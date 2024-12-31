@@ -27,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         AnhXa();
-
+// hihi
         // Lắng nghe trạng thái checkbox
         cbCheck.setOnCheckedChangeListener((buttonView, isChecked) -> {
             // Bật hoặc tắt nút Sign Up dựa trên trạng thái checkbox
