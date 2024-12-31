@@ -16,6 +16,21 @@
 
     <!-- Mô tả -->
 
+    <Button
+        android:id="@+id/btnIn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="27dp"
+        android:layout_marginEnd="116dp"
+        android:layout_marginBottom="36dp"
+        android:backgroundTint="#FDF2E0"
+        android:text="SIGN IN"
+        android:textColor="#AC3D03"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.681"
+        app:layout_constraintStart_toEndOf="@+id/textView6" />
+
     <ImageView
         android:id="@+id/imageView2"
         android:layout_width="103dp"
@@ -46,13 +61,13 @@
         android:id="@+id/txtUp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="72dp"
+        android:layout_marginTop="40dp"
         android:text="Sign Up"
         android:textColor="#172B4D"
         android:textSize="22sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.12"
+        app:layout_constraintHorizontal_bias="0.116"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/txtTitle" />
 
@@ -154,6 +169,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/edtMKhau" />
 
+    <!-- Hoặc tiếp tục -->
     <Button
         android:id="@+id/btnUp"
         android:layout_width="0dp"
@@ -163,31 +179,34 @@
         android:textColor="#FFFFFF"
         android:textColorLink="#9E3A00"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/cbCheck" />
 
-    <!-- Hoặc tiếp tục -->
+    <!-- TextView chuyển đến Sign In -->
+
     <TextView
         android:id="@+id/textView5"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="16dp"
         android:text="Or Continue With"
         android:textColor="#7A7A7A"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.483"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/btnUp" />
+        app:layout_constraintTop_toBottomOf="@+id/btnUp" />
 
-    <!-- TextView chuyển đến Sign In -->
     <TextView
         android:id="@+id/textView6"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="56dp"
-        android:text="Already have an Account? SIGN IN"
+        android:layout_marginBottom="52dp"
+        android:text="Already have an Account? "
         android:textColor="#AC3B00"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.26"
         app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

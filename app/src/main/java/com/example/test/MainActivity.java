@@ -6,14 +6,10 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -22,7 +18,7 @@ public class MainActivity extends AppCompatActivity {
 
     EditText edtName, edtPhone, edtEmail, edtMKhau;
     CheckBox cbCheck;
-    Button btnUp;
+    Button btnUp, btnIn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,15 +44,20 @@ public class MainActivity extends AppCompatActivity {
 
                 if (!isValidEmail(email) || !isValidPhoneNumber(soDT)) {
                     Toast.makeText(MainActivity.this, "Email hoặc số điện thoại không đúng định dạng", Toast.LENGTH_SHORT).show();
-                } else if (!isValidPassword(pass)) {
-                    Toast.makeText(MainActivity.this, "Mật khẩu ít nhất 8 ký tự gồm chữ hoa, chữ thường, số và ký tự đặc biệt", Toast.LENGTH_SHORT).show();
                 }
-                else {
-                    Intent intent = new Intent(MainActivity.this, Sign_In.class);
-                    startActivity(intent);
+                if (!isValidPassword(pass)) {
+                    Toast.makeText(MainActivity.this, "Mật khẩu ít nhất 8 ký tự gồm chữ hoa, chữ thường, số và ký tự đặc biệt", Toast.LENGTH_SHORT).show();
                 }
             }
         });
+
+        btnIn.setOnClickListener((new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, Sign_In.class);
+                startActivity(intent);
+            }
+        }));
 
     }
 
@@ -67,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
         edtMKhau = (EditText) findViewById(R.id.edtMKhau);
         cbCheck = findViewById(R.id.cbCheck);
         btnUp = findViewById(R.id.btnUp);
-
+        btnIn = findViewById(R.id.btnIn);
         // Vô hiệu hóa button ban đầu
         btnUp.setEnabled(false);
     }
