@@ -24,10 +24,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_intro1);
 
         AnhXa();
-// hihi
+
         // Lắng nghe trạng thái checkbox
         cbCheck.setOnCheckedChangeListener((buttonView, isChecked) -> {
             // Bật hoặc tắt nút Sign Up dựa trên trạng thái checkbox
