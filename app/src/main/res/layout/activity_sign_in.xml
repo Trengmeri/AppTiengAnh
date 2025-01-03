@@ -83,36 +83,73 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/textView3" />
 
-    <EditText
-        android:id="@+id/edtPass"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:layout_marginTop="68dp"
-        android:backgroundTint="#D1D1D1"
-        android:hint="Email"
-        android:inputType="textEmailAddress"
-        android:padding="10dp"
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="314dp"
+        android:layout_height="65dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/rounded_corner"
+        android:orientation="horizontal"
+        android:padding="16dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="0.494"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView4" />
+        app:layout_constraintTop_toBottomOf="@+id/textView4">
 
+        <ImageView
+            android:layout_width="16dp"
+            android:layout_height="22dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginRight="2sp"
+            android:src="@drawable/ic_email" />
+
+        <EditText
+            android:id="@+id/edtPass"
+            android:layout_width="242dp"
+            android:layout_height="40dp"
+            android:ems="10"
+            android:hint="Email"
+            android:inputType="text"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:layout_editor_absoluteY="543dp" />
+
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/linearLayout1"
+        android:layout_width="314dp"
+        android:layout_height="65dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/rounded_corner"
+        android:orientation="horizontal"
+        android:padding="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.494"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout">
+
+        <ImageView
+            android:layout_width="16dp"
+            android:layout_height="22dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginRight="2sp"
+            android:src="@drawable/icpass" />
+
+        <EditText
+            android:id="@+id/edtMKhau"
+            android:layout_width="242dp"
+            android:layout_height="40dp"
+            android:ems="10"
+            android:hint="Password"
+            android:inputType="text"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:layout_editor_absoluteY="543dp" />
+
+    </LinearLayout>
     <!-- Checkbox đồng ý điều khoản -->
 
     <!-- Nút Sign Up -->
-    <EditText
-        android:id="@+id/edtMKhau"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:layout_marginTop="32dp"
-        android:backgroundTint="#D1D1D1"
-        android:hint="Password"
-        android:inputType="textPassword"
-        android:padding="10dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/edtPass" />
 
     <CheckBox
         android:id="@+id/cbCheck"
@@ -124,7 +161,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.115"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/edtMKhau" />
+        app:layout_constraintTop_toBottomOf="@id/linearLayout1" />
 
     <Button
         android:id="@+id/btnIn"
