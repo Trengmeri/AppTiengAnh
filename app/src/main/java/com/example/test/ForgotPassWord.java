@@ -10,9 +10,6 @@ import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -38,6 +35,10 @@ public class ForgotPassWord extends AppCompatActivity {
                 if (!isValidEmail(email)) {
                     Toast.makeText(ForgotPassWord.this, "Email không đúng định dạng", Toast.LENGTH_SHORT).show();
                 }
+                else{
+                    Intent intent = new Intent(ForgotPassWord.this, ConfirmCode.class);
+                    startActivity(intent);
+                }
             }
         });
 
@@ -51,7 +52,7 @@ public class ForgotPassWord extends AppCompatActivity {
     }
 
     private void AnhXa() {
-        edtEmail = (EditText) findViewById(R.id.edtEmail);
+        edtEmail = (EditText) findViewById(R.id.edtPass);
         btnNext = findViewById(R.id.btnNext);
         icback = findViewById(R.id.icback);
     }

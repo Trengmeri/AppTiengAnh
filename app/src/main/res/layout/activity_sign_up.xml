@@ -130,7 +130,7 @@
 
     <!-- Ô nhập email -->
     <EditText
-        android:id="@+id/edtEmail"
+        android:id="@+id/edtPass"
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:layout_marginTop="8dp"
@@ -154,7 +154,7 @@
         android:inputType="textPassword"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/edtEmail" />
+        app:layout_constraintTop_toBottomOf="@id/edtPass" />
 
     <!-- Checkbox đồng ý điều khoản -->
 

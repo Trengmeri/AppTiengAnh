@@ -63,7 +63,7 @@ public class Sign_In extends AppCompatActivity {
     }
 
     private void AnhXa() {
-        edtEmail = (EditText) findViewById(R.id.edtEmail);
+        edtEmail = (EditText) findViewById(R.id.edtPass);
         edtName = (EditText) findViewById(R.id.edtTen);
         edtPhone = (EditText) findViewById(R.id.edtSdt);
         edtMKhau = (EditText) findViewById(R.id.edtMKhau);

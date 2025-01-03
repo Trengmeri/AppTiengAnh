@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:backgroundTint="#AC3B00"
-    tools:context=".ForgotPassWord">
+    tools:context=".NewPass">
 
     <ImageView
         android:id="@+id/imageView"
@@ -23,8 +23,8 @@
 
     <ImageView
         android:id="@+id/imageView4"
-        android:layout_width="356dp"
-        android:layout_height="378dp"
+        android:layout_width="411dp"
+        android:layout_height="419dp"
         android:layout_marginTop="328dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.49"
@@ -36,14 +36,14 @@
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="232dp"
-        android:text="Forgot PassWord"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="148dp"
+        android:text="Create New PassWord"
         android:textColor="@color/black"
-        android:textSize="16sp"
+        android:textSize="20sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintHorizontal_bias="0.9"
         app:layout_constraintStart_toEndOf="@+id/icback"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -65,23 +65,25 @@
 
     <Button
         android:id="@+id/btnNext"
-        android:layout_width="294dp"
-        android:layout_height="40dp"
-        android:layout_marginTop="60dp"
+        android:layout_width="309dp"
+        android:layout_height="43dp"
+        android:layout_marginTop="36dp"
         android:backgroundTint="#8B3000"
         android:text="Countine"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
+        app:layout_constraintTop_toBottomOf="@+id/linearLayoutReEnter" />
 
     <TextView
         android:id="@+id/textView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="76dp"
-        android:text="Select your email account to revice confirm code"
-        android:textSize="14sp"
+        android:layout_marginTop="64dp"
+        android:text="Create Your New Password"
+        android:textSize="20sp"
+        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.199"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imageView" />
 
@@ -95,11 +97,12 @@
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_back" />
 
+    <!-- Thêm EditText Re-enter your password -->
     <LinearLayout
         android:id="@+id/linearLayout"
         android:layout_width="314dp"
         android:layout_height="65dp"
-        android:layout_marginTop="44dp"
+        android:layout_marginTop="20dp"
         android:background="@drawable/rounded_corner"
         android:orientation="horizontal"
         android:padding="16dp"
@@ -109,22 +112,54 @@
         app:layout_constraintTop_toBottomOf="@+id/textView2">
 
         <ImageView
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_marginTop="10dp"
-            android:src="@drawable/ic_email" />
+            android:layout_width="16dp"
+            android:layout_height="22dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginRight="2sp"
+            android:src="@drawable/icpass" />
 
         <EditText
             android:id="@+id/edtPass"
             android:layout_width="242dp"
             android:layout_height="40dp"
             android:ems="10"
-            android:hint="Email"
+            android:hint="Password"
             android:inputType="text"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             tools:layout_editor_absoluteY="543dp" />
 
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayoutReEnter"
+        android:layout_width="314dp"
+        android:layout_height="65dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/rounded_corner"
+        android:orientation="horizontal"
+        android:padding="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.494"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout">
+
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginRight="2sp"
+            android:src="@drawable/icpass" /> <!-- Biểu tượng có thể thay đổi -->
+
+        <EditText
+            android:id="@+id/edtRePass"
+            android:layout_width="242dp"
+            android:layout_height="40dp"
+            android:ems="10"
+            android:hint="Re-enter Password"
+            android:inputType="text"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

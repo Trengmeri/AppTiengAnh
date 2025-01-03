@@ -10,9 +10,6 @@ import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -47,9 +44,12 @@ public class Sign_up extends AppCompatActivity {
 
                 if (!isValidEmail(email) || !isValidPhoneNumber(soDT)) {
                     Toast.makeText(Sign_up.this, "Email hoặc số điện thoại không đúng định dạng", Toast.LENGTH_SHORT).show();
-                }
-                if (!isValidPassword(pass)) {
+                } else if (!isValidPassword(pass)) {
                     Toast.makeText(Sign_up.this, "Mật khẩu ít nhất 8 ký tự gồm chữ hoa, chữ thường, số và ký tự đặc biệt", Toast.LENGTH_SHORT).show();
+                }
+                else{
+                    Intent intent = new Intent(Sign_up.this, ConfirmCode2.class);
+                    startActivity(intent);
                 }
             }
         });
@@ -65,7 +65,7 @@ public class Sign_up extends AppCompatActivity {
     }
 
     private void AnhXa() {
-        edtEmail = (EditText) findViewById(R.id.edtEmail);
+        edtEmail = (EditText) findViewById(R.id.edtPass);
         edtName = (EditText) findViewById(R.id.edtTen);
         edtPhone = (EditText) findViewById(R.id.edtSdt);
         edtMKhau = (EditText) findViewById(R.id.edtMKhau);
