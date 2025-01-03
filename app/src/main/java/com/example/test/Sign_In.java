@@ -37,9 +37,12 @@ public class Sign_In extends AppCompatActivity {
 
                 if (!isValidEmail(email)) {
                     Toast.makeText(Sign_In.this, "Email không đúng định dạng", Toast.LENGTH_SHORT).show();
-                }
-                if (!isValidPassword(pass)) {
+                } else if (!isValidPassword(pass)) {
                     Toast.makeText(Sign_In.this, "Mật khẩu ít nhất 8 ký tự gồm chữ hoa, chữ thường, số và ký tự đặc biệt", Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    Intent intent = new Intent(Sign_In.this, Home.class);
+                    startActivity(intent);
                 }
             }
         });
