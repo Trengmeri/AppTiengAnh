@@ -139,7 +139,7 @@ public class Sign_In extends AppCompatActivity {
             @Override
             public void onFailure(Call call, IOException e) {
                 // Xử lý khi không thể kết nối máy chủ
-                runOnUiThread(() -> Toast.makeText(Sign_In.this, "Kết nối thất bại!", Toast.LENGTH_SHORT).show());
+                runOnUiThread(() -> Toast.makeText(Sign_In.this, "Kết nối thất bại! Không thể kết nối tới API.", Toast.LENGTH_SHORT).show());
             }
 
             @Override
@@ -151,6 +151,7 @@ public class Sign_In extends AppCompatActivity {
                         Toast.makeText(Sign_In.this, "Đăng nhập thành công!", Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(Sign_In.this, Home.class);
                         startActivity(intent);
+                        finish(); // Đảm bảo Activity cũ bị hủy
                     });
                 } else {
                     // Xử lý phản hồi thất bại từ máy chủ
@@ -159,6 +160,8 @@ public class Sign_In extends AppCompatActivity {
             }
         });
     }
+
+
 
     public boolean isInternetAvailable() {
         ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
