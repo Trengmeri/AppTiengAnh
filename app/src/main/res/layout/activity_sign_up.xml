@@ -5,7 +5,6 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/background_gradient"
     tools:context=".Sign_up">
 
     <!-- Tiêu đề ứng dụng -->
@@ -22,13 +21,13 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="27dp"
         android:layout_marginEnd="116dp"
-        android:layout_marginBottom="36dp"
-        android:backgroundTint="#FDF2E0"
+        android:layout_marginBottom="28dp"
+        android:backgroundTint="@android:color/transparent"
         android:text="SIGN IN"
         android:textColor="#AC3D03"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.681"
+        app:layout_constraintHorizontal_bias="0.45"
         app:layout_constraintStart_toEndOf="@+id/textView6" />
 
     <ImageView
@@ -37,7 +36,7 @@
         android:layout_height="107dp"
         android:layout_margin="16dp"
         android:layout_marginTop="4dp"
-        android:layout_marginEnd="4dp"
+        android:layout_marginEnd="16dp"
         android:background="@drawable/circle_shape"
         android:visibility="visible"
         app:layout_constraintEnd_toEndOf="parent"
@@ -71,6 +70,37 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/txtTitle" />
 
+    <!-- Ô nhập tên -->
+
+    <ImageView
+        android:id="@+id/imageView3"
+        android:layout_width="416dp"
+        android:layout_height="523dp"
+        android:layout_marginTop="68dp"
+        android:background="@drawable/img_back"
+        app:layout_constraintTop_toBottomOf="@+id/txtTitle"
+        tools:layout_editor_absoluteX="0dp" />
+
+    <ImageView
+        android:layout_width="66dp"
+        android:layout_height="62dp"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/ic_gg"
+        app:layout_constraintEnd_toStartOf="@+id/imageView6"
+        app:layout_constraintHorizontal_bias="0.763"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView5" />
+
+    <ImageView
+        android:id="@+id/imageView6"
+        android:layout_width="66dp"
+        android:layout_height="62dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="128dp"
+        android:background="@drawable/ic_fb"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView5" />
+
     <TextView
         android:id="@+id/textView3"
         android:layout_width="wrap_content"
@@ -85,7 +115,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/txtUp" />
 
-    <!-- Ô nhập tên -->
     <TextView
         android:id="@+id/textView4"
         android:layout_width="wrap_content"
@@ -103,99 +132,103 @@
 
     <EditText
         android:id="@+id/edtTen"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:layout_marginTop="32dp"
+        android:layout_width="343dp"
+        android:layout_height="47dp"
+        android:layout_marginTop="16dp"
         android:backgroundTint="#D1D1D1"
         android:hint="Name"
         android:inputType="text"
         android:padding="10dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="0.455"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/textView4" />
 
-    <EditText
-        android:id="@+id/edtSdt"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:layout_marginTop="8dp"
-        android:hint="Phone"
-        android:backgroundTint="#D1D1D1"
-        android:padding="10dp"
-        android:inputType="phone"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/edtTen" />
-
     <!-- Ô nhập email -->
-    <EditText
-        android:id="@+id/edtPass"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:layout_marginTop="8dp"
-        android:hint="Email"
-        android:backgroundTint="#D1D1D1"
-        android:padding="10dp"
-        android:inputType="textEmailAddress"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/edtSdt" />
 
     <!-- Ô nhập mật khẩu -->
     <EditText
-        android:id="@+id/edtMKhau"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:layout_marginTop="8dp"
-        android:hint="Password"
+        android:id="@+id/edtSdt"
+        android:layout_width="343dp"
+        android:layout_height="47dp"
+        android:layout_marginTop="4dp"
         android:backgroundTint="#D1D1D1"
+        android:hint="Phone"
+        android:inputType="phone"
         android:padding="10dp"
-        android:inputType="textPassword"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.455"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/edtPass" />
+        app:layout_constraintTop_toBottomOf="@id/edtTen" />
 
     <!-- Checkbox đồng ý điều khoản -->
 
     <!-- Nút Sign Up -->
+    <EditText
+        android:id="@+id/edtPass"
+        android:layout_width="343dp"
+        android:layout_height="47dp"
+        android:layout_marginTop="8dp"
+        android:backgroundTint="#D1D1D1"
+        android:hint="Email"
+        android:inputType="textEmailAddress"
+        android:padding="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.455"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/edtSdt" />
+
+    <EditText
+        android:id="@+id/edtMKhau"
+        android:layout_width="343dp"
+        android:layout_height="47dp"
+        android:layout_marginTop="4dp"
+        android:backgroundTint="#D1D1D1"
+        android:hint="Password"
+        android:inputType="textPassword"
+        android:padding="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.455"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/edtPass" />
+
+    <!-- Hoặc tiếp tục -->
+
+    <!-- TextView chuyển đến Sign In -->
+
     <CheckBox
         android:id="@+id/cbCheck"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="4dp"
         android:text="Agree to Terms Conditions"
         android:textColor="#7A7A7A"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.191"
+        app:layout_constraintHorizontal_bias="0.179"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/edtMKhau" />
 
-    <!-- Hoặc tiếp tục -->
     <Button
         android:id="@+id/btnUp"
-        android:layout_width="0dp"
-        android:layout_height="48dp"
-        android:layout_marginTop="16dp"
+        android:layout_width="337dp"
+        android:layout_height="45dp"
+        android:layout_marginTop="8dp"
         android:text="Sign Up"
         android:textColor="#FFFFFF"
         android:textColorLink="#9E3A00"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/cbCheck" />
-
-    <!-- TextView chuyển đến Sign In -->
 
     <TextView
         android:id="@+id/textView5"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="4dp"
         android:text="Or Continue With"
         android:textColor="#7A7A7A"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.483"
+        app:layout_constraintHorizontal_bias="0.48"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btnUp" />
 
@@ -203,12 +236,13 @@
         android:id="@+id/textView6"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="52dp"
+        android:layout_marginBottom="44dp"
         android:text="Already have an Account? "
         android:textColor="#AC3B00"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.26"
+        app:layout_constraintHorizontal_bias="0.267"
         app:layout_constraintStart_toStartOf="parent" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

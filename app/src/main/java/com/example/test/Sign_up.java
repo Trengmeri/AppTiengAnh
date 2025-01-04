@@ -10,6 +10,7 @@ import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -32,6 +33,8 @@ public class Sign_up extends AppCompatActivity {
         cbCheck.setOnCheckedChangeListener((buttonView, isChecked) -> {
             // Bật hoặc tắt nút Sign Up dựa trên trạng thái checkbox
             btnUp.setEnabled(isChecked);
+            btnUp.setBackgroundColor(ContextCompat.getColor(this, R.color.btncolor));
+
         });
 
         btnUp.setOnClickListener(new View.OnClickListener() {
