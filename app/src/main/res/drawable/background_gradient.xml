@@ -11,6 +11,7 @@
                 android:centerColor="#FFFFFF"
                 android:endColor="#FFF2DB"
                  />
+
         </shape>
     </item>
 </layer-list>

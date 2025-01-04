@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import java.io.IOException;
 import java.util.regex.Matcher;
@@ -49,6 +50,8 @@ public class Sign_up extends AppCompatActivity {
         cbCheck.setOnCheckedChangeListener((buttonView, isChecked) -> {
             // Bật hoặc tắt nút Sign Up dựa trên trạng thái checkbox
             btnUp.setEnabled(isChecked);
+            btnUp.setBackgroundColor(ContextCompat.getColor(this, R.color.btncolor));
+
         });
 
         // Tạo đối tượng NetworkChangeReceiver
