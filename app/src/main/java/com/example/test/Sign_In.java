@@ -9,6 +9,7 @@ import android.net.Network;
 import android.net.NetworkCapabilities;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -25,6 +26,7 @@ import java.util.regex.Pattern;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.FormBody;
+import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
@@ -52,16 +54,23 @@ public class Sign_In extends AppCompatActivity {
             public void onClick(View view) {
                 String email = edtEmail.getText().toString();
                 String pass = edtMKhau.getText().toString();
-
-                if (email.isEmpty() || pass.isEmpty()) {
-                    Toast.makeText(Sign_In.this, "Vui lòng điền đầy đủ thông tin!", Toast.LENGTH_LONG).show();
-                } else if (!isValidEmail(email)) {
-                    Toast.makeText(Sign_In.this, "Email không đúng định dạng!", Toast.LENGTH_LONG).show();
-                } else if (!isValidPassword(pass)) {
-                    Toast.makeText(Sign_In.this, "Mật khẩu ít nhất 8 ký tự gồm chữ hoa, chữ thường, số và ký tự đặc biệt", Toast.LENGTH_LONG).show();
-                }else {
-                    sendLoginRequest(email, pass);
+                if (!isInternetAvailable()) {
+                    Toast.makeText(Sign_In.this, "Không có kết nối Internet!", Toast.LENGTH_SHORT).show();
+                    return;
                 }
+                sendLoginRequest(email, pass);
+                // if (email.isEmpty() || pass.isEmpty()) {
+                // Toast.makeText(Sign_In.this, "Vui lòng điền đầy đủ thông tin!",
+                // Toast.LENGTH_LONG).show();
+                // } else if (!isValidEmail(email)) {
+                // Toast.makeText(Sign_In.this, "Email không đúng định dạng!",
+                // Toast.LENGTH_LONG).show();
+                // } else if (!isValidPassword(pass)) {
+                // Toast.makeText(Sign_In.this, "Mật khẩu ít nhất 8 ký tự gồm chữ hoa, chữ
+                // thường, số và ký tự đặc biệt", Toast.LENGTH_LONG).show();
+                // }else {
+                // sendLoginRequest(email, pass);
+                // }
             }
         });
 
@@ -122,46 +131,46 @@ public class Sign_In extends AppCompatActivity {
     private void sendLoginRequest(String email, String password) {
         OkHttpClient client = new OkHttpClient();
 
-        // Tạo RequestBody chứa dữ liệu email và mật khẩu
-        RequestBody formBody = new FormBody.Builder()
-                .add("email", email)
-                .add("password", password)
-                .build();
+        // Tạo RequestBody chứa dữ liệu email và mật khẩu theo định dạng JSON
+        String json = "{ \"username\": \"" + email + "\", \"password\": \"" + password + "\" }";
+        RequestBody body = RequestBody.create(json, MediaType.parse("application/json; charset=utf-8"));
 
         // Tạo Request để gửi đến máy chủ
         Request request = new Request.Builder()
-                .url("https://your-server-url.com/api/login") // Thay bằng URL máy chủ của bạn
-                .post(formBody)
+                .url("http://192.168.56.1:8080/login") // Thay bằng URL máy chủ của bạn
+                .post(body)
                 .build();
 
         // Thực thi yêu cầu
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                // Xử lý khi không thể kết nối máy chủ
-                runOnUiThread(() -> Toast.makeText(Sign_In.this, "Kết nối thất bại! Không thể kết nối tới API.", Toast.LENGTH_SHORT).show());
+                Log.e("Sign_In", "Kết nối thất bại: " + e.getMessage());
+                runOnUiThread(() -> Toast
+                        .makeText(Sign_In.this, "Kết nối thất bại! Không thể kết nối tới API.", Toast.LENGTH_SHORT)
+                        .show());
             }
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
+                Log.d("Sign_In", "Phản hồi từ server: " + response.body().string());
                 if (response.isSuccessful()) {
-                    // Xử lý phản hồi thành công từ máy chủ
+                    // Xử lý phản hồi thành công
                     String responseBody = response.body().string();
                     runOnUiThread(() -> {
                         Toast.makeText(Sign_In.this, "Đăng nhập thành công!", Toast.LENGTH_SHORT).show();
-                        Intent intent = new Intent(Sign_In.this, Home.class);
+                        Intent intent = new Intent(Sign_In.this, ForgotPassWord.class);
                         startActivity(intent);
                         finish(); // Đảm bảo Activity cũ bị hủy
                     });
                 } else {
-                    // Xử lý phản hồi thất bại từ máy chủ
-                    runOnUiThread(() -> Toast.makeText(Sign_In.this, "Đăng nhập thất bại! Vui lòng kiểm tra lại thông tin.", Toast.LENGTH_SHORT).show());
+                    Log.e("Sign_In", "Lỗi từ server: " + response.code());
+                    runOnUiThread(() -> Toast.makeText(Sign_In.this,
+                            "Đăng nhập thất bại! Vui lòng kiểm tra lại thông tin.", Toast.LENGTH_SHORT).show());
                 }
             }
         });
     }
-
-
 
     public boolean isInternetAvailable() {
         ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -181,7 +190,8 @@ public class Sign_In extends AppCompatActivity {
     public class NetworkChangeReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-            ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+            ConnectivityManager connectivityManager = (ConnectivityManager) context
+                    .getSystemService(Context.CONNECTIVITY_SERVICE);
             NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
 
             if (networkInfo == null || !networkInfo.isConnected()) {

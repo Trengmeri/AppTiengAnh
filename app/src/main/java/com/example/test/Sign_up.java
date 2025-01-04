@@ -145,7 +145,7 @@ public class Sign_up extends AppCompatActivity {
 
         // Tạo Request gửi đến máy chủ
         Request request = new Request.Builder()
-                .url("https://your-server-url.com/api/signup") // Thay URL máy chủ thực tế
+                .url("http://localhost:8080/users") // Thay URL máy chủ thực tế
                 .post(formBody)
                 .build();
 
