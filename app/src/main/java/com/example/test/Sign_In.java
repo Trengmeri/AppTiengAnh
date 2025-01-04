@@ -6,6 +6,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -19,6 +20,7 @@ public class Sign_In extends AppCompatActivity {
     EditText edtName, edtPhone, edtEmail, edtMKhau;
     CheckBox cbCheck;
     Button btnIn, btnForgot, btnUp;
+    ImageView imgVanTay;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +72,7 @@ public class Sign_In extends AppCompatActivity {
         btnIn = findViewById(R.id.btnIn);
         btnUp = findViewById(R.id.btnUp);
         btnForgot = findViewById(R.id.btnForgot);
+        imgVanTay=(ImageView) findViewById(R.id.imgVanTay);
     }
 
     private boolean isValidEmail(String email) {
