@@ -100,62 +100,136 @@
         app:layout_constraintTop_toBottomOf="@id/textView3" />
 
     <!-- Ô nhập số điện thoại -->
-
-    <EditText
-        android:id="@+id/edtTen"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:layout_marginTop="32dp"
-        android:backgroundTint="#D1D1D1"
-        android:hint="Name"
-        android:inputType="text"
-        android:padding="10dp"
+    <LinearLayout
+        android:id="@+id/linearLayout1"
+        android:layout_width="314dp"
+        android:layout_height="65dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/rounded_corner"
+        android:orientation="horizontal"
+        android:padding="16dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="0.494"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/textView4" />
+        app:layout_constraintTop_toBottomOf="@+id/textView4">
 
-    <EditText
-        android:id="@+id/edtSdt"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:layout_marginTop="8dp"
-        android:hint="Phone"
-        android:backgroundTint="#D1D1D1"
-        android:padding="10dp"
-        android:inputType="phone"
+        <ImageView
+            android:layout_width="16dp"
+            android:layout_height="22dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginRight="2sp"
+            android:src="@drawable/ic_email" />
+
+        <EditText
+            android:id="@+id/edtTen"
+            android:layout_width="242dp"
+            android:layout_height="48dp"
+            android:ems="10"
+            android:hint="Name"
+            android:inputType="text"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:layout_editor_absoluteY="543dp" />
+
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/linearLayout2"
+        android:layout_width="314dp"
+        android:layout_height="65dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/rounded_corner"
+        android:orientation="horizontal"
+        android:padding="16dp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.494"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/edtTen" />
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout1">
+
+        <ImageView
+            android:layout_width="16dp"
+            android:layout_height="22dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginRight="2sp"
+            android:src="@drawable/icpass" />
+
+        <EditText
+            android:id="@+id/edtSdt"
+            android:layout_width="242dp"
+            android:layout_height="48dp"
+            android:ems="10"
+            android:hint="Phone"
+            android:inputType="text"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:layout_editor_absoluteY="543dp" />
+
+    </LinearLayout>
 
     <!-- Ô nhập email -->
-    <EditText
-        android:id="@+id/edtPass"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:layout_marginTop="8dp"
-        android:hint="Email"
-        android:backgroundTint="#D1D1D1"
-        android:padding="10dp"
-        android:inputType="textEmailAddress"
+    <LinearLayout
+        android:id="@+id/linearLayout3"
+        android:layout_width="314dp"
+        android:layout_height="65dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/rounded_corner"
+        android:orientation="horizontal"
+        android:padding="16dp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.494"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/edtSdt" />
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout2">
 
-    <!-- Ô nhập mật khẩu -->
-    <EditText
-        android:id="@+id/edtMKhau"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:layout_marginTop="8dp"
-        android:hint="Password"
-        android:backgroundTint="#D1D1D1"
-        android:padding="10dp"
-        android:inputType="textPassword"
+        <ImageView
+            android:layout_width="16dp"
+            android:layout_height="22dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginRight="2sp"
+            android:src="@drawable/ic_email" />
+
+        <EditText
+            android:id="@+id/edtPass"
+            android:layout_width="242dp"
+            android:layout_height="48dp"
+            android:ems="10"
+            android:hint="Email"
+            android:inputType="text"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:layout_editor_absoluteY="543dp" />
+
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/linearLayout4"
+        android:layout_width="314dp"
+        android:layout_height="65dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/rounded_corner"
+        android:orientation="horizontal"
+        android:padding="16dp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.494"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/edtPass" />
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout3">
 
+        <ImageView
+            android:layout_width="16dp"
+            android:layout_height="22dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginRight="2sp"
+            android:src="@drawable/icpass" />
+
+        <EditText
+            android:id="@+id/edtMKhau"
+            android:layout_width="242dp"
+            android:layout_height="48dp"
+            android:ems="10"
+            android:hint="Password"
+            android:inputType="text"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:layout_editor_absoluteY="543dp" />
+
+    </LinearLayout>
     <!-- Checkbox đồng ý điều khoản -->
 
     <!-- Nút Sign Up -->
@@ -169,7 +243,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.191"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/edtMKhau" />
+        app:layout_constraintTop_toBottomOf="@id/linearLayout4" />
 
     <!-- Hoặc tiếp tục -->
     <Button
@@ -177,6 +251,7 @@
         android:layout_width="0dp"
         android:layout_height="48dp"
         android:layout_marginTop="16dp"
+        android:backgroundTint="#9E3A00"
         android:text="Sign Up"
         android:textColor="#FFFFFF"
         android:textColorLink="#9E3A00"

@@ -54,7 +54,7 @@
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
                 android:layout_centerHorizontal="true"
-                android:text="Your Account is Ready to Use. You will be redirected to the Home Page in a Few Seconds."
+                android:text="Your Account is Ready to Use. You will be redirected to the Home Page in a few seconds."
                 android:textColor="#7C7C7C"
                 android:textSize="14sp"
                 android:gravity="center" />
