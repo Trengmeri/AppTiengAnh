@@ -52,8 +52,9 @@ public class Sign_In extends AppCompatActivity {
             public void onClick(View view) {
                 String email = edtEmail.getText().toString();
                 String pass = edtMKhau.getText().toString();
+                sendLoginRequest(email, pass);
 
-                if (email.isEmpty() || pass.isEmpty()) {
+                /*if (email.isEmpty() || pass.isEmpty()) {
                     Toast.makeText(Sign_In.this, "Vui lòng điền đầy đủ thông tin!", Toast.LENGTH_LONG).show();
                 } else if (!isValidEmail(email)) {
                     Toast.makeText(Sign_In.this, "Email không đúng định dạng!", Toast.LENGTH_LONG).show();
@@ -61,7 +62,7 @@ public class Sign_In extends AppCompatActivity {
                     Toast.makeText(Sign_In.this, "Mật khẩu ít nhất 8 ký tự gồm chữ hoa, chữ thường, số và ký tự đặc biệt", Toast.LENGTH_LONG).show();
                 }else {
                     sendLoginRequest(email, pass);
-                }
+                }*/
             }
         });
 
@@ -130,7 +131,7 @@ public class Sign_In extends AppCompatActivity {
 
         // Tạo Request để gửi đến máy chủ
         Request request = new Request.Builder()
-                .url("https://your-server-url.com/api/login") // Thay bằng URL máy chủ của bạn
+                .url("http://192.168.109.2:8080/login") // Thay bằng URL máy chủ của bạn
                 .post(formBody)
                 .build();
 
