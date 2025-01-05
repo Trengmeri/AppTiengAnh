@@ -22,13 +22,13 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="27dp"
         android:layout_marginEnd="116dp"
-        android:layout_marginBottom="36dp"
+        android:layout_marginBottom="40dp"
         android:backgroundTint="#FDF2E0"
         android:text="SIGN IN"
         android:textColor="#AC3D03"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.681"
+        app:layout_constraintHorizontal_bias="0.38"
         app:layout_constraintStart_toEndOf="@+id/textView6" />
 
     <ImageView
@@ -61,7 +61,7 @@
         android:id="@+id/txtUp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="28dp"
         android:text="Sign Up"
         android:textColor="#172B4D"
         android:textSize="22sp"
