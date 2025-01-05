@@ -9,6 +9,7 @@ import android.net.Network;
 import android.net.NetworkCapabilities;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -26,6 +27,7 @@ import java.util.regex.Pattern;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.FormBody;
+import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
@@ -135,41 +137,43 @@ public class Sign_up extends AppCompatActivity {
     private void sendSignUpRequest(String name, String phone, String email, String password) {
         OkHttpClient client = new OkHttpClient();
 
-        // Tạo RequestBody chứa dữ liệu đăng ký
-        RequestBody formBody = new FormBody.Builder()
-                .add("name", name)
-                .add("phone", phone)
-                .add("email", email)
-                .add("password", password)
-                .build();
+        // Tạo JSON chứa dữ liệu đăng ký
+        String json = "{ \"name\": \"" + name + "\", \"phone\": \"" + phone + "\", \"email\": \"" + email + "\", \"password\": \"" + password + "\" }";
+        RequestBody body = RequestBody.create(json, MediaType.parse("application/json; charset=utf-8"));
 
         // Tạo Request gửi đến máy chủ
         Request request = new Request.Builder()
-                .url("http://localhost:8080/users") // Thay URL máy chủ thực tế
-                .post(formBody)
+                .url("http://192.168.109.2:8080/users") // Thay URL máy chủ thực tế
+                .post(body)
                 .build();
 
         // Thực thi yêu cầu
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                runOnUiThread(() -> Toast.makeText(Sign_up.this, "Kết nối thất bại", Toast.LENGTH_SHORT).show());
+                Log.e("Sign_up", "Kết nối thất bại: " + e.getMessage());
+                runOnUiThread(() -> Toast.makeText(Sign_up.this, "Kết nối thất bại! Không thể kết nối tới API.", Toast.LENGTH_SHORT).show());
             }
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
+                String responseBody = response.body().string();
+                Log.d("Sign_up", "Phản hồi từ server: " + responseBody);
                 if (response.isSuccessful()) {
                     runOnUiThread(() -> {
-                        Toast.makeText(Sign_up.this, "Vui lòng kiểm tra email của bạn!", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(Sign_up.this, "Đăng ký thành công! Vui lòng kiểm tra email của bạn.", Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(Sign_up.this, ConfirmCode2.class);
                         startActivity(intent);
+                        finish(); // Đảm bảo màn hình đăng ký bị hủy
                     });
                 } else {
-                    runOnUiThread(() -> Toast.makeText(Sign_up.this, "Đăng ký thất bại. Vui lòng kiểm tra lại thông tin.", Toast.LENGTH_SHORT).show());
+                    Log.e("Sign_up", "Lỗi từ server: Mã lỗi " + response.code() + ", Nội dung: " + responseBody);
+                    runOnUiThread(() -> Toast.makeText(Sign_up.this, "Đăng ký thất bại! Vui lòng kiểm tra lại thông tin.", Toast.LENGTH_SHORT).show());
                 }
             }
         });
     }
+
 
     public boolean isInternetAvailable() {
         ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
