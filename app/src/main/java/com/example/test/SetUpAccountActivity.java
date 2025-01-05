@@ -6,11 +6,8 @@ import android.os.Handler;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
-public class SetUpAccount extends AppCompatActivity {
+public class SetUpAccountActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,7 +17,7 @@ public class SetUpAccount extends AppCompatActivity {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                Intent intent = new Intent(SetUpAccount.this, Home.class);
+                Intent intent = new Intent(SetUpAccountActivity.this, HomeActivity.class);
                 startActivity(intent);
             }
         }, 3000);

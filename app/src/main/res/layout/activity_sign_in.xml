@@ -6,19 +6,7 @@
     android:background="@drawable/background_gradient"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Sign_In">
-
-    <ImageView
-        android:id="@+id/imageView2"
-        android:layout_width="103dp"
-        android:layout_height="107dp"
-        android:layout_margin="16dp"
-        android:layout_marginTop="4dp"
-        android:layout_marginEnd="4dp"
-        android:background="@drawable/circle_shape"
-        android:visibility="visible"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    tools:context=".SignInActivity">
 
     <TextView
         android:id="@+id/txtTitle"
@@ -46,7 +34,7 @@
         android:id="@+id/txtUp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="72dp"
         android:text="Sign In"
         android:textColor="#172B4D"
         android:textSize="22sp"
@@ -60,7 +48,7 @@
         android:id="@+id/textView3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="48dp"
         android:text="Welcome Back"
         android:textColor="#AC3B00"
         android:textSize="18sp"
@@ -85,8 +73,8 @@
 
     <LinearLayout
         android:id="@+id/linearLayout"
-        android:layout_width="314dp"
-        android:layout_height="65dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:background="@drawable/rounded_corner"
         android:orientation="horizontal"
@@ -105,20 +93,17 @@
 
         <EditText
             android:id="@+id/edtPass"
-            android:layout_width="242dp"
-            android:layout_height="40dp"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
             android:ems="10"
             android:hint="Email"
-            android:inputType="text"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            tools:layout_editor_absoluteY="543dp" />
+            android:inputType="text"/>
 
     </LinearLayout>
     <LinearLayout
         android:id="@+id/linearLayout1"
-        android:layout_width="314dp"
-        android:layout_height="65dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:background="@drawable/rounded_corner"
         android:orientation="horizontal"
@@ -137,8 +122,8 @@
 
         <EditText
             android:id="@+id/edtMKhau"
-            android:layout_width="242dp"
-            android:layout_height="40dp"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
             android:ems="10"
             android:hint="Password"
             android:inputType="text"
@@ -167,8 +152,8 @@
 
     <Button
         android:id="@+id/btnIn"
-        android:layout_width="254dp"
-        android:layout_height="40dp"
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
         android:layout_marginTop="24dp"
         android:backgroundTint="#BC6136"
         android:text="Sign In"
@@ -179,28 +164,28 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/cbCheck" />
 
+    <!-- TextView chuyển đến Sign In -->
+
     <TextView
         android:id="@+id/textView5"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="16dp"
         android:text="Or Continue With"
         android:textColor="#7A7A7A"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/btnIn" />
 
-    <!-- TextView chuyển đến Sign In -->
-
     <TextView
         android:id="@+id/textView6"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="56dp"
+        android:layout_marginTop="36dp"
         android:text="Don’t have an Account? "
         android:textColor="#AC3B00"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.274"
+        app:layout_constraintHorizontal_bias="0.244"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imageView5" />
 
@@ -222,12 +207,12 @@
         android:id="@+id/btnUp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="44dp"
-        android:backgroundTint="#FDF2DE"
+        android:layout_marginTop="20dp"
+        android:backgroundTint="#FFFFFF"
         android:text="SIGN UP"
         android:textColor="#AF4610"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.181"
+        app:layout_constraintHorizontal_bias="0.156"
         app:layout_constraintStart_toEndOf="@+id/textView6"
         app:layout_constraintTop_toBottomOf="@+id/imageView6" />
 
@@ -243,22 +228,22 @@
 
     <ImageView
         android:id="@+id/imageView5"
-        android:layout_width="86dp"
+        android:layout_width="wrap_content"
         android:layout_height="74dp"
-        android:layout_marginStart="72dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginStart="40dp"
+        android:layout_marginTop="32dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView5"
         app:srcCompat="@drawable/ic_fb" />
 
     <ImageView
         android:id="@+id/imageView6"
-        android:layout_width="70dp"
+        android:layout_width="wrap_content"
         android:layout_height="75dp"
-        android:layout_marginStart="96dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="36dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="0.825"
         app:layout_constraintStart_toEndOf="@+id/imageView5"
         app:layout_constraintTop_toBottomOf="@+id/textView5"
         app:srcCompat="@drawable/ic_gg" />

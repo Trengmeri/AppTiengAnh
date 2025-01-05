@@ -3,15 +3,11 @@ package com.example.test;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Looper;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
-public class LoadPass extends AppCompatActivity {
+public class LoadPassActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,7 +18,7 @@ public class LoadPass extends AppCompatActivity {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                Intent intent = new Intent(LoadPass.this, Sign_In.class);
+                Intent intent = new Intent(LoadPassActivity.this, SignInActivity.class);
                 startActivity(intent);
             }
         }, 3000);

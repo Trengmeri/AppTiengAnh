@@ -14,7 +14,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class ForgotPassWord extends AppCompatActivity {
+public class ForgotPassWordActivity extends AppCompatActivity {
 
     EditText edtEmail;
     Button btnNext;
@@ -33,10 +33,10 @@ public class ForgotPassWord extends AppCompatActivity {
                 String email = edtEmail.getText().toString();
 
                 if (!isValidEmail(email)) {
-                    Toast.makeText(ForgotPassWord.this, "Email không đúng định dạng", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ForgotPassWordActivity.this, "Email không đúng định dạng", Toast.LENGTH_SHORT).show();
                 }
                 else{
-                    Intent intent = new Intent(ForgotPassWord.this, ConfirmCode.class);
+                    Intent intent = new Intent(ForgotPassWordActivity.this, ConfirmCodeActivity.class);
                     startActivity(intent);
                 }
             }
@@ -45,7 +45,7 @@ public class ForgotPassWord extends AppCompatActivity {
         icback.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(ForgotPassWord.this, Sign_In.class);
+                Intent intent = new Intent(ForgotPassWordActivity.this, SignInActivity.class);
                 startActivity(intent);
             }
         });

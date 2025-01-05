@@ -4,14 +4,11 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Html;
-import android.util.Log;
 import android.view.View;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -19,7 +16,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-public class Intro2 extends AppCompatActivity {
+public class Intro2Activity extends AppCompatActivity {
 
     ImageView logoImage;
     Button btnNext, btnSkip;
@@ -67,7 +64,7 @@ public class Intro2 extends AppCompatActivity {
             }, 300); // Đợi 300ms trước khi cập nhật nội dung
 
             if(clickCount ==3){
-                Intent intent = new Intent(Intro2.this, Sign_In.class);
+                Intent intent = new Intent(Intro2Activity.this, SignInActivity.class);
                 startActivity(intent);
                 finish();
             }
@@ -77,7 +74,7 @@ public class Intro2 extends AppCompatActivity {
         btnSkip.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(Intro2.this, Sign_In.class);
+                Intent intent = new Intent(Intro2Activity.this, SignInActivity.class);
                 startActivity(intent);
             }
         });

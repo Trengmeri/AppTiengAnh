@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#4E4C6C"
-    tools:context=".LoadPass">
+    tools:context=".LoadPassActivity">
 
     <!-- Card View -->
     <androidx.cardview.widget.CardView

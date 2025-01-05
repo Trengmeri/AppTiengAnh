@@ -7,7 +7,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#F1F5FE"
-    tools:context=".ConfirmCode2">
+    tools:context=".ConfirmCode2Activity">
 
     <!-- Thanh tiêu đề -->
     <LinearLayout

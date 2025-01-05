@@ -1,16 +1,9 @@
 package com.example.test;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
-import android.net.Network;
-import android.net.NetworkCapabilities;
-import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -20,20 +13,10 @@ import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
-import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.FormBody;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
-
-public class Sign_up extends AppCompatActivity {
+public class SignUpActivity extends AppCompatActivity {
 
     EditText edtName, edtPhone, edtEmail, edtMKhau;
     CheckBox cbCheck;
@@ -62,8 +45,8 @@ public class Sign_up extends AppCompatActivity {
         apiManager = new ApiManager();
 
         btnUp.setOnClickListener(view -> {
-            if (!apiManager.isInternetAvailable(Sign_up.this)) {
-                Toast.makeText(Sign_up.this, "Vui lòng kiểm tra kết nối Internet của bạn.", Toast.LENGTH_LONG).show();
+            if (!apiManager.isInternetAvailable(SignUpActivity.this)) {
+                Toast.makeText(SignUpActivity.this, "Vui lòng kiểm tra kết nối Internet của bạn.", Toast.LENGTH_LONG).show();
             } else {
                 // Thực hiện yêu cầu nếu có Internet
                 String hoten = edtName.getText().toString();
@@ -74,15 +57,15 @@ public class Sign_up extends AppCompatActivity {
                 apiManager.sendSignUpRequest(hoten, soDT, email, pass, new ApiCallback() {
                     @Override
                     public void onSuccess() {
-                        Toast.makeText(Sign_up.this, "Đăng ký thành công! Vui lòng kiểm tra email của bạn.", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(SignUpActivity.this, "Đăng ký thành công! Vui lòng kiểm tra email của bạn.", Toast.LENGTH_SHORT).show();
                         // Chuyển hướng đến Activity xác nhận hoặc trang chính
-                        Intent intent = new Intent(Sign_up.this, ConfirmCode.class);
+                        Intent intent = new Intent(SignUpActivity.this, ConfirmCodeActivity.class);
                         startActivity(intent);
                     }
 
                     @Override
                     public void onFailure(String errorMessage) {
-                        Toast.makeText(Sign_up.this, errorMessage, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(SignUpActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
                     }
                 });
 
@@ -99,7 +82,7 @@ public class Sign_up extends AppCompatActivity {
         });
 
         btnIn.setOnClickListener(view -> {
-            Intent intent = new Intent(Sign_up.this, Sign_In.class);
+            Intent intent = new Intent(SignUpActivity.this, SignInActivity.class);
             startActivity(intent);
         });
     }

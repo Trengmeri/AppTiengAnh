@@ -10,14 +10,11 @@ import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class NewPass extends AppCompatActivity {
+public class NewPassActivity extends AppCompatActivity {
 
     EditText edtPass, edtRePass;
     Button btnNext;
@@ -38,11 +35,11 @@ public class NewPass extends AppCompatActivity {
                 String repass = edtRePass.getText().toString();
 
                 if (!isValidPassword(pass)) {
-                    Toast.makeText(NewPass.this, "Mật khẩu ít nhất 8 ký tự gồm chữ hoa, chữ thường, số và ký tự đặc biệt", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(NewPassActivity.this, "Mật khẩu ít nhất 8 ký tự gồm chữ hoa, chữ thường, số và ký tự đặc biệt", Toast.LENGTH_SHORT).show();
                 } else if (!pass.equals(repass)) {
-                    Toast.makeText(NewPass.this, "Mật khẩu nhập lại không khớp", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(NewPassActivity.this, "Mật khẩu nhập lại không khớp", Toast.LENGTH_SHORT).show();
                 } else{
-                    Intent intent = new Intent(NewPass.this, LoadPass.class);
+                    Intent intent = new Intent(NewPassActivity.this, LoadPassActivity.class);
                     startActivity(intent);
                 }
             }
@@ -51,7 +48,7 @@ public class NewPass extends AppCompatActivity {
         icback.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(NewPass.this, ForgotPassWord.class);
+                Intent intent = new Intent(NewPassActivity.this, ForgotPassWordActivity.class);
                 startActivity(intent);
             }
         });

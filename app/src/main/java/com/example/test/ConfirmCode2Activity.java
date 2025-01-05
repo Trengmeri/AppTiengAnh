@@ -3,7 +3,6 @@ package com.example.test;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -16,7 +15,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-public class ConfirmCode2 extends AppCompatActivity {
+public class ConfirmCode2Activity extends AppCompatActivity {
 
     private EditText[] codeInputs; // Mảng chứa các ô nhập mã
     private int currentInputIndex = 0; // Vị trí hiện tại của con trỏ nhập liệu
@@ -58,7 +57,7 @@ public class ConfirmCode2 extends AppCompatActivity {
 
         // Nút quay lại
         icback.setOnClickListener(view -> {
-            Intent intent = new Intent(ConfirmCode2.this, ForgotPassWord.class);
+            Intent intent = new Intent(ConfirmCode2Activity.this, ForgotPassWordActivity.class);
             startActivity(intent);
         });
 
@@ -142,7 +141,7 @@ public class ConfirmCode2 extends AppCompatActivity {
 
     // Phương thức chuyển trang sau khi nhập đủ mã
     private void navigateToNextPage() {
-        Intent intent = new Intent(ConfirmCode2.this, SetUpAccount.class); // Chuyển đến Activity tiếp theo
+        Intent intent = new Intent(ConfirmCode2Activity.this, SetUpAccountActivity.class); // Chuyển đến Activity tiếp theo
         startActivity(intent);
     }
 
@@ -168,7 +167,7 @@ public class ConfirmCode2 extends AppCompatActivity {
 
     private void onCountdownFinished() {
         // Hành động khi đếm ngược kết thúc
-        Toast.makeText(ConfirmCode2.this, "Vui lòng nhấn gửi lại mã!", Toast.LENGTH_SHORT).show(); // Hiển thị thông báo hoặc xử lý logic khác
+        Toast.makeText(ConfirmCode2Activity.this, "Vui lòng nhấn gửi lại mã!", Toast.LENGTH_SHORT).show(); // Hiển thị thông báo hoặc xử lý logic khác
     }
 
     @Override
