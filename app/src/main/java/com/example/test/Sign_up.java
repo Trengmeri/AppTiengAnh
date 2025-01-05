@@ -39,6 +39,7 @@ public class Sign_up extends AppCompatActivity {
     CheckBox cbCheck;
     Button btnUp, btnIn;
     NetworkChangeReceiver networkReceiver;
+    ApiManager apiManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,9 +59,10 @@ public class Sign_up extends AppCompatActivity {
 
         // Tạo đối tượng NetworkChangeReceiver
         networkReceiver = new NetworkChangeReceiver();
+        apiManager = new ApiManager();
 
         btnUp.setOnClickListener(view -> {
-            if (!isInternetAvailable()) {
+            if (!apiManager.isInternetAvailable(Sign_up.this)) {
                 Toast.makeText(Sign_up.this, "Vui lòng kiểm tra kết nối Internet của bạn.", Toast.LENGTH_LONG).show();
             } else {
                 // Thực hiện yêu cầu nếu có Internet
@@ -69,15 +71,30 @@ public class Sign_up extends AppCompatActivity {
                 String soDT = edtPhone.getText().toString();
                 String pass = edtMKhau.getText().toString();
 
-                if (hoten.isEmpty() || email.isEmpty() || soDT.isEmpty() || pass.isEmpty()) {
-                    Toast.makeText(Sign_up.this, "Vui lòng điền đầy đủ thông tin", Toast.LENGTH_LONG).show();
-                } else if (!isValidEmail(email) || !isValidPhoneNumber(soDT)) {
-                    Toast.makeText(Sign_up.this, "Email hoặc số điện thoại không đúng định dạng", Toast.LENGTH_LONG).show();
-                } else if (!isValidPassword(pass)) {
-                    Toast.makeText(Sign_up.this, "Mật khẩu ít nhất 8 ký tự gồm chữ hoa, chữ thường, số và ký tự đặc biệt", Toast.LENGTH_LONG).show();
-                } else {
-                    sendSignUpRequest(hoten, soDT, email, pass);
-                }
+                apiManager.sendSignUpRequest(hoten, soDT, email, pass, new ApiCallback() {
+                    @Override
+                    public void onSuccess() {
+                        Toast.makeText(Sign_up.this, "Đăng ký thành công! Vui lòng kiểm tra email của bạn.", Toast.LENGTH_SHORT).show();
+                        // Chuyển hướng đến Activity xác nhận hoặc trang chính
+                        Intent intent = new Intent(Sign_up.this, ConfirmCode.class);
+                        startActivity(intent);
+                    }
+
+                    @Override
+                    public void onFailure(String errorMessage) {
+                        Toast.makeText(Sign_up.this, errorMessage, Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+//                if (hoten.isEmpty() || email.isEmpty() || soDT.isEmpty() || pass.isEmpty()) {
+//                    Toast.makeText(Sign_up.this, "Vui lòng điền đầy đủ thông tin", Toast.LENGTH_LONG).show();
+//                } else if (!isValidEmail(email) || !isValidPhoneNumber(soDT)) {
+//                    Toast.makeText(Sign_up.this, "Email hoặc số điện thoại không đúng định dạng", Toast.LENGTH_LONG).show();
+//                } else if (!isValidPassword(pass)) {
+//                    Toast.makeText(Sign_up.this, "Mật khẩu ít nhất 8 ký tự gồm chữ hoa, chữ thường, số và ký tự đặc biệt", Toast.LENGTH_LONG).show();
+//                } else {
+//                    apiManager.sendSignUpRequest(hoten, soDT, email, pass, Sign_up.this);
+//                }
             }
         });
 
@@ -134,71 +151,4 @@ public class Sign_up extends AppCompatActivity {
         return matcher.matches();
     }
 
-    private void sendSignUpRequest(String name, String phone, String email, String password) {
-        OkHttpClient client = new OkHttpClient();
-
-        // Tạo JSON chứa dữ liệu đăng ký
-        String json = "{ \"name\": \"" + name + "\", \"phone\": \"" + phone + "\", \"email\": \"" + email + "\", \"password\": \"" + password + "\" }";
-        RequestBody body = RequestBody.create(json, MediaType.parse("application/json; charset=utf-8"));
-
-        // Tạo Request gửi đến máy chủ
-        Request request = new Request.Builder()
-                .url("http://192.168.109.2:8080/users") // Thay URL máy chủ thực tế
-                .post(body)
-                .build();
-
-        // Thực thi yêu cầu
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                Log.e("Sign_up", "Kết nối thất bại: " + e.getMessage());
-                runOnUiThread(() -> Toast.makeText(Sign_up.this, "Kết nối thất bại! Không thể kết nối tới API.", Toast.LENGTH_SHORT).show());
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                String responseBody = response.body().string();
-                Log.d("Sign_up", "Phản hồi từ server: " + responseBody);
-                if (response.isSuccessful()) {
-                    runOnUiThread(() -> {
-                        Toast.makeText(Sign_up.this, "Đăng ký thành công! Vui lòng kiểm tra email của bạn.", Toast.LENGTH_SHORT).show();
-                        Intent intent = new Intent(Sign_up.this, ConfirmCode2.class);
-                        startActivity(intent);
-                        finish(); // Đảm bảo màn hình đăng ký bị hủy
-                    });
-                } else {
-                    Log.e("Sign_up", "Lỗi từ server: Mã lỗi " + response.code() + ", Nội dung: " + responseBody);
-                    runOnUiThread(() -> Toast.makeText(Sign_up.this, "Đăng ký thất bại! Vui lòng kiểm tra lại thông tin.", Toast.LENGTH_SHORT).show());
-                }
-            }
-        });
-    }
-
-
-    public boolean isInternetAvailable() {
-        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        if (connectivityManager != null) {
-            Network network = connectivityManager.getActiveNetwork();
-            if (network != null) {
-                NetworkCapabilities capabilities = connectivityManager.getNetworkCapabilities(network);
-                return capabilities != null &&
-                        (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ||
-                                capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR));
-            }
-        }
-        return false;
-    }
-
-    // BroadcastReceiver để lắng nghe thay đổi trạng thái mạng
-    public static class NetworkChangeReceiver extends BroadcastReceiver {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-            NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
-
-            if (networkInfo == null || !networkInfo.isConnected()) {
-                Toast.makeText(context, "Không có Internet. Vui lòng kiểm tra kết nối.", Toast.LENGTH_LONG).show();
-            }
-        }
-    }
 }

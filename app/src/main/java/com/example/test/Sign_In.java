@@ -37,8 +37,8 @@ public class Sign_In extends AppCompatActivity {
     EditText edtEmail, edtMKhau;
     CheckBox cbCheck;
     Button btnIn, btnForgot, btnUp;
-    Sign_In.NetworkChangeReceiver networkReceiver;
-
+    NetworkChangeReceiver networkReceiver;
+    ApiManager apiManager;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,17 +48,30 @@ public class Sign_In extends AppCompatActivity {
 
         // Tạo đối tượng NetworkChangeReceiver
         networkReceiver = new NetworkChangeReceiver();
+        apiManager = new ApiManager();
 
         btnIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 String email = edtEmail.getText().toString();
                 String pass = edtMKhau.getText().toString();
-                if (!isInternetAvailable()) {
+                if (!apiManager.isInternetAvailable(Sign_In.this)) {
                     Toast.makeText(Sign_In.this, "Không có kết nối Internet!", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                sendLoginRequest(email, pass);
+                apiManager.sendLoginRequest(email, pass, new ApiCallback() {
+                    @Override
+                    public void onSuccess() {
+                        Toast.makeText(Sign_In.this, "Đăng nhập thành công!", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(Sign_In.this, Home.class);
+                        startActivity(intent); // Chuyển hướng đến Home Activity
+                    }
+
+                    @Override
+                    public void onFailure(String errorMessage) {
+                        Toast.makeText(Sign_In.this, errorMessage, Toast.LENGTH_SHORT).show();
+                    }
+                });
                 // if (email.isEmpty() || pass.isEmpty()) {
                 // Toast.makeText(Sign_In.this, "Vui lòng điền đầy đủ thông tin!",
                 // Toast.LENGTH_LONG).show();
@@ -128,74 +141,4 @@ public class Sign_In extends AppCompatActivity {
         return matcher.matches();
     }
 
-    private void sendLoginRequest(String email, String password) {
-        OkHttpClient client = new OkHttpClient();
-
-        // Tạo RequestBody chứa dữ liệu email và mật khẩu theo định dạng JSON
-        String json = "{ \"username\": \"" + email + "\", \"password\": \"" + password + "\" }";
-        RequestBody body = RequestBody.create(json, MediaType.parse("application/json; charset=utf-8"));
-
-        // Tạo Request để gửi đến máy chủ
-        Request request = new Request.Builder()
-                .url("http://192.168.109.2:8080/login") // Thay bằng URL máy chủ của bạn
-                .post(body)
-                .build();
-
-        // Thực thi yêu cầu
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                Log.e("Sign_In", "Kết nối thất bại: " + e.getMessage());
-                runOnUiThread(() -> Toast
-                        .makeText(Sign_In.this, "Kết nối thất bại! Không thể kết nối tới API.", Toast.LENGTH_SHORT)
-                        .show());
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                String responseBody = response.body().string();
-                Log.d("Sign_In", "Phản hồi từ server: " + responseBody);
-                if (response.isSuccessful()) {
-                    runOnUiThread(() -> {
-                        Toast.makeText(Sign_In.this, "Đăng nhập thành công!", Toast.LENGTH_SHORT).show();
-                        Intent intent = new Intent(Sign_In.this, Home.class);
-                        startActivity(intent);
-                        finish();
-                    });
-                } else {
-                    Log.e("Sign_In", "Lỗi từ server: Mã lỗi " + response.code() + ", Nội dung: " + responseBody);
-                    runOnUiThread(() -> Toast.makeText(Sign_In.this,
-                            "Đăng nhập thất bại! Vui lòng kiểm tra lại thông tin.", Toast.LENGTH_SHORT).show());
-                }
-            }
-        });
-    }
-
-    public boolean isInternetAvailable() {
-        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        if (connectivityManager != null) {
-            Network network = connectivityManager.getActiveNetwork();
-            if (network != null) {
-                NetworkCapabilities capabilities = connectivityManager.getNetworkCapabilities(network);
-                return capabilities != null &&
-                        (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ||
-                                capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR));
-            }
-        }
-        return false;
-    }
-
-    // BroadcastReceiver để lắng nghe thay đổi trạng thái mạng
-    public class NetworkChangeReceiver extends BroadcastReceiver {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            ConnectivityManager connectivityManager = (ConnectivityManager) context
-                    .getSystemService(Context.CONNECTIVITY_SERVICE);
-            NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
-
-            if (networkInfo == null || !networkInfo.isConnected()) {
-                Toast.makeText(context, "Không có Internet. Vui lòng kiểm tra kết nối.", Toast.LENGTH_LONG).show();
-            }
-        }
-    }
 }
