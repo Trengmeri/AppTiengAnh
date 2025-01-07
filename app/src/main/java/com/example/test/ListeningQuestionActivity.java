@@ -20,7 +20,7 @@ public class ListeningQuestionActivity extends AppCompatActivity {
 
     private MediaPlayer mediaPlayer;
     private EditText etAnswer;
-    private String correctAnswer = "expected answer"; // Đáp án đúng
+    private String correctAnswer = "u i a fein"; // Đáp án đúng
     String userAnswer = "";
     private ProgressBar progressBar;
     private int progressStatus = 0; // Trạng thái tiến trình

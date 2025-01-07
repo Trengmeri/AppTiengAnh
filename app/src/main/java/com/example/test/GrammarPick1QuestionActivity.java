@@ -2,7 +2,6 @@ package com.example.test;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -10,7 +9,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-public class GrammarQuestionActivity extends AppCompatActivity {
+public class GrammarPick1QuestionActivity extends AppCompatActivity {
     private String correctAnswer = "internet"; // Giả sử dữ liệu đúng từ backend
     private String userAnswer = ""; // Đáp án mà người dùng chọn
     private ProgressBar progressBar;
@@ -44,7 +43,7 @@ public class GrammarQuestionActivity extends AppCompatActivity {
         btnCheckAnswer.setOnClickListener(v -> {
 
             if (userAnswer.isEmpty()) {
-                Toast.makeText(GrammarQuestionActivity.this, "Vui lòng trả lời câu hỏi!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(GrammarPick1QuestionActivity.this, "Vui lòng trả lời câu hỏi!", Toast.LENGTH_SHORT).show();
             } else {
                 // Truyền view cụ thể vào PopupHelper
                 PopupHelper.showResultPopup(findViewById(R.id.popupContainer), userAnswer, correctAnswer, () -> {
@@ -56,7 +55,7 @@ public class GrammarQuestionActivity extends AppCompatActivity {
                     // Kiểm tra xem ProgressBar đã đạt 100 chưa
                     if (progressStatus >= 100) {
                         // Chuyển sang Activity tiếp theo
-                        Intent intent = new Intent(GrammarQuestionActivity.this, ListeningQuestionActivity.class);
+                        Intent intent = new Intent(GrammarPick1QuestionActivity.this, GrammarPickManyActivity.class);
                         startActivity(intent);
                         finish(); // Kết thúc Activity hiện tại
                     }
