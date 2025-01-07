@@ -12,11 +12,11 @@ import android.widget.TextView;
 
 public class PopupHelper {
 
-    public static void showResultPopup(Context context, String userAnswer, String correctAnswer) {
-        boolean isCorrect = userAnswer.equals(correctAnswer);
+    public static void showResultPopup(View anchorView, String userAnswer, String correctAnswer, Runnable onNextQuestion) {
+        boolean isCorrect = userAnswer.equalsIgnoreCase(correctAnswer);
 
         // Tạo pop-up
-        View popupView = LayoutInflater.from(context).inflate(R.layout.popup_result, null);
+        View popupView = LayoutInflater.from(anchorView.getContext()).inflate(R.layout.popup_result, null);
         PopupWindow popupWindow = new PopupWindow(popupView,
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT, true);
@@ -27,23 +27,22 @@ public class PopupHelper {
 
         if (isCorrect) {
             tvMessage.setText("That's right!\nAnswer:");
-            tvMessage.setTextColor(context.getResources().getColor(android.R.color.holo_green_dark));
-            tvDetail.setText("The " + correctAnswer + " is a global network that connects millions of private, public, academic, and business networks.");
+            tvMessage.setTextColor(anchorView.getResources().getColor(android.R.color.holo_green_dark));
+            tvDetail.setText(correctAnswer);
             popupView.setBackgroundResource(R.drawable.popup_background_correct);
-            btnNext.setBackgroundColor(context.getResources().getColor(android.R.color.holo_green_dark));
-
         } else {
             tvMessage.setText("Oops... That's not the answer.\nCorrect answer:");
-            tvMessage.setTextColor(context.getResources().getColor(android.R.color.holo_red_dark));
-            tvDetail.setText("The " + correctAnswer + " is a global network that connects millions of private, public, academic, and business networks.");
+            tvMessage.setTextColor(anchorView.getResources().getColor(android.R.color.holo_red_dark));
+            tvDetail.setText(correctAnswer);
             popupView.setBackgroundResource(R.drawable.popup_background_incorrect);
-            btnNext.setBackgroundColor(context.getResources().getColor(android.R.color.holo_red_dark));
-
         }
 
-        btnNext.setOnClickListener(v -> popupWindow.dismiss());
+        btnNext.setOnClickListener(v -> {
+            popupWindow.dismiss(); // Đóng popup
+            onNextQuestion.run(); // Gọi hàm để chuyển sang câu hỏi tiếp theo
+        });
 
-        // Hiển thị popup ở dưới cùng màn hình
-        popupWindow.showAtLocation(((GrammarQuestionActivity) context).findViewById(android.R.id.content), Gravity.BOTTOM, 0, 0);
+        // Hiển thị popup ở dưới cùng của view cụ thể
+        popupWindow.showAtLocation(anchorView, Gravity.BOTTOM, 0, 0);
     }
 }

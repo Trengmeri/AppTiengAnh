@@ -10,4 +10,10 @@
     <string name="invalid_password">Password must be >5 characters</string>
     <string name="login_failed">"Login failed"</string>
     <string name="question_grammar_1">The ______ is a global network that connects millions of private, public, academic, and business networks.</string>
+    <string name="fill_blank">Fill in the blank</string>
+    <string name="listen_rewrite">Listen and rewrite the answer</string>
+    <string name="ques_lis">What are they talking about ?</string>
+    <string name="check">Check Result</string>
+    <string name="grammar">Grammar</string>
+    <string name="lis">Listening</string>
 </resources>

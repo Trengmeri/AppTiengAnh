@@ -88,10 +88,10 @@ public class ApiManager {
         });
     }
 
-    /*// Phương thức để lấy danh sách câu hỏi từ API
-    public void fetchQuestionsFromApi(ApiCallback callback) {
+    /*// Phương thức để lấy nội dung câu hỏi từ API
+    public void fetchQuestionContentFromApi(ApiCallback callback) {
         Request request = new Request.Builder()
-                .url("http://192.168.109.2:8080/get_questions") // Địa chỉ API để lấy câu hỏi
+                .url("http://192.168.109.2:8080/get_question_content") // Địa chỉ API để lấy nội dung câu hỏi
                 .build();
 
         client.newCall(request).enqueue(new Callback() {
@@ -107,70 +107,7 @@ public class ApiManager {
                 Log.d("ApiManager", "Phản hồi từ server: " + responseBody);
 
                 if (response.isSuccessful()) {
-                    Gson gson = new Gson();
-                    Type questionListType = new TypeToken<List<Question>>(){}.getType();
-                    List<Question> questions = gson.fromJson(responseBody, questionListType);
-                    callback.onQuestionsSuccess(questions);
-                } else {
-                    callback.onFailure("Lỗi từ server: Mã lỗi " + response.code());
-                }
-            }
-        });
-    }
-
-    // Phương thức để lấy danh sách câu trả lời từ API
-    public void fetchAnswersFromApi(int questionId, ApiCallback callback) {
-        Request request = new Request.Builder()
-                .url("http://192.168.109.2:8080/get_answers?question_id=" + questionId) // Địa chỉ API để lấy câu trả lời của một câu hỏi
-                .build();
-
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                Log.e("ApiManager", "Lỗi kết nối: " + e.getMessage());
-                callback.onFailure("Không thể kết nối tới API.");
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                String responseBody = response.body().string();
-                Log.d("ApiManager", "Phản hồi từ server: " + responseBody);
-
-                if (response.isSuccessful()) {
-                    Gson gson = new Gson();
-                    Type answerListType = new TypeToken<List<Answer>>(){}.getType();
-                    List<Answer> answers = gson.fromJson(responseBody, answerListType);
-                    callback.onAnswersSuccess(answers);
-                } else {
-                    callback.onFailure("Lỗi từ server: Mã lỗi " + response.code());
-                }
-            }
-        });
-    }
-
-    // Phương thức để lấy điểm từ API
-    public void fetchPointsFromApi(ApiCallback callback) {
-        Request request = new Request.Builder()
-                .url("http://192.168.109.2:8080/get_points") // Địa chỉ API để lấy điểm
-                .build();
-
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                Log.e("ApiManager", "Lỗi kết nối: " + e.getMessage());
-                callback.onFailure("Không thể kết nối tới API.");
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                String responseBody = response.body().string();
-                Log.d("ApiManager", "Phản hồi từ server: " + responseBody);
-
-                if (response.isSuccessful()) {
-                    Gson gson = new Gson();
-                    Type pointListType = new TypeToken<List<Point>>(){}.getType();
-                    List<Point> points = gson.fromJson(responseBody, pointListType);
-                    callback.onPointsSuccess(points);
+                    callback.onSuccess(responseBody); // Gọi callback với nội dung câu hỏi
                 } else {
                     callback.onFailure("Lỗi từ server: Mã lỗi " + response.code());
                 }
