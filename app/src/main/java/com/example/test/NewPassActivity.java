@@ -1,7 +1,13 @@
 package com.example.test;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.text.method.HideReturnsTransformationMethod;
+import android.text.method.PasswordTransformationMethod;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -19,7 +25,8 @@ public class NewPassActivity extends AppCompatActivity {
     EditText edtPass, edtRePass;
     Button btnNext;
     ImageView icback;
-
+    private boolean isPasswordVisible = false;
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,6 +34,7 @@ public class NewPassActivity extends AppCompatActivity {
         setContentView(R.layout.activity_new_pass);
 
         AnhXa();
+        setupPasswordField();
 
         btnNext.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -53,7 +61,112 @@ public class NewPassActivity extends AppCompatActivity {
             }
         });
     }
+//    Ẩn hiện mk
+    @SuppressLint("ClickableViewAccessibility")
+    private void setupPasswordField() {
+        edtPass.setOnTouchListener((v, event) -> {
+            // Kiểm tra xem người dùng có nhấn vào drawableEnd không
+            if (event.getAction() == MotionEvent.ACTION_UP) {
+                if (event.getRawX() >= (edtPass.getRight() - edtPass.getCompoundDrawables()[2].getBounds().width())) {
+                    // Thay đổi trạng thái hiển thị mật khẩu
+                    if (isPasswordVisible) {
+                        // Ẩn mật khẩu
+                        edtPass.setTransformationMethod(PasswordTransformationMethod.getInstance());
+                        edtPass.setCompoundDrawablesWithIntrinsicBounds(
+                                R.drawable.icon_pass, 0, R.drawable.icon_visibility_off, 0);
+                    } else {
+                        // Hiện mật khẩu
+                        edtPass.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
+                        edtPass.setCompoundDrawablesWithIntrinsicBounds(
+                                R.drawable.icon_pass, 0, R.drawable.icon_visibility, 0);
+                    }
+                    isPasswordVisible = !isPasswordVisible;
 
+                    // Đặt con trỏ ở cuối văn bản
+                    edtPass.setSelection(edtPass.getText().length());
+                    return true;
+                }
+            }
+            return false;
+        });
+        edtRePass.setOnTouchListener((v, event) -> {
+            // Kiểm tra xem người dùng có nhấn vào drawableEnd không
+            if (event.getAction() == MotionEvent.ACTION_UP) {
+                if (event.getRawX() >= (edtRePass.getRight() - edtRePass.getCompoundDrawables()[2].getBounds().width())) {
+                    // Thay đổi trạng thái hiển thị mật khẩu
+                    if (isPasswordVisible) {
+                        // Ẩn mật khẩu
+                        edtRePass.setTransformationMethod(PasswordTransformationMethod.getInstance());
+                        edtRePass.setCompoundDrawablesWithIntrinsicBounds(
+                                R.drawable.icon_pass, 0, R.drawable.icon_visibility_off, 0);
+                    } else {
+                        // Hiện mật khẩu
+                        edtRePass.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
+                        edtRePass.setCompoundDrawablesWithIntrinsicBounds(
+                                R.drawable.icon_pass, 0, R.drawable.icon_visibility, 0);
+                    }
+                    isPasswordVisible = !isPasswordVisible;
+
+                    // Đặt con trỏ ở cuối văn bản
+                    edtRePass.setSelection(edtRePass.getText().length());
+                    return true;
+                }
+            }
+            return false;
+        });
+        // Theo dõi thay đổi văn bản
+        edtPass.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                // Không cần xử lý
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                // Kiểm tra nếu mật khẩu đang hiển thị và người dùng nhập thêm ký tự
+                if (isPasswordVisible) {
+                    // Tự động chuyển về chế độ ẩn mật khẩu
+                    edtPass.setTransformationMethod(PasswordTransformationMethod.getInstance());
+                    edtPass.setCompoundDrawablesWithIntrinsicBounds(
+                            R.drawable.icon_pass, 0, R.drawable.icon_visibility_off, 0);
+                    isPasswordVisible = false;
+
+                    // Đặt con trỏ ở cuối văn bản
+                    edtPass.setSelection(edtPass.getText().length());
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                // Không cần xử lý
+            }
+        });
+        edtRePass.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                // Không cần xử lý
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                // Kiểm tra nếu mật khẩu đang hiển thị và người dùng nhập thêm ký tự
+                if (isPasswordVisible) {
+                    // Tự động chuyển về chế độ ẩn mật khẩu
+                    edtRePass.setTransformationMethod(PasswordTransformationMethod.getInstance());
+                    edtRePass.setCompoundDrawablesWithIntrinsicBounds(
+                            R.drawable.icon_pass, 0, R.drawable.icon_visibility_off, 0);
+                    isPasswordVisible = false;
+
+                    // Đặt con trỏ ở cuối văn bản
+                    edtRePass.setSelection(edtRePass.getText().length());
+                }
+            }
+            @Override
+            public void afterTextChanged(Editable s) {
+                // Không cần xử lý
+            }
+        });
+    }
     private void AnhXa() {
         edtPass = (EditText) findViewById(R.id.edtPass);
         edtRePass = (EditText) findViewById(R.id.edtRePass);

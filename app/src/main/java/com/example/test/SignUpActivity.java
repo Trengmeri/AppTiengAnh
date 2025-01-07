@@ -1,9 +1,12 @@
 package com.example.test;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
 import android.view.MotionEvent;
@@ -27,6 +30,7 @@ public class SignUpActivity extends AppCompatActivity {
     NetworkChangeReceiver networkReceiver;
     ApiManager apiManager;
     private boolean isPasswordVisible = false;
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,6 +38,7 @@ public class SignUpActivity extends AppCompatActivity {
         setContentView(R.layout.activity_sign_up);
 
         AnhXa();
+        setupPasswordField();
 
         // Lắng nghe trạng thái checkbox
         cbCheck.setOnCheckedChangeListener((buttonView, isChecked) -> {
@@ -59,28 +64,16 @@ public class SignUpActivity extends AppCompatActivity {
                 apiManager.sendSignUpRequest(hoten, soDT, email, pass, new ApiCallback() {
                     @Override
                     public void onSuccess() {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Toast.makeText(SignUpActivity.this, "Đăng ký thành công! Vui lòng kiểm tra email của bạn.", Toast.LENGTH_SHORT).show();
-                            }
-                        });
-
+                        Toast.makeText(SignUpActivity.this, "Đăng ký thành công! Vui lòng kiểm tra email của bạn.", Toast.LENGTH_SHORT).show();
+                        // Chuyển hướng đến Activity xác nhận hoặc trang chính
                         Intent intent = new Intent(SignUpActivity.this, ConfirmCode2Activity.class);
-                        startActivity(intent); // Chuyển hướng đến Home Activity
+                        startActivity(intent);
                     }
-
 
                     @Override
                     public void onFailure(String errorMessage) {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Toast.makeText(SignUpActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
-                            }
-                        });
+                        Toast.makeText(SignUpActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
                     }
-
                 });
 
 //                if (hoten.isEmpty() || email.isEmpty() || soDT.isEmpty() || pass.isEmpty()) {
@@ -99,8 +92,11 @@ public class SignUpActivity extends AppCompatActivity {
             Intent intent = new Intent(SignUpActivity.this, SignInActivity.class);
             startActivity(intent);
         });
+    }
+    @SuppressLint("ClickableViewAccessibility")
+    private void setupPasswordField() {
         edtMKhau.setOnTouchListener((v, event) -> {
-            // Kiểm tra xem người dùng có nhấn vào `drawableEnd` không
+            // Kiểm tra xem người dùng có nhấn vào drawableEnd không
             if (event.getAction() == MotionEvent.ACTION_UP) {
                 if (event.getRawX() >= (edtMKhau.getRight() - edtMKhau.getCompoundDrawables()[2].getBounds().width())) {
                     // Thay đổi trạng thái hiển thị mật khẩu
@@ -124,8 +120,35 @@ public class SignUpActivity extends AppCompatActivity {
             }
             return false;
         });
-    }
 
+        // Theo dõi thay đổi văn bản
+        edtMKhau.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                // Không cần xử lý
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                // Kiểm tra nếu mật khẩu đang hiển thị và người dùng nhập thêm ký tự
+                if (isPasswordVisible) {
+                    // Tự động chuyển về chế độ ẩn mật khẩu
+                    edtMKhau.setTransformationMethod(PasswordTransformationMethod.getInstance());
+                    edtMKhau.setCompoundDrawablesWithIntrinsicBounds(
+                            R.drawable.icon_pass, 0, R.drawable.icon_visibility_off, 0);
+                    isPasswordVisible = false;
+
+                    // Đặt con trỏ ở cuối văn bản
+                    edtMKhau.setSelection(edtMKhau.getText().length());
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                // Không cần xử lý
+            }
+        });
+    }
     @Override
     protected void onStart() {
         super.onStart();
@@ -153,10 +176,10 @@ public class SignUpActivity extends AppCompatActivity {
     }
 
     private boolean isValidEmail(String email) {
-        String emailPattern = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$";
-        Pattern pattern = Pattern.compile(emailPattern);
-        Matcher matcher = pattern.matcher(email);
-        return matcher.matches();
+        if (email == null || email.trim().isEmpty()) {
+            return false;
+        }
+        return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches();
     }
 
     private boolean isValidPhoneNumber(String phoneNumber) {

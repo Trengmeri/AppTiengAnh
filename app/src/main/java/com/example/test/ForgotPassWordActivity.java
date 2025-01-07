@@ -19,53 +19,43 @@ import java.util.regex.Pattern;
 public class ForgotPassWordActivity extends AppCompatActivity {
 
     EditText edtEmail;
-    Button btnNext,btnBack;
+    Button btnContinue;
+    ImageView imgBack;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_forgot_pass_word);
-        AnhXa();
+        setUpView();
 
-        btnNext.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String email = edtEmail.getText().toString();
+        btnContinue.setOnClickListener(view -> {
+            String email = edtEmail.getText().toString();
 
-                if (!isValidEmail(email)) {
-                    Toast.makeText(ForgotPassWordActivity.this, "Email không đúng định dạng", Toast.LENGTH_SHORT).show();
-                }
-                else{
-                    Intent intent = new Intent(ForgotPassWordActivity.this, ConfirmCodeActivity.class);
-                    startActivity(intent);
-                }
+            if (!isValidEmail(email)) {
+                Toast.makeText(ForgotPassWordActivity.this, "Email không đúng định dạng", Toast.LENGTH_SHORT).show();
+            }
+            else{
+                Intent intent = new Intent(ForgotPassWordActivity.this, ConfirmCodeActivity.class);
+                startActivity(intent);
             }
         });
 
-        if (btnBack != null) {
-            btnBack.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(ForgotPassWordActivity.this, SignInActivity.class);
-                    startActivity(intent);
-                }
-            });
-        } else {
-            Log.e("ForgotPassWordActivity", "Button btnResetPassword is null.");
-        }
+        imgBack.setOnClickListener(v -> {
+            Intent intent = new Intent(ForgotPassWordActivity.this, SignInActivity.class);
+            startActivity(intent);
+        });
     }
 
-    private void AnhXa() {
-        edtEmail = (EditText) findViewById(R.id.edtEmail);
-        btnNext = findViewById(R.id.btnNext);
-        btnBack=(Button) findViewById(R.id.btnBack);
+    private void setUpView() {
+        edtEmail = (EditText) findViewById(R.id.edt_email);
+        btnContinue = findViewById(R.id.btn_continue);
+        imgBack = (ImageView) findViewById(R.id.imgBack);
     }
-
     private boolean isValidEmail(String email) {
-        String emailPattern = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$";
-        Pattern pattern = Pattern.compile(emailPattern);
-        Matcher matcher = pattern.matcher(email);
-        return matcher.matches();
-    }
+        if (email == null || email.trim().isEmpty()) {
+            return false;
+        }
+        return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches();
+}
 }
