@@ -4,6 +4,9 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
+import android.text.method.HideReturnsTransformationMethod;
+import android.text.method.PasswordTransformationMethod;
+import android.view.MotionEvent;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -23,7 +26,7 @@ public class SignUpActivity extends AppCompatActivity {
     Button btnUp, btnIn;
     NetworkChangeReceiver networkReceiver;
     ApiManager apiManager;
-
+    private boolean isPasswordVisible = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,7 +40,6 @@ public class SignUpActivity extends AppCompatActivity {
             // Bật hoặc tắt nút Sign Up dựa trên trạng thái checkbox
             btnUp.setEnabled(isChecked);
             btnUp.setBackgroundColor(ContextCompat.getColor(this, R.color.btncolor));
-
         });
 
         // Tạo đối tượng NetworkChangeReceiver
@@ -97,6 +99,31 @@ public class SignUpActivity extends AppCompatActivity {
             Intent intent = new Intent(SignUpActivity.this, SignInActivity.class);
             startActivity(intent);
         });
+        edtMKhau.setOnTouchListener((v, event) -> {
+            // Kiểm tra xem người dùng có nhấn vào `drawableEnd` không
+            if (event.getAction() == MotionEvent.ACTION_UP) {
+                if (event.getRawX() >= (edtMKhau.getRight() - edtMKhau.getCompoundDrawables()[2].getBounds().width())) {
+                    // Thay đổi trạng thái hiển thị mật khẩu
+                    if (isPasswordVisible) {
+                        // Ẩn mật khẩu
+                        edtMKhau.setTransformationMethod(PasswordTransformationMethod.getInstance());
+                        edtMKhau.setCompoundDrawablesWithIntrinsicBounds(
+                                R.drawable.icon_pass, 0, R.drawable.icon_visibility_off, 0);
+                    } else {
+                        // Hiện mật khẩu
+                        edtMKhau.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
+                        edtMKhau.setCompoundDrawablesWithIntrinsicBounds(
+                                R.drawable.icon_pass, 0, R.drawable.icon_visibility, 0);
+                    }
+                    isPasswordVisible = !isPasswordVisible;
+
+                    // Đặt con trỏ ở cuối văn bản
+                    edtMKhau.setSelection(edtMKhau.getText().length());
+                    return true;
+                }
+            }
+            return false;
+        });
     }
 
     @Override
@@ -114,7 +141,7 @@ public class SignUpActivity extends AppCompatActivity {
     }
 
     private void AnhXa() {
-        edtEmail = findViewById(R.id.edtPass);
+        edtEmail = findViewById(R.id.edtEmail);
         edtName = findViewById(R.id.edtTen);
         edtPhone = findViewById(R.id.edtSdt);
         edtMKhau = findViewById(R.id.edtMKhau);

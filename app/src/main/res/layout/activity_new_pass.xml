@@ -116,7 +116,7 @@
             android:layout_height="22dp"
             android:layout_marginTop="8dp"
             android:layout_marginRight="2sp"
-            android:src="@drawable/icpass" />
+            android:src="@drawable/icon_pass" />
 
         <EditText
             android:id="@+id/edtPass"
@@ -149,7 +149,7 @@
             android:layout_height="24dp"
             android:layout_marginTop="8dp"
             android:layout_marginRight="2sp"
-            android:src="@drawable/icpass" /> <!-- Biểu tượng có thể thay đổi -->
+            android:src="@drawable/icon_pass" /> <!-- Biểu tượng có thể thay đổi -->
 
         <EditText
             android:id="@+id/edtRePass"
