@@ -105,28 +105,37 @@ public class ConfirmCode2Activity extends AppCompatActivity {
             }
         });
 
-        // Lắng nghe sự kiện nhập mã vào các ô, đặc biệt là ô cuối cùng
-        for (int i = 0; i < codeInputs.length; i++) {
-            final int index = i;
-            codeInputs[i].addTextChangedListener(new android.text.TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) {}
+        // Lắng nghe sự kiện nhập mã vào ô cuối cùng
+        codeInputs[5].addTextChangedListener(new android.text.TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) {}
 
-                @Override
-                public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
-                    if (index == 5 && charSequence.length() == 1) {
-                        // Nếu người dùng nhập vào ô cuối cùng và đủ 6 ký tự, chuyển trang
-                        String code = getCode();
-                        if (code.length() == 6) {
-                            navigateToNextPage();
+            @Override
+            public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
+                if (charSequence.length() == 1) { // Khi người dùng nhập vào ô cuối cùng
+                    String code = getCode(); // Lấy mã đã nhập
+                    // Gọi API xác nhận mã OTP
+                    ApiManager apiManager = new ApiManager();
+                    apiManager.sendConfirmCodeRequest(code, new ApiCallback() {
+                        @Override
+                        public void onSuccess() {
+                            // Chuyển đến Activity tiếp theo nếu mã đúng
+                            Intent intent = new Intent(ConfirmCode2Activity.this, SetUpAccountActivity.class);
+                            startActivity(intent);
                         }
-                    }
-                }
 
-                @Override
-                public void afterTextChanged(android.text.Editable editable) {}
-            });
-        }
+                        @Override
+                        public void onFailure(String errorMessage) {
+                            // Hiển thị thông báo lỗi nếu mã sai
+                            Toast.makeText(ConfirmCode2Activity.this, errorMessage, Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void afterTextChanged(android.text.Editable editable) {}
+        });
     }
 
 
@@ -137,12 +146,6 @@ public class ConfirmCode2Activity extends AppCompatActivity {
             code.append(input.getText().toString());
         }
         return code.toString();
-    }
-
-    // Phương thức chuyển trang sau khi nhập đủ mã
-    private void navigateToNextPage() {
-        Intent intent = new Intent(ConfirmCode2Activity.this, SetUpAccountActivity.class); // Chuyển đến Activity tiếp theo
-        startActivity(intent);
     }
 
     private void startCountdown() {

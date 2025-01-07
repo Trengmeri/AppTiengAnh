@@ -88,6 +88,36 @@ public class ApiManager {
         });
     }
 
+    public void sendConfirmCodeRequest(String code, ApiCallback callback) {
+        String json = "{ \"code\": \"" + code + "\" }"; // Giả sử mã OTP được gửi dưới dạng JSON
+        RequestBody body = RequestBody.create(json, MediaType.parse("application/json; charset=utf-8"));
+
+        Request request = new Request.Builder()
+                .url("http://192.168.109.2:8080/confirm_code") // Thay bằng URL máy chủ của bạn
+                .post(body)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.e("ApiManager", "Kết nối thất bại: " + e.getMessage());
+                callback.onFailure("Kết nối thất bại! Không thể kết nối tới API.");
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String responseBody = response.body().string();
+                Log.d("ApiManager", "Phản hồi từ server: " + responseBody);
+                if (response.isSuccessful()) {
+                    callback.onSuccess(); // Gọi callback thành công
+                } else {
+                    Log.e("ApiManager", "Lỗi từ server: Mã lỗi " + response.code() + ", Nội dung: " + responseBody);
+                    callback.onFailure("Mã OTP sai! Vui lòng kiểm tra lại.");
+                }
+            }
+        });
+    }
+
     /*// Phương thức để lấy nội dung câu hỏi từ API
     public void fetchQuestionContentFromApi(ApiCallback callback) {
         Request request = new Request.Builder()
