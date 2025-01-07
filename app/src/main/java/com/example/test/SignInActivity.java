@@ -46,14 +46,26 @@ public class SignInActivity extends AppCompatActivity {
                 apiManager.sendLoginRequest(email, pass, new ApiCallback() {
                     @Override
                     public void onSuccess() {
-                        Toast.makeText(SignInActivity.this, "Đăng nhập thành công!", Toast.LENGTH_SHORT).show();
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(SignInActivity.this, "Đăng nhập thành công!", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+
                         Intent intent = new Intent(SignInActivity.this, HomeActivity.class);
                         startActivity(intent); // Chuyển hướng đến Home Activity
                     }
 
+
                     @Override
                     public void onFailure(String errorMessage) {
-                        Toast.makeText(SignInActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(SignInActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
+                            }
+                        });
                     }
                 });
                 // if (email.isEmpty() || pass.isEmpty()) {

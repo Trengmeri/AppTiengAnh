@@ -34,7 +34,7 @@
         android:id="@+id/txtUp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="72dp"
+        android:layout_marginTop="48dp"
         android:text="Sign In"
         android:textColor="#172B4D"
         android:textSize="22sp"
@@ -126,10 +126,7 @@
             android:layout_height="48dp"
             android:ems="10"
             android:hint="Password"
-            android:inputType="text"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            tools:layout_editor_absoluteY="543dp" />
+            android:inputType="text" />
 
     </LinearLayout>
     <!-- Checkbox đồng ý điều khoản -->
@@ -181,9 +178,10 @@
         android:id="@+id/textView6"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="36dp"
+        android:layout_marginTop="30dp"
         android:text="Don’t have an Account? "
         android:textColor="#AC3B00"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.244"
         app:layout_constraintStart_toStartOf="parent"
@@ -211,6 +209,7 @@
         android:backgroundTint="#FFFFFF"
         android:text="SIGN UP"
         android:textColor="#AF4610"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.156"
         app:layout_constraintStart_toEndOf="@+id/textView6"
@@ -231,7 +230,7 @@
         android:layout_width="wrap_content"
         android:layout_height="74dp"
         android:layout_marginStart="40dp"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="8dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView5"
         app:srcCompat="@drawable/ic_fb" />
@@ -240,7 +239,7 @@
         android:id="@+id/imageView6"
         android:layout_width="wrap_content"
         android:layout_height="75dp"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="8dp"
         android:layout_marginEnd="36dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.825"

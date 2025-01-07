@@ -57,16 +57,28 @@ public class SignUpActivity extends AppCompatActivity {
                 apiManager.sendSignUpRequest(hoten, soDT, email, pass, new ApiCallback() {
                     @Override
                     public void onSuccess() {
-                        Toast.makeText(SignUpActivity.this, "Đăng ký thành công! Vui lòng kiểm tra email của bạn.", Toast.LENGTH_SHORT).show();
-                        // Chuyển hướng đến Activity xác nhận hoặc trang chính
-                        Intent intent = new Intent(SignUpActivity.this, ConfirmCodeActivity.class);
-                        startActivity(intent);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(SignUpActivity.this, "Đăng ký thành công! Vui lòng kiểm tra email của bạn.", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+
+                        Intent intent = new Intent(SignUpActivity.this, ConfirmCode2Activity.class);
+                        startActivity(intent); // Chuyển hướng đến Home Activity
                     }
+
 
                     @Override
                     public void onFailure(String errorMessage) {
-                        Toast.makeText(SignUpActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(SignUpActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
+                            }
+                        });
                     }
+
                 });
 
 //                if (hoten.isEmpty() || email.isEmpty() || soDT.isEmpty() || pass.isEmpty()) {

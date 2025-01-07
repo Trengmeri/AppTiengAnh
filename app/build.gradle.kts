@@ -37,6 +37,7 @@ android {
 }
 
 dependencies {
+    implementation("com.google.code.gson:gson:2.8.8")
     implementation("com.squareup.okhttp3:okhttp:4.10.0")
     implementation("androidx.cardview:cardview:1.0.0")
     implementation(libs.appcompat)
