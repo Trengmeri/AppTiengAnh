@@ -58,23 +58,38 @@ public class SignUpActivity extends AppCompatActivity {
                 // Thực hiện yêu cầu nếu có Internet
                 String hoten = edtName.getText().toString();
                 String email = edtEmail.getText().toString();
-                String soDT = edtPhone.getText().toString();
+//                String soDT = edtPhone.getText().toString();
                 String pass = edtMKhau.getText().toString();
 
-                apiManager.sendSignUpRequest(hoten, soDT, email, pass, new ApiCallback() {
+                apiManager.sendSignUpRequest(hoten, email, pass, new ApiCallback() {
                     @Override
                     public void onSuccess() {
-                        Toast.makeText(SignUpActivity.this, "Đăng ký thành công! Vui lòng kiểm tra email của bạn.", Toast.LENGTH_SHORT).show();
-                        // Chuyển hướng đến Activity xác nhận hoặc trang chính
-                        Intent intent = new Intent(SignUpActivity.this, ConfirmCode2Activity.class);
+//                        Toast.makeText(SignUpActivity.this, "Đăng ký thành công! Vui lòng kiểm tra email của bạn.", Toast.LENGTH_SHORT).show();
+//                        // Chuyển hướng đến Activity xác nhận hoặc trang chính
+//                        Intent intent = new Intent(SignUpActivity.this, ConfirmCode2Activity.class);
+//                        startActivity(intent);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(SignUpActivity.this, "Đăng ký thành công! Vui lòng kiểm tra email của bạn.", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                        Intent intent = new Intent(SignUpActivity.this, ConfirmCodeActivity.class);
                         startActivity(intent);
                     }
 
                     @Override
                     public void onFailure(String errorMessage) {
-                        Toast.makeText(SignUpActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(SignUpActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(SignUpActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
+                            }
+                        });
                     }
                 });
+
 
 //                if (hoten.isEmpty() || email.isEmpty() || soDT.isEmpty() || pass.isEmpty()) {
 //                    Toast.makeText(Sign_up.this, "Vui lòng điền đầy đủ thông tin", Toast.LENGTH_LONG).show();

@@ -1,17 +1,17 @@
 package com.example.test;
 
+import android.app.Activity;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
 import android.util.Log;
+import android.widget.Toast;
 /*
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;*/
 
 import java.io.IOException;
-import java.lang.reflect.Type;
-import java.util.List;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -27,13 +27,14 @@ public class ApiManager {
     public ApiManager() {
         client = new OkHttpClient();
     }
+    Activity activity;
 
     public void sendLoginRequest(String email, String password, ApiCallback callback) {
         String json = "{ \"username\": \"" + email + "\", \"password\": \"" + password + "\" }";
         RequestBody body = RequestBody.create(json, MediaType.parse("application/json; charset=utf-8"));
 
         Request request = new Request.Builder()
-                .url("http://192.168.109.2:8080/login") // Thay bằng URL máy chủ của bạn
+                .url("http://192.168.56.1:8080/login") // Thay bằng URL máy chủ của bạn
                 .post(body)
                 .build();
 
@@ -57,13 +58,13 @@ public class ApiManager {
             }
         });
     }
-
-    public void sendSignUpRequest(String name, String phone, String email, String password, ApiCallback callback) {
-        String json = "{ \"name\": \"" + name + "\", \"phone\": \"" + phone + "\", \"email\": \"" + email + "\", \"password\": \"" + password + "\" }";
+//{ \"name\": \"" + name + "\", \"phone\": \"" + phone + "\", \"email\": \"" + email + "\", \"password\": \"" + password + "\" }
+    public void sendSignUpRequest(String name, String email, String password, ApiCallback callback) {
+        String json = "{ \"name\": \"" + name + "\", \"email\": \"" + email + "\", \"password\": \"" + password + "\" }";
         RequestBody body = RequestBody.create(json, MediaType.parse("application/json; charset=utf-8"));
 
         Request request = new Request.Builder()
-                .url("http://192.168.109.2:8080/register") // Thay bằng URL máy chủ của bạn
+                .url("http://192.168.56.1:8080/register") // Thay bằng URL máy chủ của bạn
                 .post(body)
                 .build();
 
@@ -93,7 +94,7 @@ public class ApiManager {
         RequestBody body = RequestBody.create(json, MediaType.parse("application/json; charset=utf-8"));
 
         Request request = new Request.Builder()
-                .url("http://192.168.109.2:8080/confirm_code") // Thay bằng URL máy chủ của bạn
+                .url("http://192.168.56.1:8080/verify-otp") // Thay bằng URL máy chủ của bạn
                 .post(body)
                 .build();
 
