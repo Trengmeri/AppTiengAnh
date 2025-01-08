@@ -1,17 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <item>
-        <shape
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:shape="rectangle">
-            <gradient
-                android:angle="90"
-                android:startColor="#FFF2DB"
-                android:centerColor="#FFFFFF"
-                android:endColor="#FFF2DB"
-                 />
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <gradient
+        android:startColor="#CE9566"
+        android:endColor="#FFF2DB"
+        android:angle="90"/>
+    <corners android:topLeftRadius="100dp"
+        android:bottomRightRadius="100dp"/>
 
-        </shape>
-    </item>
-</layer-list>
+
+</shape>

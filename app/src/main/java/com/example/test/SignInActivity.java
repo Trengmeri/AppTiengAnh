@@ -1,9 +1,16 @@
 package com.example.test;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.text.method.HideReturnsTransformationMethod;
+import android.text.method.PasswordTransformationMethod;
+import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -23,12 +30,15 @@ public class SignInActivity extends AppCompatActivity {
     Button btnIn, btnForgot, btnUp;
     NetworkChangeReceiver networkReceiver;
     ApiManager apiManager;
+    private boolean isPasswordVisible = false;
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_sign_in);
         AnhXa();
+        setupPasswordField();
 
         // Tạo đối tượng NetworkChangeReceiver
         networkReceiver = new NetworkChangeReceiver();
@@ -86,6 +96,7 @@ public class SignInActivity extends AppCompatActivity {
         btnForgot.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Log.e("SignInActivity","onclicked");
                 Intent intent = new Intent(SignInActivity.this, ForgotPassWordActivity.class);
                 startActivity(intent);
             }
@@ -96,6 +107,62 @@ public class SignInActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent intent = new Intent(SignInActivity.this, SignUpActivity.class);
                 startActivity(intent);
+            }
+        });
+    }
+    @SuppressLint("ClickableViewAccessibility")
+    private void setupPasswordField() {
+        edtMKhau.setOnTouchListener((v, event) -> {
+            // Kiểm tra xem người dùng có nhấn vào drawableEnd không
+            if (event.getAction() == MotionEvent.ACTION_UP) {
+                if (event.getRawX() >= (edtMKhau.getRight() - edtMKhau.getCompoundDrawables()[2].getBounds().width())) {
+                    // Đổi trạng thái hiển thị mật khẩu
+                    if (isPasswordVisible) {
+                        // Ẩn mật khẩu
+                        edtMKhau.setTransformationMethod(PasswordTransformationMethod.getInstance());
+                        edtMKhau.setCompoundDrawablesWithIntrinsicBounds(
+                                R.drawable.icon_pass, 0, R.drawable.icon_visibility_off, 0);
+                    } else {
+                        // Hiện mật khẩu
+                        edtMKhau.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
+                        edtMKhau.setCompoundDrawablesWithIntrinsicBounds(
+                                R.drawable.icon_pass, 0, R.drawable.icon_visibility, 0);
+                    }
+                    isPasswordVisible = !isPasswordVisible;
+
+                    // Đặt con trỏ ở cuối văn bản
+                    edtMKhau.setSelection(edtMKhau.getText().length());
+                    return true;
+                }
+            }
+            return false;
+        });
+
+        edtMKhau.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                // Không cần xử lý trước khi văn bản thay đổi
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                // Khi văn bản thay đổi, tự động ẩn mật khẩu nếu đang hiển thị
+                if (isPasswordVisible) {
+                    // Chuyển về chế độ ẩn mật khẩu
+                    edtMKhau.setTransformationMethod(PasswordTransformationMethod.getInstance());
+                    edtMKhau.setCompoundDrawablesWithIntrinsicBounds(
+                            R.drawable.icon_pass, 0, R.drawable.icon_visibility_off, 0);
+                    isPasswordVisible = false;
+
+                    // Đặt con trỏ ở cuối văn bản
+                    edtMKhau.setSelection(edtMKhau.getText().length());
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                // Không cần xử lý sau khi văn bản thay đổi
             }
         });
     }
@@ -114,20 +181,21 @@ public class SignInActivity extends AppCompatActivity {
         unregisterReceiver(networkReceiver);
     }
 
+
     private void AnhXa() {
-        edtEmail = (EditText) findViewById(R.id.edtPass);
-        edtMKhau = (EditText) findViewById(R.id.edtMKhau);
+        edtEmail = findViewById(R.id.edtPass);
+        edtMKhau = findViewById(R.id.edtMKhau);
         cbCheck = findViewById(R.id.cbCheck);
         btnIn = findViewById(R.id.btnIn);
         btnUp = findViewById(R.id.btnUp);
-        btnForgot = findViewById(R.id.btnForgot);
+        btnForgot =(Button) findViewById(R.id.btnForgot);
     }
 
     private boolean isValidEmail(String email) {
-        String emailPattern = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$";
-        Pattern pattern = Pattern.compile(emailPattern);
-        Matcher matcher = pattern.matcher(email);
-        return matcher.matches();
+        if (email == null || email.trim().isEmpty()) {
+            return false;
+        }
+        return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches();
     }
 
     private boolean isValidPassword(String password) {

@@ -48,7 +48,7 @@ public class ConfirmCodeActivity extends AppCompatActivity {
                 findViewById(R.id.editText6)
         };
 
-        icback = findViewById(R.id.icback);
+        icback = findViewById(R.id.iconback);
         btnRe = findViewById(R.id.btnRe);
         tvCountdown = findViewById(R.id.tv_countdown); // Ánh xạ TextView đếm ngược
 
