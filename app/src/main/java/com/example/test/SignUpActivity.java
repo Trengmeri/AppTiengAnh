@@ -10,7 +10,6 @@ import android.net.NetworkCapabilities;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -26,14 +25,13 @@ import java.util.regex.Pattern;
 
 import okhttp3.Call;
 import okhttp3.Callback;
-import okhttp3.FormBody;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-public class Sign_up extends AppCompatActivity {
+public class SignUpActivity extends AppCompatActivity {
 
     EditText edtName, edtPhone, edtEmail, edtMKhau;
     CheckBox cbCheck;
@@ -61,7 +59,7 @@ public class Sign_up extends AppCompatActivity {
 
         btnUp.setOnClickListener(view -> {
             if (!isInternetAvailable()) {
-                Toast.makeText(Sign_up.this, "Vui lòng kiểm tra kết nối Internet của bạn.", Toast.LENGTH_LONG).show();
+                Toast.makeText(SignUpActivity.this, "Vui lòng kiểm tra kết nối Internet của bạn.", Toast.LENGTH_LONG).show();
             } else {
                 // Thực hiện yêu cầu nếu có Internet
                 String hoten = edtName.getText().toString();
@@ -70,11 +68,11 @@ public class Sign_up extends AppCompatActivity {
                 String pass = edtMKhau.getText().toString();
 
                 if (hoten.isEmpty() || email.isEmpty() || soDT.isEmpty() || pass.isEmpty()) {
-                    Toast.makeText(Sign_up.this, "Vui lòng điền đầy đủ thông tin", Toast.LENGTH_LONG).show();
+                    Toast.makeText(SignUpActivity.this, "Vui lòng điền đầy đủ thông tin", Toast.LENGTH_LONG).show();
                 } else if (!isValidEmail(email) || !isValidPhoneNumber(soDT)) {
-                    Toast.makeText(Sign_up.this, "Email hoặc số điện thoại không đúng định dạng", Toast.LENGTH_LONG).show();
+                    Toast.makeText(SignUpActivity.this, "Email hoặc số điện thoại không đúng định dạng", Toast.LENGTH_LONG).show();
                 } else if (!isValidPassword(pass)) {
-                    Toast.makeText(Sign_up.this, "Mật khẩu ít nhất 8 ký tự gồm chữ hoa, chữ thường, số và ký tự đặc biệt", Toast.LENGTH_LONG).show();
+                    Toast.makeText(SignUpActivity.this, "Mật khẩu ít nhất 8 ký tự gồm chữ hoa, chữ thường, số và ký tự đặc biệt", Toast.LENGTH_LONG).show();
                 } else {
                     sendSignUpRequest(hoten, soDT, email, pass);
                 }
@@ -82,7 +80,7 @@ public class Sign_up extends AppCompatActivity {
         });
 
         btnIn.setOnClickListener(view -> {
-            Intent intent = new Intent(Sign_up.this, Sign_In.class);
+            Intent intent = new Intent(SignUpActivity.this, Sign_In.class);
             startActivity(intent);
         });
     }
@@ -143,7 +141,7 @@ public class Sign_up extends AppCompatActivity {
 
         // Tạo Request gửi đến máy chủ
         Request request = new Request.Builder()
-                .url("http://192.168.109.2:8080/users") // Thay URL máy chủ thực tế
+                .url("http://192.168.56.1:8080/register") // Thay URL máy chủ thực tế
                 .post(body)
                 .build();
 
@@ -152,7 +150,7 @@ public class Sign_up extends AppCompatActivity {
             @Override
             public void onFailure(Call call, IOException e) {
                 Log.e("Sign_up", "Kết nối thất bại: " + e.getMessage());
-                runOnUiThread(() -> Toast.makeText(Sign_up.this, "Kết nối thất bại! Không thể kết nối tới API.", Toast.LENGTH_SHORT).show());
+                runOnUiThread(() -> Toast.makeText(SignUpActivity.this, "Kết nối thất bại! Không thể kết nối tới API.", Toast.LENGTH_SHORT).show());
             }
 
             @Override
@@ -161,14 +159,14 @@ public class Sign_up extends AppCompatActivity {
                 Log.d("Sign_up", "Phản hồi từ server: " + responseBody);
                 if (response.isSuccessful()) {
                     runOnUiThread(() -> {
-                        Toast.makeText(Sign_up.this, "Đăng ký thành công! Vui lòng kiểm tra email của bạn.", Toast.LENGTH_SHORT).show();
-                        Intent intent = new Intent(Sign_up.this, ConfirmCode2.class);
+                        Toast.makeText(SignUpActivity.this, "Đăng ký thành công! Vui lòng kiểm tra email của bạn.", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(SignUpActivity.this, ConfirmCode2.class);
                         startActivity(intent);
                         finish(); // Đảm bảo màn hình đăng ký bị hủy
                     });
                 } else {
                     Log.e("Sign_up", "Lỗi từ server: Mã lỗi " + response.code() + ", Nội dung: " + responseBody);
-                    runOnUiThread(() -> Toast.makeText(Sign_up.this, "Đăng ký thất bại! Vui lòng kiểm tra lại thông tin.", Toast.LENGTH_SHORT).show());
+                    runOnUiThread(() -> Toast.makeText(SignUpActivity.this, "Đăng ký thất bại! Vui lòng kiểm tra lại thông tin.", Toast.LENGTH_SHORT).show());
                 }
             }
         });

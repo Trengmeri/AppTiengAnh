@@ -25,7 +25,6 @@ import java.util.regex.Pattern;
 
 import okhttp3.Call;
 import okhttp3.Callback;
-import okhttp3.FormBody;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -85,7 +84,7 @@ public class Sign_In extends AppCompatActivity {
         btnUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(Sign_In.this, Sign_up.class);
+                Intent intent = new Intent(Sign_In.this, SignUpActivity.class);
                 startActivity(intent);
             }
         });
@@ -137,7 +136,7 @@ public class Sign_In extends AppCompatActivity {
 
         // Tạo Request để gửi đến máy chủ
         Request request = new Request.Builder()
-                .url("http://192.168.109.2:8080/login") // Thay bằng URL máy chủ của bạn
+                .url("http://192.168.56.1:8080/login") // Thay bằng URL máy chủ của bạn
                 .post(body)
                 .build();
 

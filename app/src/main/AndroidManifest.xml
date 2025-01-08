@@ -36,7 +36,7 @@
             android:name=".ConfirmCode"
             android:exported="false" />
         <activity
-            android:name=".Sign_up"
+            android:name=".SignUpActivity"
             android:exported="false" />
         <activity
             android:name=".Intro2"

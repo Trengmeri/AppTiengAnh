@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/background_gradient"
-    tools:context=".Sign_up">
+    tools:context=".SignUpActivity">
 
     <!-- Tiêu đề ứng dụng -->
 
@@ -47,7 +47,7 @@
         android:id="@+id/txtTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="44dp"
+        android:layout_marginTop="4dp"
         android:text="Encybara"
         android:textAlignment="center"
         android:textColor="#9E3A00"
@@ -61,13 +61,13 @@
         android:id="@+id/txtUp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="8dp"
         android:text="Sign Up"
         android:textColor="#172B4D"
         android:textSize="22sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.116"
+        app:layout_constraintHorizontal_bias="0.11"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/txtTitle" />
 
@@ -102,34 +102,35 @@
     <!-- Ô nhập số điện thoại -->
     <LinearLayout
         android:id="@+id/linearLayout1"
-        android:layout_width="314dp"
+        android:layout_width="0dp"
         android:layout_height="65dp"
-        android:layout_marginTop="20dp"
+        android:layout_margin="20dp"
         android:background="@drawable/rounded_corner"
         android:orientation="horizontal"
         android:padding="16dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.494"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView4">
 
         <ImageView
-            android:layout_width="16dp"
-            android:layout_height="22dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:layout_marginRight="2sp"
             android:src="@drawable/ic_email" />
 
         <EditText
             android:id="@+id/edtTen"
-            android:layout_width="242dp"
+            android:layout_width="wrap_content"
             android:layout_height="48dp"
             android:ems="10"
             android:hint="Name"
+            android:drawablePadding="5dp"
+            android:drawableStart="@drawable/test"
             android:inputType="text"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            tools:layout_editor_absoluteY="543dp" />
+            />
 
     </LinearLayout>
     <LinearLayout
