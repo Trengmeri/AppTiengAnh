@@ -1,8 +1,11 @@
 package com.example.test;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -24,7 +27,7 @@ public class ConfirmCode2Activity extends AppCompatActivity {
     private TextView tvCountdown; // TextView hiển thị thời gian đếm ngược
     private static final long COUNTDOWN_TIME = 60000; // 60 giây
     private CountDownTimer countDownTimer;
-
+    private String email;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,7 +40,14 @@ public class ConfirmCode2Activity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-
+        //email = getIntent().getStringExtra("email");
+        SharedPreferences sharedPreferences = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
+        String email = sharedPreferences.getString("email", null);
+        if (email != null) {
+            Log.d("ConfirmCode", "Email lấy từ SharedPreferences: " + email);
+        } else {
+            Log.e("ConfirmCode", "Email không tồn tại trong SharedPreferences");
+        }
         // Ánh xạ các ô nhập mã
         codeInputs = new EditText[]{
                 findViewById(R.id.editText1),
@@ -48,7 +58,7 @@ public class ConfirmCode2Activity extends AppCompatActivity {
                 findViewById(R.id.editText6)
         };
 
-        icback = findViewById(R.id.icback);
+        icback = findViewById(R.id.iconback);
         btnRe = findViewById(R.id.btnRe);
         tvCountdown = findViewById(R.id.tv_countdown); // Ánh xạ TextView đếm ngược
 
@@ -106,6 +116,7 @@ public class ConfirmCode2Activity extends AppCompatActivity {
         });
 
         // Lắng nghe sự kiện nhập mã vào ô cuối cùng
+
         codeInputs[5].addTextChangedListener(new android.text.TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) {}
@@ -116,18 +127,37 @@ public class ConfirmCode2Activity extends AppCompatActivity {
                     String code = getCode(); // Lấy mã đã nhập
                     // Gọi API xác nhận mã OTP
                     ApiManager apiManager = new ApiManager();
-                    apiManager.sendConfirmCodeRequest(code, new ApiCallback() {
+                    SharedPreferences sharedPreferences = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
+                    String email = sharedPreferences.getString("email", null);
+                    if (email != null) {
+                        Log.d("ConfirmCode", "Email lấy từ SharedPreferences: " + email);
+                    } else {
+                        Log.e("ConfirmCode", "Email không tồn tại trong SharedPreferences");
+                    }
+                    apiManager.sendConfirmCodeRequest(email,code, new ApiCallback() {
                         @Override
                         public void onSuccess() {
                             // Chuyển đến Activity tiếp theo nếu mã đúng
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(ConfirmCode2Activity.this, "Mã đúng", Toast.LENGTH_SHORT).show();
+                                }
+                            });
                             Intent intent = new Intent(ConfirmCode2Activity.this, SetUpAccountActivity.class);
                             startActivity(intent);
+                            finish();
                         }
 
                         @Override
                         public void onFailure(String errorMessage) {
                             // Hiển thị thông báo lỗi nếu mã sai
-                            Toast.makeText(ConfirmCode2Activity.this, errorMessage, Toast.LENGTH_SHORT).show();
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(ConfirmCode2Activity.this, errorMessage, Toast.LENGTH_SHORT).show();
+                                }
+                            });
                         }
                     });
                 }

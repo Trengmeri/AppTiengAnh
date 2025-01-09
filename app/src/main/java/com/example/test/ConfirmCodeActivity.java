@@ -1,6 +1,8 @@
 package com.example.test;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.widget.Button;
@@ -24,7 +26,7 @@ public class ConfirmCodeActivity extends AppCompatActivity {
     private TextView tvCountdown; // TextView hiển thị thời gian đếm ngược
     private static final long COUNTDOWN_TIME = 60000; // 60 giây
     private CountDownTimer countDownTimer;
-
+    private String email;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,7 +39,8 @@ public class ConfirmCodeActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-
+        SharedPreferences sharedPreferences = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
+        String email = sharedPreferences.getString("email", null);
         // Ánh xạ các ô nhập mã
         codeInputs = new EditText[]{
                 findViewById(R.id.editText1),
@@ -116,7 +119,7 @@ public class ConfirmCodeActivity extends AppCompatActivity {
                     String code = getCode(); // Lấy mã đã nhập
                     // Gọi API xác nhận mã OTP
                     ApiManager apiManager = new ApiManager();
-                    apiManager.sendConfirmCodeRequest(code, new ApiCallback() {
+                    apiManager.sendConfirmCodeRequest(email,code, new ApiCallback() {
                         @Override
                         public void onSuccess() {
                             // Chuyển đến Activity tiếp theo nếu mã đúng

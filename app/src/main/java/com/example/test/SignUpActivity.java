@@ -3,6 +3,7 @@ package com.example.test;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.text.Editable;
@@ -61,26 +62,23 @@ public class SignUpActivity extends AppCompatActivity {
 //                String soDT = edtPhone.getText().toString();
                 String pass = edtMKhau.getText().toString();
 
-                apiManager.sendSignUpRequest(hoten, email, pass, new ApiCallback() {
+                apiManager.sendSignUpRequest(this,hoten, email, pass, new ApiCallback() {
                     @Override
                     public void onSuccess() {
-//                        Toast.makeText(SignUpActivity.this, "Đăng ký thành công! Vui lòng kiểm tra email của bạn.", Toast.LENGTH_SHORT).show();
-//                        // Chuyển hướng đến Activity xác nhận hoặc trang chính
-//                        Intent intent = new Intent(SignUpActivity.this, ConfirmCode2Activity.class);
-//                        startActivity(intent);
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
                                 Toast.makeText(SignUpActivity.this, "Đăng ký thành công! Vui lòng kiểm tra email của bạn.", Toast.LENGTH_SHORT).show();
                             }
                         });
-                        Intent intent = new Intent(SignUpActivity.this, ConfirmCodeActivity.class);
+
+                        Intent intent = new Intent(SignUpActivity.this, ConfirmCode2Activity.class);
+//                        intent.putExtra("email", email);
                         startActivity(intent);
                     }
 
                     @Override
                     public void onFailure(String errorMessage) {
-//                        Toast.makeText(SignUpActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
