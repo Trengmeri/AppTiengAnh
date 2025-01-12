@@ -16,4 +16,6 @@
     <string name="check">Check Result</string>
     <string name="grammar">Grammar</string>
     <string name="lis">Listening</string>
+    <string name="txt_it">INFORMATION\n TECHNOLOGY</string>
+    <string name="txt_construction">CONSTRUCTION</string>
 </resources>

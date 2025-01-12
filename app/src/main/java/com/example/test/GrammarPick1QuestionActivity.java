@@ -15,6 +15,9 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.test.model.Question;
+import com.example.test.model.Choice;
+
+import java.util.List;
 
 public class GrammarPick1QuestionActivity extends AppCompatActivity {
     private String correctAnswer = ""; // Giả sử dữ liệu đúng từ backend
@@ -47,16 +50,16 @@ public class GrammarPick1QuestionActivity extends AppCompatActivity {
         fetchQuestion();
         btnCheckAnswer.setOnClickListener(v -> {
             if (userAnswer.isEmpty()) {
-                Toast.makeText(GrammarPick1QuestionActivity.this, "Vui lòng trả lời câu hỏi!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(GrammarPick1QuestionActivity.this, "Vui lòng trả lời câu hỏi!", Toast.LENGTH_SHORT)
+                        .show();
             } else {
-//                boolean isCorrect = userAnswer.equals(correctAnswer);
+                // boolean isCorrect = userAnswer.equals(correctAnswer);
                 // Hiển thị popup
                 PopupHelper.showResultPopup(findViewById(R.id.popupContainer), userAnswer, correctAnswer, () -> {
                     // Callback khi nhấn Next Question trên popup
                     resetAnswerColors();
                     currentStep++;
                     updateProgressBar(progressBar, currentStep); // Cập nhật thanh tiến trình
-
 
                     // Kiểm tra nếu hoàn thành
                     if (currentStep >= totalSteps) {
@@ -78,65 +81,74 @@ public class GrammarPick1QuestionActivity extends AppCompatActivity {
             ObjectAnimator colorAnimator = ObjectAnimator.ofArgb(
                     currentStepView,
                     "backgroundColor",
-                    Color.parseColor("#E0E0E0"),  // Màu ban đầu
-                    Color.parseColor("#C4865E")   // Màu đã hoàn thành
+                    Color.parseColor("#E0E0E0"), // Màu ban đầu
+                    Color.parseColor("#C4865E") // Màu đã hoàn thành
             );
             colorAnimator.setDuration(300); // Thời gian chuyển đổi màu
             colorAnimator.start();
         }
     }
 
+    private void fetchQuestion() {
+        if (apiManager != null) {
+            apiManager.fetchQuestionContentFromApi(new ApiCallback() {
+                @Override
+                public void onSuccess(Question question) {
+                    if (question != null) {
+                        // Lấy nội dung câu hỏi
+                        String questionContent = question.getQuesContent();
+                        Log.d("GrammarPick1QuestionActivity", "Câu hỏi: " + questionContent);
 
-private void fetchQuestion() {
-        if(apiManager!=null){
-        apiManager.fetchQuestionContentFromApi(new ApiCallback() {
-            @Override
-            public void onSuccess() {
-
-            }
-
-            @Override
-            public void onSuccess(Question question) {
-                // Kiểm tra question không phải null và có questionChoices hợp lệ
-                if (question != null) {
-                    // Log toàn bộ question và questionChoices để kiểm tra
-                    Log.d("GrammarActivity", "Question: " + question.getQuesContent());
-                    Log.d("GrammarActivity", "Question Choices: " + question.getQuestionChoices());
-
-                    if (question.getQuestionChoices() != null && question.getQuestionChoices().size() >= 4) {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                // Cập nhật các view trên giao diện người dùng
-                                tvContent.setText(question.getQuesContent());
-                                btnAnswer1.setText(question.getQuestionChoices().get(0).getChoiceContent());
-                                btnAnswer2.setText(question.getQuestionChoices().get(1).getChoiceContent());
-                                btnAnswer3.setText(question.getQuestionChoices().get(2).getChoiceContent());
-                                btnAnswer4.setText(question.getQuestionChoices().get(3).getChoiceContent());
-                                correctAnswer = question.getChoiceKey();
+                        // Lấy danh sách lựa chọn
+                        List<Choice> choices = question.getQuestionChoices();
+                        if (choices != null && !choices.isEmpty()) {
+                            for (Choice choice : choices) {
+                                Log.d("GrammarPick1QuestionActivity", "Lựa chọn: " + choice.getChoiceContent() +
+                                        " (Đáp án đúng: " + choice.isChoiceKey() + ")");
                             }
-                        });
-                } else {
-                    Log.e("GrammarActivity", "Danh sách câu trả lời không hợp lệ.");
 
+                            // Cập nhật giao diện người dùng
+                            runOnUiThread(() -> {
+                                tvContent.setText(questionContent);
+                                btnAnswer1.setText(choices.get(0).getChoiceContent());
+                                btnAnswer2.setText(choices.get(1).getChoiceContent());
+                                btnAnswer3.setText(choices.get(2).getChoiceContent());
+                                btnAnswer4.setText(choices.get(3).getChoiceContent());
+                                correctAnswer = choices.stream()
+                                        .filter(Choice::isChoiceKey)
+                                        .findFirst()
+                                        .map(Choice::getChoiceContent)
+                                        .orElse(""); // Lấy đáp án đúng
+                            });
+                        } else {
+                            Log.e("GrammarPick1QuestionActivity", "Câu hỏi không có lựa chọn.");
+                        }
+                    } else {
+                        Log.e("GrammarPick1QuestionActivity", "Câu hỏi trả về là null.");
+                    }
                 }
-            }
-        }
 
-            @Override
-            public void onFailure(String errorMessage) {
+                @Override
+                public void onFailure(String errorMessage) {
+                    // Xử lý lỗi
+                    Log.e("GrammarPick1QuestionActivity", errorMessage);
+                }
 
-            }
+                @Override
+                public void onSuccess(String token) {
+                    // Nếu cần xử lý token, thêm logic ở đây
+                }
 
-            @Override
-            public void onSuccess(String token) {
-
-            }
-        });
-        }else {
+                @Override
+                public void onSuccess() {
+                    // Nếu cần xử lý trường hợp này, thêm logic ở đây
+                }
+            });
+        } else {
             Log.e("GrammarPick1QuestionActivity", "ApiManager chưa được khởi tạo!");
         }
-        }
+    }
+
     private void setupAnswerClickListeners() {
         View.OnClickListener answerClickListener = new View.OnClickListener() {
             @Override
@@ -161,6 +173,7 @@ private void fetchQuestion() {
         btnAnswer3.setOnClickListener(answerClickListener);
         btnAnswer4.setOnClickListener(answerClickListener);
     }
+
     private void resetAnswerColors() {
         // Đặt lại màu nền cho tất cả các đáp án về màu mặc định
         btnAnswer1.setBackgroundColor(Color.TRANSPARENT);

@@ -15,133 +15,82 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
             android:layout_marginLeft="30dp"
+            android:layout_marginTop="20dp"
             android:text="SELECT YOUR MAJOR"
             android:textColor="@color/black"
             android:textSize="22sp"
             android:textStyle="bold" />
+
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="40dp">
+
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
+                android:layout_gravity="center"
                 android:layout_marginTop="5dp"
                 android:layout_marginBottom="5dp"
-                android:background="@drawable/oval"
-                android:layout_gravity="center"/>
+                android:background="@drawable/oval" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-                <Button
+                <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/btnEconomic"
+                    style="@style/Button_Active_All"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginLeft="67dp"
-                    android:layout_marginRight="67dp"
-                    android:backgroundTint="#FFF2DB"
-                    android:paddingLeft="60dp"
-                    android:paddingTop="20dp"
-                    android:paddingRight="60dp"
-                    android:paddingBottom="20dp"
-                    android:text="ECONOMIC"
-                    android:textAlignment="center"
-                    android:textColor="@color/black"
-                    android:textSize="20sp"
-                    android:textStyle="bold" />
+                    android:layout_marginTop="@dimen/dp_16"
+                    android:text="ECONOMIC" />
 
-                <Button
+                <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/btnConstruct"
+                    style="@style/Button_Active_All"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginLeft="67dp"
-                    android:layout_marginTop="25dp"
-                    android:layout_marginRight="67dp"
-                    android:backgroundTint="#FFF2DB"
-                    android:paddingLeft="50dp"
-                    android:paddingTop="20dp"
-                    android:paddingRight="50dp"
-                    android:paddingBottom="20dp"
-                    android:text="CONSTRUCTION"
-                    android:textAlignment="center"
-                    android:textColor="@color/black"
-                    android:textSize="20sp"
-                    android:textStyle="bold" />
+                    android:layout_marginTop="@dimen/dp_16"
+                    android:text="@string/txt_construction" />
 
-                <Button
+                <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/btnIT"
+                    style="@style/Button_Active_All"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginLeft="67dp"
-                    android:layout_marginTop="25dp"
-                    android:layout_marginRight="67dp"
-                    android:backgroundTint="#FFF2DB"
-                    android:paddingLeft="60dp"
-                    android:paddingTop="9dp"
-                    android:paddingRight="60dp"
-                    android:paddingBottom="8dp"
-                    android:text="INFORMATION\n TECHNOLOGY"
-                    android:textAlignment="center"
-                    android:textColor="@color/black"
-                    android:textSize="20sp"
-                    android:textStyle="bold" />
+                    android:layout_marginTop="@dimen/dp_16"
+                    android:text="@string/txt_it" />
 
-                <Button
+                <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/btnMechanic"
+                    style="@style/Button_Active_All"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginLeft="67dp"
-                    android:layout_marginTop="25dp"
-                    android:layout_marginRight="67dp"
-                    android:backgroundTint="#FFF2DB"
-                    android:paddingLeft="60dp"
-                    android:paddingTop="20dp"
-                    android:paddingRight="60dp"
-                    android:paddingBottom="20dp"
-                    android:text="MECHANIC"
-                    android:textAlignment="center"
-                    android:textColor="@color/black"
-                    android:textSize="20sp"
-                    android:textStyle="bold" />
+                    android:layout_marginTop="@dimen/dp_16"
+                    android:text="MECHANIC" />
 
-                <Button
+                <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/btnOthers"
+                    style="@style/Button_Active_All"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginLeft="67dp"
-                    android:layout_marginTop="25dp"
-                    android:layout_marginRight="67dp"
-                    android:backgroundTint="#FFF2DB"
-                    android:paddingLeft="60dp"
-                    android:paddingTop="20dp"
-                    android:paddingRight="60dp"
-                    android:paddingBottom="20dp"
-                    android:text="OTHERS"
-                    android:textAlignment="center"
-                    android:textColor="@color/black"
-                    android:textSize="20sp"
-                    android:textStyle="bold" />
+                    android:layout_marginTop="@dimen/dp_16"
+                    android:text="OTHERS" />
             </LinearLayout>
         </FrameLayout>
 
         <Button
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="30dp"
             android:layout_marginLeft="50dp"
+            android:layout_marginTop="30dp"
             android:layout_marginRight="50dp"
             android:backgroundTint="#A95D40"
             android:drawableEnd="@drawable/circle__1_"

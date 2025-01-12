@@ -1,37 +1,13 @@
-package com.example.test.model;//package com.example.test.model;
-//
-//public class Question {
-//    private int id;
-//    private String content;
-//
-//    // Constructor
-//    public Question(int id, String content) {
-//        this.id = id;
-//        this.content = content;
-//    }
-//
-//    // Getter and Setter
-//    public int getId() {
-//        return id;
-//    }
-//
-//    public void setId(int id) {
-//        this.id = id;
-//    }
-//
-//    public String getContent() {
-//        return content;
-//    }
-//
-//    public void setContent(String content) {
-//        this.content = content;
-//    }
-//}
+package com.example.test.model;
+
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
 public class Question {
+
+    @SerializedName("id")
+    private int id;
 
     @SerializedName("quesContent")
     private String quesContent;
@@ -42,14 +18,18 @@ public class Question {
     @SerializedName("point")
     private int point;
 
-    @SerializedName("choiceContent")
+    @SerializedName("questionChoices")
     private List<Choice> questionChoices;
 
-
-    @SerializedName("choiceKey")
-    private String choiceKey;
-
     // Getters và Setters
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
     public String getQuesContent() {
         return quesContent;
     }
@@ -73,6 +53,7 @@ public class Question {
     public void setPoint(int point) {
         this.point = point;
     }
+
     public List<Choice> getQuestionChoices() {
         return questionChoices;
     }
@@ -80,13 +61,4 @@ public class Question {
     public void setQuestionChoices(List<Choice> questionChoices) {
         this.questionChoices = questionChoices;
     }
-
-    public String getChoiceKey() {
-        return choiceKey;
-    }
-
-    public void setChoiceKey(String choiceKey) {
-        this.choiceKey = choiceKey;
-    }
 }
-
