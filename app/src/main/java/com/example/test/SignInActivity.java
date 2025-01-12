@@ -3,6 +3,7 @@ package com.example.test;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.text.Editable;
@@ -19,6 +20,8 @@ import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.test.model.Question;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -63,11 +66,14 @@ public class SignInActivity extends AppCompatActivity {
                             }
                         });
 
-                        Intent intent = new Intent(SignInActivity.this, HomeActivity.class);
+                        Intent intent = new Intent(SignInActivity.this, ChooseFieldsActivity.class);
                         startActivity(intent); // Chuyển hướng đến Home Activity
                     }
 
+                    @Override
+                    public void onSuccess(Question question) {
 
+                    }
                     @Override
                     public void onFailure(String errorMessage) {
                         runOnUiThread(new Runnable() {
@@ -77,6 +83,23 @@ public class SignInActivity extends AppCompatActivity {
                             }
                         });
                     }
+
+                    @Override
+                    public void onSuccess(String access_token) {
+//                        runOnUiThread(new Runnable() {
+//                            @Override
+//                            public void run() {
+//                                Toast.makeText(SignInActivity.this, "Đăng nhập thành công!", Toast.LENGTH_SHORT).show();
+//                                Log.d("MainActivity", "Đăng nhập thành công. Token: " + access_token);
+//                                SharedPreferences preferences = getSharedPreferences("AppPrefs", MODE_PRIVATE);
+//                                preferences.edit().putString("auth_token", access_token).apply();
+//                            }
+//                        });
+//                        Intent intent = new Intent(SignInActivity.this, ChooseFieldsActivity.class);
+//                        startActivity(intent); // Chuyển hướng đến Home Activity
+
+                    }
+
                 });
                 // if (email.isEmpty() || pass.isEmpty()) {
                 // Toast.makeText(Sign_In.this, "Vui lòng điền đầy đủ thông tin!",

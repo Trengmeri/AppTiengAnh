@@ -18,6 +18,8 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.example.test.model.Question;
+
 public class ConfirmCode2Activity extends AppCompatActivity {
 
     private EditText[] codeInputs; // Mảng chứa các ô nhập mã
@@ -150,6 +152,11 @@ public class ConfirmCode2Activity extends AppCompatActivity {
                         }
 
                         @Override
+                        public void onSuccess(Question question) {
+
+                        }
+
+                        @Override
                         public void onFailure(String errorMessage) {
                             // Hiển thị thông báo lỗi nếu mã sai
                             runOnUiThread(new Runnable() {
@@ -158,6 +165,11 @@ public class ConfirmCode2Activity extends AppCompatActivity {
                                     Toast.makeText(ConfirmCode2Activity.this, errorMessage, Toast.LENGTH_SHORT).show();
                                 }
                             });
+                        }
+
+                        @Override
+                        public void onSuccess(String token) {
+
                         }
                     });
                 }

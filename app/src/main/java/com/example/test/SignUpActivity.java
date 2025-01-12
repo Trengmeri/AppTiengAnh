@@ -20,6 +20,8 @@ import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
+import com.example.test.model.Question;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -78,6 +80,11 @@ public class SignUpActivity extends AppCompatActivity {
                     }
 
                     @Override
+                    public void onSuccess(Question question) {
+
+                    }
+
+                    @Override
                     public void onFailure(String errorMessage) {
                         runOnUiThread(new Runnable() {
                             @Override
@@ -85,6 +92,11 @@ public class SignUpActivity extends AppCompatActivity {
                                 Toast.makeText(SignUpActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
                             }
                         });
+                    }
+
+                    @Override
+                    public void onSuccess(String token) {
+
                     }
                 });
 

@@ -39,7 +39,8 @@ public class PopupHelper {
 
         btnNext.setOnClickListener(v -> {
             popupWindow.dismiss(); // Đóng popup
-            onNextQuestion.run(); // Gọi hàm để chuyển sang câu hỏi tiếp theo
+            onNextQuestion.run();
+            // Gọi hàm để chuyển sang câu hỏi tiếp theo
         });
 
         // Hiển thị popup ở dưới cùng của view cụ thể

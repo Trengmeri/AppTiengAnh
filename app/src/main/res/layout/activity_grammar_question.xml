@@ -19,24 +19,47 @@
         android:textStyle="bold"
         android:layout_marginTop="20dp"
         android:layout_gravity="center"/>
-
-    <!-- Thanh tiến trình -->
     <LinearLayout
-        android:id="@+id/linearLayout5"
+        android:id="@+id/progressBar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:gravity="center"
         android:orientation="horizontal"
         android:layout_gravity="center">
 
-        <ProgressBar
-            android:id="@+id/progressBar"
-            style="?android:attr/progressBarStyleHorizontal"
-            android:layout_width="200dp"
-            android:layout_height="10dp"
-            android:progressTint="#CE9566"
-            android:progress="0" />
+        <!-- Step 1 (Active) -->
+        <View
+            android:layout_width="32dp"
+            android:layout_height="8dp"
+            android:background="#E0E0E0"
+            android:layout_margin="4dp" />
+
+        <!-- Step 2 (Inactive) -->
+        <View
+            android:layout_width="32dp"
+            android:layout_height="8dp"
+            android:background="#E0E0E0"
+            android:layout_margin="4dp" />
+
+        <!-- Step 3 (Inactive) -->
+        <View
+            android:layout_width="32dp"
+            android:layout_height="8dp"
+            android:background="#E0E0E0"
+            android:layout_margin="4dp" />
+
+        <!-- Step 4 (Inactive) -->
+        <View
+            android:layout_width="32dp"
+            android:layout_height="8dp"
+            android:background="#E0E0E0"
+            android:layout_margin="4dp" />
+
+        <!-- Step 5 (Inactive) -->
+        <View
+            android:layout_width="32dp"
+            android:layout_height="8dp"
+            android:background="#E0E0E0"
+            android:layout_margin="4dp" />
     </LinearLayout>
 
     <!-- Nội dung câu hỏi -->
@@ -45,7 +68,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="48dp"
-        android:drawableLeft="@drawable/jam_write"
+        android:drawableStart="@drawable/jam_write"
         android:text="@string/fill_blank"
         android:textSize="24sp"
         android:textStyle="bold" />
@@ -54,12 +77,12 @@
         android:id="@+id/tvContent"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="100dp"
+        android:layout_marginTop="80dp"
         android:padding="10dp"
-        android:text="@string/question_grammar_1"
+        android:text=""
         android:textSize="18sp"
         android:textStyle="bold" />
-
+    <!--        android:text="@string/question_grammar_1"-->
     <GridLayout
         android:id="@+id/gridLayout"
         android:layout_width="match_parent"
@@ -76,9 +99,10 @@
             android:layout_height="wrap_content"
             android:layout_columnWeight="1"
             android:layout_margin="8dp"
-            android:backgroundTint="#A95D40"
-            android:textColor="#FFFFFF"
-            android:text="computer" />
+            android:text=""
+            android:backgroundTint="#FADAC1"
+            android:textColor="@color/black"/>
+<!--            android:text="computer" />-->
 
         <Button
             android:id="@+id/btnOption2"
@@ -86,9 +110,10 @@
             android:layout_height="wrap_content"
             android:layout_columnWeight="1"
             android:layout_margin="8dp"
-            android:backgroundTint="#A95D40"
-            android:textColor="#FFFFFF"
-            android:text="internet" />
+            android:text=""
+            android:backgroundTint="#FADAC1"
+            android:textColor="@color/black"/>
+<!--            android:text="internet" />-->
 
         <Button
             android:id="@+id/btnOption3"
@@ -96,9 +121,10 @@
             android:layout_height="wrap_content"
             android:layout_columnWeight="1"
             android:layout_margin="8dp"
-            android:backgroundTint="#A95D40"
-            android:textColor="#FFFFFF"
-            android:text="database" />
+            android:text=""
+            android:backgroundTint="#FADAC1"
+            android:textColor="@color/black"/>
+<!--            android:text="database" />-->
 
         <Button
             android:id="@+id/btnOption4"
@@ -106,9 +132,10 @@
             android:layout_height="wrap_content"
             android:layout_columnWeight="1"
             android:layout_margin="8dp"
-            android:backgroundTint="#A95D40"
-            android:textColor="#FFFFFF"
-            android:text="operator" />
+            android:text=""
+            android:backgroundTint="#FADAC1"
+            android:textColor="@color/black"/>
+<!--            android:text="operator" />-->
     </GridLayout>
 
     <!-- Nút kiểm tra -->
@@ -118,7 +145,8 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:text="@string/check"
-        android:backgroundTint="#A95D40"
+        android:backgroundTint="#C0CEEF"
+        android:textColor="@color/black"
         android:layout_gravity="center"/>
 
     <!-- FrameLayout để hiển thị popup hoặc nội dung khác -->

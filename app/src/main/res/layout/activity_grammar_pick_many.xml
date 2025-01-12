@@ -27,21 +27,45 @@
 
         <!-- Thanh tiến trình -->
         <LinearLayout
-            android:id="@+id/linearLayout5"
+            android:id="@+id/progressBar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:gravity="center"
             android:orientation="horizontal"
             android:layout_gravity="center">
 
-            <ProgressBar
-                android:id="@+id/progressBar"
-                style="?android:attr/progressBarStyleHorizontal"
-                android:layout_width="200dp"
-                android:layout_height="10dp"
-                android:progressTint="#CE9566"
-                android:progress="0" />
+            <!-- Step 1 (Active) -->
+            <View
+                android:layout_width="32dp"
+                android:layout_height="8dp"
+                android:background="#C4865E"
+                android:layout_margin="4dp" />
+            <!-- Step 2 (Inactive) -->
+            <View
+                android:layout_width="32dp"
+                android:layout_height="8dp"
+                android:background="#E0E0E0"
+                android:layout_margin="4dp" />
+
+            <!-- Step 3 (Inactive) -->
+            <View
+                android:layout_width="32dp"
+                android:layout_height="8dp"
+                android:background="#E0E0E0"
+                android:layout_margin="4dp" />
+
+            <!-- Step 4 (Inactive) -->
+            <View
+                android:layout_width="32dp"
+                android:layout_height="8dp"
+                android:background="#E0E0E0"
+                android:layout_margin="4dp" />
+
+            <!-- Step 5 (Inactive) -->
+            <View
+                android:layout_width="32dp"
+                android:layout_height="8dp"
+                android:background="#E0E0E0"
+                android:layout_margin="4dp" />
         </LinearLayout>
 
         <!-- Tiêu đề -->
@@ -69,32 +93,32 @@
 
         <!-- Các tùy chọn đáp án -->
         <CheckBox
-            android:id="@+id/checkboxJava"
-            android:layout_width="wrap_content"
+            android:id="@+id/checkbox1"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Java" />
 
         <CheckBox
-            android:id="@+id/checkboxPython"
-            android:layout_width="wrap_content"
+            android:id="@+id/checkbox2"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Python" />
 
         <CheckBox
-            android:id="@+id/checkboxCSharp"
-            android:layout_width="wrap_content"
+            android:id="@+id/checkbox3"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="C#" />
 
         <CheckBox
-            android:id="@+id/checkboxHTML"
-            android:layout_width="wrap_content"
+            android:id="@+id/checkbox4"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="HTML" />
 
         <CheckBox
-            android:id="@+id/checkboxJavaScript"
-            android:layout_width="wrap_content"
+            android:id="@+id/checkbox5"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="JavaScript" />
 
@@ -104,7 +128,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
-            android:backgroundTint="#A95D40"
+            android:textColor="@color/black"
+            android:backgroundTint="#C0CEEF"
             android:text="@string/check"
             android:layout_gravity="center"/>
 

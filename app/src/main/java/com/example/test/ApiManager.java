@@ -14,6 +14,16 @@ import android.widget.Toast;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;*/
 
+import com.example.test.model.Choice;
+import com.example.test.model.Question;
+import com.example.test.model.Choice;
+import com.example.test.model.Choice;
+import com.example.test.model.ResponseWrapper;
+import com.example.test.model.TokenResponse;
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
+
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -38,7 +48,7 @@ public class ApiManager {
 
     public void sendLoginRequest(String email, String password, ApiCallback callback) {
         OkHttpClient client = new OkHttpClient.Builder()
-                .connectTimeout(10, TimeUnit.SECONDS) // Tăng thời gian kết nối
+                .connectTimeout(20, TimeUnit.SECONDS) // Tăng thời gian kết nối
                 .readTimeout(20, TimeUnit.SECONDS)    // Tăng thời gian chờ phản hồi
                 .writeTimeout(10, TimeUnit.SECONDS)   // Tăng thời gian ghi dữ liệu
                 .build();
@@ -46,7 +56,7 @@ public class ApiManager {
         RequestBody body = RequestBody.create(json, MediaType.parse("application/json; charset=utf-8"));
 
         Request request = new Request.Builder()
-                .url("http://192.168.56.1:8080/login") // Thay bằng URL máy chủ của bạn
+                .url("http://192.168.56.1:8080/api/v1/auth/login") // Thay bằng URL máy chủ của bạn
                 .post(body)
                 .build();
 
@@ -62,11 +72,39 @@ public class ApiManager {
                 String responseBody = response.body().string();
                 Log.d("ApiManager", "Phản hồi từ server: " + responseBody);
                 if (response.isSuccessful()) {
+//                    Gson gson = new Gson();
+//                    TokenResponse tokenResponse = gson.fromJson(responseBody, TokenResponse.class);
+//                    String access_token= tokenResponse.getAccess_token();
+
+                    //callback.onSuccess(access_token);
                     callback.onSuccess();
                 } else {
                     Log.e("ApiManager", "Lỗi từ server: Mã lỗi " + response.code() + ", Nội dung: " + responseBody);
                     callback.onFailure("Đăng nhập thất bại! Vui lòng kiểm tra lại thông tin.");
                 }
+//                if (response.isSuccessful()) {
+//                    try {
+//                        // Phân tích JSON từ phản hồi của server
+//                        Gson gson = new Gson();
+//                        TokenResponse tokenResponse = gson.fromJson(responseBody, TokenResponse.class);
+//                        String access_token = tokenResponse.getAccess_token();  // Lấy access_token thay vì token
+//
+//                        // Kiểm tra nếu access_token hợp lệ
+//                        if (access_token != null && !access_token.isEmpty()) {
+//                            Log.d("ApiManager", "Access Token hợp lệ: " + access_token);
+//                            callback.onSuccess(access_token); // Trả về access_token cho callback
+//                        } else {
+//                            Log.e("ApiManager", "Access token không có trong phản hồi.");
+//                            callback.onFailure("Access token không hợp lệ.");
+//                        }
+//                    } catch (JsonSyntaxException e) {
+//                        Log.e("ApiManager", "Lỗi khi phân tích JSON: " + e.getMessage());
+//                        callback.onFailure("Lỗi khi xử lý dữ liệu từ server.");
+//                    }
+//                } else {
+//                    Log.e("ApiManager", "Lỗi từ server: Mã lỗi " + response.code() + ", Nội dung: " + responseBody);
+//                    callback.onFailure("Đăng nhập thất bại! Vui lòng kiểm tra lại thông tin.");
+//                }
             }
         });
     }
@@ -82,7 +120,7 @@ public class ApiManager {
         RequestBody body = RequestBody.create(json, MediaType.parse("application/json; charset=utf-8"));
 
         Request request = new Request.Builder()
-                .url("http://192.168.56.1:8080/register") // Thay bằng URL máy chủ của bạn
+                .url("http://192.168.56.1:8080/api/v1/auth/register") // Thay bằng URL máy chủ của bạn
                 .post(body)
                 .build();
 
@@ -139,7 +177,7 @@ public class ApiManager {
         RequestBody body = RequestBody.create(json, MediaType.parse("application/json; charset=utf-8"));
 
         Request request = new Request.Builder()
-                .url("http://192.168.56.1:8080/verify-otp") // Thay bằng URL máy chủ của bạn
+                .url("http://192.168.56.1:8080/api/v1/auth/verify-otp") // Thay bằng URL máy chủ của bạn
                 .post(body)
                 .build();
 
@@ -187,32 +225,162 @@ public class ApiManager {
         });
     }
 
-    /*// Phương thức để lấy nội dung câu hỏi từ API
+    //
+//    public void sendQuestionDataToApi(String quesContent, String quesType, int point, String[] choices, String answer, ApiCallback callback) {
+//        // Xây dựng JSON từ các tham số
+//        String json = "{ \"quesContent\": \"" + quesContent + "\", " +
+//                "\"quesType\": \"" + quesType + "\", " +
+//                "\"point\": " + point + ", " +
+//                "\"choiceContent\": \"" + String.join(",", choices) + "\", " +
+//                "\"choiceKey\": \"" + answer + "\" }";
+//        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), json);
+//
+//        Request request = new Request.Builder()
+//                .url("http://192.168.109.2:8080/your_endpoint") // Địa chỉ API
+//                .post(requestBody)
+//                .build();
+//
+//        // Thực hiện yêu cầu
+//        client.newCall(request).enqueue(new Callback() {
+//            @Override
+//            public void onFailure(Call call, IOException e) {
+//                Log.e("ApiManager", "Lỗi kết nối: " + e.getMessage());
+//                callback.onFailure("Không thể kết nối tới API.");
+//            }
+//
+//            @Override
+//            public void onResponse(Call call, Response response) throws IOException {
+//                String responseBody = response.body().string();
+//                Log.d("ApiManager", "Phản hồi từ server: " + responseBody);
+//                // Xử lý phản hồi từ server (parse JSON)
+//                if (response.isSuccessful()) {
+//                    callback.onSuccess(); // Gọi callback thành công
+//                } else {
+//                    callback.onFailure("Lỗi từ server: Mã lỗi " + response.code());
+//                }
+//            }
+//        });
+//    }
+
+    //Phương thức để lấy dữ liệu câu hỏi từ API (GET request)
     public void fetchQuestionContentFromApi(ApiCallback callback) {
+        String access_token = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbkBnbWFpbC5jb20iLCJleHAiOjE3NDUyOTg4ODYsImlhdCI6MTczNjY1ODg4NiwidXNlciI6eyJpZCI6MSwiZW1haWwiOiJhZG1pbkBnbWFpbC5jb20iLCJuYW1lIjoidXNlciJ9fQ.xRd8Ah8qdNbP2YRrdXncRB4mqAq6qPHPG7H3_PAkXgf25TV_rzY6bGysx22vkN1M1SU-afqZGpbmnSTngmOhsQ"; // Token mà bạn đã nhận được sau khi đăng nhập thành công
+        OkHttpClient client = new OkHttpClient.Builder()
+                .connectTimeout(20, TimeUnit.SECONDS) // Tăng thời gian kết nối
+                .readTimeout(30, TimeUnit.SECONDS)    // Tăng thời gian chờ phản hồi
+                .writeTimeout(20, TimeUnit.SECONDS)   // Tăng thời gian ghi dữ liệu
+                .build();
         Request request = new Request.Builder()
-                .url("http://192.168.109.2:8080/get_question_content") // Địa chỉ API để lấy nội dung câu hỏi
+                .url("http://192.168.56.1:8080/api/v1/questions/10")// Địa chỉ API lấy câu hỏi
+                .addHeader("Authorization", "Bearer " + access_token)
                 .build();
 
+        // Thực hiện yêu cầu GET
         client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    // Kiểm tra body trả về
+                    String responseBody = response.body() != null ? response.body().string() : null;
+
+                    if (responseBody != null && !responseBody.isEmpty()) {
+                        Log.d("ApiManager", "JSON trả về: " + responseBody);
+
+                        try {
+                            // Parse JSON thành đối tượng Question
+//                            Gson gson = new Gson();
+//                            Question question = gson.fromJson(responseBody, Question.class);
+                            Gson gson = new Gson();
+                            ResponseWrapper responseWrapper = gson.fromJson(responseBody, ResponseWrapper.class);
+                            Question question = responseWrapper.getData();  // Truy cập phần data trong JSON
+
+                            if (question != null && question.getQuestionChoices() != null) {
+                                Log.d("ApiManager", "Câu hỏi: " + question.getQuesContent());
+                                Log.d("ApiManager", "Số câu trả lời: " + question.getQuestionChoices().size());
+
+                                // Hiển thị các lựa chọn câu trả lời
+                                for (Choice choice : question.getQuestionChoices()) {
+                                    Log.d("ApiManager", "Lựa chọn: " + choice.getChoiceContent() + ", Đúng: " + choice.isChoiceKey());
+                                }
+
+                                // Gọi callback với đối tượng question
+                                callback.onSuccess(question); // Gọi callback thành công và truyền question
+                            } else {
+                                Log.e("ApiManager", "Câu hỏi hoặc câu trả lời không hợp lệ.");
+                                callback.onFailure("Dữ liệu không hợp lệ từ server.");
+                            }
+                        } catch (JsonSyntaxException e) {
+                            Log.e("ApiManager", "Lỗi khi parse JSON: " + e.getMessage());
+                            callback.onFailure("Lỗi khi parse JSON.");
+                        }
+                    } else {
+                        Log.e("ApiManager", "Body trả về rỗng hoặc không hợp lệ.");
+                        callback.onFailure("Dữ liệu không hợp lệ từ server.");
+                    }
+                } else {
+                    Log.e("ApiManager", "Lỗi từ server: Mã lỗi " + response.code());
+                    callback.onFailure("Lỗi từ server: Mã lỗi " + response.code());
+                }
+            }
             @Override
             public void onFailure(Call call, IOException e) {
                 Log.e("ApiManager", "Lỗi kết nối: " + e.getMessage());
                 callback.onFailure("Không thể kết nối tới API.");
             }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                String responseBody = response.body().string();
-                Log.d("ApiManager", "Phản hồi từ server: " + responseBody);
-
-                if (response.isSuccessful()) {
-                    callback.onSuccess(responseBody); // Gọi callback với nội dung câu hỏi
-                } else {
-                    callback.onFailure("Lỗi từ server: Mã lỗi " + response.code());
-                }
-            }
         });
-    }*/
+    }
+
+//    public void fetchAnswerContentFromApi(ApiCallback callback) {
+//        Request request = new Request.Builder()
+//                .url("http://192.168.109.2:8080/get_answer_content") // Địa chỉ API để lấy nội dung câu trả lời
+//                .build();
+//
+//        client.newCall(request).enqueue(new Callback() {
+//            @Override
+//            public void onFailure(Call call, IOException e) {
+//                Log.e("ApiManager", "Lỗi kết nối: " + e.getMessage());
+//                callback.onFailure("Không thể kết nối tới API.");
+//            }
+//
+//            @Override
+//            public void onResponse(Call call, Response response) throws IOException {
+//                String responseBody = response.body().string();
+//                Log.d("ApiManager", "Phản hồi từ server: " + responseBody);
+//
+//                if (response.isSuccessful()) {
+//                    callback.onSuccess(responseBody); // Gọi callback với nội dung câu trả lời
+//                } else {
+//                    callback.onFailure("Lỗi từ server: Mã lỗi " + response.code());
+//                }
+//            }
+//        });
+//    }
+
+//    // Phương thức gọi API lấy URL của file âm thanh
+//    public void fetchAudioUrl(String url, ApiCallback callback) {
+//        Request request = new Request.Builder()
+//                .url("url")
+//                .build();
+//
+//        client.newCall(request).enqueue(new Callback() {
+//            @Override
+//            public void onFailure(Call call, IOException e) {
+//                // Gọi callback khi có lỗi
+//                callback.onFailure(e.getMessage());
+//            }
+//
+//            @Override
+//            public void onResponse(Call call, Response response) throws IOException {
+//                if (response.isSuccessful()) {
+//                    // Giả sử API trả về URL của file âm thanh dưới dạng string
+//                    String audioUrl = response.body().string(); // Lấy URL từ phản hồi API
+//                    runOnUiThread(() -> playAudio(audioUrl)); // Chạy playAudio trên UI thread
+//                } else {
+//                    runOnUiThread(() -> Toast.makeText(getApplicationContext(), "Lỗi tải âm thanh", Toast.LENGTH_SHORT).show());
+//                }
+//            }
+//        });
+//    }
 
     // Kiểm tra kết nối Internet
     public boolean isInternetAvailable(Context context) {

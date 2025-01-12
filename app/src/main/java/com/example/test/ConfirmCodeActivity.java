@@ -17,6 +17,8 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.example.test.model.Question;
+
 public class ConfirmCodeActivity extends AppCompatActivity {
 
     private EditText[] codeInputs; // Mảng chứa các ô nhập mã
@@ -128,9 +130,19 @@ public class ConfirmCodeActivity extends AppCompatActivity {
                         }
 
                         @Override
+                        public void onSuccess(Question question) {
+
+                        }
+
+                        @Override
                         public void onFailure(String errorMessage) {
                             // Hiển thị thông báo lỗi nếu mã sai
                             Toast.makeText(ConfirmCodeActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
+                        }
+
+                        @Override
+                        public void onSuccess(String token) {
+
                         }
                     });
                 }
