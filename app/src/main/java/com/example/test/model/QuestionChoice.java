@@ -1,11 +1,11 @@
 package com.example.test.model;
 
-public class Choice {
+public class QuestionChoice {
     private int id;
     private String choiceContent;
     private boolean choiceKey;
 
-    // Getters và Setters
+    // Getters and setters
     public int getId() {
         return id;
     }
@@ -30,4 +30,3 @@ public class Choice {
         this.choiceKey = choiceKey;
     }
 }
-
