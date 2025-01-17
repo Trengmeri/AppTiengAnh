@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".RecordQuestionActivity">
+
+    <TextView
+        android:id="@+id/tvTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/record"
+        android:textColor="#CE9566"
+        android:textSize="36sp"
+        android:textStyle="bold"
+        android:layout_marginTop="20dp"
+        android:layout_gravity="center"/>
+
+    <!-- Thanh tiến trình -->
+    <LinearLayout
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_gravity="center">
+
+        <!-- Step 1 (Active) -->
+        <View
+            android:layout_width="32dp"
+            android:layout_height="8dp"
+            android:background="#C4865E"
+            android:layout_margin="4dp" />
+
+        <!-- Step 2 (Inactive) -->
+        <View
+            android:layout_width="32dp"
+            android:layout_height="8dp"
+            android:background="#E0E0E0"
+            android:layout_margin="4dp" />
+
+        <!-- Step 3 (Inactive) -->
+        <View
+            android:layout_width="32dp"
+            android:layout_height="8dp"
+            android:background="#E0E0E0"
+            android:layout_margin="4dp" />
+
+        <!-- Step 4 (Inactive) -->
+        <View
+            android:layout_width="32dp"
+            android:layout_height="8dp"
+            android:background="#E0E0E0"
+            android:layout_margin="4dp" />
+
+        <!-- Step 5 (Inactive) -->
+        <View
+            android:layout_width="32dp"
+            android:layout_height="8dp"
+            android:background="#E0E0E0"
+            android:layout_margin="4dp" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tvInstruction"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="25dp"
+        android:drawableLeft="@drawable/grommet_icons_assist_listening"
+        android:text="@string/ans_record"
+        android:textSize="24sp"
+        android:textStyle="bold" />
+
+    <ImageView
+        android:id="@+id/imgVoice"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="25dp"
+        app:srcCompat="@drawable/ic_record" />
+    <LinearLayout
+        android:id="@+id/linearLayout1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:orientation="horizontal"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/txt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/your_ans"
+            android:textColor="#CE9566"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textAlignment="center"/>
+
+        <TextView
+            android:id="@+id/tvTranscription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:textAlignment="center" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tvQuestion"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:drawableLeft="@drawable/fe_question"
+        android:text="@string/ques_record"
+        android:textSize="24sp"
+        android:textStyle="bold" />
+
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/rounded_corner"
+        android:backgroundTint="#FFDDD0"
+        android:orientation="horizontal"
+        android:padding="16dp">
+
+        <ImageView
+            android:id="@+id/btn_play"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:srcCompat="@drawable/btn_play" />
+
+        <SeekBar
+            android:id="@+id/seekBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp" />
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/btnCheckResult"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/check"
+        android:backgroundTint="#BC6136"
+        android:layout_marginTop="26dp"
+        android:layout_gravity="center"/>
+
+
+    <FrameLayout
+        android:id="@+id/popupContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom" />
+</LinearLayout>

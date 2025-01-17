@@ -57,7 +57,7 @@ public class ListeningQuestionActivity extends AppCompatActivity {
 
                     // Kiểm tra nếu hoàn thành
                     if (currentStep >= totalSteps) {
-                        Intent intent = new Intent(ListeningQuestionActivity.this, HomeActivity.class);
+                        Intent intent = new Intent(ListeningQuestionActivity.this, RecordQuestionActivity.class);
                         startActivity(intent);
                         finish();
                     }

@@ -4,6 +4,7 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
 
     <application
         android:allowBackup="true"
@@ -17,6 +18,12 @@
         android:theme="@style/Theme.Test"
         tools:targetApi="31">
         <activity
+            android:name=".PointResultActivity"
+            android:exported="true" />
+        <activity
+            android:name=".RecordQuestionActivity"
+            android:exported="true" />
+        <activity
             android:name=".LoadingTestActivity"
             android:exported="false" />
         <activity
@@ -27,7 +34,7 @@
             android:exported="true" />
         <activity
             android:name=".ListeningQuestionActivity"
-            android:exported="false" />
+            android:exported="true" />
         <activity
             android:name=".GrammarPick1QuestionActivity"
             android:exported="true" />
@@ -39,7 +46,7 @@
             android:exported="false" />
         <activity
             android:name=".HomeActivity"
-            android:exported="false" />
+            android:exported="true" />
         <activity
             android:name=".LoadPassActivity"
             android:exported="false" />

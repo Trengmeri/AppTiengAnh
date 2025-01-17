@@ -16,6 +16,15 @@
     <string name="check">Check Result</string>
     <string name="grammar">Grammar</string>
     <string name="lis">Listening</string>
+    <string name="speak">Speaking</string>
+    <string name="write">Writing</string>
+    <string name="read">Reading</string>
+    <string name="record">Voice Response</string>
+    <string name="ans_record">Answer the question by recording</string>
+    <string name="your_ans">Your answer :</string>
+    <string name="ques_record">How do you use IT ?</string>
     <string name="txt_it">INFORMATION\n TECHNOLOGY</string>
     <string name="txt_construction">CONSTRUCTION</string>
+    <string name="btn_continute">Continue Studying</string>
+    <string name="txtcontinute">Continue your journey!</string>
 </resources>
