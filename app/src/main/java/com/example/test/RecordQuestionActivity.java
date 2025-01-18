@@ -18,17 +18,18 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 public class RecordQuestionActivity extends AppCompatActivity {
-
+    List<String> correctAnswers = new ArrayList<>();
     private MediaPlayer mediaPlayer;
     private SeekBar seekBar;
     private ImageView imgVoice, btnPlayAudio;
     private TextView tvTranscription;
     private SpeechRecognizer speechRecognizer;
 
-    private String correctAnswer = "u i a fein"; // Đáp án đúng
+    //private String correctAnswer = "u i a fein"; // Đáp án đúng
     String userAnswer = "";
     private int currentStep = 0; // Bước hiện tại (bắt đầu từ 0)
     private int totalSteps = 5; // Tổng số bước trong thanh tiến trình
@@ -75,7 +76,7 @@ public class RecordQuestionActivity extends AppCompatActivity {
                 Toast.makeText(RecordQuestionActivity.this, "Vui lòng trả lời câu hỏi!", Toast.LENGTH_SHORT).show();
             } else {
                 // Truyền view cụ thể vào PopupHelper
-                PopupHelper.showResultPopup(findViewById(R.id.popupContainer), userAnswer, correctAnswer, () -> {
+                PopupHelper.showResultPopup(findViewById(R.id.popupContainer), userAnswer, correctAnswers, () -> {
                     // Callback khi nhấn Next Question trên popup
                     updateProgressBar(progressBar, currentStep);
                     currentStep++; // Cập nhật thanh tiến trình

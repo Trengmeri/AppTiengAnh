@@ -190,7 +190,7 @@ public class ApiManager {
                 .writeTimeout(20, TimeUnit.SECONDS) // Tăng thời gian ghi dữ liệu
                 .build();
         Request request = new Request.Builder()
-                .url("http://192.168.56.1:8080/api/v1/questions/1")// Địa chỉ API lấy câu hỏi
+                .url("http://192.168.56.1:8080/api/v1/questions/3")// Địa chỉ API lấy câu hỏi
                 // .addHeader("Authorization", "Bearer " + access_token)
                 .build();
 
