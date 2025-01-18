@@ -8,8 +8,6 @@ import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.speech.RecognitionListener;
-import android.speech.RecognizerIntent;
-import android.speech.SpeechRecognizer;
 import android.util.Log;
 import android.view.View;
 import android.widget.*;
@@ -18,21 +16,19 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import java.util.ArrayList;
-import java.util.Locale;
 
-public class RecordQuestionActivity extends AppCompatActivity {
+public class RecordQuestionActivity extends AppCompatActivity implements SpeechRecognitionCallback {
 
     private MediaPlayer mediaPlayer;
     private SeekBar seekBar;
     private ImageView imgVoice, btnPlayAudio;
     private TextView tvTranscription;
-    private SpeechRecognizer speechRecognizer;
+    private SpeechRecognitionHelper speechRecognitionHelper;
 
     private String correctAnswer = "u i a fein"; // Đáp án đúng
     String userAnswer = "";
     private int currentStep = 0; // Bước hiện tại (bắt đầu từ 0)
     private int totalSteps = 5; // Tổng số bước trong thanh tiến trình
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,8 +45,8 @@ public class RecordQuestionActivity extends AppCompatActivity {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO}, 1);
         } else {
-            // Speech-to-text setup
-            imgVoice.setOnClickListener(v -> startSpeechRecognition());
+            // Khởi tạo SpeechRecognitionHelper
+            imgVoice.setOnClickListener(v ->initializeSpeechRecognition());
         }
 
         // Audio playback setup
@@ -65,8 +61,6 @@ public class RecordQuestionActivity extends AppCompatActivity {
         mediaPlayer.setOnCompletionListener(mp -> seekBar.setProgress(0));
 
         LinearLayout progressBar = findViewById(R.id.progressBar); // Ánh xạ ProgressBar
-
-        //btnListen.setOnClickListener(v -> playAudio());
 
         btnCheckResult.setOnClickListener(v -> {
             String userAnswer = tvTranscription.getText().toString(); // Lấy giá trị từ EditText
@@ -91,6 +85,11 @@ public class RecordQuestionActivity extends AppCompatActivity {
         });
     }
 
+    private void initializeSpeechRecognition() {
+        speechRecognitionHelper = new SpeechRecognitionHelper(this, this);
+        speechRecognitionHelper.startListening();
+    }
+
     private void updateProgressBar(LinearLayout progressBarSteps, int step) {
         if (step < progressBarSteps.getChildCount()) {
             final View currentStepView = progressBarSteps.getChildAt(step);
@@ -107,67 +106,52 @@ public class RecordQuestionActivity extends AppCompatActivity {
         }
     }
 
-    private void startSpeechRecognition() {
-        if (speechRecognizer == null) {
-            speechRecognizer = SpeechRecognizer.createSpeechRecognizer(this);
+    @Override
+    public void onReadyForSpeech() {
+        Toast.makeText(this, "Listening...", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onBeginningOfSpeech() {
+        // Gọi khi bắt đầu nhận diện giọng nói
+    }
+
+    @Override
+    public void onRmsChanged(float rmsdB) {
+        // Gọi khi thay đổi âm lượng
+    }
+
+    @Override
+    public void onBufferReceived(byte[] buffer) {
+        // Gọi khi nhận được dữ liệu
+    }
+
+    @Override
+    public void onEndOfSpeech() {
+        Toast.makeText(this, "Processing...", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onError(int error) {
+        Log.e("SpeechRecognizerError", "Error code: " + error);
+        Toast.makeText(this, "Error: " + error, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onResults(ArrayList<String> matches) {
+        if (matches != null && !matches.isEmpty()) {
+            tvTranscription.setText(matches.get(0));
         }
+    }
 
-        speechRecognizer.setRecognitionListener(new RecognitionListener() {
-            @Override
-            public void onReadyForSpeech(Bundle params) {
-                Toast.makeText(RecordQuestionActivity.this, "Listening...", Toast.LENGTH_SHORT).show();
-            }
+    @Override
+    public void onPartialResults(Bundle partialResults) {
+        // Gọi khi nhận được kết quả từng phần
+    }
 
-            @Override
-            public void onBeginningOfSpeech() {
-                // Gọi khi bắt đầu nhận diện giọng nói
-            }
-
-            @Override
-            public void onRmsChanged(float rmsdB) {
-                // Gọi khi thay đổi âm lượng
-            }
-
-            @Override
-            public void onBufferReceived(byte[] buffer) {
-                // Gọi khi nhận được dữ liệu
-            }
-
-            @Override
-            public void onEndOfSpeech() {
-                Toast.makeText(RecordQuestionActivity.this, "Processing...", Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onError(int error) {
-                Log.e("SpeechRecognizerError", "Error code: " + error);
-                Toast.makeText(RecordQuestionActivity.this, "Error: " + error, Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onResults(Bundle results) {
-                ArrayList<String> matches = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
-                if (matches != null && !matches.isEmpty()) {
-                    tvTranscription.setText(matches.get(0));
-                }
-            }
-
-            @Override
-            public void onPartialResults(Bundle partialResults) {
-                // Gọi khi nhận được kết quả từng phần
-            }
-
-            @Override
-            public void onEvent(int eventType, Bundle params) {
-                // Gọi khi có sự kiện tùy chỉnh
-            }
-        });
-
-        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
-
-        speechRecognizer.startListening(intent);
+    @Override
+    public void onEvent(int eventType, Bundle params) {
+        // Gọi khi có sự kiện tùy chỉnh
     }
 
     private void updateSeekBar() {
@@ -190,9 +174,8 @@ public class RecordQuestionActivity extends AppCompatActivity {
             mediaPlayer.release();
             mediaPlayer = null;
         }
-        if (speechRecognizer != null) {
-            speechRecognizer.destroy();
-            speechRecognizer = null;
+        if (speechRecognitionHelper != null) {
+            speechRecognitionHelper.destroy();
         }
         super.onDestroy();
     }
@@ -202,7 +185,7 @@ public class RecordQuestionActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == 1 && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            startSpeechRecognition();
+            initializeSpeechRecognition();
         } else {
             Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show();
         }

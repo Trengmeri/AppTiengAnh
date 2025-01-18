@@ -8,20 +8,27 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:background="@drawable/card">
+        android:background="@drawable/card"
+        android:padding="10dp">
+
+        <ImageView
+            android:id="@+id/img_notification"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/notifications"
+            android:layout_gravity="end"
+            android:layout_marginBottom="-50dp"/>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
-            <ProgressBar
-                android:id="@+id/progressBar"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="match_parent"
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/cricle"
                 android:layout_margin="20dp"
-                android:progress="75"
-                android:max="100"/>
+                />
 
             <LinearLayout
                 android:layout_width="0dp"
@@ -73,7 +80,83 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@drawable/back_home">
+            android:background="@drawable/back_home"
+            android:orientation="vertical">
+
+            <!-- Thêm các TextView hoặc các thành phần khác ở đây -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Lesson 1 - Can you hear the difference between met  mate"
+                android:padding="16dp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Lesson 2 - Social life words"
+                android:padding="16dp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Lesson 3 - Social life phrases"
+                android:padding="16dp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Lesson 4 - Stress these words: roommate, everyone, understand"
+                android:padding="16dp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Lesson 5 - Social life sentences"
+                android:padding="16dp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Lesson 6 - Reconnecting with friends"
+                android:padding="16dp"/>
+
+            <!-- Thêm các TextView hoặc các thành phần khác ở đây -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Lesson 1 - Can you hear the difference between met  mate"
+                android:padding="16dp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Lesson 2 - Social life words"
+                android:padding="16dp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Lesson 3 - Social life phrases"
+                android:padding="16dp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Lesson 4 - Stress these words: roommate, everyone, understand"
+                android:padding="16dp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Lesson 5 - Social life sentences"
+                android:padding="16dp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Lesson 6 - Reconnecting with friends"
+                android:padding="16dp"/>
+
         </LinearLayout>
 
     </ScrollView>
