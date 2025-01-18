@@ -85,18 +85,7 @@ public class SignInActivity extends AppCompatActivity {
                     }
 
                     @Override
-                    public void onSuccess(String access_token) {
-//                        runOnUiThread(new Runnable() {
-//                            @Override
-//                            public void run() {
-//                                Toast.makeText(SignInActivity.this, "Đăng nhập thành công!", Toast.LENGTH_SHORT).show();
-//                                Log.d("MainActivity", "Đăng nhập thành công. Token: " + access_token);
-//                                SharedPreferences preferences = getSharedPreferences("AppPrefs", MODE_PRIVATE);
-//                                preferences.edit().putString("auth_token", access_token).apply();
-//                            }
-//                        });
-//                        Intent intent = new Intent(SignInActivity.this, ChooseFieldsActivity.class);
-//                        startActivity(intent); // Chuyển hướng đến Home Activity
+                    public void onSuccessWithOtpID(String otpID) {
 
                     }
 

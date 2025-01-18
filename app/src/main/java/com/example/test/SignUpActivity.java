@@ -1,6 +1,7 @@
 package com.example.test;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -10,6 +11,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -27,12 +29,12 @@ import java.util.regex.Pattern;
 
 public class SignUpActivity extends AppCompatActivity {
 
-    EditText edtName, edtPhone, edtEmail, edtMKhau;
+    EditText edtName, edtEmail, edtMKhau1;
     CheckBox cbCheck;
     Button btnUp, btnIn;
     NetworkChangeReceiver networkReceiver;
     ApiManager apiManager;
-    private boolean isPasswordVisible = false;
+    //private boolean isPasswordVisible = false;
     @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,7 +43,7 @@ public class SignUpActivity extends AppCompatActivity {
         setContentView(R.layout.activity_sign_up);
 
         AnhXa();
-        setupPasswordField();
+        //setupPasswordField();
 
         // Lắng nghe trạng thái checkbox
         cbCheck.setOnCheckedChangeListener((buttonView, isChecked) -> {
@@ -61,22 +63,21 @@ public class SignUpActivity extends AppCompatActivity {
                 // Thực hiện yêu cầu nếu có Internet
                 String hoten = edtName.getText().toString();
                 String email = edtEmail.getText().toString();
-//                String soDT = edtPhone.getText().toString();
-                String pass = edtMKhau.getText().toString();
+                String pass = edtMKhau1.getText().toString();
 
                 apiManager.sendSignUpRequest(this,hoten, email, pass, new ApiCallback() {
                     @Override
                     public void onSuccess() {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Toast.makeText(SignUpActivity.this, "Đăng ký thành công! Vui lòng kiểm tra email của bạn.", Toast.LENGTH_SHORT).show();
-                            }
-                        });
-
-                        Intent intent = new Intent(SignUpActivity.this, ConfirmCode2Activity.class);
-//                        intent.putExtra("email", email);
-                        startActivity(intent);
+//                        runOnUiThread(new Runnable() {
+//                            @Override
+//                            public void run() {
+//                                Toast.makeText(SignUpActivity.this, "Đăng ký thành công! Vui lòng kiểm tra email của bạn.", Toast.LENGTH_SHORT).show();
+//                            }
+//                        });
+//
+//                        Intent intent = new Intent(SignUpActivity.this, ConfirmCode2Activity.class);
+////                        intent.putExtra("email", email);
+//                        startActivity(intent);
                     }
 
                     @Override
@@ -95,9 +96,20 @@ public class SignUpActivity extends AppCompatActivity {
                     }
 
                     @Override
-                    public void onSuccess(String token) {
+                    public void onSuccessWithOtpID(String otpID) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(SignUpActivity.this, "Đăng ký thành công! Vui lòng kiểm tra email của bạn.", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                        saveOtpId(otpID); // Lưu otpID vào SharedPreferences
+                        Intent intent = new Intent(SignUpActivity.this, ConfirmCode2Activity.class);
+//                        intent.putExtra("email", email);
+                        startActivity(intent);
 
                     }
+
                 });
 
 
@@ -113,67 +125,74 @@ public class SignUpActivity extends AppCompatActivity {
             }
         });
 
+
         btnIn.setOnClickListener(view -> {
             Intent intent = new Intent(SignUpActivity.this, SignInActivity.class);
             startActivity(intent);
         });
     }
-    @SuppressLint("ClickableViewAccessibility")
-    private void setupPasswordField() {
-        edtMKhau.setOnTouchListener((v, event) -> {
-            // Kiểm tra xem người dùng có nhấn vào drawableEnd không
-            if (event.getAction() == MotionEvent.ACTION_UP) {
-                if (event.getRawX() >= (edtMKhau.getRight() - edtMKhau.getCompoundDrawables()[2].getBounds().width())) {
-                    // Thay đổi trạng thái hiển thị mật khẩu
-                    if (isPasswordVisible) {
-                        // Ẩn mật khẩu
-                        edtMKhau.setTransformationMethod(PasswordTransformationMethod.getInstance());
-                        edtMKhau.setCompoundDrawablesWithIntrinsicBounds(
-                                R.drawable.icon_pass, 0, R.drawable.icon_visibility_off, 0);
-                    } else {
-                        // Hiện mật khẩu
-                        edtMKhau.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
-                        edtMKhau.setCompoundDrawablesWithIntrinsicBounds(
-                                R.drawable.icon_pass, 0, R.drawable.icon_visibility, 0);
-                    }
-                    isPasswordVisible = !isPasswordVisible;
-
-                    // Đặt con trỏ ở cuối văn bản
-                    edtMKhau.setSelection(edtMKhau.getText().length());
-                    return true;
-                }
-            }
-            return false;
-        });
-
-        // Theo dõi thay đổi văn bản
-        edtMKhau.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                // Không cần xử lý
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                // Kiểm tra nếu mật khẩu đang hiển thị và người dùng nhập thêm ký tự
-                if (isPasswordVisible) {
-                    // Tự động chuyển về chế độ ẩn mật khẩu
-                    edtMKhau.setTransformationMethod(PasswordTransformationMethod.getInstance());
-                    edtMKhau.setCompoundDrawablesWithIntrinsicBounds(
-                            R.drawable.icon_pass, 0, R.drawable.icon_visibility_off, 0);
-                    isPasswordVisible = false;
-
-                    // Đặt con trỏ ở cuối văn bản
-                    edtMKhau.setSelection(edtMKhau.getText().length());
-                }
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                // Không cần xử lý
-            }
-        });
+    private void saveOtpId(String otpID) {
+        SharedPreferences sharedPreferences = getSharedPreferences("MyAppPrefs", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("otpID", otpID);
+        editor.apply();
     }
+    @SuppressLint("ClickableViewAccessibility")
+//    private void setupPasswordField() {
+//        edtMKhau.setOnTouchListener((v, event) -> {
+//            // Kiểm tra xem người dùng có nhấn vào drawableEnd không
+//            if (event.getAction() == MotionEvent.ACTION_UP) {
+//                if (event.getRawX() >= (edtMKhau.getRight() - edtMKhau.getCompoundDrawables()[2].getBounds().width())) {
+//                    // Thay đổi trạng thái hiển thị mật khẩu
+//                    if (isPasswordVisible) {
+//                        // Ẩn mật khẩu
+//                        edtMKhau.setTransformationMethod(PasswordTransformationMethod.getInstance());
+//                        edtMKhau.setCompoundDrawablesWithIntrinsicBounds(
+//                                R.drawable.icon_pass, 0, R.drawable.icon_visibility_off, 0);
+//                    } else {
+//                        // Hiện mật khẩu
+//                        edtMKhau.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
+//                        edtMKhau.setCompoundDrawablesWithIntrinsicBounds(
+//                                R.drawable.icon_pass, 0, R.drawable.icon_visibility, 0);
+//                    }
+//                    isPasswordVisible = !isPasswordVisible;
+//
+//                    // Đặt con trỏ ở cuối văn bản
+//                    edtMKhau.setSelection(edtMKhau.getText().length());
+//                    return true;
+//                }
+//            }
+//            return false;
+//        });
+//
+//        // Theo dõi thay đổi văn bản
+//        edtMKhau.addTextChangedListener(new TextWatcher() {
+//            @Override
+//            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+//                // Không cần xử lý
+//            }
+//
+//            @Override
+//            public void onTextChanged(CharSequence s, int start, int before, int count) {
+//                // Kiểm tra nếu mật khẩu đang hiển thị và người dùng nhập thêm ký tự
+//                if (isPasswordVisible) {
+//                    // Tự động chuyển về chế độ ẩn mật khẩu
+//                    edtMKhau.setTransformationMethod(PasswordTransformationMethod.getInstance());
+//                    edtMKhau.setCompoundDrawablesWithIntrinsicBounds(
+//                            R.drawable.icon_pass, 0, R.drawable.icon_visibility_off, 0);
+//                    isPasswordVisible = false;
+//
+//                    // Đặt con trỏ ở cuối văn bản
+//                    edtMKhau.setSelection(edtMKhau.getText().length());
+//                }
+//            }
+//
+//            @Override
+//            public void afterTextChanged(Editable s) {
+//                // Không cần xử lý
+//            }
+//        });
+//    }
     @Override
     protected void onStart() {
         super.onStart();
@@ -191,8 +210,7 @@ public class SignUpActivity extends AppCompatActivity {
     private void AnhXa() {
         edtEmail = findViewById(R.id.edtEmail);
         edtName = findViewById(R.id.edtTen);
-        edtPhone = findViewById(R.id.edtSdt);
-        edtMKhau = findViewById(R.id.edtMKhau);
+        edtMKhau1= findViewById(R.id.edtMKhau);
         cbCheck = findViewById(R.id.cbCheck);
         btnUp = findViewById(R.id.btnUp);
         btnIn = findViewById(R.id.btnIn);

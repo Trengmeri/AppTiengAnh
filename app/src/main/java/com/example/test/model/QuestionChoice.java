@@ -5,7 +5,7 @@ public class QuestionChoice {
     private String choiceContent;
     private boolean choiceKey;
 
-    // Getters and setters
+    // Getters and Setters
     public int getId() {
         return id;
     }

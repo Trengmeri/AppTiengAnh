@@ -67,22 +67,22 @@
         android:id="@+id/tvQuestion"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="48dp"
+        android:layout_marginTop="40dp"
         android:drawableStart="@drawable/jam_write"
         android:text="@string/fill_blank"
-        android:textSize="24sp"
+        android:textSize="22sp"
         android:textStyle="bold" />
 
     <TextView
         android:id="@+id/tvContent"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="80dp"
+        android:layout_marginTop="60dp"
         android:padding="10dp"
         android:text=""
         android:textSize="18sp"
         android:textStyle="bold" />
-    <!--        android:text="@string/question_grammar_1"-->
+
     <GridLayout
         android:id="@+id/gridLayout"
         android:layout_width="match_parent"
@@ -93,47 +93,51 @@
         android:padding="10dp"
         android:gravity="center">
 
-        <Button
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btnOption1"
+            style="@style/Text_Button_All"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_columnWeight="1"
             android:layout_margin="8dp"
+            android:background="@drawable/button_background"
             android:text=""
-            android:backgroundTint="#FADAC1"
             android:textColor="@color/black"/>
 <!--            android:text="computer" />-->
 
-        <Button
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btnOption2"
+            style="@style/Text_Button_All"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_columnWeight="1"
             android:layout_margin="8dp"
             android:text=""
-            android:backgroundTint="#FADAC1"
+            android:background="@drawable/button_background"
             android:textColor="@color/black"/>
 <!--            android:text="internet" />-->
 
-        <Button
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btnOption3"
+            style="@style/Text_Button_All"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_columnWeight="1"
             android:layout_margin="8dp"
             android:text=""
-            android:backgroundTint="#FADAC1"
+            android:background="@drawable/button_background"
             android:textColor="@color/black"/>
 <!--            android:text="database" />-->
 
-        <Button
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btnOption4"
+            style="@style/Text_Button_All"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_columnWeight="1"
             android:layout_margin="8dp"
             android:text=""
-            android:backgroundTint="#FADAC1"
+            android:background="@drawable/button_background"
             android:textColor="@color/black"/>
 <!--            android:text="operator" />-->
     </GridLayout>

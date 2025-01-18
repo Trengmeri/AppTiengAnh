@@ -10,11 +10,14 @@ import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
+import java.util.List;
+
 public class PopupHelper {
 
-    public static void showResultPopup(View anchorView, String userAnswer, String correctAnswer, Runnable onNextQuestion) {
-        boolean isCorrect = userAnswer.equalsIgnoreCase(correctAnswer);
-
+    public static void showResultPopup(View anchorView, String userAnswer, List<String> correctAnswers, Runnable onNextQuestion) {
+        //boolean isCorrect = userAnswer.equalsIgnoreCase(correctAnswer);
+        boolean isCorrect = correctAnswers.stream()
+                .anyMatch(answer -> answer.equalsIgnoreCase(userAnswer));
         // Tạo pop-up
         View popupView = LayoutInflater.from(anchorView.getContext()).inflate(R.layout.popup_result, null);
         PopupWindow popupWindow = new PopupWindow(popupView,
@@ -28,15 +31,16 @@ public class PopupHelper {
         if (isCorrect) {
             tvMessage.setText("That's right!\nAnswer:");
             tvMessage.setTextColor(anchorView.getResources().getColor(android.R.color.holo_green_dark));
-            tvDetail.setText(correctAnswer);
+            String correctAnswerText = String.join(", ", correctAnswers);
+            tvDetail.setText(correctAnswerText);
             popupView.setBackgroundResource(R.drawable.popup_background_correct);
         } else {
             tvMessage.setText("Oops... That's not the answer.\nCorrect answer:");
             tvMessage.setTextColor(anchorView.getResources().getColor(android.R.color.holo_red_dark));
-            tvDetail.setText(correctAnswer);
+            String correctAnswerText = String.join(", ", correctAnswers);
+            tvDetail.setText(correctAnswerText);
             popupView.setBackgroundResource(R.drawable.popup_background_incorrect);
         }
-
         btnNext.setOnClickListener(v -> {
             popupWindow.dismiss(); // Đóng popup
             onNextQuestion.run();

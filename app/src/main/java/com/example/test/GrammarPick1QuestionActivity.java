@@ -7,25 +7,31 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatButton;
 
 import com.example.test.model.Question;
-import com.example.test.model.Choice;
+import com.example.test.model.QuestionChoice;
+import com.example.test.model.QuestionChoice;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class GrammarPick1QuestionActivity extends AppCompatActivity {
-    private String correctAnswer = ""; // Giả sử dữ liệu đúng từ backend
+    List<String> correctAnswers = new ArrayList<>(); // Giả sử dữ liệu đúng từ backend
     private String userAnswer = ""; // Đáp án mà người dùng chọn
     private int currentStep = 0; // Bước hiện tại (bắt đầu từ 0)
     private int totalSteps = 5; // Tổng số bước trong thanh tiến trình
-    private Button selectedAnswer = null;
-    private Button btnAnswer1, btnAnswer2, btnAnswer3, btnAnswer4, btnCheckAnswer;
+    private AppCompatButton selectedAnswer = null;
+    private AppCompatButton btnAnswer1, btnAnswer2, btnAnswer3, btnAnswer4;
+    private Button  btnCheckAnswer;
     ApiManager apiManager;
     TextView tvContent;
     NetworkChangeReceiver networkReceiver;
@@ -53,9 +59,8 @@ public class GrammarPick1QuestionActivity extends AppCompatActivity {
                 Toast.makeText(GrammarPick1QuestionActivity.this, "Vui lòng trả lời câu hỏi!", Toast.LENGTH_SHORT)
                         .show();
             } else {
-                // boolean isCorrect = userAnswer.equals(correctAnswer);
                 // Hiển thị popup
-                PopupHelper.showResultPopup(findViewById(R.id.popupContainer), userAnswer, correctAnswer, () -> {
+                PopupHelper.showResultPopup(findViewById(R.id.popupContainer), userAnswer, correctAnswers, () -> {
                     // Callback khi nhấn Next Question trên popup
                     resetAnswerColors();
                     currentStep++;
@@ -100,9 +105,9 @@ public class GrammarPick1QuestionActivity extends AppCompatActivity {
                         Log.d("GrammarPick1QuestionActivity", "Câu hỏi: " + questionContent);
 
                         // Lấy danh sách lựa chọn
-                        List<Choice> choices = question.getQuestionChoices();
+                        List<QuestionChoice> choices = question.getQuestionChoices();
                         if (choices != null && !choices.isEmpty()) {
-                            for (Choice choice : choices) {
+                            for (QuestionChoice choice : choices) {
                                 Log.d("GrammarPick1QuestionActivity", "Lựa chọn: " + choice.getChoiceContent() +
                                         " (Đáp án đúng: " + choice.isChoiceKey() + ")");
                             }
@@ -114,11 +119,22 @@ public class GrammarPick1QuestionActivity extends AppCompatActivity {
                                 btnAnswer2.setText(choices.get(1).getChoiceContent());
                                 btnAnswer3.setText(choices.get(2).getChoiceContent());
                                 btnAnswer4.setText(choices.get(3).getChoiceContent());
-                                correctAnswer = choices.stream()
-                                        .filter(Choice::isChoiceKey)
-                                        .findFirst()
-                                        .map(Choice::getChoiceContent)
-                                        .orElse(""); // Lấy đáp án đúng
+//                                correctAnswers = choices.stream()
+//                                        .filter(QuestionChoice::isChoiceKey)
+//                                        .findFirst()
+//                                        .map(QuestionChoice::getChoiceContent)
+//                                        .orElse(""); // Lấy đáp án đúng
+                                 correctAnswers = choices.stream()
+                                        .filter(QuestionChoice::isChoiceKey) // Lọc ra các đáp án đúng
+                                        .map(QuestionChoice::getChoiceContent) // Chuyển đổi thành nội dung đáp án
+                                        .collect(Collectors.toList());
+
+                                // Trong trường hợp có một đáp án đúng, correctAnswers chỉ chứa một phần tử
+//                                if (!correctAnswers.isEmpty()) {
+//                                    // Hiển thị đáp án đúng đầu tiên (hoặc hiển thị tất cả nếu có nhiều đáp án đúng)
+//                                    String correctAnswer = correctAnswers.get(0);
+//                                    Log.d("GrammarPick1QuestionActivity", "Đáp án đúng: " + correctAnswer);
+//                                }
                             });
                         } else {
                             Log.e("GrammarPick1QuestionActivity", "Câu hỏi không có lựa chọn.");
@@ -135,9 +151,10 @@ public class GrammarPick1QuestionActivity extends AppCompatActivity {
                 }
 
                 @Override
-                public void onSuccess(String token) {
-                    // Nếu cần xử lý token, thêm logic ở đây
+                public void onSuccessWithOtpID(String otpID) {
+
                 }
+
 
                 @Override
                 public void onSuccess() {
@@ -155,15 +172,15 @@ public class GrammarPick1QuestionActivity extends AppCompatActivity {
             public void onClick(View view) {
                 // Nếu có đáp án đã được chọn trước đó, gỡ màu
                 if (selectedAnswer != null) {
-                    selectedAnswer.setBackgroundColor(Color.TRANSPARENT); // Hoặc màu nền mặc định
+                    selectedAnswer.setBackgroundResource(R.drawable.bg_answer); // Hoặc màu nền mặc định
                 }
 
                 // Đặt màu cho đáp án được chọn
-                view.setBackgroundColor(Color.parseColor("#C4865E")); // Màu bạn muốn áp dụng
+                view.setBackgroundResource(R.drawable.bg_answer_pressed); // Màu bạn muốn áp dụng
 
                 // Cập nhật biến selectedAnswer
-                selectedAnswer = (Button) view;
-                userAnswer = ((Button) view).getText().toString();
+                selectedAnswer = (AppCompatButton) view;
+                userAnswer = selectedAnswer.getText().toString();
             }
         };
 
@@ -176,9 +193,10 @@ public class GrammarPick1QuestionActivity extends AppCompatActivity {
 
     private void resetAnswerColors() {
         // Đặt lại màu nền cho tất cả các đáp án về màu mặc định
-        btnAnswer1.setBackgroundColor(Color.TRANSPARENT);
-        btnAnswer2.setBackgroundColor(Color.TRANSPARENT);
-        btnAnswer3.setBackgroundColor(Color.TRANSPARENT);
-        btnAnswer4.setBackgroundColor(Color.TRANSPARENT);
+        btnAnswer1.setBackgroundResource(R.drawable.bg_answer);
+        btnAnswer2.setBackgroundResource(R.drawable.bg_answer);
+        btnAnswer3.setBackgroundResource(R.drawable.bg_answer);
+        btnAnswer4.setBackgroundResource(R.drawable.bg_answer);
+
     }
 }

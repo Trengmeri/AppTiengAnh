@@ -5,23 +5,22 @@ import com.google.gson.annotations.SerializedName;
 import java.util.List;
 
 public class Question {
-
-    @SerializedName("id")
     private int id;
-
-    @SerializedName("quesContent")
     private String quesContent;
-
-    @SerializedName("quesType")
+    private String keyword;
     private String quesType;
-
-    @SerializedName("point")
+    private String skillType;
     private int point;
+    private String createBy;
+    private String createAt;
+    private String updateBy;
+    private String updateAt;
+    private List<Answer> answers;
+    private List<LessonQuestion> lessonQuestions;
+    private List<QuestionChoice> questionChoices;
+    private Object learningMaterial;
 
-    @SerializedName("questionChoices")
-    private List<Choice> questionChoices;
-
-    // Getters và Setters
+    // Getters and Setters
     public int getId() {
         return id;
     }
@@ -38,12 +37,28 @@ public class Question {
         this.quesContent = quesContent;
     }
 
+    public String getKeyword() {
+        return keyword;
+    }
+
+    public void setKeyword(String keyword) {
+        this.keyword = keyword;
+    }
+
     public String getQuesType() {
         return quesType;
     }
 
     public void setQuesType(String quesType) {
         this.quesType = quesType;
+    }
+
+    public String getSkillType() {
+        return skillType;
+    }
+
+    public void setSkillType(String skillType) {
+        this.skillType = skillType;
     }
 
     public int getPoint() {
@@ -54,11 +69,67 @@ public class Question {
         this.point = point;
     }
 
-    public List<Choice> getQuestionChoices() {
+    public String getCreateBy() {
+        return createBy;
+    }
+
+    public void setCreateBy(String createBy) {
+        this.createBy = createBy;
+    }
+
+    public String getCreateAt() {
+        return createAt;
+    }
+
+    public void setCreateAt(String createAt) {
+        this.createAt = createAt;
+    }
+
+    public String getUpdateBy() {
+        return updateBy;
+    }
+
+    public void setUpdateBy(String updateBy) {
+        this.updateBy = updateBy;
+    }
+
+    public String getUpdateAt() {
+        return updateAt;
+    }
+
+    public void setUpdateAt(String updateAt) {
+        this.updateAt = updateAt;
+    }
+
+    public List<Answer> getAnswers() {
+        return answers;
+    }
+
+    public void setAnswers(List<Answer> answers) {
+        this.answers = answers;
+    }
+
+    public List<LessonQuestion> getLessonQuestions() {
+        return lessonQuestions;
+    }
+
+    public void setLessonQuestions(List<LessonQuestion> lessonQuestions) {
+        this.lessonQuestions = lessonQuestions;
+    }
+
+    public List<QuestionChoice> getQuestionChoices() {
         return questionChoices;
     }
 
-    public void setQuestionChoices(List<Choice> questionChoices) {
+    public void setQuestionChoices(List<QuestionChoice> questionChoices) {
         this.questionChoices = questionChoices;
+    }
+
+    public Object getLearningMaterial() {
+        return learningMaterial;
+    }
+
+    public void setLearningMaterial(Object learningMaterial) {
+        this.learningMaterial = learningMaterial;
     }
 }
