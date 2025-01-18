@@ -1,9 +1,8 @@
-package com.example.test;
+package com.example.test.activity;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.text.Editable;
@@ -21,6 +20,12 @@ import android.widget.Toast;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.test.NetworkChangeReceiver;
+import com.example.test.R;
+import com.example.test.api.ApiCallback;
+import com.example.test.api.ApiManager;
+import com.example.test.model.Course;
+import com.example.test.model.Lesson;
 import com.example.test.model.Question;
 
 import java.util.regex.Matcher;
@@ -66,7 +71,7 @@ public class SignInActivity extends AppCompatActivity {
                             }
                         });
 
-                        Intent intent = new Intent(SignInActivity.this, ChooseFieldsActivity.class);
+                        Intent intent = new Intent(SignInActivity.this, HomeActivity.class);
                         startActivity(intent); // Chuyển hướng đến Home Activity
                     }
 
@@ -74,6 +79,11 @@ public class SignInActivity extends AppCompatActivity {
                     public void onSuccess(Question question) {
 
                     }
+                    @Override
+                    public void onSuccess(Lesson lesson) {}
+                    @Override
+                    public void onSuccess(Course course) {}
+
                     @Override
                     public void onFailure(String errorMessage) {
                         runOnUiThread(new Runnable() {

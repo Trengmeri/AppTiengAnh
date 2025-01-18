@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#4E4C6C"
-    tools:context=".SetUpAccountActivity">
+    tools:context=".activity.SetUpAccountActivity">
 
     <!-- Card View -->
     <androidx.cardview.widget.CardView

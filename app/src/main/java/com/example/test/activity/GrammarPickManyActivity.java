@@ -1,4 +1,4 @@
-package com.example.test;
+package com.example.test.activity;
 
 import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
@@ -8,22 +8,26 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.CheckBox;
+
 import androidx.appcompat.widget.AppCompatButton;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.test.NetworkChangeReceiver;
+import com.example.test.PopupHelper;
+import com.example.test.R;
+import com.example.test.api.ApiCallback;
+import com.example.test.api.ApiManager;
+import com.example.test.model.Course;
+import com.example.test.model.Lesson;
 import com.example.test.model.Question;
 import com.example.test.model.QuestionChoice;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public class GrammarPickManyActivity extends AppCompatActivity {
     List<String> correctAnswers = new ArrayList<>(); // Đáp án đúng
@@ -159,6 +163,10 @@ public class GrammarPickManyActivity extends AppCompatActivity {
                     Log.e("GrammarPickManyQuestionActivity", "Câu hỏi trả về là null.");
                 }
             }
+            @Override
+            public void onSuccess(Lesson lesson) {}
+            @Override
+            public void onSuccess(Course course) {}
 
             @Override
             public void onFailure(String errorMessage) {

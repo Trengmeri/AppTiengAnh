@@ -1,4 +1,4 @@
-package com.example.test;
+package com.example.test.activity;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -16,6 +16,8 @@ import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.test.R;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

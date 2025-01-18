@@ -61,16 +61,26 @@
                     android:textSize="18sp"
                     android:textStyle="bold"/>
             </LinearLayout>
+
         </LinearLayout>
 
         <Button
             android:id="@+id/btn_continue"
             android:layout_width="wrap_content"
-            android:layout_margin="20dp"
             android:layout_height="wrap_content"
             android:text="@string/btn_continute"
             android:backgroundTint="@color/cotinute"/>
+
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/courseTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/black"
+        android:textStyle="bold"
+        android:textSize="20dp"
+        android:gravity="center"/>
 
     <ScrollView
         android:layout_width="match_parent"
@@ -83,79 +93,13 @@
             android:background="@drawable/back_home"
             android:orientation="vertical">
 
-            <!-- Thêm các TextView hoặc các thành phần khác ở đây -->
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Lesson 1 - Can you hear the difference between met  mate"
-                android:padding="16dp"/>
 
-            <TextView
+            <LinearLayout
+                android:id="@+id/lessonsContainer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Lesson 2 - Social life words"
-                android:padding="16dp"/>
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Lesson 3 - Social life phrases"
-                android:padding="16dp"/>
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Lesson 4 - Stress these words: roommate, everyone, understand"
-                android:padding="16dp"/>
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Lesson 5 - Social life sentences"
-                android:padding="16dp"/>
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Lesson 6 - Reconnecting with friends"
-                android:padding="16dp"/>
-
-            <!-- Thêm các TextView hoặc các thành phần khác ở đây -->
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Lesson 1 - Can you hear the difference between met  mate"
-                android:padding="16dp"/>
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Lesson 2 - Social life words"
-                android:padding="16dp"/>
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Lesson 3 - Social life phrases"
-                android:padding="16dp"/>
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Lesson 4 - Stress these words: roommate, everyone, understand"
-                android:padding="16dp"/>
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Lesson 5 - Social life sentences"
-                android:padding="16dp"/>
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Lesson 6 - Reconnecting with friends"
-                android:padding="16dp"/>
+                android:orientation="vertical">
+            </LinearLayout>
 
         </LinearLayout>
 

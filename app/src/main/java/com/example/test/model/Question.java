@@ -1,7 +1,5 @@
 package com.example.test.model;
 
-import com.google.gson.annotations.SerializedName;
-
 import java.util.List;
 
 public class Question {
@@ -16,7 +14,7 @@ public class Question {
     private String updateBy;
     private String updateAt;
     private List<Answer> answers;
-    private List<LessonQuestion> lessonQuestions;
+    private List<Lesson> lessonQuestions;
     private List<QuestionChoice> questionChoices;
     private Object learningMaterial;
 
@@ -109,11 +107,11 @@ public class Question {
         this.answers = answers;
     }
 
-    public List<LessonQuestion> getLessonQuestions() {
+    public List<Lesson> getLessonQuestions() {
         return lessonQuestions;
     }
 
-    public void setLessonQuestions(List<LessonQuestion> lessonQuestions) {
+    public void setLessonQuestions(List<Lesson> lessonQuestions) {
         this.lessonQuestions = lessonQuestions;
     }
 

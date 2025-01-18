@@ -1,10 +1,14 @@
-package com.example.test;
+package com.example.test.api;
 
+import com.example.test.model.Course;
+import com.example.test.model.Lesson;
 import com.example.test.model.Question;
 
 public interface ApiCallback {
     void onSuccess();
     void onSuccess(Question question);
+    void onSuccess(Lesson lesson);
+    void onSuccess(Course course);
     void onFailure(String errorMessage);
     void onSuccessWithOtpID(String otpID);
    // void onSuccess(String token);

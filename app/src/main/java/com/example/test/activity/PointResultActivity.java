@@ -1,4 +1,4 @@
-package com.example.test;
+package com.example.test.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -7,11 +7,9 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
+
+import com.example.test.R;
 
 public class PointResultActivity extends AppCompatActivity {
     private TextView timeTextView, pointTextView;

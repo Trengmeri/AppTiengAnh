@@ -1,11 +1,10 @@
-package com.example.test;
+package com.example.test.activity;
 
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -18,9 +17,14 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.example.test.R;
+import com.example.test.api.ApiCallback;
+import com.example.test.api.ApiManager;
+import com.example.test.model.Course;
+import com.example.test.model.Lesson;
 import com.example.test.model.Question;
 
-public class ConfirmCode2Activity extends AppCompatActivity {
+public class ConfirmCodeActivity extends AppCompatActivity {
 
     private EditText[] codeInputs; // Mảng chứa các ô nhập mã
     private int currentInputIndex = 0; // Vị trí hiện tại của con trỏ nhập liệu
@@ -34,7 +38,7 @@ public class ConfirmCode2Activity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_confirm_code2);
+        setContentView(R.layout.activity_confirm_code);
 
         // Áp dụng padding cho giao diện
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
@@ -42,14 +46,8 @@ public class ConfirmCode2Activity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-        //email = getIntent().getStringExtra("email");
-//        SharedPreferences sharedPreferences = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
-//        String email = sharedPreferences.getString("email", null);
-//        if (email != null) {
-//            Log.d("ConfirmCode", "Email lấy từ SharedPreferences: " + email);
-//        } else {
-//            Log.e("ConfirmCode", "Email không tồn tại trong SharedPreferences");
-//        }
+        SharedPreferences sharedPreferences = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
+        String email = sharedPreferences.getString("email", null);
         // Ánh xạ các ô nhập mã
         codeInputs = new EditText[]{
                 findViewById(R.id.editText1),
@@ -69,7 +67,7 @@ public class ConfirmCode2Activity extends AppCompatActivity {
 
         // Nút quay lại
         icback.setOnClickListener(view -> {
-            Intent intent = new Intent(ConfirmCode2Activity.this, ForgotPassWordActivity.class);
+            Intent intent = new Intent(ConfirmCodeActivity.this, ForgotPassWordActivity.class);
             startActivity(intent);
         });
 
@@ -118,53 +116,47 @@ public class ConfirmCode2Activity extends AppCompatActivity {
         });
 
         // Lắng nghe sự kiện nhập mã vào ô cuối cùng
-
         codeInputs[5].addTextChangedListener(new android.text.TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) {}
 
             @Override
             public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
-                if (charSequence.length() == 1) {
-                    String otpID = getOtpIdFromPreferences();// Khi người dùng nhập vào ô cuối cùng
+                if (charSequence.length() == 1) {// Khi người dùng nhập vào ô cuối cùng
+                    String otpID = getOtpIdFromPreferences();
                     String code = getCode(); // Lấy mã đã nhập
                     // Gọi API xác nhận mã OTP
                     ApiManager apiManager = new ApiManager();
-//                    SharedPreferences sharedPreferences = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
-//                    String email = sharedPreferences.getString("email", null);
-//                    if (email != null) {
-//                        Log.d("ConfirmCode", "Email lấy từ SharedPreferences: " + email);
-//                    } else {
-//                        Log.e("ConfirmCode", "Email không tồn tại trong SharedPreferences");
-//                    }
                     apiManager.sendConfirmCodeRequest(otpID,code, new ApiCallback() {
                         @Override
                         public void onSuccess() {
-                            // Chuyển đến Activity tiếp theo nếu mã đúng
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    Toast.makeText(ConfirmCode2Activity.this, "OTP correct!", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(ConfirmCodeActivity.this, "OTP correct!", Toast.LENGTH_SHORT).show();
                                 }
                             });
                             clearOtpId();
-                            Intent intent = new Intent(ConfirmCode2Activity.this, SetUpAccountActivity.class);
+                            // Chuyển đến Activity tiếp theo nếu mã đúng
+                            Intent intent = new Intent(ConfirmCodeActivity.this, SetUpAccountActivity.class);
                             startActivity(intent);
-                            finish();
                         }
 
                         @Override
                         public void onSuccess(Question question) {
 
                         }
+                        @Override
+                        public void onSuccess(Lesson lesson) {}
+                        @Override
+                        public void onSuccess(Course course) {}
 
                         @Override
                         public void onFailure(String errorMessage) {
-                            // Hiển thị thông báo lỗi nếu mã sai
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    Toast.makeText(ConfirmCode2Activity.this, errorMessage, Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(ConfirmCodeActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
                                 }
                             });
                         }
@@ -182,12 +174,12 @@ public class ConfirmCode2Activity extends AppCompatActivity {
             public void afterTextChanged(android.text.Editable editable) {}
         });
     }
+
     // Lấy otpID từ SharedPreferences
     private String getOtpIdFromPreferences() {
         SharedPreferences sharedPreferences = getSharedPreferences("MyAppPrefs", MODE_PRIVATE);
         return sharedPreferences.getString("otpID", null); // Trả về giá trị otpID hoặc null nếu không tồn tại
     }
-
     // Xóa otpID khỏi SharedPreferences
     private void clearOtpId() {
         SharedPreferences sharedPreferences = this.getSharedPreferences("MyAppPrefs", Context.MODE_PRIVATE);
@@ -195,7 +187,6 @@ public class ConfirmCode2Activity extends AppCompatActivity {
         editor.remove("otpID");
         editor.apply();
     }
-
     // Phương thức để lấy mã đã nhập
     private String getCode() {
         StringBuilder code = new StringBuilder();
@@ -227,7 +218,7 @@ public class ConfirmCode2Activity extends AppCompatActivity {
 
     private void onCountdownFinished() {
         // Hành động khi đếm ngược kết thúc
-        Toast.makeText(ConfirmCode2Activity.this, "Vui lòng nhấn gửi lại mã!", Toast.LENGTH_SHORT).show(); // Hiển thị thông báo hoặc xử lý logic khác
+        Toast.makeText(ConfirmCodeActivity.this, "Vui lòng nhấn gửi lại mã!", Toast.LENGTH_SHORT).show(); // Hiển thị thông báo hoặc xử lý logic khác
     }
 
     @Override

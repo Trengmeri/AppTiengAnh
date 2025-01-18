@@ -1,4 +1,4 @@
-package com.example.test;
+package com.example.test.activity;
 
 import android.Manifest;
 import android.animation.ObjectAnimator;
@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.os.Bundle;
-import android.speech.RecognitionListener;
 import android.util.Log;
 import android.view.View;
 import android.widget.*;
@@ -15,7 +14,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import com.example.test.PopupHelper;
+import com.example.test.R;
+import com.example.test.SpeechRecognitionCallback;
+import com.example.test.SpeechRecognitionHelper;
+
 import java.util.ArrayList;
+import java.util.List;
 
 public class RecordQuestionActivity extends AppCompatActivity implements SpeechRecognitionCallback {
 
@@ -25,7 +30,7 @@ public class RecordQuestionActivity extends AppCompatActivity implements SpeechR
     private TextView tvTranscription;
     private SpeechRecognitionHelper speechRecognitionHelper;
 
-    private String correctAnswer = "u i a fein"; // Đáp án đúng
+    List<String> correctAnswers = new ArrayList<>();
     String userAnswer = "";
     private int currentStep = 0; // Bước hiện tại (bắt đầu từ 0)
     private int totalSteps = 5; // Tổng số bước trong thanh tiến trình
@@ -69,7 +74,7 @@ public class RecordQuestionActivity extends AppCompatActivity implements SpeechR
                 Toast.makeText(RecordQuestionActivity.this, "Vui lòng trả lời câu hỏi!", Toast.LENGTH_SHORT).show();
             } else {
                 // Truyền view cụ thể vào PopupHelper
-                PopupHelper.showResultPopup(findViewById(R.id.popupContainer), userAnswer, correctAnswer, () -> {
+                PopupHelper.showResultPopup(findViewById(R.id.popupContainer), userAnswer, correctAnswers, () -> {
                     // Callback khi nhấn Next Question trên popup
                     updateProgressBar(progressBar, currentStep);
                     currentStep++; // Cập nhật thanh tiến trình

@@ -4,7 +4,7 @@
     android:background="@color/none"
     android:padding="16dp"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".PointResultActivity">
+    tools:context=".activity.PointResultActivity">
 
     <LinearLayout
         android:layout_width="match_parent"

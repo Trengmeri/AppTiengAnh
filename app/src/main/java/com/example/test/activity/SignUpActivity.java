@@ -1,18 +1,11 @@
-package com.example.test;
+package com.example.test.activity;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.text.method.HideReturnsTransformationMethod;
-import android.text.method.PasswordTransformationMethod;
-import android.util.Log;
-import android.view.MotionEvent;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -22,6 +15,12 @@ import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
+import com.example.test.NetworkChangeReceiver;
+import com.example.test.R;
+import com.example.test.api.ApiCallback;
+import com.example.test.api.ApiManager;
+import com.example.test.model.Course;
+import com.example.test.model.Lesson;
 import com.example.test.model.Question;
 
 import java.util.regex.Matcher;
@@ -84,6 +83,10 @@ public class SignUpActivity extends AppCompatActivity {
                     public void onSuccess(Question question) {
 
                     }
+                    @Override
+                    public void onSuccess(Lesson lesson) {}
+                    @Override
+                    public void onSuccess(Course course) {}
 
                     @Override
                     public void onFailure(String errorMessage) {

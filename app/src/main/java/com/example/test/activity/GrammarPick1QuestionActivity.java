@@ -1,4 +1,4 @@
-package com.example.test;
+package com.example.test.activity;
 
 import android.animation.ObjectAnimator;
 import android.content.Intent;
@@ -7,17 +7,21 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 
+import com.example.test.NetworkChangeReceiver;
+import com.example.test.PopupHelper;
+import com.example.test.R;
+import com.example.test.api.ApiCallback;
+import com.example.test.api.ApiManager;
+import com.example.test.model.Course;
+import com.example.test.model.Lesson;
 import com.example.test.model.Question;
-import com.example.test.model.QuestionChoice;
 import com.example.test.model.QuestionChoice;
 
 import java.util.ArrayList;
@@ -143,6 +147,10 @@ public class GrammarPick1QuestionActivity extends AppCompatActivity {
                         Log.e("GrammarPick1QuestionActivity", "Câu hỏi trả về là null.");
                     }
                 }
+                @Override
+                public void onSuccess(Lesson lesson) {}
+                @Override
+                public void onSuccess(Course course) {}
 
                 @Override
                 public void onFailure(String errorMessage) {
