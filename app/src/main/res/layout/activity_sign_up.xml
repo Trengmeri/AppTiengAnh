@@ -27,11 +27,13 @@
         android:layout_height="wrap_content"
         android:background="@drawable/ellipse_4"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0" />
+        app:layout_constraintHorizontal_bias="1.0"
+        tools:ignore="MissingConstraints" />
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        tools:ignore="MissingConstraints">
         <TextView
             android:id="@+id/txtTitle"
             android:layout_width="match_parent"
@@ -115,24 +117,6 @@
 
                     </LinearLayout>
                     <LinearLayout
-                        android:id="@+id/linearLayout1"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="12dp"
-                        android:background="@drawable/rounded_corner"
-                        android:orientation="horizontal"
-                        android:padding="12dp">
-                        <EditText
-                            android:id="@+id/edtSdt"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="Phone"
-                            android:inputType="text"
-                            android:drawableStart="@drawable/icon_call"
-                            android:drawablePadding="8dp"/>
-
-                    </LinearLayout>
-                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_margin="12dp"
@@ -209,7 +193,7 @@
                             android:id="@+id/imageView6"
                             android:layout_width="wrap_content"
                             android:layout_height="74dp"
-                            android:layout_marginLeft="30dp"
+                            android:layout_marginLeft="25dp"
                             android:background="@drawable/icon_gg" />
                     </LinearLayout>
                 </LinearLayout>

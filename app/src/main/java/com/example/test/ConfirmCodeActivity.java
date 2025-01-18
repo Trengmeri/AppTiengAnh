@@ -28,7 +28,7 @@ public class ConfirmCodeActivity extends AppCompatActivity {
     private TextView tvCountdown; // TextView hiển thị thời gian đếm ngược
     private static final long COUNTDOWN_TIME = 60000; // 60 giây
     private CountDownTimer countDownTimer;
-    private String email;
+    private String otpID;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -117,13 +117,21 @@ public class ConfirmCodeActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
-                if (charSequence.length() == 1) { // Khi người dùng nhập vào ô cuối cùng
+                if (charSequence.length() == 1) {// Khi người dùng nhập vào ô cuối cùng
+                    String otpID = getOtpIdFromPreferences();
                     String code = getCode(); // Lấy mã đã nhập
                     // Gọi API xác nhận mã OTP
                     ApiManager apiManager = new ApiManager();
-                    apiManager.sendConfirmCodeRequest(email,code, new ApiCallback() {
+                    apiManager.sendConfirmCodeRequest(otpID,code, new ApiCallback() {
                         @Override
                         public void onSuccess() {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(ConfirmCodeActivity.this, "OTP correct!", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                            clearOtpId();
                             // Chuyển đến Activity tiếp theo nếu mã đúng
                             Intent intent = new Intent(ConfirmCodeActivity.this, SetUpAccountActivity.class);
                             startActivity(intent);
@@ -136,14 +144,19 @@ public class ConfirmCodeActivity extends AppCompatActivity {
 
                         @Override
                         public void onFailure(String errorMessage) {
-                            // Hiển thị thông báo lỗi nếu mã sai
-                            Toast.makeText(ConfirmCodeActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(ConfirmCodeActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
+                                }
+                            });
                         }
 
                         @Override
-                        public void onSuccess(String token) {
+                        public void onSuccessWithOtpID(String otpID) {
 
                         }
+
                     });
                 }
             }
@@ -153,7 +166,18 @@ public class ConfirmCodeActivity extends AppCompatActivity {
         });
     }
 
-
+    // Lấy otpID từ SharedPreferences
+    private String getOtpIdFromPreferences() {
+        SharedPreferences sharedPreferences = getSharedPreferences("MyAppPrefs", MODE_PRIVATE);
+        return sharedPreferences.getString("otpID", null); // Trả về giá trị otpID hoặc null nếu không tồn tại
+    }
+    // Xóa otpID khỏi SharedPreferences
+    private void clearOtpId() {
+        SharedPreferences sharedPreferences = this.getSharedPreferences("MyAppPrefs", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.remove("otpID");
+        editor.apply();
+    }
     // Phương thức để lấy mã đã nhập
     private String getCode() {
         StringBuilder code = new StringBuilder();

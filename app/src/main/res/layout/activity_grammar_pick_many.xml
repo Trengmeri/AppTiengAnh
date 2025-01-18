@@ -68,9 +68,7 @@
                 android:layout_margin="4dp" />
         </LinearLayout>
 
-        <!-- Tiêu đề -->
 
-        <!-- Nội dung câu hỏi -->
         <TextView
             android:id="@+id/tvQuestion"
             android:layout_width="wrap_content"
@@ -78,7 +76,7 @@
             android:layout_marginTop="48dp"
             android:layout_marginBottom="48dp"
             android:drawableLeft="@drawable/jam_write"
-            android:text="Chọn đáp án đúng"
+            android:text="Choose the correct answer"
             android:textSize="24sp"
             android:textStyle="bold" />
 
@@ -87,40 +85,45 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            android:text="@string/question_grammar_1"
+            android:text=""
             android:textSize="18sp"
             android:textStyle="bold"/>
 
         <!-- Các tùy chọn đáp án -->
-        <CheckBox
+        <androidx.appcompat.widget.AppCompatButton
+            style="@style/Answer_Multi_style"
             android:id="@+id/checkbox1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Java" />
+            android:text="" />
 
-        <CheckBox
+        <androidx.appcompat.widget.AppCompatButton
+            style="@style/Answer_Multi_style"
             android:id="@+id/checkbox2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Python" />
+            android:text="" />
 
-        <CheckBox
+        <androidx.appcompat.widget.AppCompatButton
+            style="@style/Answer_Multi_style"
             android:id="@+id/checkbox3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="C#" />
+            android:text="" />
 
-        <CheckBox
+        <androidx.appcompat.widget.AppCompatButton
+            style="@style/Answer_Multi_style"
             android:id="@+id/checkbox4"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="HTML" />
+            android:text="" />
 
-        <CheckBox
+        <androidx.appcompat.widget.AppCompatButton
+            style="@style/Answer_Multi_style"
             android:id="@+id/checkbox5"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="JavaScript" />
+            android:text="" />
 
         <!-- Nút kiểm tra -->
         <Button
