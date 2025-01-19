@@ -180,6 +180,66 @@ public class ApiManager {
         });
     }
 
+    //Resend OTP khi dki
+    public void resendCodeRequest(String otpID, ApiCallback callback) {
+        OkHttpClient client = new OkHttpClient.Builder()
+                .connectTimeout(10, TimeUnit.SECONDS) // Tăng thời gian kết nối
+                .readTimeout(20, TimeUnit.SECONDS) // Tăng thời gian chờ phản hồi
+                .writeTimeout(10, TimeUnit.SECONDS) // Tăng thời gian ghi dữ liệu
+                .build();
+
+        String json = "{ \"otpID\": \"" + otpID + "\" }";
+
+        Log.d("ConfirmCode", "OTPID: " + otpID );
+
+        RequestBody body = RequestBody.create(json, MediaType.parse("application/json; charset=utf-8"));
+
+        Request request = new Request.Builder()
+                .url("http://192.168.56.1:8080/api/v1/auth/resend-otp") // Thay bằng URL máy chủ của bạn
+                .post(body)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                // Log.e("ApiManager", "Kết nối thất bại: " + e.getMessage());
+                // callback.onFailure("Kết nối thất bại! Không thể kết nối tới API.");
+                if (e instanceof SocketTimeoutException) {
+                    Log.e("ApiManager", "Kết nối timeout: " + e.getMessage());
+                    callback.onFailure("Thời gian kết nối đã hết. Vui lòng thử lại.");
+                } else if (e instanceof UnknownHostException) {
+                    Log.e("ApiManager", "Không tìm thấy máy chủ: " + e.getMessage());
+                    callback.onFailure("Không thể tìm thấy máy chủ. Kiểm tra lại URL hoặc kết nối mạng.");
+                } else if (e instanceof ConnectException) {
+                    Log.e("ApiManager", "Không kết nối được tới server: " + e.getMessage());
+                    callback.onFailure("Không thể kết nối tới server. Kiểm tra xem server có hoạt động không.");
+                } else {
+                    Log.e("ApiManager", "Lỗi không xác định: " + e.getMessage(), e);
+                    callback.onFailure("Lỗi không xác định: " + e.getMessage());
+                }
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String responseBody = response.body().string();
+                Log.d("ApiManager", "Phản hồi từ server: " + responseBody);
+                if (response.isSuccessful()) {
+                    callback.onSuccess(); // Gọi callback thành công
+                } else {
+                    if (!response.isSuccessful()) {
+                        JSONObject errorJson = null; // Parse nội dung phản hồi
+                        try {
+                            errorJson = new JSONObject(responseBody);
+                        } catch (JSONException e) {
+                            throw new RuntimeException(e);
+                        }
+                        String errorMessage = errorJson.optString("message", "Mã OTP sai! Vui lòng kiểm tra lại.");
+                        callback.onFailure(errorMessage);
+                    }
+                }
+            }
+        });
+    }
     // Phương thức để lấy dữ liệu câu hỏi từ API (GET request)
     public void fetchQuestionContentFromApi(ApiCallback callback) {
         // String access_token =
@@ -209,7 +269,7 @@ public class ApiManager {
                         try {
                             Gson gson = new Gson();
                             // Chuyển đổi JSON thành đối tượng ApiResponse
-                            ApiResponse apiResponse = gson.fromJson(responseBody, ApiResponse.class);
+                            ApiResponseQuestion apiResponse = gson.fromJson(responseBody, ApiResponseQuestion.class);
                             // Lấy đối tượng Question từ thuộc tính data của ApiResponse
                             Question question = apiResponse.getData();
 
@@ -259,7 +319,7 @@ public class ApiManager {
                 .build();
 
         Request request = new Request.Builder()
-                .url("http://192.168.109.2:8080/api/v1/lessons/" + lessonId) // Thay bằng URL máy chủ của bạn
+                .url("http://192.168.56.1:8080/api/v1/lessons/" + lessonId) // Thay bằng URL máy chủ của bạn
                 .build();
 
         client.newCall(request).enqueue(new Callback() {
@@ -302,7 +362,7 @@ public class ApiManager {
                 .build();
 
         Request request = new Request.Builder()
-                .url("http://192.168.109.2:8080/api/v1/courses/1") // Thay bằng URL máy chủ của bạn
+                .url("http://192.168.56.1:8080/api/v1/courses/1") // Thay bằng URL máy chủ của bạn
                 .build();
 
         client.newCall(request).enqueue(new Callback() {

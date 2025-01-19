@@ -71,7 +71,7 @@ public class SignInActivity extends AppCompatActivity {
                             }
                         });
 
-                        Intent intent = new Intent(SignInActivity.this, HomeActivity.class);
+                        Intent intent = new Intent(SignInActivity.this, ChooseFieldsActivity.class);
                         startActivity(intent); // Chuyển hướng đến Home Activity
                     }
 

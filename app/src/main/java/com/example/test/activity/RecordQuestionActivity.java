@@ -1,5 +1,5 @@
-package com.example.test;
-
+//package com.example.test.api;
+package com.example.test.activity;
 import android.Manifest;
 import android.animation.ObjectAnimator;
 import android.content.pm.PackageManager;
@@ -21,6 +21,7 @@ import com.example.test.PopupHelper;
 import com.example.test.R;
 import com.example.test.SpeechRecognitionCallback;
 import com.example.test.SpeechRecognitionHelper;
+import com.example.test.activity.PointResultActivity;
 
 import java.util.ArrayList;
 import java.util.List;

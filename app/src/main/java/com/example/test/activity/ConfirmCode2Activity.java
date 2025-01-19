@@ -17,6 +17,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.example.test.NetworkChangeReceiver;
 import com.example.test.R;
 import com.example.test.api.ApiCallback;
 import com.example.test.api.ApiManager;
@@ -34,6 +35,8 @@ public class ConfirmCode2Activity extends AppCompatActivity {
     private static final long COUNTDOWN_TIME = 60000; // 60 giây
     private CountDownTimer countDownTimer;
     private String otpID;
+    NetworkChangeReceiver networkReceiver;
+    ApiManager apiManager;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,14 +49,7 @@ public class ConfirmCode2Activity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-        //email = getIntent().getStringExtra("email");
-//        SharedPreferences sharedPreferences = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
-//        String email = sharedPreferences.getString("email", null);
-//        if (email != null) {
-//            Log.d("ConfirmCode", "Email lấy từ SharedPreferences: " + email);
-//        } else {
-//            Log.e("ConfirmCode", "Email không tồn tại trong SharedPreferences");
-//        }
+
         // Ánh xạ các ô nhập mã
         codeInputs = new EditText[]{
                 findViewById(R.id.editText1),
@@ -73,14 +69,18 @@ public class ConfirmCode2Activity extends AppCompatActivity {
 
         // Nút quay lại
         icback.setOnClickListener(view -> {
-            Intent intent = new Intent(ConfirmCode2Activity.this, ForgotPassWordActivity.class);
+            Intent intent = new Intent(ConfirmCode2Activity.this, SignUpActivity.class);
             startActivity(intent);
         });
-
+        networkReceiver = new NetworkChangeReceiver();
+        apiManager = new ApiManager();
         // Bắt đầu đếm ngược thời gian
         startCountdown();
         btnRe.setOnClickListener(view -> {
-            resetCountdown();  // Gọi phương thức reset lại bộ đếm
+            btnRe.setEnabled(false); // Ngăn người dùng nhấn liên tục
+            btnRe.setAlpha(0.5f);
+            resetCountdown();// Gọi phương thức reset lại bộ đếm
+
         });
     }
 
@@ -231,6 +231,8 @@ public class ConfirmCode2Activity extends AppCompatActivity {
             public void onFinish() {
                 // Khi đếm ngược kết thúc
                 tvCountdown.setText("00:00");
+                btnRe.setEnabled(true);
+                btnRe.setAlpha(1.0f);
                 onCountdownFinished();
             }
         }.start();
