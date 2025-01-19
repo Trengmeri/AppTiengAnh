@@ -2,7 +2,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/none"
-    android:padding="16dp"
+    android:padding="10dp"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".activity.PointResultActivity">
 
@@ -52,7 +52,7 @@
 
             </LinearLayout>
 
-            <!-- Cột 2: Thời gian -->
+            <!-- Cột 2: Thời gian
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -85,7 +85,7 @@
                 </LinearLayout>
 
 
-            </LinearLayout>
+            </LinearLayout>-->
 
             <!-- Cột 3: Điểm -->
             <LinearLayout

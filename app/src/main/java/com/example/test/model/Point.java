@@ -2,15 +2,12 @@ package com.example.test.model;
 
 public class Point {
     private int id;
-    private int value;
+    private int stuTime;
+    private int totalPoints;
+    private User user;
+    private Lesson lesson;
 
-    // Constructor
-    public Point(int id, int value) {
-        this.id = id;
-        this.value = value;
-    }
-
-    // Getter and Setter
+    // Getters and Setters
     public int getId() {
         return id;
     }
@@ -19,11 +16,35 @@ public class Point {
         this.id = id;
     }
 
-    public int getValue() {
-        return value;
+    public int getStuTime() {
+        return stuTime;
     }
 
-    public void setValue(int value) {
-        this.value = value;
+    public void setStuTime(int stuTime) {
+        this.stuTime = stuTime;
+    }
+
+    public int getTotalPoints() {
+        return totalPoints;
+    }
+
+    public void setTotalPoints(int totalPoints) {
+        this.totalPoints = totalPoints;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public Lesson getLesson() {
+        return lesson;
+    }
+
+    public void setLesson(Lesson lesson) {
+        this.lesson = lesson;
     }
 }

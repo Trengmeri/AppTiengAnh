@@ -23,8 +23,8 @@ public class PointResultActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_point_result);
-
-        timeTextView = findViewById(R.id.time);
+/*
+        timeTextView = findViewById(R.id.time);*/
         pointTextView = findViewById(R.id.point);
         btnReview = findViewById(R.id.btnReview);
         btnNext = findViewById(R.id.btnNext);
@@ -42,7 +42,7 @@ public class PointResultActivity extends AppCompatActivity {
         String points = getIntent().getStringExtra("POINTS");
 
         // Hiển thị thời gian và điểm
-        timeTextView.setText(time);
+/*        timeTextView.setText(time);*/
         pointTextView.setText(points);
 
         // Sự kiện cho nút Review

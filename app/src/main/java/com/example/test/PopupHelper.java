@@ -34,12 +34,14 @@ public class PopupHelper {
             String correctAnswerText = String.join(", ", correctAnswers);
             tvDetail.setText(correctAnswerText);
             popupView.setBackgroundResource(R.drawable.popup_background_correct);
+            btnNext.setBackgroundColor(anchorView.getResources().getColor(android.R.color.holo_green_dark));
         } else {
             tvMessage.setText("Oops... That's not the answer.\nCorrect answer:");
             tvMessage.setTextColor(anchorView.getResources().getColor(android.R.color.holo_red_dark));
             String correctAnswerText = String.join(", ", correctAnswers);
             tvDetail.setText(correctAnswerText);
             popupView.setBackgroundResource(R.drawable.popup_background_incorrect);
+            btnNext.setBackgroundColor(anchorView.getResources().getColor(android.R.color.holo_red_dark));
         }
         btnNext.setOnClickListener(v -> {
             popupWindow.dismiss(); // Đóng popup
