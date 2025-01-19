@@ -70,9 +70,7 @@ public class HomeActivity extends AppCompatActivity {
                                 }
 
                                 @Override
-                                public void onSuccess(Course course) {
-
-                                }
+                                public void onSuccess(Course course) {}
 
                                 @Override
                                 public void onFailure(String errorMessage) {
@@ -113,9 +111,7 @@ public class HomeActivity extends AppCompatActivity {
             public void onSuccess() {}
 
             @Override
-            public void onSuccess(Question question) {
-
-            }
+            public void onSuccess(Question question) {}
 
             @Override
             public void onSuccess(Lesson lesson) {

@@ -50,7 +50,7 @@ public class ApiManager {
         RequestBody body = RequestBody.create(json, MediaType.parse("application/json; charset=utf-8"));
 
         Request request = new Request.Builder()
-                .url("http://192.168.56.1:8080/api/v1/auth/login") // Thay bằng URL máy chủ của bạn
+                .url("http://192.168.109.2:8080/api/v1/auth/login") // Thay bằng URL máy chủ của bạn
                 .post(body)
                 .build();
 
@@ -90,7 +90,7 @@ public class ApiManager {
         RequestBody body = RequestBody.create(json, MediaType.parse("application/json; charset=utf-8"));
 
         Request request = new Request.Builder()
-                .url("http://192.168.56.1:8080/api/v1/auth/register") // Thay bằng URL máy chủ của bạn
+                .url("http://192.168.109.2:8080/api/v1/auth/register") // Thay bằng URL máy chủ của bạn
                 .post(body)
                 .build();
 
@@ -134,7 +134,7 @@ public class ApiManager {
         RequestBody body = RequestBody.create(json, MediaType.parse("application/json; charset=utf-8"));
 
         Request request = new Request.Builder()
-                .url("http://192.168.56.1:8080/api/v1/auth/verify-otp") // Thay bằng URL máy chủ của bạn
+                .url("http://192.168.109.2:8080/api/v1/auth/verify-otp") // Thay bằng URL máy chủ của bạn
                 .post(body)
                 .build();
 
@@ -195,7 +195,7 @@ public class ApiManager {
         RequestBody body = RequestBody.create(json, MediaType.parse("application/json; charset=utf-8"));
 
         Request request = new Request.Builder()
-                .url("http://192.168.56.1:8080/api/v1/auth/resend-otp") // Thay bằng URL máy chủ của bạn
+                .url("http://192.168.109.2:8080/api/v1/auth/resend-otp") // Thay bằng URL máy chủ của bạn
                 .post(body)
                 .build();
 
@@ -241,7 +241,7 @@ public class ApiManager {
         });
     }
     // Phương thức để lấy dữ liệu câu hỏi từ API (GET request)
-    public void fetchQuestionContentFromApi(ApiCallback callback) {
+    public void fetchQuestionContentFromApi(int questionId, ApiCallback callback) {
         // String access_token =
         // "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ2YW5raWV0bWFzdGVyY3Y0QGdtYWlsLmNvbSIsImV4cCI6MTc0NTMwNzEyMCwiaWF0IjoxNzM2NjY3MTIwLCJ1c2VyIjp7ImlkIjo1LCJlbWFpbCI6InZhbmtpZXRtYXN0ZXJjdjRAZ21haWwuY29tIiwibmFtZSI6IlZhbiBLaWV0In19.K_906ifZ2fQEMxkPEPERaLY7Gh-VTyjvoUae6CEjnLkmR-vyleeraJuAzfEvzMfgsMwwniTBntAIBQP_p9HgFA";
         // // Token mà bạn đã nhận được sau khi đăng nhập thành công
@@ -251,7 +251,7 @@ public class ApiManager {
                 .writeTimeout(20, TimeUnit.SECONDS) // Tăng thời gian ghi dữ liệu
                 .build();
         Request request = new Request.Builder()
-                .url("http://192.168.56.1:8080/api/v1/questions/3")// Địa chỉ API lấy câu hỏi
+                .url("http://192.168.109.2:8080/api/v1/questions/" + questionId)// Địa chỉ API lấy câu hỏi
                 // .addHeader("Authorization", "Bearer " + access_token)
                 .build();
 
@@ -319,7 +319,7 @@ public class ApiManager {
                 .build();
 
         Request request = new Request.Builder()
-                .url("http://192.168.56.1:8080/api/v1/lessons/" + lessonId) // Thay bằng URL máy chủ của bạn
+                .url("http://192.168.109.2:8080/api/v1/lessons/" + lessonId) // Thay bằng URL máy chủ của bạn
                 .build();
 
         client.newCall(request).enqueue(new Callback() {
@@ -362,7 +362,7 @@ public class ApiManager {
                 .build();
 
         Request request = new Request.Builder()
-                .url("http://192.168.56.1:8080/api/v1/courses/1") // Thay bằng URL máy chủ của bạn
+                .url("http://192.168.109.2:8080/api/v1/courses/1") // Thay bằng URL máy chủ của bạn
                 .build();
 
         client.newCall(request).enqueue(new Callback() {
