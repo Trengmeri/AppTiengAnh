@@ -4,9 +4,11 @@ import com.example.test.model.Course;
 import com.example.test.model.Lesson;
 import com.example.test.model.Question;
 
+import java.util.List;
+
 public interface ApiCallback {
     void onSuccess();
-    void onSuccess(Question question);
+    void onSuccess(List<Question> questions);
     void onSuccess(Lesson lesson);
     void onSuccess(Course course);
     void onFailure(String errorMessage);

@@ -25,6 +25,8 @@ import com.example.test.model.Course;
 import com.example.test.model.Lesson;
 import com.example.test.model.Question;
 
+import java.util.List;
+
 public class ConfirmCode2Activity extends AppCompatActivity {
 
     private EditText[] codeInputs; // Mảng chứa các ô nhập mã
@@ -156,7 +158,7 @@ public class ConfirmCode2Activity extends AppCompatActivity {
                         }
 
                         @Override
-                        public void onSuccess(Question question) {
+                        public void onSuccess(List<Question> questions) {
 
                         }
 
