@@ -33,7 +33,8 @@ public class GrammarPickManyActivity extends AppCompatActivity {
     List<String> correctAnswers = new ArrayList<>(); // Đáp án đúng
     private int currentStep = 0; // Bước hiện tại (bắt đầu từ 0)
     private int totalSteps = 5; // Tổng số bước trong thanh tiến trình
-    private String userAnswers = "";
+    //private String userAnswer = "";
+    private List<String> userAnswers = new ArrayList<>();
     List<String> selectedAnswers = new ArrayList<>();
     //private String selectedAnswers  ;
    // private Set<String> selectedAnswers = new HashSet<>();
@@ -56,22 +57,19 @@ public class GrammarPickManyActivity extends AppCompatActivity {
          tvContent= findViewById(R.id.tvContent);
         Button btnCheckAnswers = findViewById(R.id.btnCheckAnswers);
         LinearLayout progressBar = findViewById(R.id.progressBar);
-//        checkbox1.setOnClickListener(v -> userAnswers += checkbox1.getText().toString());
-//        checkbox2.setOnClickListener(v -> userAnswers += checkbox2.getText().toString());
-//        checkbox3.setOnClickListener(v -> userAnswers += checkbox3.getText().toString());
-//        checkbox4.setOnClickListener(v -> userAnswers += checkbox4.getText().toString());
-//        checkbox5.setOnClickListener(v -> userAnswers += checkbox5.getText().toString());
+
         checkbox1.setOnClickListener(v -> toggleAnswer(checkbox1));
         checkbox2.setOnClickListener(v -> toggleAnswer(checkbox2));
         checkbox3.setOnClickListener(v -> toggleAnswer(checkbox3));
         checkbox4.setOnClickListener(v -> toggleAnswer(checkbox4));
         checkbox5.setOnClickListener(v -> toggleAnswer(checkbox5));
-        setupAnswerClickListeners();
+        //setupAnswerClickListeners();
         networkReceiver = new NetworkChangeReceiver();
         apiManager = new ApiManager();
         fetchQuestion();
 
         btnCheckAnswers.setOnClickListener(v -> {
+            Log.d("GrammarPickManyActivity", "User Answers: " + userAnswers);
             if (userAnswers.isEmpty()) {
                 Toast.makeText(GrammarPickManyActivity.this, "Vui lòng trả lời câu hỏi!", Toast.LENGTH_SHORT).show();
             } else {
@@ -92,36 +90,6 @@ public class GrammarPickManyActivity extends AppCompatActivity {
             }
         });
     }
-    private void setupAnswerClickListeners() {
-
-        // Tạo sự kiện click cho các nút đáp án
-        View.OnClickListener answerClickListener = new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                AppCompatButton selectedButton = (AppCompatButton) view;
-                String userAnswer = selectedButton.getText().toString();
-                if (selectedAnswers.contains(userAnswer)) {
-                    // Nếu đáp án đã được chọn, gỡ bỏ đáp án và đặt màu về mặc định
-                    selectedAnswers.remove(userAnswer);
-                    view.setBackgroundResource(R.color.colorDefault); // Màu nền mặc định
-                } else {
-                    // Nếu đáp án chưa được chọn, thêm vào danh sách và đổi màu
-                    selectedAnswers.add(userAnswer);
-                    view.setBackgroundResource(R.color.colorPressed); // Màu khi chọn
-                }
-
-                // Log danh sách đáp án đã chọn (tùy chọn, dùng để kiểm tra)
-                Log.d("SelectedAnswers", "Current selected answers: " + selectedAnswers);
-            }
-        };
-
-        // Gán sự kiện click cho các AppCompatButton đáp án
-        checkbox1.setOnClickListener(answerClickListener);
-        checkbox2.setOnClickListener(answerClickListener);
-        checkbox3.setOnClickListener(answerClickListener);
-        checkbox4.setOnClickListener(answerClickListener);
-        checkbox5.setOnClickListener(answerClickListener);
-    }
 
     private void fetchQuestion() {
     if (apiManager != null) {
@@ -137,7 +105,7 @@ public class GrammarPickManyActivity extends AppCompatActivity {
                     List<QuestionChoice> choices = question.getQuestionChoices();
                     if (choices != null && !choices.isEmpty()) {
                         for (QuestionChoice choice : choices) {
-                            Log.d("GrammarPick1QuestionActivity", "Lựa chọn: " + choice.getChoiceContent() +
+                            Log.d("GrammarPickManyQuestionActivity", "Lựa chọn: " + choice.getChoiceContent() +
                                     " (Đáp án đúng: " + choice.isChoiceKey() + ")");
                         }
 
@@ -148,7 +116,7 @@ public class GrammarPickManyActivity extends AppCompatActivity {
                             checkbox2.setText(choices.get(1).getChoiceContent());
                             checkbox3.setText(choices.get(2).getChoiceContent());
                             checkbox4.setText(choices.get(3).getChoiceContent());
-                            //checkbox5.setText(choices.get(4).getChoiceContent());
+                            checkbox5.setText(choices.get(4).getChoiceContent());
                             correctAnswers.clear();
                             for (QuestionChoice choice : choices) {
                                 if (choice.isChoiceKey()) {
@@ -205,20 +173,28 @@ public class GrammarPickManyActivity extends AppCompatActivity {
     }
     private void resetAnswerColors() {
         // Đặt lại màu nền cho tất cả các đáp án về màu mặc định
+        userAnswers.clear();
         checkbox1.setBackgroundResource(R.color.colorDefault);
         checkbox2.setBackgroundResource(R.color.colorDefault);
         checkbox3.setBackgroundResource(R.color.colorDefault);
         checkbox4.setBackgroundResource(R.color.colorDefault);
         checkbox5.setBackgroundResource(R.color.colorDefault);
+
     }
-    private void toggleAnswer(AppCompatButton checkbox) {
-        String answer = checkbox.getText().toString();
-        if (selectedAnswers.contains(answer)) {
-            selectedAnswers.remove(answer);  // Bỏ chọn
+    private void toggleAnswer(AppCompatButton button) {
+        String answer = button.getText().toString();
+
+        if (userAnswers.contains(answer)) {
+            // Bỏ chọn: gỡ đáp án và đặt lại màu mặc định
+            userAnswers.remove(answer);
+            button.setBackgroundResource(R.color.colorDefault); // Màu nền mặc định
         } else {
-            selectedAnswers.add(answer);     // Chọn
+            // Chọn: thêm đáp án và đổi màu
+            userAnswers.add(answer);
+            button.setBackgroundResource(R.color.colorPressed);// Màu khi chọn
         }
-        // Cập nhật userAnswers từ danh sách selectedAnswers
-        userAnswers = String.join(", ", selectedAnswers); // Nối các đáp án chọn được thành chuỗi
+
+        // Log kết quả để kiểm tra
+        Log.d("ToggleAnswer", "Current userAnswers: " + userAnswers);
     }
 }

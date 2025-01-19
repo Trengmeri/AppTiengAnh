@@ -29,8 +29,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class GrammarPick1QuestionActivity extends AppCompatActivity {
-    List<String> correctAnswers = new ArrayList<>(); // Giả sử dữ liệu đúng từ backend
-    private String userAnswer = ""; // Đáp án mà người dùng chọn
+    List<String> correctAnswers = new ArrayList<>();
+    private List<String> userAnswers = new ArrayList<>();
     private int currentStep = 0; // Bước hiện tại (bắt đầu từ 0)
     private int totalSteps = 5; // Tổng số bước trong thanh tiến trình
     private AppCompatButton selectedAnswer = null;
@@ -59,12 +59,12 @@ public class GrammarPick1QuestionActivity extends AppCompatActivity {
         apiManager = new ApiManager();
         fetchQuestion();
         btnCheckAnswer.setOnClickListener(v -> {
-            if (userAnswer.isEmpty()) {
+            if (userAnswers.isEmpty()) {
                 Toast.makeText(GrammarPick1QuestionActivity.this, "Vui lòng trả lời câu hỏi!", Toast.LENGTH_SHORT)
                         .show();
             } else {
                 // Hiển thị popup
-                PopupHelper.showResultPopup(findViewById(R.id.popupContainer), userAnswer, correctAnswers, () -> {
+                PopupHelper.showResultPopup(findViewById(R.id.popupContainer), userAnswers, correctAnswers, () -> {
                     // Callback khi nhấn Next Question trên popup
                     resetAnswerColors();
                     currentStep++;
@@ -133,12 +133,6 @@ public class GrammarPick1QuestionActivity extends AppCompatActivity {
                                         .map(QuestionChoice::getChoiceContent) // Chuyển đổi thành nội dung đáp án
                                         .collect(Collectors.toList());
 
-                                // Trong trường hợp có một đáp án đúng, correctAnswers chỉ chứa một phần tử
-//                                if (!correctAnswers.isEmpty()) {
-//                                    // Hiển thị đáp án đúng đầu tiên (hoặc hiển thị tất cả nếu có nhiều đáp án đúng)
-//                                    String correctAnswer = correctAnswers.get(0);
-//                                    Log.d("GrammarPick1QuestionActivity", "Đáp án đúng: " + correctAnswer);
-//                                }
                             });
                         } else {
                             Log.e("GrammarPick1QuestionActivity", "Câu hỏi không có lựa chọn.");
@@ -174,33 +168,76 @@ public class GrammarPick1QuestionActivity extends AppCompatActivity {
         }
     }
 
-    private void setupAnswerClickListeners() {
-        View.OnClickListener answerClickListener = new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // Nếu có đáp án đã được chọn trước đó, gỡ màu
+//    private void setupAnswerClickListeners() {
+//        View.OnClickListener answerClickListener = new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                // Nếu có đáp án đã được chọn trước đó, gỡ màu
+//                if (selectedAnswer != null) {
+//                    selectedAnswer.setBackgroundResource(R.drawable.bg_answer); // Hoặc màu nền mặc định
+//                }
+//
+//                // Đặt màu cho đáp án được chọn
+//                view.setBackgroundResource(R.drawable.bg_answer_pressed); // Màu bạn muốn áp dụng
+//
+//                // Cập nhật biến selectedAnswer
+//                selectedAnswer = (AppCompatButton) view;
+//                userAnswers = selectedAnswer.getText().toString();
+//            }
+//        };
+//
+//        // Gán sự kiện cho các đáp án
+//        btnAnswer1.setOnClickListener(answerClickListener);
+//        btnAnswer2.setOnClickListener(answerClickListener);
+//        btnAnswer3.setOnClickListener(answerClickListener);
+//        btnAnswer4.setOnClickListener(answerClickListener);
+//    }
+private void setupAnswerClickListeners() {
+    View.OnClickListener answerClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            AppCompatButton clickedButton = (AppCompatButton) view;
+
+            // Kiểm tra nếu đáp án đã được chọn trước đó
+            if (selectedAnswer != null && selectedAnswer == clickedButton) {
+                // Nếu đáp án đang được chọn lại, gỡ bỏ chọn
+                clickedButton.setBackgroundResource(R.drawable.bg_answer); // Màu nền mặc định
+                selectedAnswer = null;
+
+                // Xóa đáp án khỏi danh sách
+                userAnswers.remove(clickedButton.getText().toString());
+            } else {
+                // Nếu có đáp án được chọn trước đó, gỡ màu của đáp án cũ
                 if (selectedAnswer != null) {
-                    selectedAnswer.setBackgroundResource(R.drawable.bg_answer); // Hoặc màu nền mặc định
+                    selectedAnswer.setBackgroundResource(R.drawable.bg_answer);
                 }
 
-                // Đặt màu cho đáp án được chọn
-                view.setBackgroundResource(R.drawable.bg_answer_pressed); // Màu bạn muốn áp dụng
+                // Đặt màu cho đáp án mới được chọn
+                clickedButton.setBackgroundResource(R.drawable.bg_answer_pressed);
 
-                // Cập nhật biến selectedAnswer
-                selectedAnswer = (AppCompatButton) view;
-                userAnswer = selectedAnswer.getText().toString();
+                // Cập nhật đáp án được chọn
+                selectedAnswer = clickedButton;
+
+                // Thêm đáp án mới vào danh sách
+                String answerText = clickedButton.getText().toString();
+                if (!userAnswers.contains(answerText)) {
+                    userAnswers.add(answerText);
+                }
             }
-        };
+        }
+    };
 
-        // Gán sự kiện cho các đáp án
+    // Đăng ký lắng nghe sự kiện cho tất cả các nút đáp án
         btnAnswer1.setOnClickListener(answerClickListener);
         btnAnswer2.setOnClickListener(answerClickListener);
         btnAnswer3.setOnClickListener(answerClickListener);
         btnAnswer4.setOnClickListener(answerClickListener);
-    }
+}
+
 
     private void resetAnswerColors() {
         // Đặt lại màu nền cho tất cả các đáp án về màu mặc định
+        userAnswers.clear();
         btnAnswer1.setBackgroundResource(R.drawable.bg_answer);
         btnAnswer2.setBackgroundResource(R.drawable.bg_answer);
         btnAnswer3.setBackgroundResource(R.drawable.bg_answer);

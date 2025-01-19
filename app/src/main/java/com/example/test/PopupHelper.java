@@ -14,10 +14,10 @@ import java.util.List;
 
 public class PopupHelper {
 
-    public static void showResultPopup(View anchorView, String userAnswer, List<String> correctAnswers, Runnable onNextQuestion) {
+    public static void showResultPopup(View anchorView, List<String> userAnswers, List<String> correctAnswers, Runnable onNextQuestion) {
         //boolean isCorrect = userAnswer.equalsIgnoreCase(correctAnswer);
-        boolean isCorrect = correctAnswers.stream()
-                .anyMatch(answer -> answer.equalsIgnoreCase(userAnswer));
+//        boolean isCorrect = correctAnswers.stream()
+//                .anyMatch(answer -> answer.equalsIgnoreCase(userAnswers));
         // Tạo pop-up
         View popupView = LayoutInflater.from(anchorView.getContext()).inflate(R.layout.popup_result, null);
         PopupWindow popupWindow = new PopupWindow(popupView,
@@ -28,7 +28,7 @@ public class PopupHelper {
         TextView tvDetail = popupView.findViewById(R.id.tvResultDetail);
         Button btnNext = popupView.findViewById(R.id.btnNextQuestion);
 
-        if (isCorrect) {
+        if (userAnswers.equals(correctAnswers)) {
             tvMessage.setText("That's right!\nAnswer:");
             tvMessage.setTextColor(anchorView.getResources().getColor(android.R.color.holo_green_dark));
             String correctAnswerText = String.join(", ", correctAnswers);

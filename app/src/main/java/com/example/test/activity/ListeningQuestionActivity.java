@@ -26,7 +26,8 @@ public class ListeningQuestionActivity extends AppCompatActivity {
     private MediaPlayer mediaPlayer;
     private EditText etAnswer;
     //private String correctAnswer = "u i a fein"; // Đáp án đúng
-    String userAnswer = "";
+   // String userAnswer = "";
+    private List<String> userAnswers = new ArrayList<>();
     private int currentStep = 0; // Bước hiện tại (bắt đầu từ 0)
     private int totalSteps = 5; // Tổng số bước trong thanh tiến trình
 
@@ -51,7 +52,7 @@ public class ListeningQuestionActivity extends AppCompatActivity {
                 Toast.makeText(ListeningQuestionActivity.this, "Vui lòng trả lời câu hỏi!", Toast.LENGTH_SHORT).show();
             } else {
                 // Truyền view cụ thể vào PopupHelper
-                PopupHelper.showResultPopup(findViewById(R.id.popupContainer), userAnswer, correctAnswers, () -> {
+                PopupHelper.showResultPopup(findViewById(R.id.popupContainer), userAnswers, correctAnswers, () -> {
                     // Callback khi nhấn Next Question trên popup
                     updateProgressBar(progressBar, currentStep);
                     currentStep++; // Cập nhật thanh tiến trình

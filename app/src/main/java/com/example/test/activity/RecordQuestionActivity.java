@@ -1,4 +1,4 @@
-package com.example.test.activity;
+package com.example.test;
 
 import android.Manifest;
 import android.animation.ObjectAnimator;
@@ -7,6 +7,9 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.speech.RecognitionListener;
+import android.speech.RecognizerIntent;
+import android.speech.SpeechRecognizer;
 import android.util.Log;
 import android.view.View;
 import android.widget.*;
@@ -21,6 +24,7 @@ import com.example.test.SpeechRecognitionHelper;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class RecordQuestionActivity extends AppCompatActivity implements SpeechRecognitionCallback {
 
@@ -30,10 +34,11 @@ public class RecordQuestionActivity extends AppCompatActivity implements SpeechR
     private TextView tvTranscription;
     private SpeechRecognitionHelper speechRecognitionHelper;
 
+    private List<String> userAnswers = new ArrayList<>();
     List<String> correctAnswers = new ArrayList<>();
-    String userAnswer = "";
     private int currentStep = 0; // Bước hiện tại (bắt đầu từ 0)
     private int totalSteps = 5; // Tổng số bước trong thanh tiến trình
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +72,8 @@ public class RecordQuestionActivity extends AppCompatActivity implements SpeechR
 
         LinearLayout progressBar = findViewById(R.id.progressBar); // Ánh xạ ProgressBar
 
+        //btnListen.setOnClickListener(v -> playAudio());
+
         btnCheckResult.setOnClickListener(v -> {
             String userAnswer = tvTranscription.getText().toString(); // Lấy giá trị từ EditText
 
@@ -74,7 +81,7 @@ public class RecordQuestionActivity extends AppCompatActivity implements SpeechR
                 Toast.makeText(RecordQuestionActivity.this, "Vui lòng trả lời câu hỏi!", Toast.LENGTH_SHORT).show();
             } else {
                 // Truyền view cụ thể vào PopupHelper
-                PopupHelper.showResultPopup(findViewById(R.id.popupContainer), userAnswer, correctAnswers, () -> {
+                PopupHelper.showResultPopup(findViewById(R.id.popupContainer), userAnswers, correctAnswers, () -> {
                     // Callback khi nhấn Next Question trên popup
                     updateProgressBar(progressBar, currentStep);
                     currentStep++; // Cập nhật thanh tiến trình
