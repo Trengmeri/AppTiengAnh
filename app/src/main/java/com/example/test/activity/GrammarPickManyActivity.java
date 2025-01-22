@@ -42,47 +42,54 @@ public class GrammarPickManyActivity extends AppCompatActivity {
     TextView tvContent;
     ApiManager apiManager;
     NetworkChangeReceiver networkReceiver;
-    @SuppressLint("MissingInflatedId")
+    private List<Integer> questionIds; // Danh sách questionIds
+//    @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_grammar_pick_many);
 
         // Ánh xạ các thành phần UI
-         checkbox1 = findViewById(R.id.checkbox1);
-         checkbox2 = findViewById(R.id.checkbox2);
-         checkbox3 = findViewById(R.id.checkbox3);
-         checkbox4 = findViewById(R.id.checkbox4);
-         checkbox5 = findViewById(R.id.checkbox5);
-         tvContent= findViewById(R.id.tvContent);
+        checkbox1 = findViewById(R.id.checkbox1);
+        checkbox2 = findViewById(R.id.checkbox2);
+        checkbox3 = findViewById(R.id.checkbox3);
+        checkbox4 = findViewById(R.id.checkbox4);
+//        checkbox5 = findViewById(R.id.checkbox5);
+        tvContent = findViewById(R.id.tvContent);
         Button btnCheckAnswers = findViewById(R.id.btnCheckAnswers);
         LinearLayout progressBar = findViewById(R.id.progressBar);
+
+        // Kiểm tra null cho các thành phần UI
+        if (checkbox1 == null || checkbox2 == null || checkbox3 == null || checkbox4 == null || tvContent == null || btnCheckAnswers == null || progressBar == null) {
+            Log.e("GrammarPickManyActivity", "Một hoặc nhiều thành phần UI không được ánh xạ đúng.");
+            return;
+        }
 
         checkbox1.setOnClickListener(v -> toggleAnswer(checkbox1));
         checkbox2.setOnClickListener(v -> toggleAnswer(checkbox2));
         checkbox3.setOnClickListener(v -> toggleAnswer(checkbox3));
         checkbox4.setOnClickListener(v -> toggleAnswer(checkbox4));
-        checkbox5.setOnClickListener(v -> toggleAnswer(checkbox5));
-        //setupAnswerClickListeners();
+//        checkbox5.setOnClickListener(v -> toggleAnswer(checkbox5));
+
         networkReceiver = new NetworkChangeReceiver();
         apiManager = new ApiManager();
         int lessonId = 2;
-        fetchLessonAndQuestions(lessonId); // Gọi phương thức để lấy bài học và câu hỏi
+        fetchLessonAndQuestions(lessonId);
 
         btnCheckAnswers.setOnClickListener(v -> {
             Log.d("GrammarPickManyActivity", "User Answers: " + userAnswers);
             if (userAnswers.isEmpty()) {
                 Toast.makeText(GrammarPickManyActivity.this, "Vui lòng trả lời câu hỏi!", Toast.LENGTH_SHORT).show();
             } else {
-                // Hiển thị popup
                 PopupHelper.showResultPopup(findViewById(R.id.popupContainer), userAnswers, correctAnswers, () -> {
-                    // Callback khi nhấn Next Question trên popup
                     resetAnswerColors();
-                    updateProgressBar(progressBar, currentStep);
-                    currentStep++; // Cập nhật thanh tiến trình
+                    currentStep++;
+                    Log.d("GrammarPickManyActivity", "Current step: " + currentStep + ", Total steps: " + totalSteps);
 
-                    // Kiểm tra nếu hoàn thành
-                    if (currentStep >= totalSteps) {
+                    if (currentStep < totalSteps) {
+                        fetchQuestion(questionIds.get(currentStep)); // Lấy câu hỏi tiếp theo
+                        updateProgressBar(progressBar, currentStep); // Cập nhật thanh tiến trình
+                    } else {
                         Intent intent = new Intent(GrammarPickManyActivity.this, ListeningQuestionActivity.class);
                         startActivity(intent);
                         finish();
@@ -98,7 +105,8 @@ public class GrammarPickManyActivity extends AppCompatActivity {
             public void onSuccess(Lesson lesson) {
                 if (lesson != null) {
                     // Lấy danh sách questionIds từ lesson
-                    List<Integer> questionIds = lesson.getQuestionIds();
+                    questionIds = lesson.getQuestionIds(); // Lưu trữ danh sách questionIds
+                    Log.d("GrammarPickManyActivity", "Danh sách questionIds: " + questionIds);
                     totalSteps = questionIds.size();
                     if (questionIds != null && !questionIds.isEmpty()) {
                         fetchQuestion(questionIds.get(currentStep)); // Lấy câu hỏi đầu tiên
@@ -146,6 +154,7 @@ public class GrammarPickManyActivity extends AppCompatActivity {
                                     " (Đáp án đúng: " + choice.isChoiceKey() + ")");
                         }
 
+
                         // Cập nhật giao diện người dùng
                         runOnUiThread(() -> {
                             tvContent.setText(questionContent);
@@ -153,7 +162,7 @@ public class GrammarPickManyActivity extends AppCompatActivity {
                             checkbox2.setText(choices.get(1).getChoiceContent());
                             checkbox3.setText(choices.get(2).getChoiceContent());
                             checkbox4.setText(choices.get(3).getChoiceContent());
-                            checkbox5.setText(choices.get(4).getChoiceContent());
+                      /*      checkbox5.setText(choices.get(4).getChoiceContent());*/
                             correctAnswers.clear();
                             for (QuestionChoice choice : choices) {
                                 if (choice.isChoiceKey()) {
@@ -210,7 +219,7 @@ public class GrammarPickManyActivity extends AppCompatActivity {
         checkbox2.setBackgroundResource(R.color.colorDefault);
         checkbox3.setBackgroundResource(R.color.colorDefault);
         checkbox4.setBackgroundResource(R.color.colorDefault);
-        checkbox5.setBackgroundResource(R.color.colorDefault);
+//        checkbox5.setBackgroundResource(R.color.colorDefault);
 
     }
     private void toggleAnswer(AppCompatButton button) {

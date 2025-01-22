@@ -79,7 +79,7 @@ public class GrammarPick1QuestionActivity extends AppCompatActivity {
                         fetchQuestion(questionIds.get(currentStep)); // Lấy câu hỏi tiếp theo
                         updateProgressBar(progressBar, currentStep); // Cập nhật thanh tiến trình
                     } else {
-                        Intent intent = new Intent(GrammarPick1QuestionActivity.this, PointResultActivity.class);
+                        Intent intent = new Intent(GrammarPick1QuestionActivity.this, GrammarPickManyActivity.class);
                         startActivity(intent);
                         finish();
                     }

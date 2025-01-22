@@ -64,13 +64,6 @@ public class SignInActivity extends AppCompatActivity {
                 apiManager.sendLoginRequest(email, pass, new ApiCallback() {
                     @Override
                     public void onSuccess() {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Toast.makeText(SignInActivity.this, "Đăng nhập thành công!", Toast.LENGTH_SHORT).show();
-                            }
-                        });
-
                         Intent intent = new Intent(SignInActivity.this, ChooseFieldsActivity.class);
                         startActivity(intent); // Chuyển hướng đến Home Activity
                     }

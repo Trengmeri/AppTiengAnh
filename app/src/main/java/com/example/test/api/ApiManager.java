@@ -240,6 +240,108 @@ public class ApiManager {
             }
         });
     }
+
+    public void sendForgotRequest(Context context, String name, String email, String password, ApiCallback callback) {
+        OkHttpClient client = new OkHttpClient.Builder()
+                .connectTimeout(10, TimeUnit.SECONDS) // Tăng thời gian kết nối
+                .readTimeout(20, TimeUnit.SECONDS) // Tăng thời gian chờ phản hồi
+                .writeTimeout(10, TimeUnit.SECONDS) // Tăng thời gian ghi dữ liệu
+                .build();
+
+        String json = "{ \"email\": \"" + email + "\" }";
+        RequestBody body = RequestBody.create(json, MediaType.parse("application/json; charset=utf-8"));
+
+        Request request = new Request.Builder()
+                .url("http://192.168.109.2:8080/api/v1/forgot-password/send-otp") // Thay bằng URL máy chủ của bạn
+                .post(body)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.e("ApiManager", "Kết nối thất bại: " + e.getMessage());
+                callback.onFailure("Kết nối thất bại! Không thể kết nối tới API.");
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String responseBody = response.body().string();
+                Log.d("ApiManager", "Phản hồi từ server: " + responseBody);
+                if (response.isSuccessful()) {
+                    try {
+                        JSONObject responseJson = new JSONObject(responseBody);
+                        String otpID = responseJson.optString("otpID"); // Trích xuất otpID từ phản hồi
+                        callback.onSuccessWithOtpID(otpID);
+                    } catch (JSONException e) {
+                        callback.onFailure("Lỗi phân tích phản hồi JSON: " + e.getMessage());
+                    }
+                } else {
+                    callback.onFailure("Đăng ký thất bại: " + response.message());
+                }
+            }
+        });
+    }
+
+    public void sendConfirmCodeRequestForgot(String otpID, String code, ApiCallback callback) {
+        OkHttpClient client = new OkHttpClient.Builder()
+                .connectTimeout(10, TimeUnit.SECONDS) // Tăng thời gian kết nối
+                .readTimeout(20, TimeUnit.SECONDS) // Tăng thời gian chờ phản hồi
+                .writeTimeout(10, TimeUnit.SECONDS) // Tăng thời gian ghi dữ liệu
+                .build();
+
+        String json = "{ \"otpID\": \"" + otpID + "\", \"otp\": \"" + code + "\" }";
+
+        Log.d("ConfirmCode", "OTPID: " + otpID + ", OTP: " + code);
+
+        RequestBody body = RequestBody.create(json, MediaType.parse("application/json; charset=utf-8"));
+
+        Request request = new Request.Builder()
+                .url("http://192.168.109.2:8080/api/v1/forgot-password/verify-otp") // Thay bằng URL máy chủ của bạn
+                .post(body)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                // Log.e("ApiManager", "Kết nối thất bại: " + e.getMessage());
+                // callback.onFailure("Kết nối thất bại! Không thể kết nối tới API.");
+                if (e instanceof SocketTimeoutException) {
+                    Log.e("ApiManager", "Kết nối timeout: " + e.getMessage());
+                    callback.onFailure("Thời gian kết nối đã hết. Vui lòng thử lại.");
+                } else if (e instanceof UnknownHostException) {
+                    Log.e("ApiManager", "Không tìm thấy máy chủ: " + e.getMessage());
+                    callback.onFailure("Không thể tìm thấy máy chủ. Kiểm tra lại URL hoặc kết nối mạng.");
+                } else if (e instanceof ConnectException) {
+                    Log.e("ApiManager", "Không kết nối được tới server: " + e.getMessage());
+                    callback.onFailure("Không thể kết nối tới server. Kiểm tra xem server có hoạt động không.");
+                } else {
+                    Log.e("ApiManager", "Lỗi không xác định: " + e.getMessage(), e);
+                    callback.onFailure("Lỗi không xác định: " + e.getMessage());
+                }
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String responseBody = response.body().string();
+                Log.d("ApiManager", "Phản hồi từ server: " + responseBody);
+                if (response.isSuccessful()) {
+                    callback.onSuccess(); // Gọi callback thành công
+                } else {
+                    if (!response.isSuccessful()) {
+                        JSONObject errorJson = null; // Parse nội dung phản hồi
+                        try {
+                            errorJson = new JSONObject(responseBody);
+                        } catch (JSONException e) {
+                            throw new RuntimeException(e);
+                        }
+                        String errorMessage = errorJson.optString("message", "Mã OTP sai! Vui lòng kiểm tra lại.");
+                        callback.onFailure(errorMessage);
+                    }
+                }
+            }
+        });
+    }
+
     // Phương thức để lấy dữ liệu câu hỏi từ API (GET request)
     public void fetchQuestionContentFromApi(int questionId, ApiCallback callback) {
         // String access_token =
@@ -397,32 +499,6 @@ public class ApiManager {
         });
     }
 
-    // // Phương thức gọi API lấy URL của file âm thanh
-    // public void fetchAudioUrl(String url, ApiCallback callback) {
-    // Request request = new Request.Builder()
-    // .url("url")
-    // .build();
-    //
-    // client.newCall(request).enqueue(new Callback() {
-    // @Override
-    // public void onFailure(Call call, IOException e) {
-    // // Gọi callback khi có lỗi
-    // callback.onFailure(e.getMessage());
-    // }
-    //
-    // @Override
-    // public void onResponse(Call call, Response response) throws IOException {
-    // if (response.isSuccessful()) {
-    // // Giả sử API trả về URL của file âm thanh dưới dạng string
-    // String audioUrl = response.body().string(); // Lấy URL từ phản hồi API
-    // runOnUiThread(() -> playAudio(audioUrl)); // Chạy playAudio trên UI thread
-    // } else {
-    // runOnUiThread(() -> Toast.makeText(getApplicationContext(), "Lỗi tải âm
-    // thanh", Toast.LENGTH_SHORT).show());
-    // }
-    // }
-    // });
-    // }
 
     // Kiểm tra kết nối Internet
     public boolean isInternetAvailable(Context context) {
