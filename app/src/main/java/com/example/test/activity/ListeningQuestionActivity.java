@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -29,7 +30,7 @@ public class ListeningQuestionActivity extends AppCompatActivity {
    // String userAnswer = "";
     private List<String> userAnswers = new ArrayList<>();
     private int currentStep = 0; // Bước hiện tại (bắt đầu từ 0)
-    private int totalSteps = 5; // Tổng số bước trong thanh tiến trình
+    private int totalSteps; // Tổng số bước trong thanh tiến trình
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,18 +48,19 @@ public class ListeningQuestionActivity extends AppCompatActivity {
 
         btnCheckResult.setOnClickListener(v -> {
             String userAnswer = etAnswer.getText().toString(); // Lấy giá trị từ EditText
-
-            if (userAnswer.isEmpty()) {
+            Log.d("GrammarPickManyActivity", "User Answers: " + userAnswers);
+            if (userAnswers.isEmpty()) {
                 Toast.makeText(ListeningQuestionActivity.this, "Vui lòng trả lời câu hỏi!", Toast.LENGTH_SHORT).show();
             } else {
-                // Truyền view cụ thể vào PopupHelper
                 PopupHelper.showResultPopup(findViewById(R.id.popupContainer), userAnswers, correctAnswers, () -> {
-                    // Callback khi nhấn Next Question trên popup
-                    updateProgressBar(progressBar, currentStep);
-                    currentStep++; // Cập nhật thanh tiến trình
+                    userAnswers.clear();
+                    currentStep++;
+                    Log.d("GrammarPickManyActivity", "Current step: " + currentStep + ", Total steps: " + totalSteps);
 
-                    // Kiểm tra nếu hoàn thành
-                    if (currentStep >= totalSteps) {
+                    if (currentStep < totalSteps) {
+                    /*    fetchQuestion(questionIds.get(currentStep));*/
+                        updateProgressBar(progressBar, currentStep);
+                    } else {
                         Intent intent = new Intent(ListeningQuestionActivity.this, RecordQuestionActivity.class);
                         startActivity(intent);
                         finish();
