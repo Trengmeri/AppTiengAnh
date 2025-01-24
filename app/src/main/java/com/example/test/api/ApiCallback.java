@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface ApiCallback {
     void onSuccess();
-    void onSuccess(List<Question> questions);
+    void onSuccess(Question questions);
     void onSuccess(Lesson lesson);
     void onSuccess(Course course);
     void onFailure(String errorMessage);

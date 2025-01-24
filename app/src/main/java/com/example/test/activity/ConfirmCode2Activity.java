@@ -158,7 +158,7 @@ public class ConfirmCode2Activity extends AppCompatActivity {
                         }
 
                         @Override
-                        public void onSuccess(List<Question> questions) {
+                        public void onSuccess(Question questions) {
 
                         }
 

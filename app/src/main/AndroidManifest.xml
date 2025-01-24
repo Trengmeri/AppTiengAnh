@@ -31,7 +31,7 @@
             android:exported="false" />
         <activity
             android:name=".activity.GrammarPickManyActivity"
-            android:exported="true" />
+            android:exported="false" />
         <activity
             android:name=".activity.ListeningQuestionActivity"
             android:exported="true" />
