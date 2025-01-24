@@ -15,8 +15,6 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
 
         if (networkInfo == null || !networkInfo.isConnected()) {
             Toast.makeText(context, "Không có Internet. Vui lòng kiểm tra kết nối.", Toast.LENGTH_LONG).show();
-        } else {
-            Toast.makeText(context, "Kết nối Internet đã được khôi phục.", Toast.LENGTH_SHORT).show();
         }
     }
 }

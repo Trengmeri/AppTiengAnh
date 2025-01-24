@@ -147,9 +147,7 @@ public class ConfirmCode2Activity extends AppCompatActivity {
                             // Chuyển đến Activity tiếp theo nếu mã đúng
                             runOnUiThread(new Runnable() {
                                 @Override
-                                public void run() {
-                                    Toast.makeText(ConfirmCode2Activity.this, "OTP correct!", Toast.LENGTH_SHORT).show();
-                                }
+                                public void run() {}
                             });
                             clearOtpId();
                             Intent intent = new Intent(ConfirmCode2Activity.this, SetUpAccountActivity.class);

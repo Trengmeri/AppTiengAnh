@@ -86,7 +86,6 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="30dp"
         android:drawableLeft="@drawable/fe_question"
-        android:text="@string/ques_lis"
         android:textSize="24sp"
         android:textStyle="bold" />
 

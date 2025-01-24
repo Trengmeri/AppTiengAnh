@@ -22,6 +22,12 @@ import com.example.test.R;
 import com.example.test.SpeechRecognitionCallback;
 import com.example.test.SpeechRecognitionHelper;
 import com.example.test.activity.PointResultActivity;
+import com.example.test.api.ApiCallback;
+import com.example.test.api.ApiManager;
+import com.example.test.model.Course;
+import com.example.test.model.Lesson;
+import com.example.test.model.Question;
+import com.example.test.model.QuestionChoice;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,8 +43,10 @@ public class RecordQuestionActivity extends AppCompatActivity implements SpeechR
 
     private List<String> userAnswers = new ArrayList<>();
     List<String> correctAnswers = new ArrayList<>();
+    private List<Integer> questionIds;
     private int currentStep = 0; // Bước hiện tại (bắt đầu từ 0)
-    private int totalSteps = 5; // Tổng số bước trong thanh tiến trình
+    private int totalSteps; // Tổng số bước trong thanh tiến trình
+    ApiManager apiManager = new ApiManager();
 
 
     @Override
@@ -51,6 +59,8 @@ public class RecordQuestionActivity extends AppCompatActivity implements SpeechR
         btnPlayAudio = findViewById(R.id.btn_play);
         Button btnCheckResult = findViewById(R.id.btnCheckResult);
         seekBar = findViewById(R.id.seekBar);
+        int lessonId = 4;
+        fetchLessonAndQuestions(lessonId);
 
         // Kiểm tra quyền microphone
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
@@ -76,25 +86,109 @@ public class RecordQuestionActivity extends AppCompatActivity implements SpeechR
         //btnListen.setOnClickListener(v -> playAudio());
 
         btnCheckResult.setOnClickListener(v -> {
-            String userAnswer = tvTranscription.getText().toString(); // Lấy giá trị từ EditText
-
-            if (userAnswer.isEmpty()) {
+            String userAnswer = tvTranscription.getText().toString().trim();
+            userAnswers.clear(); // Xóa các câu trả lời trước đó
+            userAnswers.add(userAnswer); // Thêm câu trả lời mới vào danh sách
+            Log.d("RecordQuestionActivity", "User Answers: " + userAnswers);
+            if (userAnswers.isEmpty()) {
                 Toast.makeText(RecordQuestionActivity.this, "Vui lòng trả lời câu hỏi!", Toast.LENGTH_SHORT).show();
             } else {
-                // Truyền view cụ thể vào PopupHelper
                 PopupHelper.showResultPopup(findViewById(R.id.popupContainer), userAnswers, correctAnswers, () -> {
-                    // Callback khi nhấn Next Question trên popup
-                    updateProgressBar(progressBar, currentStep);
-                    currentStep++; // Cập nhật thanh tiến trình
+                    userAnswers.clear();
+                    currentStep++;
+                    Log.d("RecordQuestionActivity", "Current step: " + currentStep + ", Total steps: " + totalSteps);
 
-                    // Kiểm tra nếu hoàn thành
-                    if (currentStep >= totalSteps) {
+                    if (currentStep < totalSteps) {
+                        fetchQuestion(questionIds.get(currentStep));
+                        updateProgressBar(progressBar, currentStep);
+                    } else {
                         Intent intent = new Intent(RecordQuestionActivity.this, PointResultActivity.class);
                         startActivity(intent);
                         finish();
                     }
                 });
             }
+        });
+    }
+
+    private void fetchLessonAndQuestions(int lessonId) {
+        apiManager.fetchLessonById(lessonId, new ApiCallback() {
+            @Override
+            public void onSuccess(Lesson lesson) {
+                if (lesson != null) {
+                    questionIds = lesson.getQuestionIds();
+                    Log.d("RecordQuestionActivity", "Danh sách questionIds: " + questionIds);
+                    totalSteps = questionIds.size();
+                    if (questionIds != null && !questionIds.isEmpty()) {
+                        fetchQuestion(questionIds.get(currentStep));
+                    } else {
+                        Log.e("RecordQuestionActivity", "Bài học không có câu hỏi.");
+                    }
+                } else {
+                    Log.e("RecordQuestionActivity", "Bài học trả về là null.");
+                }
+            }
+
+            @Override
+            public void onSuccess(Course course) {}
+
+            @Override
+            public void onFailure(String errorMessage) {
+                Log.e("RecordQuestionActivity", errorMessage);
+            }
+
+            @Override
+            public void onSuccessWithOtpID(String otpID) {}
+
+            @Override
+            public void onSuccess() {}
+
+            @Override
+            public void onSuccess(Question question) {}
+        });
+    }
+
+    private void fetchQuestion(int questionId) {
+        apiManager.fetchQuestionContentFromApi(questionId, new ApiCallback() {
+            @Override
+            public void onSuccess(Question question) {
+                if (question != null) {
+                    // Cập nhật giao diện người dùng với nội dung câu hỏi
+                    runOnUiThread(() -> {
+                        // Giả sử bạn có một TextView để hiển thị câu hỏi
+                        TextView tvQuestion = findViewById(R.id.tvQuestion);
+                        tvQuestion.setText(question.getQuesContent());
+
+                        // Lưu trữ đáp án đúng để kiểm tra sau
+                        List<QuestionChoice> choices = question.getQuestionChoices();
+                        correctAnswers.clear();
+                        for (QuestionChoice choice : choices) {
+                            if (choice.isChoiceKey()) {
+                                correctAnswers.add(choice.getChoiceContent());
+                            }
+                        }
+                    });
+                } else {
+                    Log.e("RecordQuestionActivity", "Câu hỏi trả về là null.");
+                }
+            }
+
+            @Override
+            public void onFailure(String errorMessage) {
+                Log.e("RecordQuestionActivity", errorMessage);
+            }
+
+            @Override
+            public void onSuccess(Lesson lesson) {}
+
+            @Override
+            public void onSuccess(Course course) {}
+
+            @Override
+            public void onSuccessWithOtpID(String otpID) {}
+
+            @Override
+            public void onSuccess() {}
         });
     }
 
