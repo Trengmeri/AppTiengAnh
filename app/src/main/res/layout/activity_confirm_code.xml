@@ -140,8 +140,9 @@
                 android:id="@+id/btnRe"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-
-                android:backgroundTint="#EFF3FC"
+                android:backgroundTint="@android:color/transparent"
+                android:enabled="false"
+                android:alpha="0.5"
                 android:text="Resend Code in"
                 android:textColor="#9E3A00"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -162,12 +163,29 @@
                 app:layout_constraintStart_toEndOf="@+id/btnRe"
                 app:layout_constraintTop_toBottomOf="@+id/codeInputLayout" />
         </LinearLayout>
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom">
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/elip_cfcode"/>
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/elip_cfcode2"
+                    android:layout_gravity="bottom"/>
+            </FrameLayout>
 
             <GridLayout
                 android:id="@+id/numericKeyboard"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
+                android:layout_gravity="center|top"
                 android:layout_marginTop="25dp"
                 android:columnCount="3"
                 android:rowCount="4">
@@ -296,18 +314,6 @@
                     android:textColor="@color/black"/>
 
             </GridLayout>
-        <FrameLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/elip_cfcode"/>
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/elip_cfcode2"
-                android:layout_gravity="bottom"/>
         </FrameLayout>
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

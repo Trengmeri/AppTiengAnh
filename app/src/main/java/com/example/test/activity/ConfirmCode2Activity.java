@@ -30,6 +30,8 @@ import com.example.test.model.Result;
 
 import java.util.List;
 
+import java.util.List;
+
 public class ConfirmCode2Activity extends AppCompatActivity {
 
     private EditText[] codeInputs; // Mảng chứa các ô nhập mã
@@ -161,7 +163,7 @@ public class ConfirmCode2Activity extends AppCompatActivity {
                         }
 
                         @Override
-                        public void onSuccess(Question question) {
+                        public void onSuccess(Question questions) {
 
                         }
 

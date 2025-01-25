@@ -87,20 +87,23 @@
         android:id="@+id/gridLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_margin="@dimen/dp_16"
         android:columnCount="2"
         android:rowCount="2"
-        android:padding="10dp"
-        android:gravity="center">
+        android:columnOrderPreserved="true"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp">
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btnOption1"
             style="@style/Text_Button_All"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:padding="8dp"
             android:layout_columnWeight="1"
-            android:layout_margin="30dp"
+            android:layout_margin="25dp"
             android:background="@drawable/button_background"
+            android:text=""
             android:textColor="@color/black"/>
 <!--            android:text="computer" />-->
 
@@ -110,7 +113,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_columnWeight="1"
-            android:layout_margin="30dp"
+            android:layout_margin="25dp"
             android:text=""
             android:background="@drawable/button_background"
             android:textColor="@color/black"/>
@@ -122,7 +125,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_columnWeight="1"
-            android:layout_margin="30dp"
+            android:layout_margin="25dp"
             android:text=""
             android:background="@drawable/button_background"
             android:textColor="@color/black"/>
@@ -134,7 +137,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_columnWeight="1"
-            android:layout_margin="30dp"
+            android:layout_margin="25dp"
             android:text=""
             android:background="@drawable/button_background"
             android:textColor="@color/black"/>
@@ -144,9 +147,11 @@
     <!-- Nút kiểm tra -->
     <Button
         android:id="@+id/btnCheckAnswer"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
+        android:layout_marginRight="@dimen/dp_30"
+        android:layout_marginLeft="@dimen/dp_30"
         android:text="@string/check"
         android:backgroundTint="#C0CEEF"
         android:textColor="@color/black"

@@ -1,39 +1,65 @@
 
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/none"
+    android:background="#F0F0F0"
     android:padding="10dp"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".activity.PointResultActivity">
 
-
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        tools:ignore="MissingConstraints">
 
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/congrattt"/>
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
 
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/congrattt" />
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal|center_vertical"
+                android:layout_marginTop="@dimen/dp_16"
+                android:layout_marginStart="85dp"
+                android:background="@drawable/welldone" />
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:layout_margin="10dp"
+                android:background="@drawable/group_right" />
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start"
+                android:layout_margin="10dp"
+                android:background="@drawable/group_left" />
+
+        </FrameLayout>
         <!-- Thời gian và điểm -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="-30dp"
+            android:layout_marginTop="-45dp"
+            android:layout_marginLeft="@dimen/dp40"
+            android:layout_marginRight="@dimen/dp40"
             android:background="@drawable/rounded_corner"
-            android:padding="12dp">
+            android:orientation="horizontal"
+            android:padding="10dp">
 
             <!-- Cột 1: Ba tia chớp -->
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:orientation="horizontal"
                 android:gravity="center"
+                android:orientation="horizontal"
                 android:paddingTop="10dp">
 
                 <ImageView
@@ -41,11 +67,13 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@drawable/tiachop" />
+
                 <ImageView
                     android:id="@+id/star2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@drawable/tiachop" />
+
                 <ImageView
                     android:id="@+id/star3"
                     android:layout_width="wrap_content"
@@ -54,7 +82,7 @@
 
             </LinearLayout>
 
-            <!-- Cột 2: Thời gian
+<!--          Cột 2: Thời gian-->
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -71,7 +99,7 @@
                         android:id="@+id/time"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textSize="18sp"
+                        android:textSize="15sp"
                         android:textStyle="bold"
                         android:textColor="@color/black"
                         android:gravity="center"/>
@@ -80,14 +108,14 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Fast!"
-                        android:textSize="18sp"
+                        android:textSize="12sp"
                         android:textStyle="bold"
                         android:textColor="@color/black"
                         android:gravity="center"/>
                 </LinearLayout>
 
 
-            </LinearLayout>-->
+            </LinearLayout>
 
             <!-- Cột 3: Điểm -->
             <LinearLayout
@@ -99,26 +127,26 @@
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:gravity="center">
+                    android:gravity="center"
+                    android:orientation="vertical">
 
                     <TextView
                         android:id="@+id/point"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textSize="18sp"
-                        android:textStyle="bold"
+                        android:gravity="center"
                         android:textColor="@color/black"
-                        android:gravity="center"/>
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:gravity="center"
                         android:text="Total Point"
-                        android:textSize="18sp"
-                        android:textStyle="bold"
                         android:textColor="@color/black"
-                        android:gravity="center"/>
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
                 </LinearLayout>
 
 
@@ -130,36 +158,39 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Detailed Statistics"
-            android:textSize="16sp"
-            android:textColor="@color/black"
-            android:textStyle="bold"
             android:paddingTop="16dp"
-            android:paddingBottom="8dp" />
+            android:paddingBottom="8dp"
+            android:text="Detailed Statistics"
+            android:textColor="@color/black"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
         <!-- CardView cho từng kỹ năng -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:dividerPadding="8dp">
+            android:dividerPadding="8dp"
+            android:orientation="vertical">
 
             <!-- Kỹ năng Reading -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/read"
-                android:textStyle="bold"
-                android:layout_marginTop="15dp"
-                android:drawableLeft="@drawable/tick"
-                android:textColor="@color/black"
-                android:textSize="14sp" />
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
                 android:background="@drawable/rounded_corner"
+                android:orientation="vertical"
                 android:padding="12dp">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:drawableLeft="@drawable/tick"
+                    android:text="@string/read"
+                    android:textColor="@color/black"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -168,77 +199,77 @@
 
                     <LinearLayout
                         android:layout_width="0dp"
-                        android:layout_weight="1"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:gravity="center">
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:orientation="vertical">
 
                         <TextView
                             android:id="@+id/correct_read"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textStyle="bold"
+                            android:gravity="center"
                             android:textColor="@color/light_green"
                             android:textSize="14sp"
-                            android:gravity="center"/>
+                            android:textStyle="bold" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:gravity="center"
                             android:text="Correct answers"
-                            android:textStyle="bold"
                             android:textColor="@color/light_green"
                             android:textSize="14sp"
-                            android:gravity="center"/>
+                            android:textStyle="bold" />
                     </LinearLayout>
 
                     <LinearLayout
                         android:layout_width="0dp"
-                        android:layout_weight="1"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:gravity="center">
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:orientation="vertical">
 
                         <TextView
                             android:id="@+id/comp_read"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textStyle="bold"
+                            android:gravity="center"
                             android:textColor="@color/light_green"
                             android:textSize="14sp"
-                            android:gravity="center"/>
+                            android:textStyle="bold" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:gravity="center"
                             android:text="Complete"
-                            android:textStyle="bold"
                             android:textColor="@color/light_green"
                             android:textSize="14sp"
-                            android:gravity="center"/>
+                            android:textStyle="bold" />
                     </LinearLayout>
 
                 </LinearLayout>
             </LinearLayout>
 
 
-                <!-- Kỹ năng Listening -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/lis"
-                android:textStyle="bold"
-                android:layout_marginTop="15dp"
-                android:drawableLeft="@drawable/tick_2"
-                android:textColor="@color/black"
-                android:textSize="14sp" />
+            <!-- Kỹ năng Listening -->
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
                 android:background="@drawable/rounded_corner"
+                android:orientation="vertical"
+                android:layout_marginTop="15dp"
                 android:padding="12dp">
-
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:drawableLeft="@drawable/tick_2"
+                    android:text="@string/lis"
+                    android:textColor="@color/black"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -246,76 +277,76 @@
 
                     <LinearLayout
                         android:layout_width="0dp"
-                        android:layout_weight="1"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:gravity="center">
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:orientation="vertical">
 
                         <TextView
                             android:id="@+id/correct_lis"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textStyle="bold"
+                            android:gravity="center"
                             android:textColor="@color/light_red"
                             android:textSize="14sp"
-                            android:gravity="center"/>
+                            android:textStyle="bold" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:gravity="center"
                             android:text="Correct answers"
-                            android:textStyle="bold"
                             android:textColor="@color/light_red"
                             android:textSize="14sp"
-                            android:gravity="center"/>
+                            android:textStyle="bold" />
                     </LinearLayout>
 
                     <LinearLayout
                         android:layout_width="0dp"
-                        android:layout_weight="1"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:gravity="center">
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:orientation="vertical">
 
                         <TextView
                             android:id="@+id/comp_lis"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textStyle="bold"
+                            android:gravity="center"
                             android:textColor="@color/light_red"
                             android:textSize="14sp"
-                            android:gravity="center"/>
+                            android:textStyle="bold" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:gravity="center"
                             android:text="Complete"
-                            android:textStyle="bold"
                             android:textColor="@color/light_red"
                             android:textSize="14sp"
-                            android:gravity="center"/>
+                            android:textStyle="bold" />
                     </LinearLayout>
 
                 </LinearLayout>
             </LinearLayout>
 
             <!-- Kỹ năng Speaking -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/speak"
-                android:textColor="@color/black"
-                android:drawableLeft="@drawable/tick"
-                android:layout_marginTop="15dp"
-                android:textStyle="bold"
-                android:textSize="14sp" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
                 android:background="@drawable/rounded_corner"
+                android:orientation="vertical"
+                android:layout_marginTop="15dp"
                 android:padding="12dp">
-
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:drawableLeft="@drawable/tick"
+                    android:text="@string/speak"
+                    android:textColor="@color/black"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -323,76 +354,76 @@
 
                     <LinearLayout
                         android:layout_width="0dp"
-                        android:layout_weight="1"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:gravity="center">
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:orientation="vertical">
 
                         <TextView
                             android:id="@+id/correct_speak"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textStyle="bold"
+                            android:gravity="center"
                             android:textColor="@color/light_green"
                             android:textSize="14sp"
-                            android:gravity="center"/>
+                            android:textStyle="bold" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:gravity="center"
                             android:text="Correct answers"
-                            android:textStyle="bold"
                             android:textColor="@color/light_green"
                             android:textSize="14sp"
-                            android:gravity="center"/>
+                            android:textStyle="bold" />
                     </LinearLayout>
 
                     <LinearLayout
                         android:layout_width="0dp"
-                        android:layout_weight="1"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:gravity="center">
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:orientation="vertical">
 
                         <TextView
                             android:id="@+id/comp_speak"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textStyle="bold"
+                            android:gravity="center"
                             android:textColor="@color/light_green"
                             android:textSize="14sp"
-                            android:gravity="center"/>
+                            android:textStyle="bold" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:gravity="center"
                             android:text="Complete"
-                            android:textStyle="bold"
                             android:textColor="@color/light_green"
                             android:textSize="14sp"
-                            android:gravity="center"/>
+                            android:textStyle="bold" />
                     </LinearLayout>
 
                 </LinearLayout>
             </LinearLayout>
 
             <!-- Kỹ năng Writing -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/write"
-                android:textColor="@color/black"
-                android:layout_marginTop="15dp"
-                android:drawableLeft="@drawable/tick_2"
-                android:textStyle="bold"
-                android:textSize="14sp" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
                 android:background="@drawable/rounded_corner"
+                android:orientation="vertical"
+                android:layout_marginTop="15dp"
                 android:padding="12dp">
-
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:drawableLeft="@drawable/tick_2"
+                    android:text="@string/write"
+                    android:textColor="@color/black"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -400,87 +431,86 @@
 
                     <LinearLayout
                         android:layout_width="0dp"
-                        android:layout_weight="1"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:gravity="center">
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:orientation="vertical">
 
                         <TextView
                             android:id="@+id/correct_write"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textStyle="bold"
+                            android:gravity="center"
                             android:textColor="@color/light_red"
                             android:textSize="14sp"
-                            android:gravity="center"/>
+                            android:textStyle="bold" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:gravity="center"
                             android:text="Correct answers"
-                            android:textStyle="bold"
                             android:textColor="@color/light_red"
                             android:textSize="14sp"
-                            android:gravity="center"/>
+                            android:textStyle="bold" />
                     </LinearLayout>
 
                     <LinearLayout
                         android:layout_width="0dp"
-                        android:layout_weight="1"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:gravity="center">
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:orientation="vertical">
 
                         <TextView
                             android:id="@+id/comp_write"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textStyle="bold"
+                            android:gravity="center"
                             android:textColor="@color/light_red"
                             android:textSize="14sp"
-                            android:gravity="center"/>
+                            android:textStyle="bold" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:gravity="center"
                             android:text="Complete"
-                            android:textStyle="bold"
                             android:textColor="@color/light_red"
                             android:textSize="14sp"
-                            android:gravity="center"/>
+                            android:textStyle="bold" />
                     </LinearLayout>
 
                 </LinearLayout>
             </LinearLayout>
+            <!-- Nút Review và Next -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/btnReview"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="20dp"
+                    android:layout_weight="1"
+                    android:backgroundTint="@color/grayy"
+                    android:text="Review"
+                    android:textColor="@color/white" />
+
+                <Button
+                    android:id="@+id/btnNext"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="20dp"
+                    android:layout_weight="1"
+                    android:backgroundTint="@color/btncolor"
+                    android:text="Next"
+                    android:textColor="@color/white" />
+            </LinearLayout>
 
         </LinearLayout>
-
-
-        <!-- Nút Review và Next -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <Button
-                android:id="@+id/btnReview"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="wrap_content"
-                android:text="Review"
-                android:backgroundTint="@color/grayy"
-                android:textColor="@color/white"
-                android:layout_margin="20dp"/>
-
-            <Button
-                android:id="@+id/btnNext"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="wrap_content"
-                android:text="Next"
-                android:backgroundTint="@color/btncolor"
-                android:textColor="@color/white"
-                android:layout_margin="20dp"/>
-        </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
     </LinearLayout>
-</ScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>
