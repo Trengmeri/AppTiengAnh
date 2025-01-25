@@ -98,7 +98,7 @@ public class RecordQuestionActivity extends AppCompatActivity implements SpeechR
                 Toast.makeText(RecordQuestionActivity.this, "Vui lòng trả lời câu hỏi!", Toast.LENGTH_SHORT).show();
             } else {
                 // Lưu câu trả lời của người dùng
-                apiManager.fetchAnswers(questionIds.get(currentStep), userAnswer, new ApiCallback() {
+                apiManager.saveUserAnswer(questionIds.get(currentStep), userAnswer, new ApiCallback() {
                     @Override
                     public void onSuccess() {
                         Log.e("RecordQuestionActivity", "Câu trả lời đã được lưu: " + userAnswers.toString());

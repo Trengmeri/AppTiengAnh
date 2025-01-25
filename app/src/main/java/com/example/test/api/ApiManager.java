@@ -44,23 +44,19 @@ public class ApiManager {
     private static final String BASE_URL = "http://192.168.109.2:8080"; // Thay đổi URL của bạn
     private static final OkHttpClient client = new OkHttpClient();
 
-    public static void gradeAnswer(int answerId, okhttp3.Callback callback) {
+    public static void gradeAnswer(int answerId, Callback callback) {
         String url = BASE_URL + "/api/v1/answers/grade/" + answerId;
-
-        // Tạo body nếu cần thiết, ví dụ nếu bạn cần gửi thêm thông tin
-        String jsonBody = "{ \"answerId\": " + answerId + " }"; // Tùy chỉnh theo yêu cầu API
-        RequestBody requestBody = RequestBody.create(jsonBody, MediaType.parse("application/json"));
 
         Request request = new Request.Builder()
                 .url(url)
-                .put(requestBody) // Sử dụng PUT nếu API yêu cầu
+                .post(RequestBody.create("", MediaType.parse("application/json"))) // Nếu không có body, có thể để trống
                 .build();
 
         client.newCall(request).enqueue(callback);
     }
 
     public void sendLoginRequest(String email, String password, ApiCallback callback) {
-         
+
         String json = "{ \"username\": \"" + email + "\", \"password\": \"" + password + "\" }";
         RequestBody body = RequestBody.create(json, MediaType.parse("application/json; charset=utf-8"));
 
@@ -472,43 +468,38 @@ public class ApiManager {
         });
     }
 
-    public void fetchAnswers(int questionId, String answerContent, ApiCallback callback) {
+    public void saveUserAnswer(int questionId, String answerContent, ApiCallback callback) {
 
-        String url = BASE_URL + "/answers/question/"+questionId; // Thay đổi URL nếu cần
+        // Tạo JSON từ dữ liệu
+        String json = "{"
+                + "\"questionId\":" + questionId + ","
+                + "\"answerContent\":\"" + answerContent + "\""
+                + "}";
 
+        // Tạo RequestBody
+        RequestBody body = RequestBody.create(
+                json, MediaType.get("application/json; charset=utf-8"));
+
+        // Tạo Request
         Request request = new Request.Builder()
-                .url(url)
-                .get() // Sử dụng phương thức GET
+                .url(BASE_URL + "/api/v1/answers/user/1") // Thay bằng URL máy chủ của bạn
+                .post(body)
                 .build();
 
+        // Thực hiện Request
         client.newCall(request).enqueue(new Callback() {
             @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                if (response.isSuccessful()) {
-                    String responseBody = response.body().string();
-                    Log.d("ApiManager", "Phản hồi từ server: " + responseBody);
-
-                    // Chuyển đổi JSON thành đối tượng ApiResponse
-                    Gson gson = new Gson();
-                    ApiResponseAnswer apiResponse = gson.fromJson(responseBody, ApiResponseAnswer.class);
-
-                    // Kiểm tra mã trạng thái
-                    if (apiResponse.getStatusCode() == 200) {
-                        List<Answer> answers = apiResponse.getData().getContent();
-                        callback.onSuccess(answers); // Gọi callback thành công với danh sách answers
-                    } else {
-                        callback.onFailure("Lỗi từ server: " + apiResponse.getMessage());
-                    }
-                } else {
-                    Log.e("ApiManager", "Lỗi từ server: Mã lỗi " + response.code() + ", Thông điệp: " + response.message());
-                    callback.onFailure("Lỗi từ server: Mã lỗi " + response.code());
-                }
+            public void onFailure(Call call, IOException e) {
+                callback.onFailure("Không thể lưu câu trả lời: " + e.getMessage());
             }
 
             @Override
-            public void onFailure(Call call, IOException e) {
-                Log.e("ApiManager", "Lỗi kết nối: " + e.getMessage());
-                callback.onFailure("Không thể kết nối tới API.");
+            public void onResponse(Call call, Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    callback.onSuccess();
+                } else {
+                    callback.onFailure("Lỗi: " + response.code());
+                }
             }
         });
     }

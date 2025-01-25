@@ -232,20 +232,20 @@ public class PointResultActivity extends AppCompatActivity {
         pointTextView.setText(String.valueOf(totalPoints));
         switch (skillType) {
             case "READING":
-                correctRead.setText(stuTime);
-                compRead.setText( totalPoints);
+                correctRead.setText("Correct: " + stuTime);
+                compRead.setText("Complete: " + totalPoints);
                 break;
             case "LISTENING":
-                correctLis.setText(stuTime);
-                compLis.setText(totalPoints);
+                correctLis.setText("Correct: " + stuTime);
+                compLis.setText("Complete: " + totalPoints);
                 break;
             case "SPEAKING":
-                correctSpeak.setText(stuTime);
-                compSpeak.setText(totalPoints);
+                correctSpeak.setText("Correct: " + stuTime);
+                compSpeak.setText("Complete: " + totalPoints);
                 break;
             case "WRITING":
-                correctWrite.setText(stuTime);
-                compWrite.setText(totalPoints);
+                correctWrite.setText("Correct: " + stuTime);
+                compWrite.setText("Complete: " + totalPoints);
                 break;
         }
     }

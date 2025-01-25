@@ -64,7 +64,7 @@ public class GrammarPickManyActivity extends AppCompatActivity {
                 Toast.makeText(GrammarPickManyActivity.this, "Vui lòng trả lời câu hỏi!", Toast.LENGTH_SHORT).show();
             } else {
                 // Lưu câu trả lời của người dùng
-                apiManager.fetchAnswers(questionIds.get(currentStep), userAnswers.toString(), new ApiCallback() {
+                apiManager.saveUserAnswer(questionIds.get(currentStep), userAnswers.toString(), new ApiCallback() {
 
                     @Override
                     public void onSuccess() {

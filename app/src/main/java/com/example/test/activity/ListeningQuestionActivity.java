@@ -69,7 +69,7 @@ public class ListeningQuestionActivity extends AppCompatActivity {
                 Toast.makeText(ListeningQuestionActivity.this, "Vui lòng trả lời câu hỏi!", Toast.LENGTH_SHORT).show();
             } else {
                 // Lưu câu trả lời của người dùng
-                apiManager.fetchAnswers(questionIds.get(currentStep), userAnswers.toString(), new ApiCallback() {
+                apiManager.saveUserAnswer(questionIds.get(currentStep), userAnswers.toString(), new ApiCallback() {
 
                     @Override
                     public void onSuccess() {
