@@ -1,0 +1,14 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="68dp"
+    android:height="68dp"
+    android:viewportWidth="68"
+    android:viewportHeight="68">
+  <!-- Circle Background -->
+  <path
+      android:pathData="M34,34m-24,0a24,24 0,1 1,48 0a24,24 0,1 1,-48 0"
+      android:fillColor="#FFFFFF"/> <!-- White background -->
+  <!-- Facebook "f" logo -->
+  <path
+      android:pathData="M38,22H35c-2.5,0 -4,1.5 -4,4v3h-2v5h2v12h5v-12h3v-5h-4v-2.5c0-0.7 0.5-1.5 1-1.5H38V22Z"
+      android:fillColor="#3b5998"/> <!-- Facebook blue -->
+</vector>

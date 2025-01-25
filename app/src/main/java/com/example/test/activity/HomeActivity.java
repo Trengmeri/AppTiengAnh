@@ -1,8 +1,10 @@
 package com.example.test.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -23,6 +25,7 @@ public class HomeActivity extends AppCompatActivity {
     Button continueButton;
     LinearLayout lessonsContainer; // LinearLayout để chứa các bài học
     TextView courseTitle,lessonTitle1,lessonNumber; // TextView để hiển thị tên khóa học
+    ImageView btnNoti;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,9 +37,18 @@ public class HomeActivity extends AppCompatActivity {
         courseTitle = findViewById(R.id.courseTitle); // ID của TextView hiển thị tên khóa học
         lessonTitle1 = findViewById(R.id.lessonTitle);
         lessonNumber = findViewById(R.id.lessonNumber);
+        btnNoti= findViewById(R.id.img_notification);
 
         continueButton.setOnClickListener(v -> {
             Toast.makeText(HomeActivity.this, "Continue studying clicked!", Toast.LENGTH_SHORT).show();
+        });
+
+        btnNoti.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(HomeActivity.this, NotificationActivity.class);
+                startActivity(intent);
+            }
         });
 
         // Gọi API để lấy thông tin khóa học

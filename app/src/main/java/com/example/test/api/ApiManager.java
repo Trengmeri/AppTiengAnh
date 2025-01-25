@@ -252,7 +252,7 @@ public class ApiManager {
         RequestBody body = RequestBody.create(json, MediaType.parse("application/json; charset=utf-8"));
 
         Request request = new Request.Builder()
-                .url("http://192.168.109.2:8080/api/v1/forgot-password/send-otp") // Thay bằng URL máy chủ của bạn
+                .url("http://192.168.56.1:8080/api/v1/forgot-password/send-otp") // Thay bằng URL máy chủ của bạn
                 .post(body)
                 .build();
 
@@ -296,7 +296,7 @@ public class ApiManager {
         RequestBody body = RequestBody.create(json, MediaType.parse("application/json; charset=utf-8"));
 
         Request request = new Request.Builder()
-                .url("http://192.168.109.2:8080/api/v1/forgot-password/verify-otp") // Thay bằng URL máy chủ của bạn
+                .url("http://192.168.56.1:8080/api/v1/forgot-password/verify-otp") // Thay bằng URL máy chủ của bạn
                 .post(body)
                 .build();
 

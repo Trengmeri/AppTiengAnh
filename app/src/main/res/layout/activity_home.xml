@@ -90,7 +90,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@drawable/back_home"
+            android:background="@drawable/bg_home"
             android:orientation="vertical">
 
 

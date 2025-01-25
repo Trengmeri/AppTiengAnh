@@ -74,6 +74,8 @@ public class ConfirmCodeActivity extends AppCompatActivity {
         // Bắt đầu đếm ngược thời gian
         startCountdown();
         btnRe.setOnClickListener(view -> {
+            btnRe.setEnabled(false); // Ngăn người dùng nhấn liên tục
+            btnRe.setAlpha(0.5f);
             resetCountdown();  // Gọi phương thức reset lại bộ đếm
         });
     }
