@@ -4,7 +4,6 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.recyclerview.widget.RecyclerView;
@@ -36,9 +35,17 @@ public class ChoiceAdapter extends RecyclerView.Adapter<ChoiceAdapter.ChoiceView
     @Override
     public void onBindViewHolder(@NonNull ChoiceViewHolder holder, int position) {
         QuestionChoice choice = choices.get(position);
-        holder.choiceButton.setText(choice.getChoiceContent());
+        String answer = choice.getChoiceContent();
+        holder.choiceButton.setText(answer);
+
+        // Kiểm tra nếu lựa chọn đã được chọn trước đó
+        if (userAnswers.contains(answer)) {
+            holder.choiceButton.setBackgroundResource(R.color.colorPressed);
+        } else {
+            holder.choiceButton.setBackgroundResource(R.color.colorDefault);
+        }
+
         holder.choiceButton.setOnClickListener(v -> {
-            String answer = choice.getChoiceContent();
             if (userAnswers.contains(answer)) {
                 userAnswers.remove(answer);
                 holder.choiceButton.setBackgroundResource(R.color.colorDefault);

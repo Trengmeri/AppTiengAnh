@@ -2,17 +2,21 @@ package com.example.test.model;
 
 public class Answer {
     private int id;
-    private String content;
     private boolean isCorrect;
+    private int questionId;
+    private int sessionId;
+    private int pointAchieved;
 
     // Constructor
-    public Answer(int id, String content, boolean isCorrect) {
+    public Answer(int id,  boolean isCorrect, int questionId, int sessionId, int pointAchieved) {
         this.id = id;
-        this.content = content;
         this.isCorrect = isCorrect;
+        this.questionId = questionId;
+        this.sessionId = sessionId;
+        this.pointAchieved = pointAchieved;
     }
 
-    // Getter and Setter
+    // Getters and Setters
     public int getId() {
         return id;
     }
@@ -21,19 +25,35 @@ public class Answer {
         this.id = id;
     }
 
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
-
     public boolean isCorrect() {
         return isCorrect;
     }
 
     public void setCorrect(boolean correct) {
         isCorrect = correct;
+    }
+
+    public int getQuestionId() {
+        return questionId;
+    }
+
+    public void setQuestionId(int questionId) {
+        this.questionId = questionId;
+    }
+
+    public int getSessionId() {
+        return sessionId;
+    }
+
+    public void setSessionId(int sessionId) {
+        this.sessionId = sessionId;
+    }
+
+    public int getPointAchieved() {
+        return pointAchieved;
+    }
+
+    public void setPointAchieved(int pointAchieved) {
+        this.pointAchieved = pointAchieved;
     }
 }

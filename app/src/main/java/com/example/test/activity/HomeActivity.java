@@ -12,9 +12,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.test.R;
 import com.example.test.api.ApiCallback;
 import com.example.test.api.ApiManager;
+import com.example.test.api.ApiResponseAnswer;
+import com.example.test.model.Answer;
 import com.example.test.model.Course;
 import com.example.test.model.Lesson;
 import com.example.test.model.Question;
+import com.example.test.model.Result;
 
 import java.util.List;
 
@@ -86,6 +89,17 @@ public class HomeActivity extends AppCompatActivity {
                                 public void onSuccess() {}
 
                                 @Override
+                                public void onSuccess(Result result) {}
+
+                                @Override
+                                public void onSuccess(List<Answer> answer) {}
+
+                                @Override
+                                public void onSuccess(ApiResponseAnswer response) {
+
+                                }
+
+                                @Override
                                 public void onSuccess(Question question) {
 
                                 }
@@ -109,6 +123,17 @@ public class HomeActivity extends AppCompatActivity {
 
             @Override
             public void onSuccess() {}
+
+            @Override
+            public void onSuccess(Result result) {}
+
+            @Override
+            public void onSuccess(List<Answer> answer) {}
+
+            @Override
+            public void onSuccess(ApiResponseAnswer response) {
+
+            }
 
             @Override
             public void onSuccess(Question question) {}

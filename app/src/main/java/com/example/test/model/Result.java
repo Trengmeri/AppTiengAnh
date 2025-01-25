@@ -1,6 +1,6 @@
 package com.example.test.model;
 
-public class Point {
+public class Result {
     private int id;
     private int stuTime;
     private int totalPoints;

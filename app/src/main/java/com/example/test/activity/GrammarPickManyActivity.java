@@ -21,10 +21,13 @@ import com.example.test.R;
 import com.example.test.adapter.ChoiceAdapter;
 import com.example.test.api.ApiCallback;
 import com.example.test.api.ApiManager;
+import com.example.test.api.ApiResponseAnswer;
+import com.example.test.model.Answer;
 import com.example.test.model.Course;
 import com.example.test.model.Lesson;
 import com.example.test.model.Question;
 import com.example.test.model.QuestionChoice;
+import com.example.test.model.Result;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -60,18 +63,62 @@ public class GrammarPickManyActivity extends AppCompatActivity {
             if (userAnswers.isEmpty()) {
                 Toast.makeText(GrammarPickManyActivity.this, "Vui lòng trả lời câu hỏi!", Toast.LENGTH_SHORT).show();
             } else {
-                PopupHelper.showResultPopup(findViewById(R.id.popupContainer), userAnswers, correctAnswers, () -> {
-                    userAnswers.clear();
-                    currentStep++;
-                    Log.d("GrammarPickManyActivity", "Current step: " + currentStep + ", Total steps: " + totalSteps);
+                // Lưu câu trả lời của người dùng
+                apiManager.fetchAnswers(questionIds.get(currentStep), userAnswers.toString(), new ApiCallback() {
 
-                    if (currentStep < totalSteps) {
-                        fetchQuestion(questionIds.get(currentStep));
-                        updateProgressBar(progressBar, currentStep);
-                    } else {
-                        Intent intent = new Intent(GrammarPickManyActivity.this, ListeningQuestionActivity.class);
-                        startActivity(intent);
-                        finish();
+                    @Override
+                    public void onSuccess() {
+                        Log.e("GrammarPickManyActivity", "Câu trả lời đã được lưu: " + userAnswers.toString());
+                        // Hiển thị popup
+                        runOnUiThread(() -> {
+                            PopupHelper.showResultPopup(findViewById(R.id.popupContainer), userAnswers, correctAnswers, () -> {
+                                // Callback khi nhấn Next Question trên popup
+                                currentStep++; // Tăng currentStep
+
+                                // Kiểm tra nếu hoàn thành
+                                if (currentStep < totalSteps) {
+                                    fetchQuestion(questionIds.get(currentStep)); // Lấy câu hỏi tiếp theo
+                                    updateProgressBar(progressBar, currentStep); // Cập nhật thanh tiến trình
+                                } else {
+                                    Intent intent = new Intent(GrammarPickManyActivity.this, ListeningQuestionActivity.class);
+                                    startActivity(intent);
+                                    finish();
+                                }
+                            });
+                        });
+                    }
+
+                    @Override
+                    public void onSuccess(Question question) {
+                    }
+
+                    @Override
+                    public void onSuccess(Lesson lesson) {
+                    }
+
+                    @Override
+                    public void onSuccess(Course course) {
+                    }
+
+                    @Override
+                    public void onSuccess(Result result) {
+                    }
+
+                    @Override
+                    public void onSuccess(List<Answer> answer) {}
+
+                    @Override
+                    public void onSuccess(ApiResponseAnswer response) {
+
+                    }
+
+                    @Override
+                    public void onFailure(String errorMessage) {
+                        Log.e("GrammarPickManyActivity", errorMessage);
+                    }
+
+                    @Override
+                    public void onSuccessWithOtpID(String otpID) {
                     }
                 });
             }
@@ -98,6 +145,17 @@ public class GrammarPickManyActivity extends AppCompatActivity {
 
             @Override
             public void onSuccess(Course course) {}
+
+            @Override
+            public void onSuccess(Result result) {}
+
+            @Override
+            public void onSuccess(List<Answer> answer) {}
+
+            @Override
+            public void onSuccess(ApiResponseAnswer response) {
+
+            }
 
             @Override
             public void onFailure(String errorMessage) {
@@ -149,6 +207,17 @@ public class GrammarPickManyActivity extends AppCompatActivity {
 
             @Override
             public void onSuccess(Course course) {}
+
+            @Override
+            public void onSuccess(Result result) {}
+
+            @Override
+            public void onSuccess(List<Answer> answer) {}
+
+            @Override
+            public void onSuccess(ApiResponseAnswer response) {
+
+            }
 
             @Override
             public void onFailure(String errorMessage) {

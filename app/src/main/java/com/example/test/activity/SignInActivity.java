@@ -24,10 +24,14 @@ import com.example.test.NetworkChangeReceiver;
 import com.example.test.R;
 import com.example.test.api.ApiCallback;
 import com.example.test.api.ApiManager;
+import com.example.test.api.ApiResponseAnswer;
+import com.example.test.model.Answer;
 import com.example.test.model.Course;
 import com.example.test.model.Lesson;
 import com.example.test.model.Question;
+import com.example.test.model.Result;
 
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -88,7 +92,16 @@ public class SignInActivity extends AppCompatActivity {
                     }
 
                     @Override
-                    public void onSuccessWithOtpID(String otpID) {
+                    public void onSuccessWithOtpID(String otpID) {}
+
+                    @Override
+                    public void onSuccess(Result result) {}
+
+                    @Override
+                    public void onSuccess(List<Answer> answer) {}
+
+                    @Override
+                    public void onSuccess(ApiResponseAnswer response) {
 
                     }
 

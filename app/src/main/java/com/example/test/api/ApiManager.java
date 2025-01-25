@@ -10,10 +10,12 @@ import android.util.Log;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;*/
 
+import com.example.test.model.Answer;
 import com.example.test.model.Course;
 import com.example.test.model.Lesson;
 import com.example.test.model.QuestionChoice;
 import com.example.test.model.Question;
+import com.example.test.model.Result;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
@@ -24,6 +26,7 @@ import java.io.IOException;
 import java.net.ConnectException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.Call;
@@ -35,22 +38,34 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class ApiManager {
-    private OkHttpClient client;
-
     public ApiManager() {
     }
 
-    public void sendLoginRequest(String email, String password, ApiCallback callback) {
-        OkHttpClient client = new OkHttpClient.Builder()
-                .connectTimeout(20, TimeUnit.SECONDS) // Tăng thời gian kết nối
-                .readTimeout(20, TimeUnit.SECONDS) // Tăng thời gian chờ phản hồi
-                .writeTimeout(10, TimeUnit.SECONDS) // Tăng thời gian ghi dữ liệu
+    private static final String BASE_URL = "http://192.168.109.2:8080"; // Thay đổi URL của bạn
+    private static final OkHttpClient client = new OkHttpClient();
+
+    public static void gradeAnswer(int answerId, okhttp3.Callback callback) {
+        String url = BASE_URL + "/api/v1/answers/grade/" + answerId;
+
+        // Tạo body nếu cần thiết, ví dụ nếu bạn cần gửi thêm thông tin
+        String jsonBody = "{ \"answerId\": " + answerId + " }"; // Tùy chỉnh theo yêu cầu API
+        RequestBody requestBody = RequestBody.create(jsonBody, MediaType.parse("application/json"));
+
+        Request request = new Request.Builder()
+                .url(url)
+                .put(requestBody) // Sử dụng PUT nếu API yêu cầu
                 .build();
+
+        client.newCall(request).enqueue(callback);
+    }
+
+    public void sendLoginRequest(String email, String password, ApiCallback callback) {
+         
         String json = "{ \"username\": \"" + email + "\", \"password\": \"" + password + "\" }";
         RequestBody body = RequestBody.create(json, MediaType.parse("application/json; charset=utf-8"));
 
         Request request = new Request.Builder()
-                .url("http://192.168.109.2:8080/api/v1/auth/login") // Thay bằng URL máy chủ của bạn
+                .url(BASE_URL + "/api/v1/auth/login") // Thay bằng URL máy chủ của bạn
                 .post(body)
                 .build();
 
@@ -79,18 +94,13 @@ public class ApiManager {
     // { \"name\": \"" + name + "\", \"phone\": \"" + phone + "\", \"email\": \"" +
     // email + "\", \"password\": \"" + password + "\" }
     public void sendSignUpRequest(Context context, String name, String email, String password, ApiCallback callback) {
-        OkHttpClient client = new OkHttpClient.Builder()
-                .connectTimeout(10, TimeUnit.SECONDS) // Tăng thời gian kết nối
-                .readTimeout(20, TimeUnit.SECONDS) // Tăng thời gian chờ phản hồi
-                .writeTimeout(10, TimeUnit.SECONDS) // Tăng thời gian ghi dữ liệu
-                .build();
 
         String json = "{ \"name\": \"" + name + "\", \"email\": \"" + email + "\", \"password\": \"" + password
                 + "\" }";
         RequestBody body = RequestBody.create(json, MediaType.parse("application/json; charset=utf-8"));
 
         Request request = new Request.Builder()
-                .url("http://192.168.109.2:8080/api/v1/auth/register") // Thay bằng URL máy chủ của bạn
+                .url(BASE_URL + "/api/v1/auth/register") // Thay bằng URL máy chủ của bạn
                 .post(body)
                 .build();
 
@@ -121,11 +131,6 @@ public class ApiManager {
     }
 
     public void sendConfirmCodeRequest(String otpID, String code, ApiCallback callback) {
-        OkHttpClient client = new OkHttpClient.Builder()
-                .connectTimeout(10, TimeUnit.SECONDS) // Tăng thời gian kết nối
-                .readTimeout(20, TimeUnit.SECONDS) // Tăng thời gian chờ phản hồi
-                .writeTimeout(10, TimeUnit.SECONDS) // Tăng thời gian ghi dữ liệu
-                .build();
 
         String json = "{ \"otpID\": \"" + otpID + "\", \"otp\": \"" + code + "\" }";
 
@@ -134,7 +139,7 @@ public class ApiManager {
         RequestBody body = RequestBody.create(json, MediaType.parse("application/json; charset=utf-8"));
 
         Request request = new Request.Builder()
-                .url("http://192.168.109.2:8080/api/v1/auth/verify-otp") // Thay bằng URL máy chủ của bạn
+                .url(BASE_URL + "/api/v1/auth/verify-otp") // Thay bằng URL máy chủ của bạn
                 .post(body)
                 .build();
 
@@ -182,11 +187,6 @@ public class ApiManager {
 
     //Resend OTP khi dki
     public void resendCodeRequest(String otpID, ApiCallback callback) {
-        OkHttpClient client = new OkHttpClient.Builder()
-                .connectTimeout(10, TimeUnit.SECONDS) // Tăng thời gian kết nối
-                .readTimeout(20, TimeUnit.SECONDS) // Tăng thời gian chờ phản hồi
-                .writeTimeout(10, TimeUnit.SECONDS) // Tăng thời gian ghi dữ liệu
-                .build();
 
         String json = "{ \"otpID\": \"" + otpID + "\" }";
 
@@ -195,7 +195,7 @@ public class ApiManager {
         RequestBody body = RequestBody.create(json, MediaType.parse("application/json; charset=utf-8"));
 
         Request request = new Request.Builder()
-                .url("http://192.168.109.2:8080/api/v1/auth/resend-otp") // Thay bằng URL máy chủ của bạn
+                .url(BASE_URL + "/api/v1/auth/resend-otp") // Thay bằng URL máy chủ của bạn
                 .post(body)
                 .build();
 
@@ -242,17 +242,11 @@ public class ApiManager {
     }
 
     public void sendForgotRequest(Context context, String name, String email, String password, ApiCallback callback) {
-        OkHttpClient client = new OkHttpClient.Builder()
-                .connectTimeout(10, TimeUnit.SECONDS) // Tăng thời gian kết nối
-                .readTimeout(20, TimeUnit.SECONDS) // Tăng thời gian chờ phản hồi
-                .writeTimeout(10, TimeUnit.SECONDS) // Tăng thời gian ghi dữ liệu
-                .build();
-
         String json = "{ \"email\": \"" + email + "\" }";
         RequestBody body = RequestBody.create(json, MediaType.parse("application/json; charset=utf-8"));
 
         Request request = new Request.Builder()
-                .url("http://192.168.109.2:8080/api/v1/forgot-password/send-otp") // Thay bằng URL máy chủ của bạn
+                .url(BASE_URL + "/api/v1/forgot-password/send-otp") // Thay bằng URL máy chủ của bạn
                 .post(body)
                 .build();
 
@@ -283,11 +277,6 @@ public class ApiManager {
     }
 
     public void sendConfirmCodeRequestForgot(String otpID, String code, ApiCallback callback) {
-        OkHttpClient client = new OkHttpClient.Builder()
-                .connectTimeout(10, TimeUnit.SECONDS) // Tăng thời gian kết nối
-                .readTimeout(20, TimeUnit.SECONDS) // Tăng thời gian chờ phản hồi
-                .writeTimeout(10, TimeUnit.SECONDS) // Tăng thời gian ghi dữ liệu
-                .build();
 
         String json = "{ \"otpID\": \"" + otpID + "\", \"otp\": \"" + code + "\" }";
 
@@ -296,7 +285,7 @@ public class ApiManager {
         RequestBody body = RequestBody.create(json, MediaType.parse("application/json; charset=utf-8"));
 
         Request request = new Request.Builder()
-                .url("http://192.168.109.2:8080/api/v1/forgot-password/verify-otp") // Thay bằng URL máy chủ của bạn
+                .url(BASE_URL + "/api/v1/forgot-password/verify-otp") // Thay bằng URL máy chủ của bạn
                 .post(body)
                 .build();
 
@@ -347,13 +336,8 @@ public class ApiManager {
         // String access_token =
         // "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ2YW5raWV0bWFzdGVyY3Y0QGdtYWlsLmNvbSIsImV4cCI6MTc0NTMwNzEyMCwiaWF0IjoxNzM2NjY3MTIwLCJ1c2VyIjp7ImlkIjo1LCJlbWFpbCI6InZhbmtpZXRtYXN0ZXJjdjRAZ21haWwuY29tIiwibmFtZSI6IlZhbiBLaWV0In19.K_906ifZ2fQEMxkPEPERaLY7Gh-VTyjvoUae6CEjnLkmR-vyleeraJuAzfEvzMfgsMwwniTBntAIBQP_p9HgFA";
         // // Token mà bạn đã nhận được sau khi đăng nhập thành công
-        OkHttpClient client = new OkHttpClient.Builder()
-                .connectTimeout(20, TimeUnit.SECONDS) // Tăng thời gian kết nối
-                .readTimeout(30, TimeUnit.SECONDS) // Tăng thời gian chờ phản hồi
-                .writeTimeout(20, TimeUnit.SECONDS) // Tăng thời gian ghi dữ liệu
-                .build();
         Request request = new Request.Builder()
-                .url("http://192.168.109.2:8080/api/v1/questions/" + questionId)// Địa chỉ API lấy câu hỏi
+                .url(BASE_URL + "/api/v1/questions/" + questionId)// Địa chỉ API lấy câu hỏi
                 // .addHeader("Authorization", "Bearer " + access_token)
                 .build();
 
@@ -414,14 +398,9 @@ public class ApiManager {
     }
 
     public void fetchLessonById(int lessonId, ApiCallback callback) {
-        OkHttpClient client = new OkHttpClient.Builder()
-                .connectTimeout(20, TimeUnit.SECONDS)
-                .readTimeout(30, TimeUnit.SECONDS)
-                .writeTimeout(20, TimeUnit.SECONDS)
-                .build();
 
         Request request = new Request.Builder()
-                .url("http://192.168.109.2:8080/api/v1/lessons/" + lessonId) // Thay bằng URL máy chủ của bạn
+                .url(BASE_URL + "/api/v1/lessons/" + lessonId) // Thay bằng URL máy chủ của bạn
                 .build();
 
         client.newCall(request).enqueue(new Callback() {
@@ -457,14 +436,8 @@ public class ApiManager {
     }
 
     public void fetchCourseById(ApiCallback callback) {
-        OkHttpClient client = new OkHttpClient.Builder()
-                .connectTimeout(20, TimeUnit.SECONDS)
-                .readTimeout(30, TimeUnit.SECONDS)
-                .writeTimeout(20, TimeUnit.SECONDS)
-                .build();
-
         Request request = new Request.Builder()
-                .url("http://192.168.109.2:8080/api/v1/courses/1") // Thay bằng URL máy chủ của bạn
+                .url(BASE_URL + "/api/v1/courses/1") // Thay bằng URL máy chủ của bạn
                 .build();
 
         client.newCall(request).enqueue(new Callback() {
@@ -482,6 +455,132 @@ public class ApiManager {
                     if (apiResponse.getStatusCode() == 200) {
                         Course course = apiResponse.getData(); // Lấy dữ liệu khóa học
                         callback.onSuccess(course); // Gọi callback onSuccess với khóa học
+                    } else {
+                        callback.onFailure("Lỗi từ server: " + apiResponse.getMessage());
+                    }
+                } else {
+                    Log.e("ApiManager", "Lỗi từ server: Mã lỗi " + response.code());
+                    callback.onFailure("Lỗi từ server: Mã lỗi " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.e("ApiManager", "Lỗi kết nối: " + e.getMessage());
+                callback.onFailure("Không thể kết nối tới API.");
+            }
+        });
+    }
+
+    public void fetchAnswers(int questionId, String answerContent, ApiCallback callback) {
+
+        String url = BASE_URL + "/answers/question/"+questionId; // Thay đổi URL nếu cần
+
+        Request request = new Request.Builder()
+                .url(url)
+                .get() // Sử dụng phương thức GET
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    String responseBody = response.body().string();
+                    Log.d("ApiManager", "Phản hồi từ server: " + responseBody);
+
+                    // Chuyển đổi JSON thành đối tượng ApiResponse
+                    Gson gson = new Gson();
+                    ApiResponseAnswer apiResponse = gson.fromJson(responseBody, ApiResponseAnswer.class);
+
+                    // Kiểm tra mã trạng thái
+                    if (apiResponse.getStatusCode() == 200) {
+                        List<Answer> answers = apiResponse.getData().getContent();
+                        callback.onSuccess(answers); // Gọi callback thành công với danh sách answers
+                    } else {
+                        callback.onFailure("Lỗi từ server: " + apiResponse.getMessage());
+                    }
+                } else {
+                    Log.e("ApiManager", "Lỗi từ server: Mã lỗi " + response.code() + ", Thông điệp: " + response.message());
+                    callback.onFailure("Lỗi từ server: Mã lỗi " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.e("ApiManager", "Lỗi kết nối: " + e.getMessage());
+                callback.onFailure("Không thể kết nối tới API.");
+            }
+        });
+    }
+
+    public void fetchAnswerPointsByQuesId(int questionId, ApiCallback callback) {
+        Request request = new Request.Builder()
+                .url(BASE_URL + "/api/v1/answers/question/" + questionId) // Thay bằng URL máy chủ của bạn
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    String responseBody = response.body().string();
+                    Log.d("ApiManager", "Phản hồi từ server: " + responseBody);
+
+                    // Tạo đối tượng từ phản hồi JSON
+                    Gson gson = new Gson();
+                    ApiResponseAnswer apiResponse = gson.fromJson(responseBody, ApiResponseAnswer.class);
+
+                    // Kiểm tra mã trạng thái
+                    if (apiResponse.getStatusCode() == 200) {
+                        List<Answer> answers = apiResponse.getData().getContent(); // Lấy dữ liệu khóa học
+
+                        // Tạo JSON từ danh sách answers
+                        String jsonAnswers = gson.toJson(answers);
+                        Log.d("ApiManager", "Dữ liệu JSON: " + jsonAnswers);
+
+                        callback.onSuccess(answers); // Gọi callback onSuccess với khóa học
+                    } else {
+                        callback.onFailure("Lỗi từ server: " + apiResponse.getMessage());
+                    }
+                } else {
+                    Log.e("ApiManager", "Lỗi từ server: Mã lỗi " + response.code());
+                    callback.onFailure("Lỗi từ server: Mã lỗi " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.e("ApiManager", "Lỗi kết nối: " + e.getMessage());
+                callback.onFailure("Không thể kết nối tới API.");
+            }
+        });
+    }
+
+    public void fetchResultByLesson(int lessonId, ApiCallback callback) {
+
+        Request request = new Request.Builder()
+                .url(BASE_URL + "/api/v1/lesson-results/lesson/" + lessonId) // Thay bằng URL máy chủ của bạn
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    String responseBody = response.body().string();
+                    Log.d("ApiManager", "Phản hồi từ server: " + responseBody);
+
+                    // Tạo đối tượng từ phản hồi JSON
+                    Gson gson = new Gson();
+                    ApiResponseResult apiResponse = gson.fromJson(responseBody, ApiResponseResult.class);
+
+                    // Kiểm tra mã trạng thái
+                    if (apiResponse.getStatusCode() == 200) {
+                        Result result = apiResponse.getData(); // Lấy dữ liệu khóa học
+
+                        // Tạo JSON từ đối tượng result
+                        String jsonResult = gson.toJson(result);
+                        Log.d("ApiManager", "Dữ liệu JSON: " + jsonResult);
+
+                        callback.onSuccess(result); // Gọi callback onSuccess với khóa học
                     } else {
                         callback.onFailure("Lỗi từ server: " + apiResponse.getMessage());
                     }

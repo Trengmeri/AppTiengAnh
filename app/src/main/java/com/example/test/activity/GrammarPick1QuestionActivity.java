@@ -19,18 +19,26 @@ import com.example.test.PopupHelper;
 import com.example.test.R;
 import com.example.test.api.ApiCallback;
 import com.example.test.api.ApiManager;
+import com.example.test.api.ApiResponseAnswer;
+import com.example.test.model.Answer;
 import com.example.test.model.Course;
 import com.example.test.model.Lesson;
 import com.example.test.model.Question;
 import com.example.test.model.QuestionChoice;
+import com.example.test.model.Result;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import okhttp3.Call;
+import okhttp3.Response;
+
 public class GrammarPick1QuestionActivity extends AppCompatActivity {
     List<String> correctAnswers = new ArrayList<>();
     private List<String> userAnswers = new ArrayList<>();
+    private List<Integer> answerIds; // Danh sách answerIds
     private int currentStep = 0; // Bước hiện tại (bắt đầu từ 0)
     private int totalSteps; // Tổng số bước trong thanh tiến trình
     private AppCompatButton selectedAnswer = null;
@@ -68,21 +76,102 @@ public class GrammarPick1QuestionActivity extends AppCompatActivity {
                 Toast.makeText(GrammarPick1QuestionActivity.this, "Vui lòng trả lời câu hỏi!", Toast.LENGTH_SHORT)
                         .show();
             } else {
-                // Hiển thị popup
-                PopupHelper.showResultPopup(findViewById(R.id.popupContainer), userAnswers, correctAnswers, () -> {
-                    // Callback khi nhấn Next Question trên popup
-                    resetAnswerColors();
-                    currentStep++; // Tăng currentStep
+                // Lưu câu trả lời của người dùng
+                apiManager.fetchAnswers(questionIds.get(currentStep), userAnswers.toString() ,new ApiCallback() {
+                    @Override
+                    public void onSuccess() {
 
-                    // Kiểm tra nếu hoàn thành
-                    if (currentStep < totalSteps) {
-                        fetchQuestion(questionIds.get(currentStep)); // Lấy câu hỏi tiếp theo
-                        updateProgressBar(progressBar, currentStep); // Cập nhật thanh tiến trình
-                    } else {
-                        Intent intent = new Intent(GrammarPick1QuestionActivity.this, GrammarPickManyActivity.class);
-                        startActivity(intent);
-                        finish();
                     }
+
+                    @Override
+                    public void onSuccess(Question question) {
+
+                    }
+
+                    @Override
+                    public void onSuccess(Lesson lesson) {
+
+                    }
+
+                    @Override
+                    public void onSuccess(Course course) {
+
+                    }
+
+                    @Override
+                    public void onSuccess(Result result) {
+
+                    }
+
+                    @Override
+                    public void onSuccess(List<Answer> answers) {
+                        Log.e("GrammarPick1QuestionActivity", "Câu trả lời đã được lấy: " + answers.toString());
+
+                        // Lấy answerId từ câu trả lời đầu tiên
+                        if (!answers.isEmpty()) {
+                            answerIds = new ArrayList<>();
+                            for (Answer answer : answers) {
+                                answerIds.add(answer.getId()); // Lưu answerId
+                            }
+
+                            // Gọi phương thức gradeAnswer với answerId
+                            if (!answerIds.isEmpty()) {
+                                apiManager.gradeAnswer(answerIds.get(0), new okhttp3.Callback() {
+                                    @Override
+                                    public void onFailure(Call call, IOException e) {
+                                        Log.e("GrammarPick1QuestionActivity", "Lỗi chấm điểm: " + e.getMessage());
+                                    }
+
+                                    @Override
+                                    public void onResponse(Call call, Response response) throws IOException {
+                                        if (response.isSuccessful()) {
+                                            Log.e("GrammarPick1QuestionActivity", "Chấm điểm thành công cho answerId: " + answerIds.get(0));
+
+                                            // Hiển thị popup
+                                            runOnUiThread(() -> {
+                                                PopupHelper.showResultPopup(findViewById(R.id.popupContainer), userAnswers, correctAnswers, () -> {
+                                                    // Callback khi nhấn Next Question trên popup
+                                                    resetAnswerColors();
+                                                    currentStep++; // Tăng currentStep
+
+                                                    // Kiểm tra nếu hoàn thành
+                                                    if (currentStep < totalSteps) {
+                                                        fetchQuestion(questionIds.get(currentStep)); // Lấy câu hỏi tiếp theo
+                                                        updateProgressBar(progressBar, currentStep); // Cập nhật thanh tiến trình
+                                                    } else {
+                                                        Intent intent = new Intent(GrammarPick1QuestionActivity.this, GrammarPickManyActivity.class);
+                                                        startActivity(intent);
+                                                        finish();
+                                                    }
+                                                });
+                                            });
+                                        } else {
+                                            Log.e("GrammarPick1QuestionActivity", "Lỗi từ server: " + response.code());
+                                        }
+                                    }
+                                });
+                            } else {
+                                Log.e("GrammarPick1QuestionActivity", "Không có câu trả lời nào để chấm điểm.");
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onSuccess(ApiResponseAnswer response) {
+
+                    }
+
+                    @Override
+                    public void onFailure(String errorMessage) {
+                        Log.e("GrammarPick1QuestionActivity", errorMessage);
+                    }
+
+                    @Override
+                    public void onSuccessWithOtpID(String otpID) {
+
+                    }
+
+                    // Các phương thức khác không cần thiết có thể bỏ qua
                 });
             }
         });
@@ -108,6 +197,15 @@ public class GrammarPick1QuestionActivity extends AppCompatActivity {
 
             @Override
             public void onSuccess(Course course) {}
+
+            @Override
+            public void onSuccess(Result result) {}
+
+            @Override
+            public void onSuccess(List<Answer> answer) {}
+
+            @Override
+            public void onSuccess(ApiResponseAnswer response) {}
 
             @Override
             public void onFailure(String errorMessage) {
@@ -168,6 +266,15 @@ public class GrammarPick1QuestionActivity extends AppCompatActivity {
 
             @Override
             public void onSuccess(Course course) {}
+
+            @Override
+            public void onSuccess(Result result) {}
+
+            @Override
+            public void onSuccess(List<Answer> answer) {}
+
+            @Override
+            public void onSuccess(ApiResponseAnswer response) {}
 
             @Override
             public void onFailure(String errorMessage) {
