@@ -11,6 +11,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 
@@ -27,9 +28,14 @@ import com.example.test.model.Question;
 import com.example.test.model.QuestionChoice;
 import com.example.test.model.Result;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Response;
 
 public class GrammarPick1QuestionActivity extends AppCompatActivity {
     List<String> correctAnswers = new ArrayList<>();
@@ -42,7 +48,8 @@ public class GrammarPick1QuestionActivity extends AppCompatActivity {
     ApiManager apiManager;
     TextView tvContent;
     NetworkChangeReceiver networkReceiver;
-    private List<Integer> questionIds; // Danh sách questionIds
+    private List<Integer> questionIds;
+    private int answerIds;// Danh sách questionIds
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,12 +78,20 @@ public class GrammarPick1QuestionActivity extends AppCompatActivity {
                 Toast.makeText(GrammarPick1QuestionActivity.this, "Vui lòng trả lời câu hỏi!", Toast.LENGTH_SHORT)
                         .show();
             } else {
+                StringBuilder sb = new StringBuilder();
+                for (int i = 0; i < userAnswers.size(); i++) {
+                    sb.append(userAnswers.get(i));
+                    if (i < userAnswers.size() - 1) {
+                        sb.append(", "); // Hoặc ký tự phân cách khác
+                    }
+                }
+                String answerContent = sb.toString();
                 // Lưu câu trả lời của người dùng
-                apiManager.saveUserAnswer(questionIds.get(currentStep), userAnswers.toString(), new ApiCallback() {
+                apiManager.saveUserAnswer(questionIds.get(currentStep), answerContent, new ApiCallback() {
 
                     @Override
                     public void onSuccess() {
-                        Log.e("GrammarPick1QuestionActivity", "Câu trả lời đã được lưu: " + userAnswers.toString());
+                        Log.e("GrammarPick1QuestionActivity", "Câu trả lời đã được lưu: " + answerContent);
                         // Hiển thị popup
                         runOnUiThread(() -> {
                             PopupHelper.showResultPopup(findViewById(R.id.popupContainer), userAnswers, correctAnswers, () -> {
@@ -94,6 +109,70 @@ public class GrammarPick1QuestionActivity extends AppCompatActivity {
                                     finish();
                                 }
                             });
+                        });
+                        apiManager.fetchAnswerPointsByQuesId(questionIds.get(currentStep), new ApiCallback() {
+                            @Override
+                            public void onSuccess() {
+                            }
+
+                            @Override
+                            public void onSuccess(Question questions) {
+
+                            }
+
+                            @Override
+                            public void onSuccess(Lesson lesson) {
+
+                            }
+
+                            @Override
+                            public void onSuccess(Course course) {
+
+                            }
+
+                            @Override
+                            public void onSuccess(Result result) {
+
+                            }
+
+                            @Override
+                            public void onSuccess(Answer answer) {
+                                if (answer != null) {
+                                    answerIds = answer.getId();
+                                    Log.e("GrammarPick1QuestionActivity", "Answer ID từ API: " + answer.getId());
+                                    if (answerIds != 0) {
+                                        ApiManager.gradeAnswer(answerIds, new Callback() {
+                                            @Override
+                                            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                                                Log.e("GrammarPick1QuestionActivity", "Lỗi khi chấm điểm: " + e.getMessage());
+                                            }
+
+                                            @Override
+                                            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                                                if (response.isSuccessful()) {
+                                                    Log.e("GrammarPick1QuestionActivity", "Chấm điểm thành công cho Answer ID: " + answerIds +"Diem: "+ answer.getPointAchieved());
+                                                } else {
+                                                    Log.e("GrammarPick1QuestionActivity", "Lỗi từ server: " + response.code());
+                                                }
+                                            }
+                                        });
+                                    } else {
+                                        Log.e("GrammarPick1QuestionActivity", "Bài học không có câu trl.");
+                                    }
+                                } else {
+                                    Log.e("GrammarPick1QuestionActivity", "Không nhận được câu trả lời từ API.");
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(String errorMessage) {
+
+                            }
+
+                            @Override
+                            public void onSuccessWithOtpID(String otpID) {
+
+                            }
                         });
                     }
 
@@ -114,12 +193,9 @@ public class GrammarPick1QuestionActivity extends AppCompatActivity {
                     }
 
                     @Override
-                    public void onSuccess(List<Answer> answer) {}
-
-                    @Override
-                    public void onSuccess(ApiResponseAnswer response) {
-
+                    public void onSuccess(Answer answer) {
                     }
+
 
                     @Override
                     public void onFailure(String errorMessage) {
@@ -160,12 +236,7 @@ public class GrammarPick1QuestionActivity extends AppCompatActivity {
             public void onSuccess(Result result) {}
 
             @Override
-            public void onSuccess(List<Answer> answer) {}
-
-            @Override
-            public void onSuccess(ApiResponseAnswer response) {
-
-            }
+            public void onSuccess(Answer answer) {}
 
             @Override
             public void onFailure(String errorMessage) {
@@ -231,12 +302,7 @@ public class GrammarPick1QuestionActivity extends AppCompatActivity {
             public void onSuccess(Result result) {}
 
             @Override
-            public void onSuccess(List<Answer> answer) {}
-
-            @Override
-            public void onSuccess(ApiResponseAnswer response) {
-
-            }
+            public void onSuccess(Answer answer) {}
 
             @Override
             public void onFailure(String errorMessage) {

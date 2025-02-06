@@ -26,6 +26,8 @@ import java.io.IOException;
 import java.net.ConnectException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -49,7 +51,7 @@ public class ApiManager {
 
         Request request = new Request.Builder()
                 .url(url)
-                .post(RequestBody.create("", MediaType.parse("application/json"))) // Nếu không có body, có thể để trống
+                .put(RequestBody.create("", MediaType.parse(""))) // Nếu không có body, có thể để trống
                 .build();
 
         client.newCall(request).enqueue(callback);
@@ -470,10 +472,20 @@ public class ApiManager {
 
     public void saveUserAnswer(int questionId, String answerContent, ApiCallback callback) {
 
-        // Tạo JSON từ dữ liệu
+        // Tách chuỗi answerContent thành các phần tử
+        String[] answerParts = answerContent.split(", ");
+
+        // Tạo List<String> từ các phần tử
+        List<String> answerList = new ArrayList<>(Arrays.asList(answerParts));
+
+        // Chuyển đổi List<String> thành JSON array
+        Gson gson = new Gson();
+        String answerContentJson = gson.toJson(answerList);
+
+        // Tạo JSON object
         String json = "{"
                 + "\"questionId\":" + questionId + ","
-                + "\"answerContent\":\"" + answerContent + "\""
+                + "\"answerContent\":" + answerContentJson // Sử dụng JSON array cho answerContent
                 + "}";
 
         // Tạo RequestBody
@@ -504,9 +516,47 @@ public class ApiManager {
         });
     }
 
+    public void createResult(int lessonId, int sessionId, int enrollmentId, ApiCallback callback) {
+        // Tạo JSON từ dữ liệu
+        String json = "{"
+                + "\"lessonId\":" + lessonId + ","
+                + "\"sessionId\":" + sessionId + ","
+                + "\"enrollmentId\":" + enrollmentId
+                + "}";
+
+        // Tạo RequestBody
+        RequestBody body = RequestBody.create(
+                json, MediaType.get("application/json; charset=utf-8"));
+
+        // Tạo Request
+        Request request = new Request.Builder()
+                .url(BASE_URL + "/api/v1/lesson-results/user/1") // Thay bằng URL máy chủ của bạn
+                .post(body)
+                .build();
+
+        // Thực hiện Request
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                callback.onFailure("Không thể tạo kết quả: " + e.getMessage());
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    Log.d("ApiManager", "createResult: Tạo Result thành công");
+                    callback.onSuccess();
+                } else {
+                    Log.e("ApiManager", "createResult: Lỗi " + response.code());
+                    callback.onFailure("Lỗi: " + response.code());
+                }
+            }
+        });
+    }
+
     public void fetchAnswerPointsByQuesId(int questionId, ApiCallback callback) {
         Request request = new Request.Builder()
-                .url(BASE_URL + "/api/v1/answers/question/" + questionId) // Thay bằng URL máy chủ của bạn
+                .url(BASE_URL + "/api/v1/answers/question/" + questionId ) // Thay bằng URL máy chủ của bạn
                 .build();
 
         client.newCall(request).enqueue(new Callback() {
@@ -520,15 +570,15 @@ public class ApiManager {
                     Gson gson = new Gson();
                     ApiResponseAnswer apiResponse = gson.fromJson(responseBody, ApiResponseAnswer.class);
 
-                    // Kiểm tra mã trạng thái
                     if (apiResponse.getStatusCode() == 200) {
-                        List<Answer> answers = apiResponse.getData().getContent(); // Lấy dữ liệu khóa học
-
-                        // Tạo JSON từ danh sách answers
-                        String jsonAnswers = gson.toJson(answers);
-                        Log.d("ApiManager", "Dữ liệu JSON: " + jsonAnswers);
-
-                        callback.onSuccess(answers); // Gọi callback onSuccess với khóa học
+                        List<Answer> answers = apiResponse.getData().getContent(); // Lấy danh sách answers
+                        if (!answers.isEmpty()) {
+                            Answer firstAnswer = answers.get(answers.size()-1); // Lấy đối tượng Answer đầu tiên
+                            Log.d("ApiManager", "Answer ID: " + firstAnswer.getId() + ", Điểm đạt được: " + firstAnswer.getPointAchieved() + ", Session ID: " + firstAnswer.getSessionId());
+                            callback.onSuccess(firstAnswer); // Gọi callback thành công với đối tượng Answer đầu tiên
+                        } else {
+                            callback.onFailure("Không có câu trả lời nào.");
+                        }
                     } else {
                         callback.onFailure("Lỗi từ server: " + apiResponse.getMessage());
                     }
@@ -547,9 +597,8 @@ public class ApiManager {
     }
 
     public void fetchResultByLesson(int lessonId, ApiCallback callback) {
-
         Request request = new Request.Builder()
-                .url(BASE_URL + "/api/v1/lesson-results/lesson/" + lessonId) // Thay bằng URL máy chủ của bạn
+                .url(BASE_URL + "/api/v1/lesson-results/user/1/lesson/"+ lessonId +"/latest" ) // Thay bằng URL máy chủ của bạn
                 .build();
 
         client.newCall(request).enqueue(new Callback() {
@@ -565,15 +614,18 @@ public class ApiManager {
 
                     // Kiểm tra mã trạng thái
                     if (apiResponse.getStatusCode() == 200) {
-                        Result result = apiResponse.getData(); // Lấy dữ liệu khóa học
+                        List<Result> results = apiResponse.getData(); // Lấy danh sách kết quả
+                        // Tạo JSON từ danh sách results
+                        String jsonResults = gson.toJson(results);
+                        Log.d("ApiManager", "Dữ liệu JSON: " + jsonResults);
 
-                        // Tạo JSON từ đối tượng result
-                        String jsonResult = gson.toJson(result);
-                        Log.d("ApiManager", "Dữ liệu JSON: " + jsonResult);
-
-                        callback.onSuccess(result); // Gọi callback onSuccess với khóa học
-                    } else {
-                        callback.onFailure("Lỗi từ server: " + apiResponse.getMessage());
+                        if (!results.isEmpty()) {
+                            Result firstAnswer = results.get(results.size() - 1); // Lấy đối tượng Answer đầu tiên
+                            Log.d("ApiManager", "Result ID: " + firstAnswer.getId() + ", Điểm đạt được: " + firstAnswer.getTotalPoints() + ", Subtime: " + firstAnswer.getStuTime());
+                            callback.onSuccess(firstAnswer); // Gọi callback thành công với đối tượng Answer đầu tiên
+                        } else {
+                            callback.onFailure("Không có câu trả lời nào.");
+                        }
                     }
                 } else {
                     Log.e("ApiManager", "Lỗi từ server: Mã lỗi " + response.code());

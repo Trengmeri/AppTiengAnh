@@ -16,14 +16,7 @@ public interface ApiCallback {
     void onSuccess(Lesson lesson);
     void onSuccess(Course course);
     void onSuccess(Result result);
-    void onSuccess(List<Answer> answer);
-
-    void onSuccess(ApiResponseAnswer response);
-
+    void onSuccess(Answer answer);
     void onFailure(String errorMessage);
     void onSuccessWithOtpID(String otpID);
-    // void onSuccess(String token);
-/*    void onQuestionsSuccess(List<Question> questions);
-    void onAnswersSuccess(List<Answer> answers);
-    void onPointsSuccess(List<Point> points);*/
 }

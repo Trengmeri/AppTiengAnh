@@ -1,11 +1,19 @@
 package com.example.test.model;
 
+import com.google.gson.annotations.SerializedName;
+
 public class Result {
     private int id;
     private int stuTime;
     private int totalPoints;
-    private User user;
-    private Lesson lesson;
+    private int lessionId;
+    private int enrollmentId;
+
+    @SerializedName("user")
+    private User user; // Thêm trường user
+
+    @SerializedName("lesson")
+    private Lesson lesson; // Thêm trường lesson
 
     // Getters and Setters
     public int getId() {
@@ -13,6 +21,14 @@ public class Result {
     }
 
     public void setId(int id) {
+        this.id = id;
+    }
+
+    public int getLessionId() {
+        return lessionId;
+    }
+
+    public void setLessionId(int lessionId) {
         this.id = id;
     }
 
@@ -46,5 +62,13 @@ public class Result {
 
     public void setLesson(Lesson lesson) {
         this.lesson = lesson;
+    }
+
+    public int getEnrollmentId() {
+        return enrollmentId;
+    }
+
+    public void setEnrollmentId(int enrollmentId) {
+        this.enrollmentId = enrollmentId;
     }
 }

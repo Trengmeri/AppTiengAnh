@@ -12,6 +12,7 @@ public class Lesson {
     private String updateAt;
     private Integer sumQues; // Sử dụng Integer để có thể là null
     private List<Integer> questionIds;
+    private List<Integer> answerIds;
 
     // Getters and Setters
     public int getId() {
@@ -84,5 +85,13 @@ public class Lesson {
 
     public void setQuestionIds(List<Integer> questionIds) {
         this.questionIds = questionIds;
+    }
+
+    public List<Integer> getAnswerIds() {
+        return answerIds;
+    }
+
+    public void setAnswerIds(List<Integer> answerIds) {
+        this.answerIds = answerIds;
     }
 }

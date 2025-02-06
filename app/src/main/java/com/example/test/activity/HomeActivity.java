@@ -104,12 +104,7 @@ public class HomeActivity extends AppCompatActivity {
                                 public void onSuccess(Result result) {}
 
                                 @Override
-                                public void onSuccess(List<Answer> answer) {}
-
-                                @Override
-                                public void onSuccess(ApiResponseAnswer response) {
-
-                                }
+                                public void onSuccess(Answer answer) {}
 
                                 @Override
                                 public void onSuccess(Question question) {
@@ -140,12 +135,7 @@ public class HomeActivity extends AppCompatActivity {
             public void onSuccess(Result result) {}
 
             @Override
-            public void onSuccess(List<Answer> answer) {}
-
-            @Override
-            public void onSuccess(ApiResponseAnswer response) {
-
-            }
+            public void onSuccess(Answer answer) {}
 
             @Override
             public void onSuccess(Question question) {}
