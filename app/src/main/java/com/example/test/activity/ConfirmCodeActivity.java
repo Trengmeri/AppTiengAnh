@@ -125,12 +125,7 @@ public class ConfirmCodeActivity extends AppCompatActivity {
                     }
 
                     @Override
-                    public void onSuccess(List<Answer> answer) {
-
-                    }
-
-                    @Override
-                    public void onSuccess(ApiResponseAnswer response) {
+                    public void onSuccess(Answer answer) {
 
                     }
 

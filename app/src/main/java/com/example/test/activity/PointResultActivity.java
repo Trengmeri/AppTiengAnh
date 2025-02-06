@@ -98,9 +98,6 @@ public class PointResultActivity extends AppCompatActivity {
 
             @Override
             public void onSuccessWithOtpID(String otpID) {}
-            public void onSuccessWithOtpID(String otpID) {
-
-            }
 
             @Override
             public void onSuccessWithToken(String token) {
@@ -166,6 +163,11 @@ public class PointResultActivity extends AppCompatActivity {
                                 @Override
                                 public void onSuccessWithOtpID(String otpID) {
                                 }
+
+                                @Override
+                                public void onSuccessWithToken(String token) {
+
+                                }
                             });
                         }
                     }
@@ -190,6 +192,11 @@ public class PointResultActivity extends AppCompatActivity {
 
             @Override
             public void onSuccessWithOtpID(String otpID) {}
+
+            @Override
+            public void onSuccessWithToken(String token) {
+
+            }
         });
     }
 
@@ -225,14 +232,6 @@ public class PointResultActivity extends AppCompatActivity {
                         }
 
                         @Override
-                        public void onSuccessWithToken(String token) {
-
-                        }
-                    });
-                }
-            }
-
-                        @Override
                         public void onSuccess(Lesson lesson) {}
 
                         @Override
@@ -260,7 +259,12 @@ public class PointResultActivity extends AppCompatActivity {
 
                         @Override
                         public void onSuccessWithOtpID(String otpID) {}
-                    });
+
+            @Override
+            public void onSuccessWithToken(String token) {
+
+            }
+        });
                 } else {
                     Log.e("PointResultActivity", "Result không hợp lệ.");
                 }
@@ -272,11 +276,6 @@ public class PointResultActivity extends AppCompatActivity {
             @Override
             public void onFailure(String errorMessage) {
                 showToast(errorMessage);
-            }
-
-            @Override
-            public void onSuccessWithOtpID(String otpID) {
-
             }
 
             @Override

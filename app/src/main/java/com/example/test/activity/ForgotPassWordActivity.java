@@ -107,10 +107,7 @@ public class ForgotPassWordActivity extends AppCompatActivity {
                     public void onSuccess(Result result) {}
 
                     @Override
-                    public void onSuccess(List<Answer> answer) {}
-
-                    @Override
-                    public void onSuccess(ApiResponseAnswer response) {
+                    public void onSuccess(Answer answer) {
 
                     }
 

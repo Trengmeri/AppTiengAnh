@@ -164,6 +164,11 @@ public class GrammarPickManyActivity extends AppCompatActivity {
                             public void onSuccessWithOtpID(String otpID) {
 
                             }
+
+                            @Override
+                            public void onSuccessWithToken(String token) {
+
+                            }
                         });
                     }
 
