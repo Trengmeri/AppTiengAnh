@@ -98,6 +98,14 @@ public class PointResultActivity extends AppCompatActivity {
 
             @Override
             public void onSuccessWithOtpID(String otpID) {}
+            public void onSuccessWithOtpID(String otpID) {
+
+            }
+
+            @Override
+            public void onSuccessWithToken(String token) {
+
+            }
         });
     }
 
@@ -217,6 +225,14 @@ public class PointResultActivity extends AppCompatActivity {
                         }
 
                         @Override
+                        public void onSuccessWithToken(String token) {
+
+                        }
+                    });
+                }
+            }
+
+                        @Override
                         public void onSuccess(Lesson lesson) {}
 
                         @Override
@@ -259,6 +275,14 @@ public class PointResultActivity extends AppCompatActivity {
             }
 
             @Override
+            public void onSuccessWithOtpID(String otpID) {
+
+            }
+
+            @Override
+            public void onSuccessWithToken(String token) {
+
+            }
             public void onSuccessWithOtpID(String otpID) {}
         });
     }

@@ -19,4 +19,6 @@ public interface ApiCallback {
     void onSuccess(Answer answer);
     void onFailure(String errorMessage);
     void onSuccessWithOtpID(String otpID);
+    void onSuccessWithToken(String token);
+
 }

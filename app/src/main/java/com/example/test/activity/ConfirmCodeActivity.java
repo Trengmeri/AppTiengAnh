@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -17,6 +19,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.example.test.NetworkChangeReceiver;
 import com.example.test.R;
 import com.example.test.api.ApiCallback;
 import com.example.test.api.ApiManager;
@@ -38,7 +41,9 @@ public class ConfirmCodeActivity extends AppCompatActivity {
     private TextView tvCountdown; // TextView hiển thị thời gian đếm ngược
     private static final long COUNTDOWN_TIME = 60000; // 60 giây
     private CountDownTimer countDownTimer;
-    private String otpID;
+   // private String otpID;
+    NetworkChangeReceiver networkReceiver;
+    ApiManager apiManager;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,6 +67,8 @@ public class ConfirmCodeActivity extends AppCompatActivity {
                 findViewById(R.id.editText5),
                 findViewById(R.id.editText6)
         };
+        networkReceiver = new NetworkChangeReceiver();
+        apiManager = new ApiManager();
 
         icback = findViewById(R.id.iconback);
         btnRe = findViewById(R.id.btnRe);
@@ -78,13 +85,80 @@ public class ConfirmCodeActivity extends AppCompatActivity {
 
         // Bắt đầu đếm ngược thời gian
         startCountdown();
-        btnRe.setOnClickListener(view -> {
-            btnRe.setEnabled(false); // Ngăn người dùng nhấn liên tục
-            btnRe.setAlpha(0.5f);
-            resetCountdown();  // Gọi phương thức reset lại bộ đếm
+
+        btnRe.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                btnRe.setEnabled(false); // Ngăn người dùng nhấn liên tục
+                btnRe.setAlpha(0.3f);
+                resetCountdown();// Gọi phương thức reset lại bộ đếm
+                String otpID = getOtpIdFromPreferences(); // Lấy OTP ID đã lưu
+                apiManager.resendCodeRequest(otpID, new ApiCallback() {
+                    @Override
+                    public void onSuccess() {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(ConfirmCodeActivity.this, "Mã OTP đã được gửi lại. Vui lòng kiểm tra email.", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onSuccess(Question questions) {
+
+                    }
+
+                    @Override
+                    public void onSuccess(Lesson lesson) {
+
+                    }
+
+                    @Override
+                    public void onSuccess(Course course) {
+
+                    }
+
+                    @Override
+                    public void onSuccess(Result result) {
+
+                    }
+
+                    @Override
+                    public void onSuccess(List<Answer> answer) {
+
+                    }
+
+                    @Override
+                    public void onSuccess(ApiResponseAnswer response) {
+
+                    }
+
+                    @Override
+                    public void onFailure(String errorMessage) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(ConfirmCodeActivity.this, "Lỗi: " + errorMessage, Toast.LENGTH_SHORT).show();
+                                btnRe.setEnabled(true);
+                                btnRe.setAlpha(1.0f); // Cho phép bấm lại nếu lỗi
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onSuccessWithOtpID(String otpID) {
+
+                    }
+
+                    @Override
+                    public void onSuccessWithToken(String token) {
+
+                    }
+                });
+            }
         });
     }
-
     private void resetCountdown() {
         // Hủy bộ đếm hiện tại (nếu có)
         if (countDownTimer != null) {
@@ -133,18 +207,17 @@ public class ConfirmCodeActivity extends AppCompatActivity {
                     String otpID = getOtpIdFromPreferences();
                     String code = getCode(); // Lấy mã đã nhập
                     // Gọi API xác nhận mã OTP
-                    ApiManager apiManager = new ApiManager();
-                    apiManager.sendConfirmCodeRequest(otpID,code, new ApiCallback() {
+                    apiManager.sendConfirmCodeForgotRequest(otpID,code, new ApiCallback() {
                         @Override
                         public void onSuccess() {
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {}
-                            });
-                            clearOtpId();
-                            // Chuyển đến Activity tiếp theo nếu mã đúng
-                            Intent intent = new Intent(ConfirmCodeActivity.this, SetUpAccountActivity.class);
-                            startActivity(intent);
+//                            runOnUiThread(new Runnable() {
+//                                @Override
+//                                public void run() {}
+//                            });
+//                            clearOtpId();
+//                            Intent intent = new Intent(ConfirmCodeActivity.this, NewPassActivity.class);
+//                            startActivity(intent);
+//                            finish();
                         }
 
                         @Override
@@ -175,7 +248,20 @@ public class ConfirmCodeActivity extends AppCompatActivity {
                         }
 
                         @Override
-                        public void onSuccessWithOtpID(String otpID) {
+                        public void onSuccessWithOtpID(String otpID) {}
+
+                        @Override
+                        public void onSuccessWithToken(String token) {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {}
+                            });
+                            clearOtpId();
+                            saveTokenToSharedPreferences(token);
+                            Log.d("Token", "Token duoc luu: " + token);
+                            Intent intent = new Intent(ConfirmCodeActivity.this, NewPassActivity.class);
+                            startActivity(intent);
+                            finish();
 
                         }
 
@@ -186,6 +272,12 @@ public class ConfirmCodeActivity extends AppCompatActivity {
             @Override
             public void afterTextChanged(android.text.Editable editable) {}
         });
+    }
+    public void saveTokenToSharedPreferences(String token) {
+        SharedPreferences sharedPreferences = getSharedPreferences("AppPrefs", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("auth_token", token);  // Lưu token vào SharedPreferences
+        editor.apply();  // Áp dụng thay đổi
     }
 
     // Lấy otpID từ SharedPreferences

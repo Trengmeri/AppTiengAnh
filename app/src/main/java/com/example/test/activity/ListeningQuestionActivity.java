@@ -198,6 +198,11 @@ public class ListeningQuestionActivity extends AppCompatActivity {
                     @Override
                     public void onSuccessWithOtpID(String otpID) {
                     }
+
+                    @Override
+                    public void onSuccessWithToken(String token) {
+
+                    }
                 });
 
             }
@@ -271,6 +276,11 @@ public class ListeningQuestionActivity extends AppCompatActivity {
             public void onSuccessWithOtpID(String otpID) {}
 
             @Override
+            public void onSuccessWithToken(String token) {
+
+            }
+
+            @Override
             public void onSuccess() {}
 
             @Override
@@ -322,6 +332,11 @@ public class ListeningQuestionActivity extends AppCompatActivity {
 
             @Override
             public void onSuccessWithOtpID(String otpID) {}
+
+            @Override
+            public void onSuccessWithToken(String token) {
+
+            }
 
             @Override
             public void onSuccess() {}
