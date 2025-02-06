@@ -121,6 +121,11 @@ public class PointResultActivity extends AppCompatActivity {
             public void onSuccessWithOtpID(String otpID) {
 
             }
+
+            @Override
+            public void onSuccessWithToken(String token) {
+
+            }
         });
     }
 
@@ -192,6 +197,11 @@ public class PointResultActivity extends AppCompatActivity {
                         public void onSuccessWithOtpID(String otpID) {
 
                         }
+
+                        @Override
+                        public void onSuccessWithToken(String token) {
+
+                        }
                     });
                 }
             }
@@ -223,6 +233,11 @@ public class PointResultActivity extends AppCompatActivity {
 
             @Override
             public void onSuccessWithOtpID(String otpID) {
+
+            }
+
+            @Override
+            public void onSuccessWithToken(String token) {
 
             }
         });

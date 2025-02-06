@@ -22,8 +22,6 @@ public interface ApiCallback {
 
     void onFailure(String errorMessage);
     void onSuccessWithOtpID(String otpID);
-    // void onSuccess(String token);
-/*    void onQuestionsSuccess(List<Question> questions);
-    void onAnswersSuccess(List<Answer> answers);
-    void onPointsSuccess(List<Point> points);*/
+    void onSuccessWithToken(String token);
+
 }

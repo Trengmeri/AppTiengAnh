@@ -120,6 +120,11 @@ public class GrammarPickManyActivity extends AppCompatActivity {
                     @Override
                     public void onSuccessWithOtpID(String otpID) {
                     }
+
+                    @Override
+                    public void onSuccessWithToken(String token) {
+
+                    }
                 });
             }
         });
@@ -164,6 +169,11 @@ public class GrammarPickManyActivity extends AppCompatActivity {
 
             @Override
             public void onSuccessWithOtpID(String otpID) {}
+
+            @Override
+            public void onSuccessWithToken(String token) {
+
+            }
 
             @Override
             public void onSuccess() {}
@@ -226,6 +236,11 @@ public class GrammarPickManyActivity extends AppCompatActivity {
 
             @Override
             public void onSuccessWithOtpID(String otpID) {}
+
+            @Override
+            public void onSuccessWithToken(String token) {
+
+            }
 
             @Override
             public void onSuccess() {}

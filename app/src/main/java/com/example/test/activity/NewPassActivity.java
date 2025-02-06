@@ -1,7 +1,9 @@
 package com.example.test.activity;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -17,8 +19,18 @@ import android.widget.Toast;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.test.NetworkChangeReceiver;
 import com.example.test.R;
+import com.example.test.api.ApiCallback;
+import com.example.test.api.ApiManager;
+import com.example.test.api.ApiResponseAnswer;
+import com.example.test.model.Answer;
+import com.example.test.model.Course;
+import com.example.test.model.Lesson;
+import com.example.test.model.Question;
+import com.example.test.model.Result;
 
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -27,6 +39,8 @@ public class NewPassActivity extends AppCompatActivity {
     EditText edtPass, edtRePass;
     Button btnNext;
     ImageView icback;
+    NetworkChangeReceiver networkReceiver;
+    ApiManager apiManager;
     private boolean isPasswordVisible = false;
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -37,21 +51,94 @@ public class NewPassActivity extends AppCompatActivity {
 
         AnhXa();
         setupPasswordField();
-
+        networkReceiver = new NetworkChangeReceiver();
+        apiManager = new ApiManager();
         btnNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String pass = edtPass.getText().toString();
-                String repass = edtRePass.getText().toString();
+                if (!apiManager.isInternetAvailable(NewPassActivity.this)) {
+                    Toast.makeText(NewPassActivity.this, "Vui lòng kiểm tra kết nối Internet của bạn.", Toast.LENGTH_LONG).show();
+                } else {
+                    String pass = edtPass.getText().toString();
+                    String repass = edtRePass.getText().toString();
+                    String token =getTokenFromSharedPreferences();
 
-                if (!isValidPassword(pass)) {
-                    Toast.makeText(NewPassActivity.this, "Mật khẩu ít nhất 8 ký tự gồm chữ hoa, chữ thường, số và ký tự đặc biệt", Toast.LENGTH_SHORT).show();
-                } else if (!pass.equals(repass)) {
+                if (!pass.equals(repass)) {
                     Toast.makeText(NewPassActivity.this, "Mật khẩu nhập lại không khớp", Toast.LENGTH_SHORT).show();
-                } else{
-                    Intent intent = new Intent(NewPassActivity.this, LoadPassActivity.class);
-                    startActivity(intent);
                 }
+                    apiManager.updatePasswordRequest(pass, repass, token, new ApiCallback() {
+                        @Override
+                        public void onSuccess() {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(NewPassActivity.this, "Cập nhật mật khẩu thành công!", Toast.LENGTH_SHORT).show();
+                                    Intent intent = new Intent(NewPassActivity.this, LoadPassActivity.class);
+                                    startActivity(intent);
+                                }
+                            });
+                        }
+
+                        @Override
+                        public void onSuccess(Question questions) {
+
+                        }
+
+                        @Override
+                        public void onSuccess(Lesson lesson) {
+
+                        }
+
+                        @Override
+                        public void onSuccess(Course course) {
+
+                        }
+
+                        @Override
+                        public void onSuccess(Result result) {
+
+                        }
+
+                        @Override
+                        public void onSuccess(List<Answer> answer) {
+
+                        }
+
+                        @Override
+                        public void onSuccess(ApiResponseAnswer response) {
+
+                        }
+
+                        @Override
+                        public void onFailure(String errorMessage) {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(NewPassActivity.this, "Lỗi: " + errorMessage, Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        }
+
+                        @Override
+                        public void onSuccessWithOtpID(String otpID) {
+
+                        }
+
+                        @Override
+                        public void onSuccessWithToken(String token) {
+
+                        }
+                    });
+                }
+
+//                if (!isValidPassword(pass)) {
+//                    Toast.makeText(NewPassActivity.this, "Mật khẩu ít nhất 8 ký tự gồm chữ hoa, chữ thường, số và ký tự đặc biệt", Toast.LENGTH_SHORT).show();
+//                } else if (!pass.equals(repass)) {
+//                    Toast.makeText(NewPassActivity.this, "Mật khẩu nhập lại không khớp", Toast.LENGTH_SHORT).show();
+//                } else{
+//                    Intent intent = new Intent(NewPassActivity.this, LoadPassActivity.class);
+//                    startActivity(intent);
+//                }
             }
         });
 
@@ -63,7 +150,12 @@ public class NewPassActivity extends AppCompatActivity {
             }
         });
     }
-//    Ẩn hiện mk
+    public String getTokenFromSharedPreferences() {
+        SharedPreferences sharedPreferences = getSharedPreferences("AppPrefs", Context.MODE_PRIVATE);
+        return sharedPreferences.getString("auth_token", null);  // Lấy token từ sharedPreferences, nếu không có thì trả về null
+    }
+
+    //    Ẩn hiện mk
     @SuppressLint("ClickableViewAccessibility")
     private void setupPasswordField() {
         edtPass.setOnTouchListener((v, event) -> {

@@ -6,6 +6,7 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -71,16 +72,6 @@ public class SignUpActivity extends AppCompatActivity {
                 apiManager.sendSignUpRequest(this,hoten, email, pass, new ApiCallback() {
                     @Override
                     public void onSuccess() {
-//                        runOnUiThread(new Runnable() {
-//                            @Override
-//                            public void run() {
-//                                Toast.makeText(SignUpActivity.this, "Đăng ký thành công! Vui lòng kiểm tra email của bạn.", Toast.LENGTH_SHORT).show();
-//                            }
-//                        });
-//
-//                        Intent intent = new Intent(SignUpActivity.this, ConfirmCode2Activity.class);
-////                        intent.putExtra("email", email);
-//                        startActivity(intent);
                     }
 
                     @Override
@@ -121,24 +112,19 @@ public class SignUpActivity extends AppCompatActivity {
                             }
                         });
                         saveOtpId(otpID); // Lưu otpID vào SharedPreferences
+                        Log.d("ConfirmCode", "otpID được lưu: " + otpID);
+
                         Intent intent = new Intent(SignUpActivity.this, ConfirmCode2Activity.class);
 //                        intent.putExtra("email", email);
                         startActivity(intent);
 
                     }
 
+                    @Override
+                    public void onSuccessWithToken(String token) {
+
+                    }
                 });
-
-
-//                if (hoten.isEmpty() || email.isEmpty() || soDT.isEmpty() || pass.isEmpty()) {
-//                    Toast.makeText(Sign_up.this, "Vui lòng điền đầy đủ thông tin", Toast.LENGTH_LONG).show();
-//                } else if (!isValidEmail(email) || !isValidPhoneNumber(soDT)) {
-//                    Toast.makeText(Sign_up.this, "Email hoặc số điện thoại không đúng định dạng", Toast.LENGTH_LONG).show();
-//                } else if (!isValidPassword(pass)) {
-//                    Toast.makeText(Sign_up.this, "Mật khẩu ít nhất 8 ký tự gồm chữ hoa, chữ thường, số và ký tự đặc biệt", Toast.LENGTH_LONG).show();
-//                } else {
-//                    apiManager.sendSignUpRequest(hoten, soDT, email, pass, Sign_up.this);
-//                }
             }
         });
 
@@ -153,6 +139,7 @@ public class SignUpActivity extends AppCompatActivity {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("otpID", otpID);
         editor.apply();
+        Log.d("ConfirmCode", "Otp ID đã được lưu: " + otpID);
     }
     @SuppressLint("ClickableViewAccessibility")
 //    private void setupPasswordField() {

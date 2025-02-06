@@ -95,6 +95,11 @@ public class SignInActivity extends AppCompatActivity {
                     public void onSuccessWithOtpID(String otpID) {}
 
                     @Override
+                    public void onSuccessWithToken(String token) {
+
+                    }
+
+                    @Override
                     public void onSuccess(Result result) {}
 
                     @Override

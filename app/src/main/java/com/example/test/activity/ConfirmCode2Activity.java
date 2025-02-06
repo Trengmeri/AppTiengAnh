@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -41,7 +42,6 @@ public class ConfirmCode2Activity extends AppCompatActivity {
     private TextView tvCountdown; // TextView hiển thị thời gian đếm ngược
     private static final long COUNTDOWN_TIME = 60000; // 60 giây
     private CountDownTimer countDownTimer;
-    private String otpID;
     NetworkChangeReceiver networkReceiver;
     ApiManager apiManager;
     @Override
@@ -83,11 +83,78 @@ public class ConfirmCode2Activity extends AppCompatActivity {
         apiManager = new ApiManager();
         // Bắt đầu đếm ngược thời gian
         startCountdown();
-        btnRe.setOnClickListener(view -> {
-            btnRe.setEnabled(false); // Ngăn người dùng nhấn liên tục
-            btnRe.setAlpha(0.5f);
-            resetCountdown();// Gọi phương thức reset lại bộ đếm
 
+        btnRe.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                btnRe.setEnabled(false); // Ngăn người dùng nhấn liên tục
+                btnRe.setAlpha(0.3f);
+                resetCountdown();// Gọi phương thức reset lại bộ đếm
+                String otpID = getOtpIdFromPreferences(); // Lấy OTP ID đã lưu
+                apiManager.resendCodeRequest(otpID, new ApiCallback() {
+                    @Override
+                    public void onSuccess() {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(ConfirmCode2Activity.this, "Mã OTP đã được gửi lại. Vui lòng kiểm tra email.", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onSuccess(Question questions) {
+
+                    }
+
+                    @Override
+                    public void onSuccess(Lesson lesson) {
+
+                    }
+
+                    @Override
+                    public void onSuccess(Course course) {
+
+                    }
+
+                    @Override
+                    public void onSuccess(Result result) {
+
+                    }
+
+                    @Override
+                    public void onSuccess(List<Answer> answer) {
+
+                    }
+
+                    @Override
+                    public void onSuccess(ApiResponseAnswer response) {
+
+                    }
+
+                    @Override
+                    public void onFailure(String errorMessage) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(ConfirmCode2Activity.this, "Lỗi: " + errorMessage, Toast.LENGTH_SHORT).show();
+                                btnRe.setEnabled(true);
+                                btnRe.setAlpha(1.0f); // Cho phép bấm lại nếu lỗi
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onSuccessWithOtpID(String otpID) {
+
+                    }
+
+                    @Override
+                    public void onSuccessWithToken(String token) {
+
+                    }
+                });
+            }
         });
     }
 
@@ -198,6 +265,11 @@ public class ConfirmCode2Activity extends AppCompatActivity {
 
                         @Override
                         public void onSuccessWithOtpID(String otpID) {
+
+                        }
+
+                        @Override
+                        public void onSuccessWithToken(String token) {
 
                         }
 

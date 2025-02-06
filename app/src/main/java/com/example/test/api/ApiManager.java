@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
+import android.text.TextWatcher;
 import android.util.Log;
 /*
 import com.google.gson.Gson;
@@ -41,7 +42,7 @@ public class ApiManager {
     public ApiManager() {
     }
 
-    private static final String BASE_URL = "http://192.168.109.2:8080"; // Thay đổi URL của bạn
+    private static final String BASE_URL = "http://192.168.56.1:8080"; // Thay đổi URL của bạn
     private static final OkHttpClient client = new OkHttpClient();
 
     public static void gradeAnswer(int answerId, Callback callback) {
@@ -90,6 +91,11 @@ public class ApiManager {
     // { \"name\": \"" + name + "\", \"phone\": \"" + phone + "\", \"email\": \"" +
     // email + "\", \"password\": \"" + password + "\" }
     public void sendSignUpRequest(Context context, String name, String email, String password, ApiCallback callback) {
+        OkHttpClient client = new OkHttpClient.Builder()
+                .connectTimeout(30, TimeUnit.SECONDS)
+                .readTimeout(30,TimeUnit.SECONDS)
+                .writeTimeout(20,TimeUnit.SECONDS)
+                .build();
 
         String json = "{ \"name\": \"" + name + "\", \"email\": \"" + email + "\", \"password\": \"" + password
                 + "\" }";
@@ -114,13 +120,15 @@ public class ApiManager {
                 if (response.isSuccessful()) {
                     try {
                         JSONObject responseJson = new JSONObject(responseBody);
-                        String otpID = responseJson.optString("otpID"); // Trích xuất otpID từ phản hồi
+                        JSONObject data = responseJson.getJSONObject("data");
+                        String otpID = data.optString("otpID"); // Trích xuất otpID từ phản hồi
+
                         callback.onSuccessWithOtpID(otpID);
                     } catch (JSONException e) {
                         callback.onFailure("Lỗi phân tích phản hồi JSON: " + e.getMessage());
                     }
                 } else {
-                    callback.onFailure("Đăng ký thất bại: " + response.message());
+                    callback.onFailure("Đăng ký thất bại!" + response.message());
                 }
             }
         });
@@ -128,6 +136,11 @@ public class ApiManager {
 
     public void sendConfirmCodeRequest(String otpID, String code, ApiCallback callback) {
 
+        OkHttpClient client = new OkHttpClient.Builder()
+                .connectTimeout(20, TimeUnit.SECONDS)
+                .readTimeout(20,TimeUnit.SECONDS)
+                .writeTimeout(10,TimeUnit.SECONDS)
+                .build();
         String json = "{ \"otpID\": \"" + otpID + "\", \"otp\": \"" + code + "\" }";
 
         Log.d("ConfirmCode", "OTPID: " + otpID + ", OTP: " + code);
@@ -135,7 +148,7 @@ public class ApiManager {
         RequestBody body = RequestBody.create(json, MediaType.parse("application/json; charset=utf-8"));
 
         Request request = new Request.Builder()
-                .url(BASE_URL + "/api/v1/auth/verify-otp") // Thay bằng URL máy chủ của bạn
+                .url(BASE_URL + "/api/v1/otp/verify-otp") // Thay bằng URL máy chủ của bạn
                 .post(body)
                 .build();
 
@@ -181,9 +194,13 @@ public class ApiManager {
         });
     }
 
-    //Resend OTP khi dki
+    //Resend OTP
     public void resendCodeRequest(String otpID, ApiCallback callback) {
-
+        OkHttpClient client = new OkHttpClient.Builder()
+                .connectTimeout(20, TimeUnit.SECONDS)
+                .readTimeout(20,TimeUnit.SECONDS)
+                .writeTimeout(10,TimeUnit.SECONDS)
+                .build();
         String json = "{ \"otpID\": \"" + otpID + "\" }";
 
         Log.d("ConfirmCode", "OTPID: " + otpID );
@@ -191,7 +208,7 @@ public class ApiManager {
         RequestBody body = RequestBody.create(json, MediaType.parse("application/json; charset=utf-8"));
 
         Request request = new Request.Builder()
-                .url(BASE_URL + "/api/v1/auth/resend-otp") // Thay bằng URL máy chủ của bạn
+                .url(BASE_URL + "/api/v1/otp/resend-otp") // Thay bằng URL máy chủ của bạn
                 .post(body)
                 .build();
 
@@ -237,7 +254,13 @@ public class ApiManager {
         });
     }
 
-    public void sendForgotRequest(Context context, String name, String email, String password, ApiCallback callback) {
+    public void sendForgotRequest(String email, ApiCallback callback) {
+        OkHttpClient client = new OkHttpClient.Builder()
+                .connectTimeout(20, TimeUnit.SECONDS)
+                .readTimeout(20,TimeUnit.SECONDS)
+                .writeTimeout(10,TimeUnit.SECONDS)
+                .build();
+
         String json = "{ \"email\": \"" + email + "\" }";
         RequestBody body = RequestBody.create(json, MediaType.parse("application/json; charset=utf-8"));
 
@@ -260,19 +283,20 @@ public class ApiManager {
                 if (response.isSuccessful()) {
                     try {
                         JSONObject responseJson = new JSONObject(responseBody);
-                        String otpID = responseJson.optString("otpID"); // Trích xuất otpID từ phản hồi
+                        JSONObject data = responseJson.getJSONObject("data");
+                        String otpID = data.optString("otpID"); // Trích xuất otpID từ phản hồi
                         callback.onSuccessWithOtpID(otpID);
                     } catch (JSONException e) {
                         callback.onFailure("Lỗi phân tích phản hồi JSON: " + e.getMessage());
                     }
                 } else {
-                    callback.onFailure("Đăng ký thất bại: " + response.message());
+                    callback.onFailure("Thất bại: " + response.message());
                 }
             }
         });
     }
 
-    public void sendConfirmCodeRequestForgot(String otpID, String code, ApiCallback callback) {
+    public void sendConfirmCodeForgotRequest(String otpID, String code, ApiCallback callback) {
 
         String json = "{ \"otpID\": \"" + otpID + "\", \"otp\": \"" + code + "\" }";
 
@@ -281,7 +305,7 @@ public class ApiManager {
         RequestBody body = RequestBody.create(json, MediaType.parse("application/json; charset=utf-8"));
 
         Request request = new Request.Builder()
-                .url(BASE_URL + "/api/v1/forgot-password/verify-otp") // Thay bằng URL máy chủ của bạn
+                .url(BASE_URL + "/api/v1/otp/verify-otp") // Thay bằng URL máy chủ của bạn
                 .post(body)
                 .build();
 
@@ -309,23 +333,73 @@ public class ApiManager {
             public void onResponse(Call call, Response response) throws IOException {
                 String responseBody = response.body().string();
                 Log.d("ApiManager", "Phản hồi từ server: " + responseBody);
+//                if (response.isSuccessful()) {
+//                    callback.onSuccess(); // Gọi callback thành công
+//                } else {
+//                    if (!response.isSuccessful()) {
+//                        JSONObject errorJson = null; // Parse nội dung phản hồi
+//                        try {
+//                            errorJson = new JSONObject(responseBody);
+//                        } catch (JSONException e) {
+//                            throw new RuntimeException(e);
+//                        }
+//                        String errorMessage = errorJson.optString("message", "Mã OTP sai! Vui lòng kiểm tra lại.");
+//                        callback.onFailure(errorMessage);
+//                    }
+//                }
                 if (response.isSuccessful()) {
-                    callback.onSuccess(); // Gọi callback thành công
-                } else {
-                    if (!response.isSuccessful()) {
-                        JSONObject errorJson = null; // Parse nội dung phản hồi
-                        try {
-                            errorJson = new JSONObject(responseBody);
-                        } catch (JSONException e) {
-                            throw new RuntimeException(e);
-                        }
-                        String errorMessage = errorJson.optString("message", "Mã OTP sai! Vui lòng kiểm tra lại.");
-                        callback.onFailure(errorMessage);
+                    try {
+                        JSONObject responseJson = new JSONObject(responseBody);
+//                        JSONObject data = responseJson.getJSONObject("data");
+                        String token = responseJson.optString("token"); // Trích xuất otpID từ phản hồi
+                        callback.onSuccessWithToken(token);
+                    } catch (JSONException e) {
+                        callback.onFailure("Lỗi phân tích phản hồi JSON: " + e.getMessage());
                     }
+                } else {
+                    callback.onFailure("Thất bại: " + response.message());
                 }
             }
         });
     }
+
+    public void updatePasswordRequest(String newPassword, String confirmPassword,String token, ApiCallback callback) {
+        OkHttpClient client = new OkHttpClient.Builder()
+                .connectTimeout(30, TimeUnit.SECONDS)
+                .readTimeout(30, TimeUnit.SECONDS)
+                .writeTimeout(20, TimeUnit.SECONDS)
+                .build();
+
+        String json = "{ \"newPassword\": \"" + newPassword + "\", \"confirmPassword\": \"" + confirmPassword + "\" }";
+        RequestBody body = RequestBody.create(json, MediaType.parse("application/json; charset=utf-8"));
+
+        Request request = new Request.Builder()
+                .url(BASE_URL + "/api/v1/forgot-password/update-password") // Thay bằng URL API của bạn
+                .post(body)
+                .addHeader("Authorization", "Bearer " + token) // Thêm header Authorization với token
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.e("ApiManager", "Kết nối thất bại: " + e.getMessage());
+                callback.onFailure("Kết nối thất bại! Không thể kết nối tới API.");
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String responseBody = response.body().string();
+                Log.d("ApiManager", "Phản hồi từ server: " + responseBody);
+
+                if (response.isSuccessful()) {
+                    callback.onSuccess(); // Gọi callback thành công
+                } else {
+                    callback.onFailure("Cập nhật mật khẩu thất bại! " + response.message());
+                }
+            }
+        });
+    }
+
 
     // Phương thức để lấy dữ liệu câu hỏi từ API (GET request)
     public void fetchQuestionContentFromApi(int questionId, ApiCallback callback) {

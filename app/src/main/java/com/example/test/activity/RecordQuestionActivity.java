@@ -151,6 +151,11 @@ public class RecordQuestionActivity extends AppCompatActivity implements SpeechR
                     public void onSuccessWithOtpID(String otpID) {
 
                     }
+
+                    @Override
+                    public void onSuccessWithToken(String token) {
+
+                    }
                 });
             }
         });
@@ -195,6 +200,11 @@ public class RecordQuestionActivity extends AppCompatActivity implements SpeechR
 
             @Override
             public void onSuccessWithOtpID(String otpID) {}
+
+            @Override
+            public void onSuccessWithToken(String token) {
+
+            }
 
             @Override
             public void onSuccess() {}
@@ -253,6 +263,11 @@ public class RecordQuestionActivity extends AppCompatActivity implements SpeechR
 
             @Override
             public void onSuccessWithOtpID(String otpID) {}
+
+            @Override
+            public void onSuccessWithToken(String token) {
+
+            }
 
             @Override
             public void onSuccess() {}
