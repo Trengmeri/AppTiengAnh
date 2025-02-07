@@ -695,7 +695,7 @@ public class ApiManager {
 
                         if (!results.isEmpty()) {
                             Result firstAnswer = results.get(results.size() - 1); // Lấy đối tượng Answer đầu tiên
-                            Log.d("ApiManager", "Result ID: " + firstAnswer.getId() + ", Điểm đạt được: " + firstAnswer.getTotalPoints() + ", Subtime: " + firstAnswer.getStuTime());
+                            Log.d("ApiManager", "Result ID: " + firstAnswer.getId() + ", Điểm đạt được: " + firstAnswer.getTotalPoints() + ", Complete: " + firstAnswer.getComLevel());
                             callback.onSuccess(firstAnswer); // Gọi callback thành công với đối tượng Answer đầu tiên
                         } else {
                             callback.onFailure("Không có câu trả lời nào.");

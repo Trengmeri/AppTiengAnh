@@ -5,15 +5,17 @@ import com.google.gson.annotations.SerializedName;
 public class Result {
     private int id;
     private int stuTime;
+    private double comLevel; // Thêm trường comLevel
+    private int sessionId; // Thêm trường sessionId
     private int totalPoints;
     private int lessionId;
     private int enrollmentId;
 
     @SerializedName("user")
-    private User user; // Thêm trường user
+    private User user;
 
     @SerializedName("lesson")
-    private Lesson lesson; // Thêm trường lesson
+    private Lesson lesson;
 
     // Getters and Setters
     public int getId() {
@@ -29,7 +31,7 @@ public class Result {
     }
 
     public void setLessionId(int lessionId) {
-        this.id = id;
+        this.lessionId = lessionId;
     }
 
     public int getStuTime() {
@@ -38,6 +40,22 @@ public class Result {
 
     public void setStuTime(int stuTime) {
         this.stuTime = stuTime;
+    }
+
+    public double getComLevel() { // Getter cho comLevel
+        return comLevel;
+    }
+
+    public void setComLevel(double comLevel) { // Setter cho comLevel
+        this.comLevel = comLevel;
+    }
+
+    public int getSessionId() { // Getter cho sessionId
+        return sessionId;
+    }
+
+    public void setSessionId(int sessionId) { // Setter cho sessionId
+        this.sessionId = sessionId;
     }
 
     public int getTotalPoints() {

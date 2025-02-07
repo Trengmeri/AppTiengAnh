@@ -19,12 +19,13 @@ import com.example.test.model.Result;
 import java.util.List;
 
 public class PointResultActivity extends AppCompatActivity {
-    private TextView pointTextView;
+    private TextView pointTextView, totalComp;
     private Button btnReview, btnNext;
     private TextView correctRead, compRead;
     private TextView correctLis, compLis;
     private TextView correctSpeak, compSpeak;
     private TextView correctWrite, compWrite;
+    private int totalPointR = 0,totalPointL = 0,totalPointS = 0,totalPointW = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +47,7 @@ public class PointResultActivity extends AppCompatActivity {
 
     private void initializeViews() {
         pointTextView = findViewById(R.id.point);
+/*        totalComp = findViewById(R.id.totalComp);*/
         btnReview = findViewById(R.id.btnReview);
         btnNext = findViewById(R.id.btnNext);
         correctRead = findViewById(R.id.correct_read);
@@ -204,25 +206,9 @@ public class PointResultActivity extends AppCompatActivity {
         ApiManager apiManager = new ApiManager();
         apiManager.createResult(lessonId, sessionId, 1, new ApiCallback() {
             @Override
-            public void onSuccess() {}
-
-            @Override
-            public void onSuccess(Question questions) {
-
-            }
-
-            @Override
-            public void onSuccess(Lesson lesson) {}
-
-            @Override
-            public void onSuccess(Course course) {}
-
-            @Override
-            public void onSuccess(Result result) {
-                if (result!= null) {
-                    int lessonIds = result.getLessionId();
+            public void onSuccess() {
                     Log.d("PointResultActivity", "createResultForLesson: Gọi fetchResultByLesson"); // Log trước khi gọi fetchResultByLesson
-                    apiManager.fetchResultByLesson(lessonIds, new ApiCallback() {
+                    apiManager.fetchResultByLesson(lessonId, new ApiCallback() {
                         @Override
                         public void onSuccess() {}
 
@@ -241,7 +227,7 @@ public class PointResultActivity extends AppCompatActivity {
                         public void onSuccess(Result result) {
                             if (result!= null) {
                                 Log.d("PointResultActivity", "fetchResultByLesson: Lấy Result thành công");
-                                runOnUiThread(() -> updateUI(skillType, result.getStuTime(), result.getTotalPoints()));
+                                runOnUiThread(() -> updateUI(skillType, result.getComLevel(), result.getTotalPoints()));
                             } else {
                                 Log.e("PointResultActivity", "fetchResultByLesson: Kết quả không hợp lệ.");
                             }
@@ -260,14 +246,29 @@ public class PointResultActivity extends AppCompatActivity {
                         @Override
                         public void onSuccessWithOtpID(String otpID) {}
 
-            @Override
-            public void onSuccessWithToken(String token) {
+                        @Override
+                        public void onSuccessWithToken(String token) {
+
+                        }
+                    });
 
             }
-        });
-                } else {
-                    Log.e("PointResultActivity", "Result không hợp lệ.");
-                }
+
+            @Override
+            public void onSuccess(Question questions) {
+
+            }
+
+            @Override
+            public void onSuccess(Lesson lesson) {
+
+            }
+
+            @Override
+            public void onSuccess(Course course) {}
+
+            @Override
+            public void onSuccess(Result result) {
             }
 
             @Override
@@ -286,29 +287,33 @@ public class PointResultActivity extends AppCompatActivity {
         });
     }
 
-    private void updateUI(String skillType, int stuTime, int totalPoints) {
+    private void updateUI(String skillType, double complete, int totalPoints) {
         runOnUiThread(() -> {
-            pointTextView.setText(String.valueOf(totalPoints));
             switch (skillType) {
                 case "READING":
-                    correctRead.setText("Correct: " + stuTime);
-                    compRead.setText("Complete: " + totalPoints);
+                    totalPointR += totalPoints;
+                    correctRead.setText("Point: " + totalPointR);
+                    compRead.setText("Complete: " + complete);
                     break;
                 case "LISTENING":
-                    correctLis.setText("Correct: " + stuTime);
-                    compLis.setText("Complete: " + totalPoints);
+                    totalPointL += totalPoints;
+                    correctLis.setText("Point: " + totalPointL);
+                    compLis.setText("Complete: " + complete);
                     break;
                 case "SPEAKING":
-                    correctSpeak.setText("Correct: " + stuTime);
-                    compSpeak.setText("Complete: " + totalPoints);
+                    totalPointS += totalPoints;
+                    correctSpeak.setText("Point: " + totalPointS);
+                    compSpeak.setText("Complete: " + complete);
                     break;
                 case "WRITING":
-                    correctWrite.setText("Correct: " + stuTime);
-                    compWrite.setText("Complete: " + totalPoints);
+                    totalPointW += totalPoints;
+                    correctWrite.setText("Point: " + totalPointW);
+                    compWrite.setText("Complete: " + complete);
                     break;
                 default:
                     Log.e("PointResultActivity", "Skill type không hợp lệ: " + skillType);
             }
+            pointTextView.setText(String.valueOf(totalPointR+totalPointL+totalPointS+totalPointW));
         });
     }
 
