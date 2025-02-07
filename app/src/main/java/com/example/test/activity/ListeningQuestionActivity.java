@@ -21,8 +21,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.test.PopupHelper;
 import com.example.test.R;
 import com.example.test.api.ApiCallback;
-import com.example.test.api.ApiManager;
-import com.example.test.api.ApiResponseAnswer;
+import com.example.test.api.LessonManager;
+import com.example.test.api.QuestionManager;
+import com.example.test.api.ResultManager;
 import com.example.test.model.Answer;
 import com.example.test.model.Course;
 import com.example.test.model.Lesson;
@@ -32,7 +33,6 @@ import com.example.test.model.Result;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import okhttp3.Call;
@@ -49,7 +49,9 @@ public class ListeningQuestionActivity extends AppCompatActivity {
     private int totalSteps; // Tổng số bước trong thanh tiến trình
     private int answerIds;// Danh sách questionIds
 
-    ApiManager apiManager = new ApiManager();
+    QuestionManager quesManager = new QuestionManager();
+    LessonManager lesManager = new LessonManager();
+    ResultManager resultManager = new ResultManager();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,7 +86,7 @@ public class ListeningQuestionActivity extends AppCompatActivity {
                 }
                 String answerContent = sb.toString();
                 // Lưu câu trả lời của người dùng
-                apiManager.saveUserAnswer(questionIds.get(currentStep), answerContent, new ApiCallback() {
+                quesManager.saveUserAnswer(questionIds.get(currentStep), answerContent, new ApiCallback() {
 
                     @Override
                     public void onSuccess() {
@@ -106,7 +108,7 @@ public class ListeningQuestionActivity extends AppCompatActivity {
                                 }
                             });
                         });
-                        apiManager.fetchAnswerPointsByQuesId(questionIds.get(currentStep), new ApiCallback() {
+                        resultManager.fetchAnswerPointsByQuesId(questionIds.get(currentStep), new ApiCallback() {
                             @Override
                             public void onSuccess() {
                             }
@@ -137,7 +139,7 @@ public class ListeningQuestionActivity extends AppCompatActivity {
                                     answerIds = answer.getId();
                                     Log.e("ListeningQuestionActivity", "Answer ID từ API: " + answer.getId());
                                     if (answerIds != 0) {
-                                        ApiManager.gradeAnswer(answerIds, new Callback() {
+                                        QuestionManager.gradeAnswer(answerIds, new Callback() {
                                             @Override
                                             public void onFailure(@NonNull Call call, @NonNull IOException e) {
                                                 Log.e("ListeningQuestionActivity", "Lỗi khi chấm điểm: " + e.getMessage());
@@ -244,7 +246,7 @@ public class ListeningQuestionActivity extends AppCompatActivity {
     }*/
 
     private void fetchLessonAndQuestions(int lessonId) {
-        apiManager.fetchLessonById(lessonId, new ApiCallback() {
+        lesManager.fetchLessonById(lessonId, new ApiCallback() {
             @Override
             public void onSuccess(Lesson lesson) {
                 if (lesson != null) {
@@ -294,7 +296,7 @@ public class ListeningQuestionActivity extends AppCompatActivity {
     }
 
     private void fetchQuestion(int questionId) {
-        apiManager.fetchQuestionContentFromApi(questionId, new ApiCallback() {
+        quesManager.fetchQuestionContentFromApi(questionId, new ApiCallback() {
             @Override
             public void onSuccess(Question question) {
                 if (question != null) {

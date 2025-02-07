@@ -7,9 +7,6 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.os.Bundle;
-import android.speech.RecognitionListener;
-import android.speech.RecognizerIntent;
-import android.speech.SpeechRecognizer;
 import android.util.Log;
 import android.view.View;
 import android.widget.*;
@@ -23,10 +20,10 @@ import com.example.test.PopupHelper;
 import com.example.test.R;
 import com.example.test.SpeechRecognitionCallback;
 import com.example.test.SpeechRecognitionHelper;
-import com.example.test.activity.PointResultActivity;
 import com.example.test.api.ApiCallback;
-import com.example.test.api.ApiManager;
-import com.example.test.api.ApiResponseAnswer;
+import com.example.test.api.LessonManager;
+import com.example.test.api.QuestionManager;
+import com.example.test.api.ResultManager;
 import com.example.test.model.Answer;
 import com.example.test.model.Course;
 import com.example.test.model.Lesson;
@@ -37,7 +34,6 @@ import com.example.test.model.Result;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -56,7 +52,9 @@ public class RecordQuestionActivity extends AppCompatActivity implements SpeechR
     private List<Integer> questionIds;
     private int currentStep = 0; // Bước hiện tại (bắt đầu từ 0)
     private int totalSteps; // Tổng số bước trong thanh tiến trình
-    ApiManager apiManager = new ApiManager();
+    QuestionManager quesManager = new QuestionManager();
+    LessonManager lesManager = new LessonManager();
+    ResultManager resultManager = new ResultManager();
     private int answerIds;// Danh sách questionIds
 
 
@@ -106,7 +104,7 @@ public class RecordQuestionActivity extends AppCompatActivity implements SpeechR
                 Toast.makeText(RecordQuestionActivity.this, "Vui lòng trả lời câu hỏi!", Toast.LENGTH_SHORT).show();
             } else {
                 // Lưu câu trả lời của người dùng
-                apiManager.saveUserAnswer(questionIds.get(currentStep), userAnswer, new ApiCallback() {
+                quesManager.saveUserAnswer(questionIds.get(currentStep), userAnswer, new ApiCallback() {
                     @Override
                     public void onSuccess() {
                         Log.e("RecordQuestionActivity", "Câu trả lời đã được lưu: " + userAnswers.toString());
@@ -127,7 +125,7 @@ public class RecordQuestionActivity extends AppCompatActivity implements SpeechR
                                 }
                             });
                         });
-                        apiManager.fetchAnswerPointsByQuesId(questionIds.get(currentStep), new ApiCallback() {
+                        resultManager.fetchAnswerPointsByQuesId(questionIds.get(currentStep), new ApiCallback() {
                             @Override
                             public void onSuccess() {
                             }
@@ -158,7 +156,7 @@ public class RecordQuestionActivity extends AppCompatActivity implements SpeechR
                                     answerIds = answer.getId();
                                     Log.e("RecordQuestionActivity", "Answer ID từ API: " + answer.getId());
                                     if (answerIds != 0) {
-                                        ApiManager.gradeAnswer(answerIds, new Callback() {
+                                        QuestionManager.gradeAnswer(answerIds, new Callback() {
                                             @Override
                                             public void onFailure(@NonNull Call call, @NonNull IOException e) {
 
@@ -230,7 +228,7 @@ public class RecordQuestionActivity extends AppCompatActivity implements SpeechR
     }
 
     private void fetchLessonAndQuestions(int lessonId) {
-        apiManager.fetchLessonById(lessonId, new ApiCallback() {
+        lesManager.fetchLessonById(lessonId, new ApiCallback() {
             @Override
             public void onSuccess(Lesson lesson) {
                 if (lesson != null) {
@@ -278,7 +276,7 @@ public class RecordQuestionActivity extends AppCompatActivity implements SpeechR
     }
 
     private void fetchQuestion(int questionId) {
-        apiManager.fetchQuestionContentFromApi(questionId, new ApiCallback() {
+        quesManager.fetchQuestionContentFromApi(questionId, new ApiCallback() {
             @Override
             public void onSuccess(Question question) {
                 if (question != null) {

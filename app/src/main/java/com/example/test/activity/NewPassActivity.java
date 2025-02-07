@@ -22,8 +22,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.test.NetworkChangeReceiver;
 import com.example.test.R;
 import com.example.test.api.ApiCallback;
-import com.example.test.api.ApiManager;
 import com.example.test.api.ApiResponseAnswer;
+import com.example.test.api.AuthenticationManager;
 import com.example.test.model.Answer;
 import com.example.test.model.Course;
 import com.example.test.model.Lesson;
@@ -40,7 +40,7 @@ public class NewPassActivity extends AppCompatActivity {
     Button btnNext;
     ImageView icback;
     NetworkChangeReceiver networkReceiver;
-    ApiManager apiManager;
+    AuthenticationManager apiManager;
     private boolean isPasswordVisible = false;
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -52,7 +52,7 @@ public class NewPassActivity extends AppCompatActivity {
         AnhXa();
         setupPasswordField();
         networkReceiver = new NetworkChangeReceiver();
-        apiManager = new ApiManager();
+        apiManager = new AuthenticationManager();
         btnNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -66,7 +66,7 @@ public class NewPassActivity extends AppCompatActivity {
                 if (!pass.equals(repass)) {
                     Toast.makeText(NewPassActivity.this, "Mật khẩu nhập lại không khớp", Toast.LENGTH_SHORT).show();
                 }
-                    apiManager.updatePasswordRequest(pass, repass, token, new ApiCallback() {
+                    apiManager.updatePassword(pass, repass, token, new ApiCallback() {
                         @Override
                         public void onSuccess() {
                             runOnUiThread(new Runnable() {

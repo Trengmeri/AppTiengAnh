@@ -23,15 +23,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.test.NetworkChangeReceiver;
 import com.example.test.R;
 import com.example.test.api.ApiCallback;
-import com.example.test.api.ApiManager;
-import com.example.test.api.ApiResponseAnswer;
+import com.example.test.api.AuthenticationManager;
 import com.example.test.model.Answer;
 import com.example.test.model.Course;
 import com.example.test.model.Lesson;
 import com.example.test.model.Question;
 import com.example.test.model.Result;
 
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -41,7 +39,7 @@ public class SignInActivity extends AppCompatActivity {
     CheckBox cbCheck;
     Button btnIn, btnForgot, btnUp;
     NetworkChangeReceiver networkReceiver;
-    ApiManager apiManager;
+    AuthenticationManager apiManager;
     private boolean isPasswordVisible = false;
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -54,7 +52,7 @@ public class SignInActivity extends AppCompatActivity {
 
         // Tạo đối tượng NetworkChangeReceiver
         networkReceiver = new NetworkChangeReceiver();
-        apiManager = new ApiManager();
+        apiManager = new AuthenticationManager();
 
         btnIn.setOnClickListener(new View.OnClickListener() {
             @Override

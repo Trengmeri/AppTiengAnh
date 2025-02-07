@@ -16,15 +16,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.test.NetworkChangeReceiver;
 import com.example.test.R;
 import com.example.test.api.ApiCallback;
-import com.example.test.api.ApiManager;
-import com.example.test.api.ApiResponseAnswer;
+import com.example.test.api.AuthenticationManager;
 import com.example.test.model.Answer;
 import com.example.test.model.Course;
 import com.example.test.model.Lesson;
 import com.example.test.model.Question;
 import com.example.test.model.Result;
-
-import java.util.List;
 
 public class ForgotPassWordActivity extends AppCompatActivity {
 
@@ -32,7 +29,7 @@ public class ForgotPassWordActivity extends AppCompatActivity {
     Button btnContinue;
     ImageView imgBack;
     NetworkChangeReceiver networkReceiver;
-    ApiManager apiManager;
+    AuthenticationManager apiManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +39,7 @@ public class ForgotPassWordActivity extends AppCompatActivity {
         setUpView();
 
         networkReceiver = new NetworkChangeReceiver();
-        apiManager = new ApiManager();
+        apiManager = new AuthenticationManager();
 
         btnContinue.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -60,7 +57,7 @@ public class ForgotPassWordActivity extends AppCompatActivity {
                     Toast.makeText(ForgotPassWordActivity.this, "Không có kết nối Internet!", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                apiManager.sendForgotRequest(email, new ApiCallback() {
+                apiManager.sendForgotPasswordRequest(email, new ApiCallback() {
                     @Override
                     public void onSuccess() {
                     }

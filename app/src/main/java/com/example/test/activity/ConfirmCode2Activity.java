@@ -21,17 +21,12 @@ import androidx.core.view.WindowInsetsCompat;
 import com.example.test.NetworkChangeReceiver;
 import com.example.test.R;
 import com.example.test.api.ApiCallback;
-import com.example.test.api.ApiManager;
-import com.example.test.api.ApiResponseAnswer;
+import com.example.test.api.AuthenticationManager;
 import com.example.test.model.Answer;
 import com.example.test.model.Course;
 import com.example.test.model.Lesson;
 import com.example.test.model.Question;
 import com.example.test.model.Result;
-
-import java.util.List;
-
-import java.util.List;
 
 public class ConfirmCode2Activity extends AppCompatActivity {
 
@@ -43,7 +38,7 @@ public class ConfirmCode2Activity extends AppCompatActivity {
     private static final long COUNTDOWN_TIME = 60000; // 60 giây
     private CountDownTimer countDownTimer;
     NetworkChangeReceiver networkReceiver;
-    ApiManager apiManager;
+    AuthenticationManager apiManager;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -80,7 +75,7 @@ public class ConfirmCode2Activity extends AppCompatActivity {
             startActivity(intent);
         });
         networkReceiver = new NetworkChangeReceiver();
-        apiManager = new ApiManager();
+        apiManager = new AuthenticationManager();
         // Bắt đầu đếm ngược thời gian
         startCountdown();
 
@@ -91,7 +86,7 @@ public class ConfirmCode2Activity extends AppCompatActivity {
                 btnRe.setAlpha(0.3f);
                 resetCountdown();// Gọi phương thức reset lại bộ đếm
                 String otpID = getOtpIdFromPreferences(); // Lấy OTP ID đã lưu
-                apiManager.resendCodeRequest(otpID, new ApiCallback() {
+                apiManager.resendConfirmCodeRequest(otpID, new ApiCallback() {
                     @Override
                     public void onSuccess() {
                         runOnUiThread(new Runnable() {
@@ -203,7 +198,6 @@ public class ConfirmCode2Activity extends AppCompatActivity {
                     String otpID = getOtpIdFromPreferences();// Khi người dùng nhập vào ô cuối cùng
                     String code = getCode(); // Lấy mã đã nhập
                     // Gọi API xác nhận mã OTP
-                    ApiManager apiManager = new ApiManager();
 //                    SharedPreferences sharedPreferences = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
 //                    String email = sharedPreferences.getString("email", null);
 //                    if (email != null) {

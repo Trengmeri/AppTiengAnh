@@ -9,7 +9,9 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.test.R;
 import com.example.test.api.ApiCallback;
-import com.example.test.api.ApiManager;
+import com.example.test.api.LessonManager;
+import com.example.test.api.QuestionManager;
+import com.example.test.api.ResultManager;
 import com.example.test.model.Answer;
 import com.example.test.model.Course;
 import com.example.test.model.Lesson;
@@ -26,6 +28,9 @@ public class PointResultActivity extends AppCompatActivity {
     private TextView correctSpeak, compSpeak;
     private TextView correctWrite, compWrite;
     private int totalPointR = 0,totalPointL = 0,totalPointS = 0,totalPointW = 0;
+    QuestionManager quesManager = new QuestionManager();
+    LessonManager lesManager = new LessonManager();
+    ResultManager resultManager = new ResultManager();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,8 +66,7 @@ public class PointResultActivity extends AppCompatActivity {
     }
 
     private void fetchCourseData() {
-        ApiManager apiManager = new ApiManager();
-        apiManager.fetchCourseById(new ApiCallback() {
+        lesManager.fetchCourseById(new ApiCallback() {
             @Override
             public void onSuccess() {}
 
@@ -82,7 +86,7 @@ public class PointResultActivity extends AppCompatActivity {
                             fetchLessonAndCreateResult(lessonId);
                         }
                     } else {
-                        showToast("Không có khóa học nào.");
+                        Log.e("PointResultActivity","Không có khóa học nào.");
                     }
                 });
             }
@@ -95,7 +99,7 @@ public class PointResultActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(String errorMessage) {
-                showToast(errorMessage);
+                Log.e("PointResultActivity",errorMessage);
             }
 
             @Override
@@ -109,8 +113,7 @@ public class PointResultActivity extends AppCompatActivity {
     }
 
     private void fetchLessonAndCreateResult(int lessonId) {
-        ApiManager apiManager = new ApiManager();
-        apiManager.fetchLessonById(lessonId, new ApiCallback() {
+        lesManager.fetchLessonById(lessonId, new ApiCallback() {
             @Override
             public void onSuccess() {}
 
@@ -125,7 +128,7 @@ public class PointResultActivity extends AppCompatActivity {
                     String skillType = lesson.getSkillType();
                     if (lesson!= null && lesson.getQuestionIds()!= null) {
                         for (Integer questionId : lesson.getQuestionIds()) {
-                            apiManager.fetchAnswerPointsByQuesId(questionId, new ApiCallback() {
+                            resultManager.fetchAnswerPointsByQuesId(questionId, new ApiCallback() {
                                 @Override
                                 public void onSuccess() {
                                 }
@@ -159,7 +162,7 @@ public class PointResultActivity extends AppCompatActivity {
 
                                 @Override
                                 public void onFailure(String errorMessage) {
-                                    showToast(errorMessage);
+                                    Log.e("PointResultActivity",errorMessage);
                                 }
 
                                 @Override
@@ -203,12 +206,11 @@ public class PointResultActivity extends AppCompatActivity {
     }
 
     private void createResultForLesson(int lessonId, int sessionId, String skillType) {
-        ApiManager apiManager = new ApiManager();
-        apiManager.createResult(lessonId, sessionId, 1, new ApiCallback() {
+        resultManager.createResult(lessonId, sessionId, 1, new ApiCallback() {
             @Override
             public void onSuccess() {
                     Log.d("PointResultActivity", "createResultForLesson: Gọi fetchResultByLesson"); // Log trước khi gọi fetchResultByLesson
-                    apiManager.fetchResultByLesson(lessonId, new ApiCallback() {
+                    resultManager.fetchResultByLesson(lessonId, new ApiCallback() {
                         @Override
                         public void onSuccess() {}
 
@@ -236,7 +238,6 @@ public class PointResultActivity extends AppCompatActivity {
                         @Override
                         public void onFailure(String errorMessage) {
                             Log.e("PointResultActivity", "fetchResultByLesson: " + errorMessage);
-                            showToast(errorMessage);
                         }
 
                         @Override
@@ -276,7 +277,7 @@ public class PointResultActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(String errorMessage) {
-                showToast(errorMessage);
+                Log.e("PointResultActivity",errorMessage);
             }
 
             @Override
@@ -317,7 +318,4 @@ public class PointResultActivity extends AppCompatActivity {
         });
     }
 
-    private void showToast(String message) {
-        runOnUiThread(() -> Toast.makeText(PointResultActivity.this, message, Toast.LENGTH_SHORT).show());
-    }
 }

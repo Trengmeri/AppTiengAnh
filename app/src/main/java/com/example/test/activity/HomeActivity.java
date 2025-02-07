@@ -13,8 +13,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.test.R;
 import com.example.test.api.ApiCallback;
-import com.example.test.api.ApiManager;
-import com.example.test.api.ApiResponseAnswer;
+import com.example.test.api.LessonManager;
+import com.example.test.api.QuestionManager;
+import com.example.test.api.ResultManager;
 import com.example.test.model.Answer;
 import com.example.test.model.Course;
 import com.example.test.model.Lesson;
@@ -29,6 +30,9 @@ public class HomeActivity extends AppCompatActivity {
     LinearLayout lessonsContainer; // LinearLayout để chứa các bài học
     TextView courseTitle,lessonTitle1,lessonNumber; // TextView để hiển thị tên khóa học
     ImageView btnNoti;
+    QuestionManager quesManager = new QuestionManager();
+    LessonManager lesManager = new LessonManager();
+    ResultManager resultManager = new ResultManager();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,8 +59,7 @@ public class HomeActivity extends AppCompatActivity {
         });
 
         // Gọi API để lấy thông tin khóa học
-        ApiManager apiManager = new ApiManager();
-        apiManager.fetchCourseById( new ApiCallback() {
+        lesManager.fetchCourseById( new ApiCallback() {
             @Override
             public void onSuccess(Course course) {
                 runOnUiThread(() -> {
@@ -70,7 +73,7 @@ public class HomeActivity extends AppCompatActivity {
                         List<Integer> lessonIds = course.getLessonIds();
                         for (Integer lessonId : lessonIds) {
                             // Gọi API để lấy thông tin bài học
-                            apiManager.fetchLessonById(lessonId, new ApiCallback() {
+                            lesManager.fetchLessonById(lessonId, new ApiCallback() {
                                 @Override
                                 public void onSuccess(Lesson lesson) {
                                     runOnUiThread(() -> {

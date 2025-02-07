@@ -22,15 +22,12 @@ import androidx.core.view.WindowInsetsCompat;
 import com.example.test.NetworkChangeReceiver;
 import com.example.test.R;
 import com.example.test.api.ApiCallback;
-import com.example.test.api.ApiManager;
-import com.example.test.api.ApiResponseAnswer;
+import com.example.test.api.AuthenticationManager;
 import com.example.test.model.Answer;
 import com.example.test.model.Course;
 import com.example.test.model.Lesson;
 import com.example.test.model.Question;
 import com.example.test.model.Result;
-
-import java.util.List;
 
 public class ConfirmCodeActivity extends AppCompatActivity {
 
@@ -43,7 +40,7 @@ public class ConfirmCodeActivity extends AppCompatActivity {
     private CountDownTimer countDownTimer;
    // private String otpID;
     NetworkChangeReceiver networkReceiver;
-    ApiManager apiManager;
+    AuthenticationManager apiManager;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,7 +65,7 @@ public class ConfirmCodeActivity extends AppCompatActivity {
                 findViewById(R.id.editText6)
         };
         networkReceiver = new NetworkChangeReceiver();
-        apiManager = new ApiManager();
+        apiManager = new AuthenticationManager();
 
         icback = findViewById(R.id.iconback);
         btnRe = findViewById(R.id.btnRe);
@@ -93,7 +90,7 @@ public class ConfirmCodeActivity extends AppCompatActivity {
                 btnRe.setAlpha(0.3f);
                 resetCountdown();// Gọi phương thức reset lại bộ đếm
                 String otpID = getOtpIdFromPreferences(); // Lấy OTP ID đã lưu
-                apiManager.resendCodeRequest(otpID, new ApiCallback() {
+                apiManager.resendConfirmCodeRequest(otpID, new ApiCallback() {
                     @Override
                     public void onSuccess() {
                         runOnUiThread(new Runnable() {
@@ -202,7 +199,7 @@ public class ConfirmCodeActivity extends AppCompatActivity {
                     String otpID = getOtpIdFromPreferences();
                     String code = getCode(); // Lấy mã đã nhập
                     // Gọi API xác nhận mã OTP
-                    apiManager.sendConfirmCodeForgotRequest(otpID,code, new ApiCallback() {
+                    apiManager.sendConfirmForgotPasswordRequest(otpID,code, new ApiCallback() {
                         @Override
                         public void onSuccess() {
 //                            runOnUiThread(new Runnable() {
