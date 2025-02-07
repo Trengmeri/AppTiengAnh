@@ -1,10 +1,9 @@
-package com.example.test.api;
+package com.example.test.response;
 
-import com.example.test.model.Result;
+import com.example.test.model.Lesson;
 import com.google.gson.annotations.SerializedName;
-import java.util.List;
 
-public class ApiResponseResult {
+public class ApiResponseLesson {
     @SerializedName("statusCode")
     private int statusCode;
 
@@ -15,7 +14,7 @@ public class ApiResponseResult {
     private String message;
 
     @SerializedName("data")
-    private List<Result> data; // Danh sách các Result
+    private Lesson data;
 
     // Getters và Setters
     public int getStatusCode() {
@@ -42,11 +41,11 @@ public class ApiResponseResult {
         this.message = message;
     }
 
-    public List<Result> getData() {
+    public Lesson getData() {
         return data;
     }
 
-    public void setData(List<Result> data) {
+    public void setData(Lesson data) {
         this.data = data;
     }
 }

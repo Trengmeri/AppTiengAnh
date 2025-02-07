@@ -21,12 +21,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.test.PopupHelper;
 import com.example.test.R;
 import com.example.test.api.ApiCallback;
+import com.example.test.api.BaseApiManager;
 import com.example.test.api.LessonManager;
 import com.example.test.api.QuestionManager;
 import com.example.test.api.ResultManager;
 import com.example.test.model.Answer;
 import com.example.test.model.Course;
 import com.example.test.model.Lesson;
+import com.example.test.model.MediaFile;
 import com.example.test.model.Question;
 import com.example.test.model.QuestionChoice;
 import com.example.test.model.Result;
@@ -47,7 +49,8 @@ public class ListeningQuestionActivity extends AppCompatActivity {
     private List<String> userAnswers = new ArrayList<>();
     private int currentStep = 0; // Bước hiện tại (bắt đầu từ 0)
     private int totalSteps; // Tổng số bước trong thanh tiến trình
-    private int answerIds;// Danh sách questionIds
+    private int answerIds;
+    ImageView btnListen;
 
     QuestionManager quesManager = new QuestionManager();
     LessonManager lesManager = new LessonManager();
@@ -59,7 +62,7 @@ public class ListeningQuestionActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_listening_question);
 
-        ImageView btnListen = findViewById(R.id.btnListen);
+        btnListen = findViewById(R.id.btnListen);
         Button btnCheckResult = findViewById(R.id.btnCheckResult);
         etAnswer = findViewById(R.id.etAnswer);
         int lessonId = 3;
@@ -67,7 +70,7 @@ public class ListeningQuestionActivity extends AppCompatActivity {
 
         LinearLayout progressBar = findViewById(R.id.progressBar); // Ánh xạ ProgressBar
 
-        //btnListen.setOnClickListener(v -> playAudio());
+
 
         btnCheckResult.setOnClickListener(v -> {
             String userAnswer = etAnswer.getText().toString().trim();
@@ -163,6 +166,11 @@ public class ListeningQuestionActivity extends AppCompatActivity {
                             }
 
                             @Override
+                            public void onSuccess(MediaFile mediaFile) {
+
+                            }
+
+                            @Override
                             public void onFailure(String errorMessage) {
 
                             }
@@ -199,6 +207,11 @@ public class ListeningQuestionActivity extends AppCompatActivity {
                     public void onSuccess(Answer answer) {}
 
                     @Override
+                    public void onSuccess(MediaFile mediaFile) {
+
+                    }
+
+                    @Override
                     public void onFailure(String errorMessage) {
                     }
 
@@ -215,14 +228,48 @@ public class ListeningQuestionActivity extends AppCompatActivity {
             }
         });
     }
-    /*private void fetchAudioUrl() {
+    private void fetchAudioUrl(int questionId) {
 
         // Gọi phương thức fetchAudioUrl từ ApiManager
-        apiManager.fetchAudioUrl(apiUrl, new ApiManager.ApiCallback() {
+        quesManager.fetchMediaByQuesId(questionId, new ApiCallback() {
+
             @Override
-            public void onSuccess(String audioUrl) {
-                // Khi nhận được URL âm thanh từ API, gọi phương thức playAudio
-                playAudio(audioUrl);
+            public void onSuccess() {
+
+            }
+
+            @Override
+            public void onSuccess(Question questions) {
+
+            }
+
+            @Override
+            public void onSuccess(Lesson lesson) {
+
+            }
+
+            @Override
+            public void onSuccess(Course course) {
+
+            }
+
+            @Override
+            public void onSuccess(Result result) {
+
+            }
+
+            @Override
+            public void onSuccess(Answer answer) {
+
+            }
+
+            @Override
+            public void onSuccess(MediaFile mediaFile) {
+                runOnUiThread(() -> { // Sử dụng runOnUiThread ở đây
+                    if (mediaFile!= null) {
+                        btnListen.setOnClickListener(v -> playAudio(mediaFile.getMaterLink()));
+                    }
+                });
             }
 
             @Override
@@ -230,20 +277,36 @@ public class ListeningQuestionActivity extends AppCompatActivity {
                 // Hiển thị thông báo lỗi nếu có
                 runOnUiThread(() -> Toast.makeText(getApplicationContext(), errorMessage, Toast.LENGTH_SHORT).show());
             }
-        });
-        private void playAudio (String audioUrl){
-            try {
-                // Tạo MediaPlayer để phát âm thanh
-                mediaPlayer = new MediaPlayer();
-                mediaPlayer.setDataSource(audioUrl); // Đường dẫn đến file âm thanh
-                mediaPlayer.prepare(); // Chuẩn bị phát
-                mediaPlayer.start(); // Bắt đầu phát âm thanh
-            } catch (Exception e) {
-                e.printStackTrace();
-                Toast.makeText(this, "Không thể phát âm thanh", Toast.LENGTH_SHORT).show();
+
+            @Override
+            public void onSuccessWithOtpID(String otpID) {
+
             }
-        }
-    }*/
+
+            @Override
+            public void onSuccessWithToken(String token) {
+
+            }
+        });
+    }
+    private void playAudio (String audioUrl){
+        try {
+            mediaPlayer = new MediaPlayer();
+            mediaPlayer = MediaPlayer.create(this, R.raw.uaifein);
+            mediaPlayer.start();
+            /*mediaPlayer.setDataSource(BaseApiManager.BASE_URL + "/" + audioUrl); // Sử dụng đường dẫn đầy đủ
+            mediaPlayer.prepare();
+            mediaPlayer.start();*/
+        } catch (IllegalArgumentException e) {
+            Log.e("MediaPlayerError", "IllegalArgumentException: " + e.getMessage()); // In ra lỗi chi tiết
+        } /*catch (SecurityException e) {
+            Log.e("MediaPlayerError", "SecurityException: " + e.getMessage()); // In ra lỗi chi tiết
+        } catch (IllegalStateException e) {
+            Log.e("MediaPlayerError", "IllegalStateException: " + e.getMessage()); // In ra lỗi chi tiết
+        } catch (IOException e) {
+            Log.e("MediaPlayerError", "IOException: " + e.getMessage()); // In ra lỗi chi tiết
+        }*/
+    }
 
     private void fetchLessonAndQuestions(int lessonId) {
         lesManager.fetchLessonById(lessonId, new ApiCallback() {
@@ -255,6 +318,7 @@ public class ListeningQuestionActivity extends AppCompatActivity {
                     totalSteps = questionIds.size();
                     if (questionIds != null && !questionIds.isEmpty()) {
                         fetchQuestion(questionIds.get(currentStep));
+                        fetchAudioUrl(questionIds.get(currentStep));
                     } else {
                         Log.e("ListeningQuestionActivity", "Bài học không có câu hỏi.");
                     }
@@ -271,6 +335,11 @@ public class ListeningQuestionActivity extends AppCompatActivity {
 
             @Override
             public void onSuccess(Answer answer) {
+
+            }
+
+            @Override
+            public void onSuccess(MediaFile mediaFile) {
 
             }
 
@@ -333,6 +402,11 @@ public class ListeningQuestionActivity extends AppCompatActivity {
 
             @Override
             public void onSuccess(Answer answer) {}
+
+            @Override
+            public void onSuccess(MediaFile mediaFile) {
+
+            }
 
             @Override
             public void onSuccess(Course course) {}

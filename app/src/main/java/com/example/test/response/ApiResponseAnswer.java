@@ -1,4 +1,4 @@
-package com.example.test.api;
+package com.example.test.response;
 
 import com.example.test.model.Answer;
 import com.google.gson.annotations.SerializedName;

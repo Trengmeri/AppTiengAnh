@@ -27,6 +27,7 @@ import com.example.test.api.ResultManager;
 import com.example.test.model.Answer;
 import com.example.test.model.Course;
 import com.example.test.model.Lesson;
+import com.example.test.model.MediaFile;
 import com.example.test.model.Question;
 import com.example.test.model.QuestionChoice;
 import com.example.test.model.Result;
@@ -80,7 +81,7 @@ public class RecordQuestionActivity extends AppCompatActivity implements SpeechR
         }
 
         // Audio playback setup
-        mediaPlayer = MediaPlayer.create(this, R.raw.uiafein); // Thay thế với tệp âm thanh của bạn
+        mediaPlayer = MediaPlayer.create(this, R.raw.uaifein); // Thay thế với tệp âm thanh của bạn
         btnPlayAudio.setOnClickListener(v -> {
             if (!mediaPlayer.isPlaying()) {
                 mediaPlayer.start();
@@ -92,7 +93,6 @@ public class RecordQuestionActivity extends AppCompatActivity implements SpeechR
 
         LinearLayout progressBar = findViewById(R.id.progressBar); // Ánh xạ ProgressBar
 
-        //btnListen.setOnClickListener(v -> playAudio());
 
         btnCheckResult.setOnClickListener(v -> {
             String userAnswer = tvTranscription.getText().toString().trim();
@@ -176,6 +176,11 @@ public class RecordQuestionActivity extends AppCompatActivity implements SpeechR
                             }
 
                             @Override
+                            public void onSuccess(MediaFile mediaFile) {
+
+                            }
+
+                            @Override
                             public void onFailure(String errorMessage) {
 
                             }
@@ -206,6 +211,11 @@ public class RecordQuestionActivity extends AppCompatActivity implements SpeechR
 
                     @Override
                     public void onSuccess(Answer answer) {}
+
+                    @Override
+                    public void onSuccess(MediaFile mediaFile) {
+
+                    }
 
                     @Override
                     public void onFailure(String errorMessage) {
@@ -253,6 +263,11 @@ public class RecordQuestionActivity extends AppCompatActivity implements SpeechR
 
             @Override
             public void onSuccess(Answer answer) {}
+
+            @Override
+            public void onSuccess(MediaFile mediaFile) {
+
+            }
 
             @Override
             public void onFailure(String errorMessage) {
@@ -313,6 +328,11 @@ public class RecordQuestionActivity extends AppCompatActivity implements SpeechR
 
             @Override
             public void onSuccess(Answer answer) {}
+
+            @Override
+            public void onSuccess(MediaFile mediaFile) {
+
+            }
 
             @Override
             public void onSuccess(Course course) {}

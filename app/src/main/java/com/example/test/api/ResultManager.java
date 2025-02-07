@@ -4,6 +4,8 @@ import android.util.Log;
 
 import com.example.test.model.Answer;
 import com.example.test.model.Result;
+import com.example.test.response.ApiResponseAnswer;
+import com.example.test.response.ApiResponseResult;
 import com.google.gson.Gson;
 
 import java.io.IOException;

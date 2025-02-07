@@ -20,6 +20,7 @@ import com.example.test.api.AuthenticationManager;
 import com.example.test.model.Answer;
 import com.example.test.model.Course;
 import com.example.test.model.Lesson;
+import com.example.test.model.MediaFile;
 import com.example.test.model.Question;
 import com.example.test.model.Result;
 
@@ -105,6 +106,11 @@ public class ForgotPassWordActivity extends AppCompatActivity {
 
                     @Override
                     public void onSuccess(Answer answer) {
+
+                    }
+
+                    @Override
+                    public void onSuccess(MediaFile mediaFile) {
 
                     }
 
