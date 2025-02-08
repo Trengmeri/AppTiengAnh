@@ -11,13 +11,20 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.test.NotificationManager;
 import com.example.test.R;
+import com.example.test.adapter.NotificationAdapter;
+import com.example.test.model.Notification;
+
+import java.util.List;
 
 public class NotificationActivity extends AppCompatActivity {
 
     TextView notiBack;
-
+    RecyclerView recyclerView;
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,7 +38,7 @@ public class NotificationActivity extends AppCompatActivity {
         });
 
         notiBack= findViewById(R.id.notiBack);
-
+        recyclerView = findViewById(R.id.recyclerViewNotifications);
         notiBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -39,5 +46,11 @@ public class NotificationActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+        // Lấy danh sách thông báo và hiển thị
+        List<Notification> notifications = NotificationManager.getInstance().getNotifications();
+        NotificationAdapter adapter = new NotificationAdapter(notifications);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setAdapter(adapter);
+
     }
 }

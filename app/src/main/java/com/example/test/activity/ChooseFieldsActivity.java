@@ -38,7 +38,7 @@ public class ChooseFieldsActivity extends AppCompatActivity {
         btnIT.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(ChooseFieldsActivity.this, SelectActivity.class);
+                Intent intent = new Intent(ChooseFieldsActivity.this, NotificationActivity.class);
                 startActivity(intent);
             }
         });

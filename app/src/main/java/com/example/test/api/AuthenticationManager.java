@@ -6,6 +6,8 @@ import android.net.Network;
 import android.net.NetworkCapabilities;
 import android.util.Log;
 
+import com.example.test.NotificationManager;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -13,10 +15,15 @@ import java.io.IOException;
 import java.net.ConnectException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
@@ -54,6 +61,12 @@ public class AuthenticationManager extends BaseApiManager {
     }
 
     public void sendSignUpRequest(Context context, String name, String email, String password, ApiCallback callback) {
+        OkHttpClient client = new OkHttpClient.Builder()
+                .connectTimeout(30, TimeUnit.SECONDS) // Thời gian chờ kết nối
+                .readTimeout(30, TimeUnit.SECONDS)    // Thời gian chờ đọc dữ liệu
+                .writeTimeout(20, TimeUnit.SECONDS)   // Thời gian chờ ghi dữ liệu
+                .build();
+
         String json = "{ \"name\": \"" + name + "\", \"email\": \"" + email + "\", \"password\": \"" + password + "\" }";
         RequestBody body = RequestBody.create(json, MediaType.parse("application/json; charset=utf-8"));
 
@@ -111,6 +124,19 @@ public class AuthenticationManager extends BaseApiManager {
                 Log.d("AuthenticationManager", "Phản hồi từ server: " + responseBody);
                 if (response.isSuccessful()) {
                     callback.onSuccess();
+                    //them
+                    try {
+                        JSONObject responseJson = new JSONObject(responseBody);
+                        String message = responseJson.optString("message", "Tài khoản của bạn đã được tạo.");
+                        String currentDate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
+                        NotificationManager.getInstance().addNotification(
+                                "Đăng ký thành công",
+                                message,
+                                currentDate
+                        );
+                    } catch (JSONException e) {
+                        callback.onFailure("Lỗi phân tích phản hồi JSON: " + e.getMessage());
+                    }
                 } else {
                     handleError(response, responseBody, callback, "Mã OTP sai! Vui lòng kiểm tra lại.");
                 }
