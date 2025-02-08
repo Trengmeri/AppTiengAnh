@@ -51,7 +51,7 @@ public class NewPassActivity extends AppCompatActivity {
         AnhXa();
         setupPasswordField();
         networkReceiver = new NetworkChangeReceiver();
-        apiManager = new AuthenticationManager();
+        apiManager = new AuthenticationManager(this);
         btnNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

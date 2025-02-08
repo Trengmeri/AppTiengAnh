@@ -7,6 +7,8 @@ import android.net.NetworkCapabilities;
 import android.util.Log;
 
 import com.example.test.NotificationManager;
+import com.example.test.NotificationStorage;
+import com.example.test.SharedPreferencesManager;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -29,6 +31,12 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class AuthenticationManager extends BaseApiManager {
+    private final Context context;
+
+    public AuthenticationManager(Context context) {
+        this.context = context;
+    }
+
 
     public void sendLoginRequest(String email, String password, ApiCallback callback) {
         String json = "{ \"username\": \"" + email + "\", \"password\": \"" + password + "\" }";
@@ -51,6 +59,15 @@ public class AuthenticationManager extends BaseApiManager {
                 String responseBody = response.body().string();
                 Log.d("AuthenticationManager", "Phản hồi từ server: " + responseBody);
                 if (response.isSuccessful()) {
+                    try {
+                        //them
+                        JSONObject responseJson = new JSONObject(responseBody);
+                        JSONObject data = responseJson.getJSONObject("user");
+                        String id = data.optString("id", "unknown_otp");
+                        SharedPreferencesManager.getInstance(context).saveOTP_ID(id);
+                    } catch (JSONException e) {
+                        callback.onFailure("Lỗi phân tích phản hồi JSON: " + e.getMessage());
+                    }/////
                     callback.onSuccess();
                 } else {
                     Log.e("AuthenticationManager", "Lỗi từ server: Mã lỗi " + response.code() + ", Nội dung: " + responseBody);
@@ -129,11 +146,20 @@ public class AuthenticationManager extends BaseApiManager {
                         JSONObject responseJson = new JSONObject(responseBody);
                         String message = responseJson.optString("message", "Tài khoản của bạn đã được tạo.");
                         String currentDate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
-                        NotificationManager.getInstance().addNotification(
-                                "Đăng ký thành công",
-                                message,
-                                currentDate
-                        );
+                        //themmmmmm
+                        // 📌 Lấy userID từ API
+                        String id = responseJson.optString("id", "unknown_user");
+
+                        // 📌 Lưu userID vào SharedPreferences
+                        SharedPreferencesManager.getInstance(context).saveID(id);
+                        // 📌 Lưu thông báo vào SharedPreferences theo userID
+                        NotificationStorage.getInstance(context).saveNotification(id, "Đăng ký thành công", message, currentDate);
+                        /////themmmm
+//                        NotificationManager.getInstance().addNotification(
+//                                "Đăng ký thành công",
+//                                message,
+//                                currentDate
+//                        );
                     } catch (JSONException e) {
                         callback.onFailure("Lỗi phân tích phản hồi JSON: " + e.getMessage());
                     }

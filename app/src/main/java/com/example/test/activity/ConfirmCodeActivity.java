@@ -66,7 +66,7 @@ public class ConfirmCodeActivity extends AppCompatActivity {
                 findViewById(R.id.editText6)
         };
         networkReceiver = new NetworkChangeReceiver();
-        apiManager = new AuthenticationManager();
+        apiManager = new AuthenticationManager(this);
 
         icback = findViewById(R.id.iconback);
         btnRe = findViewById(R.id.btnRe);

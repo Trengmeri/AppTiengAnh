@@ -57,7 +57,7 @@ public class SignUpActivity extends AppCompatActivity {
 
         // Tạo đối tượng NetworkChangeReceiver
         networkReceiver = new NetworkChangeReceiver();
-        apiManager = new AuthenticationManager();
+        apiManager = new AuthenticationManager(this);
 
         btnUp.setOnClickListener(view -> {
             if (!apiManager.isInternetAvailable(SignUpActivity.this)) {

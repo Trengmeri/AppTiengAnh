@@ -15,7 +15,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.test.NotificationManager;
+import com.example.test.NotificationStorage;
 import com.example.test.R;
+import com.example.test.SharedPreferencesManager;
 import com.example.test.adapter.NotificationAdapter;
 import com.example.test.model.Notification;
 
@@ -25,6 +27,7 @@ public class NotificationActivity extends AppCompatActivity {
 
     TextView notiBack;
     RecyclerView recyclerView;
+    NotificationAdapter adapter;
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,10 +49,20 @@ public class NotificationActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-        // Lấy danh sách thông báo và hiển thị
-        List<Notification> notifications = NotificationManager.getInstance().getNotifications();
-        NotificationAdapter adapter = new NotificationAdapter(notifications);
+//        // Lấy danh sách thông báo và hiển thị
+//        List<Notification> notifications = NotificationManager.getInstance().getNotifications();
+//        NotificationAdapter adapter = new NotificationAdapter(notifications);
+//        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+//        recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        // 📌 Lấy userID từ SharedPreferences
+        String userID = SharedPreferencesManager.getInstance(this).getID();
+
+        // 📌 Lấy thông báo từ SharedPreferences theo userID
+        List<Notification> notifications = NotificationStorage.getInstance(this).getNotifications(userID);
+
+        adapter = new NotificationAdapter(notifications);
         recyclerView.setAdapter(adapter);
 
     }
