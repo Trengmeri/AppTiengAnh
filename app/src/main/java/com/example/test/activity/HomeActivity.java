@@ -30,7 +30,7 @@ public class HomeActivity extends AppCompatActivity {
     Button continueButton;
     LinearLayout lessonsContainer; // LinearLayout để chứa các bài học
     TextView courseTitle,lessonTitle1,lessonNumber; // TextView để hiển thị tên khóa học
-    ImageView btnNoti;
+    ImageView btnNoti,btnstudy,btnexplore,btnprofile;
     QuestionManager quesManager = new QuestionManager();
     LessonManager lesManager = new LessonManager();
     ResultManager resultManager = new ResultManager();
@@ -46,6 +46,10 @@ public class HomeActivity extends AppCompatActivity {
         lessonTitle1 = findViewById(R.id.lessonTitle);
         lessonNumber = findViewById(R.id.lessonNumber);
         btnNoti= findViewById(R.id.img_notification);
+        btnstudy = findViewById(R.id.ic_study);
+        btnexplore = findViewById(R.id.ic_explore);
+        btnprofile = findViewById(R.id.ic_profile);
+
 
         continueButton.setOnClickListener(v -> {
             Toast.makeText(HomeActivity.this, "Continue studying clicked!", Toast.LENGTH_SHORT).show();
@@ -55,6 +59,14 @@ public class HomeActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(HomeActivity.this, NotificationActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        btnexplore.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(HomeActivity.this, ExploreActivity.class);
                 startActivity(intent);
             }
         });
