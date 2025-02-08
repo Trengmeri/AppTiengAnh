@@ -26,4 +26,7 @@
     <string name="txt_construction">CONSTRUCTION</string>
     <string name="btn_continute">Continue Studying</string>
     <string name="txtcontinute">Continue your journey!</string>
+    <string name="txtschedulebasic">Basic\n10 mins per day</string>
+    <string name="txtscheduleadvance">Advance\n20 mins per day</string>
+    <string name="txtlevelupschedule">Level-up!\n30 mins per day</string>
 </resources>
