@@ -53,7 +53,7 @@ public class SignInActivity extends AppCompatActivity {
 
         // Tạo đối tượng NetworkChangeReceiver
         networkReceiver = new NetworkChangeReceiver();
-        apiManager = new AuthenticationManager();
+        apiManager = new AuthenticationManager(this);
 
         btnIn.setOnClickListener(new View.OnClickListener() {
             @Override

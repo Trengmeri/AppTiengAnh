@@ -76,7 +76,7 @@ public class ConfirmCode2Activity extends AppCompatActivity {
             startActivity(intent);
         });
         networkReceiver = new NetworkChangeReceiver();
-        apiManager = new AuthenticationManager();
+        apiManager = new AuthenticationManager(this);
         // Bắt đầu đếm ngược thời gian
         startCountdown();
 

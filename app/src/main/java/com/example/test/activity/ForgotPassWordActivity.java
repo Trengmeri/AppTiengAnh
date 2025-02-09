@@ -40,7 +40,7 @@ public class ForgotPassWordActivity extends AppCompatActivity {
         setUpView();
 
         networkReceiver = new NetworkChangeReceiver();
-        apiManager = new AuthenticationManager();
+        apiManager = new AuthenticationManager(this);
 
         btnContinue.setOnClickListener(new View.OnClickListener() {
             @Override

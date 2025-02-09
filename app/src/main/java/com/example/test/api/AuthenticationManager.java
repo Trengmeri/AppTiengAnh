@@ -6,6 +6,10 @@ import android.net.Network;
 import android.net.NetworkCapabilities;
 import android.util.Log;
 
+import com.example.test.NotificationManager;
+import com.example.test.NotificationStorage;
+import com.example.test.SharedPreferencesManager;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -13,15 +17,26 @@ import java.io.IOException;
 import java.net.ConnectException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class AuthenticationManager extends BaseApiManager {
+    private final Context context;
+
+    public AuthenticationManager(Context context) {
+        this.context = context;
+    }
+
 
     public void sendLoginRequest(String email, String password, ApiCallback callback) {
         String json = "{ \"username\": \"" + email + "\", \"password\": \"" + password + "\" }";
@@ -44,6 +59,15 @@ public class AuthenticationManager extends BaseApiManager {
                 String responseBody = response.body().string();
                 Log.d("AuthenticationManager", "Phản hồi từ server: " + responseBody);
                 if (response.isSuccessful()) {
+                    try {
+                        //them
+                        JSONObject responseJson = new JSONObject(responseBody);
+                        JSONObject data = responseJson.getJSONObject("user");
+                        String id = data.optString("id", "unknown_otp");
+                        SharedPreferencesManager.getInstance(context).saveOTP_ID(id);
+                    } catch (JSONException e) {
+                        callback.onFailure("Lỗi phân tích phản hồi JSON: " + e.getMessage());
+                    }/////
                     callback.onSuccess();
                 } else {
                     Log.e("AuthenticationManager", "Lỗi từ server: Mã lỗi " + response.code() + ", Nội dung: " + responseBody);
@@ -54,6 +78,12 @@ public class AuthenticationManager extends BaseApiManager {
     }
 
     public void sendSignUpRequest(Context context, String name, String email, String password, ApiCallback callback) {
+        OkHttpClient client = new OkHttpClient.Builder()
+                .connectTimeout(30, TimeUnit.SECONDS) // Thời gian chờ kết nối
+                .readTimeout(30, TimeUnit.SECONDS)    // Thời gian chờ đọc dữ liệu
+                .writeTimeout(20, TimeUnit.SECONDS)   // Thời gian chờ ghi dữ liệu
+                .build();
+
         String json = "{ \"name\": \"" + name + "\", \"email\": \"" + email + "\", \"password\": \"" + password + "\" }";
         RequestBody body = RequestBody.create(json, MediaType.parse("application/json; charset=utf-8"));
 
@@ -111,6 +141,23 @@ public class AuthenticationManager extends BaseApiManager {
                 Log.d("AuthenticationManager", "Phản hồi từ server: " + responseBody);
                 if (response.isSuccessful()) {
                     callback.onSuccess();
+                    //them
+                    try {
+                        JSONObject responseJson = new JSONObject(responseBody);
+                        String message = responseJson.optString("message", "Tài khoản của bạn đã được tạo.");
+                        String currentDate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
+                        //themmmmmm
+                        //  Lấy userID từ API
+                        //String id = responseJson.optString("id", "unknown_user");
+                        String id = SharedPreferencesManager.getInstance(context).getID();
+                        //  Lưu userID vào SharedPreferences
+                        SharedPreferencesManager.getInstance(context).saveID(id);
+                        // Lưu thông báo vào SharedPreferences theo userID
+                        NotificationStorage.getInstance(context).saveNotification(id, "Đăng ký thành công", message, currentDate);
+                        /////themmmm
+                    } catch (JSONException e) {
+                        callback.onFailure("Lỗi phân tích phản hồi JSON: " + e.getMessage());
+                    }
                 } else {
                     handleError(response, responseBody, callback, "Mã OTP sai! Vui lòng kiểm tra lại.");
                 }
@@ -148,6 +195,11 @@ public class AuthenticationManager extends BaseApiManager {
     }
 
     public void sendForgotPasswordRequest(String email, ApiCallback callback) {
+        OkHttpClient client = new OkHttpClient.Builder()
+                .connectTimeout(40, TimeUnit.SECONDS) // Thời gian chờ kết nối
+                .readTimeout(40, TimeUnit.SECONDS)    // Thời gian chờ đọc dữ liệu
+                .writeTimeout(30, TimeUnit.SECONDS)   // Thời gian chờ ghi dữ liệu
+                .build();
         String json = "{ \"email\": \"" + email + "\" }";
         RequestBody body = RequestBody.create(json, MediaType.parse("application/json; charset=utf-8"));
 
@@ -219,6 +271,11 @@ public class AuthenticationManager extends BaseApiManager {
     }
 
     public void updatePassword(String newPassword, String confirmPassword, String token, ApiCallback callback) {
+        OkHttpClient client = new OkHttpClient.Builder()
+                .connectTimeout(30, TimeUnit.SECONDS) // Thời gian chờ kết nối
+                .readTimeout(30, TimeUnit.SECONDS)    // Thời gian chờ đọc dữ liệu
+                .writeTimeout(20, TimeUnit.SECONDS)   // Thời gian chờ ghi dữ liệu
+                .build();
         String json = "{ \"newPassword\": \"" + newPassword + "\", \"confirmPassword\": \"" + confirmPassword + "\" }";
         RequestBody body = RequestBody.create(json, MediaType.parse("application/json; charset=utf-8"));
 
@@ -241,6 +298,20 @@ public class AuthenticationManager extends BaseApiManager {
                 Log.d("AuthenticationManager", "Phản hồi từ server: " + responseBody);
                 if (response.isSuccessful()) {
                     callback.onSuccess();
+                    // Lưu thông báo vào SharedPreferences
+                    String currentDate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
+                    String userId = SharedPreferencesManager.getInstance(context).getID();
+
+//                    // 📌 Lưu userID vào SharedPreferences
+//                    SharedPreferencesManager.getInstance(context).saveID(id);
+
+                    // Lưu thông báo (sử dụng responseBody làm nội dung)
+                    NotificationStorage.getInstance(context).saveNotification(
+                            userId,
+                            "Bạn đã đổi mật khẩu thành công", // Tiêu đề thông báo
+                            responseBody,        // Nội dung thông báo từ API
+                            currentDate          // Ngày hiện tại
+                    );
                 } else {
                     callback.onFailure("Cập nhật mật khẩu thất bại! " + response.message());
                 }
