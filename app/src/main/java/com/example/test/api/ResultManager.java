@@ -10,10 +10,12 @@ import com.google.gson.Gson;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
@@ -21,6 +23,7 @@ import okhttp3.Response;
 public class ResultManager extends BaseApiManager {
 
     public void createResult(int lessonId, int sessionId, int enrollmentId, ApiCallback callback) {
+
         String json = "{ \"lessonId\":" + lessonId + ", \"sessionId\":" + sessionId + ", \"enrollmentId\":" + enrollmentId + "}";
         RequestBody body = RequestBody.create(json, MediaType.get("application/json; charset=utf-8"));
 
