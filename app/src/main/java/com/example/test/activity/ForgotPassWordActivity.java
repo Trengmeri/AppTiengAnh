@@ -91,8 +91,8 @@ public class ForgotPassWordActivity extends AppCompatActivity {
                             }
                         });
                         saveOtpId(otpID); // Lưu otpID vào SharedPreferences
-                        Intent intent = new Intent(ForgotPassWordActivity.this, ConfirmCodeActivity.class);
-//                      intent.putExtra("email", email);
+                        Intent intent = new Intent(ForgotPassWordActivity.this, ConfirmCode2Activity.class);
+                        intent.putExtra("FORGOT", "FORGOT");
                         startActivity(intent);
                     }
 

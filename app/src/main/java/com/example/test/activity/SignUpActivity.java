@@ -114,7 +114,7 @@ public class SignUpActivity extends AppCompatActivity {
                         Log.d("ConfirmCode", "otpID được lưu: " + otpID);
 
                         Intent intent = new Intent(SignUpActivity.this, ConfirmCode2Activity.class);
-//                        intent.putExtra("email", email);
+                        intent.putExtra("REGISTER", "REGISTER");
                         startActivity(intent);
 
                     }
@@ -142,6 +142,7 @@ public class SignUpActivity extends AppCompatActivity {
     }
     @SuppressLint("ClickableViewAccessibility")
 //    private void setupPasswordField() {
+//        edtMKhau.setOnTouchListener((v, event) -> {
 //        edtMKhau.setOnTouchListener((v, event) -> {
 //            // Kiểm tra xem người dùng có nhấn vào drawableEnd không
 //            if (event.getAction() == MotionEvent.ACTION_UP) {
