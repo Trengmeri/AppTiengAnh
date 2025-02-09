@@ -29,6 +29,8 @@ import com.example.test.model.MediaFile;
 import com.example.test.model.Question;
 import com.example.test.model.Result;
 
+import java.util.Objects;
+
 public class ConfirmCode2Activity extends AppCompatActivity {
 
     private EditText[] codeInputs; // Mảng chứa các ô nhập mã
@@ -40,6 +42,7 @@ public class ConfirmCode2Activity extends AppCompatActivity {
     private CountDownTimer countDownTimer;
     NetworkChangeReceiver networkReceiver;
     AuthenticationManager apiManager;
+    private String typeScreen;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,7 +65,7 @@ public class ConfirmCode2Activity extends AppCompatActivity {
                 findViewById(R.id.editText5),
                 findViewById(R.id.editText6)
         };
-
+        typeScreen = getIntent().getStringExtra("FORGOT");
         icback = findViewById(R.id.iconback);
         btnRe = findViewById(R.id.btnRe);
         tvCountdown = findViewById(R.id.tv_countdown); // Ánh xạ TextView đếm ngược
@@ -211,68 +214,73 @@ public class ConfirmCode2Activity extends AppCompatActivity {
 //                    } else {
 //                        Log.e("ConfirmCode", "Email không tồn tại trong SharedPreferences");
 //                    }
-                    apiManager.sendConfirmCodeRequest(otpID,code, new ApiCallback() {
-                        @Override
-                        public void onSuccess() {
-                            // Chuyển đến Activity tiếp theo nếu mã đúng
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {}
-                            });
-                            clearOtpId();
-                            Intent intent = new Intent(ConfirmCode2Activity.this, SetUpAccountActivity.class);
-                            startActivity(intent);
-                            finish();
-                        }
+                    if (Objects.equals(typeScreen, "FORGOT")){
+                        // ddi luong quen mk
+                        apiManager.sendConfirmCodeRequest(otpID,code, new ApiCallback() {
+                            @Override
+                            public void onSuccess() {
+                                // Chuyển đến Activity tiếp theo nếu mã đúng
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {}
+                                });
+                                clearOtpId();
+                                Intent intent = new Intent(ConfirmCode2Activity.this, SetUpAccountActivity.class);
+                                startActivity(intent);
+                                finish();
+                            }
 
-                        @Override
-                        public void onSuccess(Question questions) {
+                            @Override
+                            public void onSuccess(Question questions) {
 
-                        }
+                            }
 
-                        @Override
-                        public void onSuccess(Lesson lesson) {}
+                            @Override
+                            public void onSuccess(Lesson lesson) {}
 
-                        @Override
-                        public void onSuccess(Result result) {}
+                            @Override
+                            public void onSuccess(Result result) {}
 
-                        @Override
-                        public void onSuccess(Answer answer) {
+                            @Override
+                            public void onSuccess(Answer answer) {
 
-                        }
+                            }
 
-                        @Override
-                        public void onSuccess(MediaFile mediaFile) {
+                            @Override
+                            public void onSuccess(MediaFile mediaFile) {
 
-                        }
-
-
-                        @Override
-                        public void onSuccess(Course course) {}
+                            }
 
 
-                        @Override
-                        public void onFailure(String errorMessage) {
-                            // Hiển thị thông báo lỗi nếu mã sai
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    Toast.makeText(ConfirmCode2Activity.this, errorMessage, Toast.LENGTH_SHORT).show();
-                                }
-                            });
-                        }
+                            @Override
+                            public void onSuccess(Course course) {}
 
-                        @Override
-                        public void onSuccessWithOtpID(String otpID) {
 
-                        }
+                            @Override
+                            public void onFailure(String errorMessage) {
+                                // Hiển thị thông báo lỗi nếu mã sai
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Toast.makeText(ConfirmCode2Activity.this, errorMessage, Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                            }
 
-                        @Override
-                        public void onSuccessWithToken(String token) {
+                            @Override
+                            public void onSuccessWithOtpID(String otpID) {
 
-                        }
+                            }
 
-                    });
+                            @Override
+                            public void onSuccessWithToken(String token) {
+
+                            }
+
+                        });
+                    }else  if (Objects.equals(typeScreen, "REGISTER")) {
+                        // ddi luong DK
+                    }
                 }
             }
 
