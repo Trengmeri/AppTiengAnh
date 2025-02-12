@@ -64,11 +64,30 @@
             android:focusable="true"
             android:focusableInTouchMode="true">
 
-            <ImageView
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/bg_choose"
-                android:backgroundTint="@color/grayy"/>
+                android:layout_height="match_parent">
+
+                <ImageView
+                    android:id="@+id/basic"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_choose"
+                    android:backgroundTint="@color/grayy"/>
+
+                <ImageView
+                    android:id="@+id/check_icon_basic"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignRight="@id/basic"
+                    android:layout_alignBottom="@id/basic"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="9dp"
+                    android:layout_marginBottom="54dp"
+                    android:src="@drawable/is_checked"
+                    android:visibility="gone"/>
+
+            </RelativeLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -101,11 +120,30 @@
             android:focusable="true"
             android:focusableInTouchMode="true">
 
-            <ImageView
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/bg_choose"
-                android:backgroundTint="#ECD29C"/>
+                android:layout_height="match_parent">
+
+                <ImageView
+                    android:id="@+id/advance"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_choose"
+                    android:backgroundTint="#ECD29C"/>
+
+                <ImageView
+                    android:id="@+id/check_icon_advance"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignRight="@id/advance"
+                    android:layout_alignBottom="@id/advance"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="9dp"
+                    android:layout_marginBottom="54dp"
+                    android:src="@drawable/is_checked"
+                    android:visibility="gone"/>
+
+            </RelativeLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -138,11 +176,30 @@
             android:focusable="true"
             android:focusableInTouchMode="true">
 
-            <ImageView
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/bg_choose"
-                android:backgroundTint="#CE9566"/>
+                android:layout_height="match_parent">
+
+                <ImageView
+                    android:id="@+id/levelup"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_choose"
+                    android:backgroundTint="#CE9566"/>
+
+                <ImageView
+                    android:id="@+id/check_icon_levelup"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignRight="@id/levelup"
+                    android:layout_alignBottom="@id/levelup"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="9dp"
+                    android:layout_marginBottom="54dp"
+                    android:src="@drawable/is_checked"
+                    android:visibility="gone"/>
+
+            </RelativeLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -280,11 +337,30 @@
             android:focusable="true"
             android:focusableInTouchMode="true">
 
-            <ImageView
+            <RelativeLayout
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/bg_day"
-                android:layout_margin="5dp"/>
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:id="@+id/mon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_day"
+                    android:layout_margin="5dp"/>
+
+                <ImageView
+                    android:id="@+id/check_icon2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignRight="@id/mon"
+                    android:layout_alignBottom="@id/mon"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="-9dp"
+                    android:layout_marginBottom="26dp"
+                    android:src="@drawable/is_checked"
+                    android:visibility="gone"/>
+
+            </RelativeLayout>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -298,11 +374,30 @@
             android:focusable="true"
             android:focusableInTouchMode="true">
 
-            <ImageView
+            <RelativeLayout
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/bg_day"
-                android:layout_margin="5dp"/>
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:id="@+id/tue"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_day"
+                    android:layout_margin="5dp"/>
+
+                <ImageView
+                    android:id="@+id/check_icon3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignRight="@id/tue"
+                    android:layout_alignBottom="@id/tue"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="-9dp"
+                    android:layout_marginBottom="26dp"
+                    android:src="@drawable/is_checked"
+                    android:visibility="gone"/>
+
+            </RelativeLayout>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -316,11 +411,30 @@
             android:focusable="true"
             android:focusableInTouchMode="true">
 
-            <ImageView
+            <RelativeLayout
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/bg_day"
-                android:layout_margin="5dp"/>
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:id="@+id/wed"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_day"
+                    android:layout_margin="5dp"/>
+
+                <ImageView
+                    android:id="@+id/check_icon4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignRight="@id/wed"
+                    android:layout_alignBottom="@id/wed"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="-9dp"
+                    android:layout_marginBottom="26dp"
+                    android:src="@drawable/is_checked"
+                    android:visibility="gone"/>
+
+            </RelativeLayout>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -334,11 +448,30 @@
             android:focusable="true"
             android:focusableInTouchMode="true">
 
-            <ImageView
+            <RelativeLayout
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/bg_day"
-                android:layout_margin="5dp"/>
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:id="@+id/thu"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_day"
+                    android:layout_margin="5dp"/>
+
+                <ImageView
+                    android:id="@+id/check_icon5"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignRight="@id/thu"
+                    android:layout_alignBottom="@id/thu"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="-9dp"
+                    android:layout_marginBottom="26dp"
+                    android:src="@drawable/is_checked"
+                    android:visibility="gone"/>
+
+            </RelativeLayout>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -352,11 +485,30 @@
             android:focusable="true"
             android:focusableInTouchMode="true">
 
-            <ImageView
+            <RelativeLayout
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/bg_day"
-                android:layout_margin="5dp"/>
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:id="@+id/fri"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_day"
+                    android:layout_margin="5dp"/>
+
+                <ImageView
+                    android:id="@+id/check_icon6"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignRight="@id/fri"
+                    android:layout_alignBottom="@id/fri"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="-9dp"
+                    android:layout_marginBottom="26dp"
+                    android:src="@drawable/is_checked"
+                    android:visibility="gone"/>
+
+            </RelativeLayout>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -370,11 +522,30 @@
             android:focusable="true"
             android:focusableInTouchMode="true">
 
-            <ImageView
+            <RelativeLayout
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/bg_day"
-                android:layout_margin="5dp" />
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:id="@+id/sat"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_day"
+                    android:layout_margin="5dp"/>
+
+                <ImageView
+                    android:id="@+id/check_icon7"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignRight="@id/sat"
+                    android:layout_alignBottom="@id/sat"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="-9dp"
+                    android:layout_marginBottom="26dp"
+                    android:src="@drawable/is_checked"
+                    android:visibility="gone"/>
+
+            </RelativeLayout>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -388,11 +559,30 @@
             android:focusable="true"
             android:focusableInTouchMode="true">
 
-            <ImageView
+            <RelativeLayout
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/bg_day"
-                android:layout_margin="5dp"/>
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:id="@+id/sun"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_day"
+                    android:layout_margin="5dp"/>
+
+                <ImageView
+                    android:id="@+id/check_icon0"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignRight="@id/sun"
+                    android:layout_alignBottom="@id/sun"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="-9dp"
+                    android:layout_marginBottom="26dp"
+                    android:src="@drawable/is_checked"
+                    android:visibility="gone"/>
+
+            </RelativeLayout>
 
             <TextView
                 android:layout_width="wrap_content"
