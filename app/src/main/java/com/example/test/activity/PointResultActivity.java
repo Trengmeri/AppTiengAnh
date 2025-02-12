@@ -32,9 +32,9 @@ public class PointResultActivity extends AppCompatActivity {
     private int r =0,l=0,s=0,w=0;
     private double comR, comL, comS, comW;
     int sessionId;
-    QuestionManager quesManager = new QuestionManager();
+    QuestionManager quesManager = new QuestionManager(this);
     LessonManager lesManager = new LessonManager();
-    ResultManager resultManager = new ResultManager();
+    ResultManager resultManager = new ResultManager(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

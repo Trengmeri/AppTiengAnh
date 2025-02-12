@@ -12,6 +12,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.test.R;
+import com.example.test.SharedPreferencesManager;
 import com.example.test.api.ApiCallback;
 import com.example.test.api.LessonManager;
 import com.example.test.api.QuestionManager;
@@ -26,14 +27,13 @@ import com.example.test.model.Result;
 import java.util.List;
 
 public class HomeActivity extends AppCompatActivity {
-
     Button continueButton;
     LinearLayout lessonsContainer; // LinearLayout để chứa các bài học
     TextView courseTitle,lessonTitle1,lessonNumber; // TextView để hiển thị tên khóa học
     ImageView btnNoti,btnstudy,btnexplore,btnprofile;
-    QuestionManager quesManager = new QuestionManager();
+    QuestionManager quesManager = new QuestionManager(this);
     LessonManager lesManager = new LessonManager();
-    ResultManager resultManager = new ResultManager();
+    ResultManager resultManager = new ResultManager(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -49,9 +49,9 @@ public class GrammarPickManyActivity extends AppCompatActivity {
     private TextView tvContent;
     private RecyclerView recyclerViewChoices;
     private LinearLayout progressBar;
-    QuestionManager quesManager = new QuestionManager();
+    QuestionManager quesManager = new QuestionManager(this);
     LessonManager lesManager = new LessonManager();
-    ResultManager resultManager = new ResultManager();
+    ResultManager resultManager = new ResultManager(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

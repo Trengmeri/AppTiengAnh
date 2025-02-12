@@ -3,6 +3,9 @@ package com.example.test;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.example.test.model.User;
+import com.google.gson.Gson;
+
 public class SharedPreferencesManager {
     private static final String PREF_NAME = "app_preferences";
     private static final String KEY_USER_ID = "user_id";
@@ -36,6 +39,28 @@ public class SharedPreferencesManager {
 
     public String getOTP_ID() {
         return sharedPreferences.getString(KEY_OTP_ID, "unknown_otp");
+    }
+    public void saveUser(User user) {
+        Gson gson = new Gson();
+        String userJson = gson.toJson(user);
+        sharedPreferences.edit().putString("user", userJson).apply();
+    }
+
+    public User getUser() {
+        Gson gson = new Gson();
+        String userJson = sharedPreferences.getString("user", null);
+        if (userJson!= null) {
+            return gson.fromJson(userJson, User.class);
+        }
+        return null;
+    }
+
+    public void saveAccessToken(String accessToken) {
+        sharedPreferences.edit().putString("access_token", accessToken).apply();
+    }
+
+    public String getAccessToken() {
+        return sharedPreferences.getString("access_token", null);
     }
 }
 

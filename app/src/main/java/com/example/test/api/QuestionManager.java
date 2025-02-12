@@ -1,7 +1,9 @@
 package com.example.test.api;
 
+import android.content.Context;
 import android.util.Log;
 
+import com.example.test.SharedPreferencesManager;
 import com.example.test.model.MediaFile;
 import com.example.test.model.Question;
 import com.example.test.model.Result;
@@ -23,6 +25,12 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class QuestionManager extends BaseApiManager {
+
+    private final Context context;
+
+    public QuestionManager(Context context) {
+        this.context = context;
+    }
 
     public void fetchQuestionContentFromApi(int questionId, ApiCallback callback) {
         Request request = new Request.Builder()
@@ -69,6 +77,7 @@ public class QuestionManager extends BaseApiManager {
     }
 
     public void saveUserAnswer(int questionId, String answerContent, ApiCallback callback) {
+        String userId = SharedPreferencesManager.getInstance(context).getID();
         String[] answerParts = answerContent.split(", ");
         List<String> answerList = new ArrayList<>(Arrays.asList(answerParts));
         Gson gson = new Gson();
@@ -78,7 +87,7 @@ public class QuestionManager extends BaseApiManager {
         RequestBody body = RequestBody.create(json, MediaType.get("application/json; charset=utf-8"));
 
         Request request = new Request.Builder()
-                .url(BASE_URL + "/api/v1/answers/user/2")
+                .url(BASE_URL + "/api/v1/answers/user/" + userId )
                 .post(body)
                 .build();
 
