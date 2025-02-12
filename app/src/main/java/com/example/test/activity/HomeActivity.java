@@ -96,6 +96,15 @@ public class HomeActivity extends AppCompatActivity {
                                             TextView lessonTitle = lessonView.findViewById(R.id.lessonTitle);
                                             lessonTitle.setText(lesson.getName());
                                             lessonsContainer.addView(lessonView);
+
+                                            lessonTitle.setOnClickListener(v -> {
+                                                Intent intent = new Intent(HomeActivity.this, QuestionActivity.class);
+                                                Bundle bundle = new Bundle();
+                                                bundle.putInt("lessonId", lessonId);
+                                                bundle.putInt("questionId", lesson.getQuestionIds().get(0)); // Truyền questionId đầu tiên
+                                                intent.putExtras(bundle);
+                                                startActivity(intent);
+                                            });
                                         }
                                     });
                                 }

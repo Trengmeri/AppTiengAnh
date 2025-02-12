@@ -29,6 +29,9 @@ public class PointResultActivity extends AppCompatActivity {
     private TextView correctSpeak, compSpeak;
     private TextView correctWrite, compWrite;
     private int totalPointR = 0,totalPointL = 0,totalPointS = 0,totalPointW = 0;
+    private int r =0,l=0,s=0,w=0;
+    private double comR, comL, comS, comW;
+    int sessionId;
     QuestionManager quesManager = new QuestionManager();
     LessonManager lesManager = new LessonManager();
     ResultManager resultManager = new ResultManager();
@@ -159,8 +162,7 @@ public class PointResultActivity extends AppCompatActivity {
                                 @Override
                                 public void onSuccess(Answer answer) {
                                     if (answer != null) {
-                                        int sessionId = answer.getSessionId();
-                                        createResultForLesson(lessonId, sessionId, skillType);
+                                        sessionId = answer.getSessionId();
                                     } else {
                                         Log.e("PointResultActivity", "Không có câu trả lời nào.");
                                     }
@@ -186,6 +188,11 @@ public class PointResultActivity extends AppCompatActivity {
                                 }
                             });
                         }
+                    }
+                    if (sessionId!= -1) { // Kiểm tra sessionId có khác 0 hay không
+                        createResultForLesson(lessonId, sessionId, skillType);
+                    } else {
+                        Log.e("PointResultActivity", "Không thể lấy sessionId.");
                     }
                 } else {
                     Log.e("PointResultActivity", "Bài học hoặc skillType không hợp lệ.");
@@ -319,27 +326,35 @@ public class PointResultActivity extends AppCompatActivity {
             switch (skillType) {
                 case "READING":
                     totalPointR += totalPoints;
-                    correctRead.setText("Point: " + totalPointR);
-                    compRead.setText("Complete: " + complete);
+                    comR += complete;
+                    r++;
                     break;
                 case "LISTENING":
                     totalPointL += totalPoints;
-                    correctLis.setText("Point: " + totalPointL);
-                    compLis.setText("Complete: " + complete);
+                    comL += complete;
+                    l++;
                     break;
                 case "SPEAKING":
                     totalPointS += totalPoints;
-                    correctSpeak.setText("Point: " + totalPointS);
-                    compSpeak.setText("Complete: " + complete);
+                    comS += complete;
+                    s++;
                     break;
                 case "WRITING":
                     totalPointW += totalPoints;
-                    correctWrite.setText("Point: " + totalPointW);
-                    compWrite.setText("Complete: " + complete);
+                    comW += complete;
+                    w++;
                     break;
                 default:
                     Log.e("PointResultActivity", "Skill type không hợp lệ: " + skillType);
             }
+            correctRead.setText("Point: " + totalPointR);
+            compRead.setText("Complete: " + String.format("%.1f",comR/r));
+            correctLis.setText("Point: " + totalPointL);
+            compLis.setText("Complete: " + String.format("%.1f",comL/l));
+            correctSpeak.setText("Point: " + totalPointS);
+            compSpeak.setText("Complete: " + String.format("%.1f",comS/s));
+            correctWrite.setText("Point: " + totalPointW);
+            compWrite.setText("Complete: " + String.format("%.1f",comW/w));
             pointTextView.setText(String.valueOf(totalPointR+totalPointL+totalPointS+totalPointW));
         });
     }

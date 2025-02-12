@@ -78,7 +78,7 @@ public class QuestionManager extends BaseApiManager {
         RequestBody body = RequestBody.create(json, MediaType.get("application/json; charset=utf-8"));
 
         Request request = new Request.Builder()
-                .url(BASE_URL + "/api/v1/answers/user/1")
+                .url(BASE_URL + "/api/v1/answers/user/2")
                 .post(body)
                 .build();
 

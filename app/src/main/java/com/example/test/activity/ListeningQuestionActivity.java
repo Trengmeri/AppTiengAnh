@@ -275,7 +275,7 @@ public class ListeningQuestionActivity extends AppCompatActivity {
             @Override
             public void onFailure(String errorMessage) {
                 // Hiển thị thông báo lỗi nếu có
-                runOnUiThread(() -> Toast.makeText(getApplicationContext(), errorMessage, Toast.LENGTH_SHORT).show());
+                Log.e("media",errorMessage);
             }
 
             @Override
