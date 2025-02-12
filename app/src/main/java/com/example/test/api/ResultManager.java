@@ -28,7 +28,7 @@ public class ResultManager extends BaseApiManager {
         RequestBody body = RequestBody.create(json, MediaType.get("application/json; charset=utf-8"));
 
         Request request = new Request.Builder()
-                .url(BASE_URL + "/api/v1/lesson-results/user/1")
+                .url(BASE_URL + "/api/v1/lesson-results/user/2")
                 .post(body)
                 .build();
 
@@ -53,7 +53,7 @@ public class ResultManager extends BaseApiManager {
 
     public void fetchAnswerPointsByQuesId(int questionId, ApiCallback callback) {
         Request request = new Request.Builder()
-                .url(BASE_URL + "/api/v1/answers/question/" + questionId)
+                .url(BASE_URL + "/api/v1/answers/latest?userId=2&questionId=" + questionId)
                 .build();
 
         client.newCall(request).enqueue(new Callback() {
@@ -64,19 +64,13 @@ public class ResultManager extends BaseApiManager {
                     Log.d("ResultManager", "Phản hồi từ server: " + responseBody);
 
                     Gson gson = new Gson();
-                    ApiResponseAnswer apiResponse = gson.fromJson(responseBody, ApiResponseAnswer.class);
+                    Answer answer = gson.fromJson(responseBody, Answer.class); // Thay đổi ở đây
 
-                    if (apiResponse.getStatusCode() == 200) {
-                        List<Answer> answers = apiResponse.getData().getContent();
-                        if (!answers.isEmpty()) {
-                            Answer firstAnswer = answers.get(answers.size() - 1);
-                            Log.d("ResultManager", "Answer ID: " + firstAnswer.getId() + ", Điểm đạt được: " + firstAnswer.getPointAchieved() + ", Session ID: " + firstAnswer.getSessionId());
-                            callback.onSuccess(firstAnswer);
-                        } else {
-                            callback.onFailure("Không có câu trả lời nào.");
-                        }
+                    if (answer != null) {
+                        Log.d("ResultManager", "Answer ID: " + answer.getId() + ", Điểm đạt được: " + answer.getPointAchieved() + ", Session ID: " + answer.getSessionId());
+                        callback.onSuccess(answer); // Thay đổi ở đây
                     } else {
-                        callback.onFailure("Lỗi từ server: " + apiResponse.getMessage());
+                        callback.onFailure("Không có câu trả lời nào.");
                     }
                 } else {
                     Log.e("ResultManager", "Lỗi từ server: Mã lỗi " + response.code());
@@ -94,7 +88,7 @@ public class ResultManager extends BaseApiManager {
 
     public void fetchResultByLesson(int lessonId, ApiCallback callback) {
         Request request = new Request.Builder()
-                .url(BASE_URL + "/api/v1/lesson-results/user/1/lesson/" + lessonId + "/latest")
+                .url(BASE_URL + "/api/v1/lesson-results/user/2/lesson/" + lessonId + "/latest")
                 .build();
 
         client.newCall(request).enqueue(new Callback() {
@@ -113,7 +107,7 @@ public class ResultManager extends BaseApiManager {
                         Log.d("ResultManager", "Dữ liệu JSON: " + jsonResults);
 
                         if (!results.isEmpty()) {
-                            Result firstAnswer = results.get(results.size() - 1);
+                            Result firstAnswer = results.get(0);
                             Log.d("ResultManager", "Result ID: " + firstAnswer.getId() + ", Điểm đạt được: " + firstAnswer.getTotalPoints() + ", Complete: " + firstAnswer.getComLevel());
                             callback.onSuccess(firstAnswer);
                         } else {
