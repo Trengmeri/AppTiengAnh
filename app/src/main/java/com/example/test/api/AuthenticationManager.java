@@ -9,6 +9,7 @@ import android.util.Log;
 import com.example.test.NotificationManager;
 import com.example.test.NotificationStorage;
 import com.example.test.SharedPreferencesManager;
+import com.example.test.model.User;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -64,7 +65,26 @@ public class AuthenticationManager extends BaseApiManager {
                         JSONObject responseJson = new JSONObject(responseBody);
                         JSONObject data = responseJson.getJSONObject("user");
                         String id = data.optString("id", "unknown_otp");
-                        SharedPreferencesManager.getInstance(context).saveOTP_ID(id);
+                        SharedPreferencesManager.getInstance(context).saveID(id);
+                        JSONObject userJson = responseJson.getJSONObject("user");
+                        String accessToken = responseJson.getString("access_token");
+
+                        // Lấy thông tin người dùng
+                        int userId = userJson.getInt("id");
+                        String email = userJson.getString("email");
+                        String name = userJson.getString("name");
+
+                        // Tạo đối tượng User
+                        User user = new User();
+                        user.setId(userId);
+                        user.setEmail(email);
+                        user.setName(name);
+
+                        // Lưu User và access token
+                        SharedPreferencesManager.getInstance(context).saveUser(user);
+                        SharedPreferencesManager.getInstance(context).saveAccessToken(accessToken);
+
+                        callback.onSuccess();
                     } catch (JSONException e) {
                         callback.onFailure("Lỗi phân tích phản hồi JSON: " + e.getMessage());
                     }/////

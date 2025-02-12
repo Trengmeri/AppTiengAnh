@@ -47,9 +47,9 @@ public class GrammarPick1QuestionActivity extends AppCompatActivity {
     private AppCompatButton selectedAnswer = null;
     private AppCompatButton btnAnswer1, btnAnswer2, btnAnswer3, btnAnswer4;
     private Button btnCheckAnswer;
-    QuestionManager quesManager = new QuestionManager();
+    QuestionManager quesManager = new QuestionManager(this);
     LessonManager lesManager = new LessonManager();
-    ResultManager resultManager = new ResultManager();
+    ResultManager resultManager = new ResultManager(this);
     TextView tvContent;
     NetworkChangeReceiver networkReceiver;
     private List<Integer> questionIds;

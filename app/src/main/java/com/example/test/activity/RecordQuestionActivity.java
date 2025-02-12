@@ -53,9 +53,9 @@ public class RecordQuestionActivity extends AppCompatActivity implements SpeechR
     private List<Integer> questionIds;
     private int currentStep = 0; // Bước hiện tại (bắt đầu từ 0)
     private int totalSteps; // Tổng số bước trong thanh tiến trình
-    QuestionManager quesManager = new QuestionManager();
+    QuestionManager quesManager = new QuestionManager(this);
     LessonManager lesManager = new LessonManager();
-    ResultManager resultManager = new ResultManager();
+    ResultManager resultManager = new ResultManager(this);
     private int answerIds;// Danh sách questionIds
 
 

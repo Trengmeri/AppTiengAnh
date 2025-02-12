@@ -52,9 +52,9 @@ public class ListeningQuestionActivity extends AppCompatActivity {
     private int answerIds;
     ImageView btnListen;
 
-    QuestionManager quesManager = new QuestionManager();
+    QuestionManager quesManager = new QuestionManager(this);
     LessonManager lesManager = new LessonManager();
-    ResultManager resultManager = new ResultManager();
+    ResultManager resultManager = new ResultManager(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -21,7 +21,7 @@ import com.example.test.model.Result;
 
 public class QuestionActivity extends AppCompatActivity {
 
-    private QuestionManager quesManager = new QuestionManager();
+    private QuestionManager quesManager = new QuestionManager(this);
     private TextView tvQuestionContent;
 //    private ViewStub choiceViewStub;
 //    private ViewStub recordingViewStub;

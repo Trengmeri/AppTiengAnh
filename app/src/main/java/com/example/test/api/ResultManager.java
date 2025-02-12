@@ -1,34 +1,40 @@
 package com.example.test.api;
 
+import android.content.Context;
 import android.util.Log;
 
+import com.example.test.SharedPreferencesManager;
 import com.example.test.model.Answer;
 import com.example.test.model.Result;
-import com.example.test.response.ApiResponseAnswer;
 import com.example.test.response.ApiResponseResult;
 import com.google.gson.Gson;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class ResultManager extends BaseApiManager {
+    private final Context context;
+
+    public ResultManager(Context context) {
+        this.context = context;
+    }
+
 
     public void createResult(int lessonId, int sessionId, int enrollmentId, ApiCallback callback) {
+        String userId = SharedPreferencesManager.getInstance(context).getID();
 
         String json = "{ \"lessonId\":" + lessonId + ", \"sessionId\":" + sessionId + ", \"enrollmentId\":" + enrollmentId + "}";
         RequestBody body = RequestBody.create(json, MediaType.get("application/json; charset=utf-8"));
 
         Request request = new Request.Builder()
-                .url(BASE_URL + "/api/v1/lesson-results/user/2")
+                .url(BASE_URL + "/api/v1/lesson-results/user/" + userId)
                 .post(body)
                 .build();
 
@@ -52,8 +58,9 @@ public class ResultManager extends BaseApiManager {
     }
 
     public void fetchAnswerPointsByQuesId(int questionId, ApiCallback callback) {
+        String userId = SharedPreferencesManager.getInstance(context).getID();
         Request request = new Request.Builder()
-                .url(BASE_URL + "/api/v1/answers/latest?userId=2&questionId=" + questionId)
+                .url(BASE_URL + "/api/v1/answers/latest?userId="+ userId +"&questionId=" + questionId)
                 .build();
 
         client.newCall(request).enqueue(new Callback() {
@@ -87,8 +94,10 @@ public class ResultManager extends BaseApiManager {
     }
 
     public void fetchResultByLesson(int lessonId, ApiCallback callback) {
+        String userId = SharedPreferencesManager.getInstance(context).getID();
+
         Request request = new Request.Builder()
-                .url(BASE_URL + "/api/v1/lesson-results/user/2/lesson/" + lessonId + "/latest")
+                .url(BASE_URL + "/api/v1/lesson-results/user/" + userId + "/lesson/" + lessonId + "/latest")
                 .build();
 
         client.newCall(request).enqueue(new Callback() {
