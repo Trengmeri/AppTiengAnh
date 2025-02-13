@@ -18,6 +18,15 @@
         android:theme="@style/Theme.Test"
         tools:targetApi="31">
         <activity
+            android:name=".activity.GroupFlashcardActivity"
+            android:exported="true" />
+        <activity
+            android:name=".activity.FlashcardInfomationActivity"
+            android:exported="true" />
+        <activity
+            android:name=".activity.FLashcardActivity"
+            android:exported="true" />
+        <activity
             android:name=".activity.ExploreActivity"
             android:exported="false" />
         <activity
