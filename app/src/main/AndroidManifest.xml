@@ -18,6 +18,9 @@
         android:theme="@style/Theme.Test"
         tools:targetApi="31">
         <activity
+            android:name=".activity.CourseActivity"
+            android:exported="true" />
+        <activity
             android:name=".activity.GroupFlashcardActivity"
             android:exported="true" />
         <activity
