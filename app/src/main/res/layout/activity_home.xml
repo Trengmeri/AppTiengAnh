@@ -1,145 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/vpg_main"
+        android:layout_above="@id/bottom_bar"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
-    <LinearLayout
+    <include
+        android:id="@+id/bottom_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:background="@drawable/card"
-        android:padding="10dp">
-
-        <ImageView
-            android:id="@+id/img_notification"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/notifications"
-            android:layout_gravity="end"
-            android:layout_marginBottom="-50dp"/>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/cricle"
-                android:layout_margin="20dp"
-                />
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_weight="5"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_margin="20dp">
-                <TextView
-                    android:id="@+id/lessonNumber"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/grayy"
-                    android:textSize="20sp"
-                    android:textStyle="bold"/>
-
-                <TextView
-                    android:id="@+id/lessonTitle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/white"
-                    android:textStyle="bold"
-                    android:textSize="24sp"
-                    android:layout_marginTop="8dp"/>
-                <TextView
-                    android:id="@+id/txtContinute"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/txtcontinute"
-                    android:textColor="@color/grayy"
-                    android:textSize="18sp"
-                    android:textStyle="bold"/>
-            </LinearLayout>
-
-        </LinearLayout>
-
-        <Button
-            android:id="@+id/btn_continue"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/btn_continute"
-            android:backgroundTint="@color/cotinute"/>
-
-    </LinearLayout>
-
-    <TextView
-        android:id="@+id/courseTitle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textColor="@color/black"
-        android:textStyle="bold"
-        android:textSize="20dp"
-        android:gravity="center"/>
-
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@drawable/bg_home"
-            android:orientation="vertical">
-
-
-            <LinearLayout
-                android:id="@+id/lessonsContainer"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-            </LinearLayout>
-
-        </LinearLayout>
-
-    </ScrollView>
-
-    <GridLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/rounded_corner"
-        android:backgroundTint="#F2F1EB"
-        android:columnCount="4"
-        android:rowCount="1"
-        android:padding="16dp">
-
-        <ImageView
-            android:id="@+id/ic_home"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_columnWeight="1"
-            android:src="@drawable/home" />
-
-        <ImageView
-            android:id="@+id/ic_study"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_columnWeight="1"
-            android:src="@drawable/study" />
-
-        <ImageView
-            android:id="@+id/ic_explore"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_columnWeight="1"
-            android:src="@drawable/explore" />
-
-        <ImageView
-            android:id="@+id/ic_profile"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_columnWeight="1"
-            android:src="@drawable/profile" />
-    </GridLayout>
-</LinearLayout>
+        android:layout_alignParentBottom="true"
+        layout="@layout/bottom_bar"/>
+</RelativeLayout>

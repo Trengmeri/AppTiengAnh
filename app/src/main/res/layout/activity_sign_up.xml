@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_constraintDimensionRatio="16:9"
-    tools:context=".activity.SignInActivity">
+    tools:context=".ui.SignInActivity">
 
     <!-- Ô nhập tên -->
 
@@ -104,7 +104,7 @@
                         android:layout_margin="12dp"
                         android:background="@drawable/rounded_corner"
                         android:orientation="horizontal"
-                        android:padding="12dp">
+                        android:padding="15dp">
                         <EditText
                             android:id="@+id/edtTen"
                             android:layout_width="match_parent"
@@ -112,6 +112,7 @@
                             android:ems="10"
                             android:hint="Name"
                             android:inputType="text"
+                            android:background="@android:color/transparent"
                             android:drawableStart="@drawable/icon_person"
                             android:drawablePadding="8dp"/>
 
@@ -122,7 +123,7 @@
                         android:layout_margin="12dp"
                         android:background="@drawable/rounded_corner"
                         android:orientation="horizontal"
-                        android:padding="12dp">
+                        android:padding="15dp">
                         <EditText
                             android:id="@+id/edtEmail"
                             android:layout_width="match_parent"
@@ -130,6 +131,7 @@
                             android:ems="10"
                             android:hint="Email"
                             android:inputType="text"
+                            android:background="@android:color/transparent"
                             android:drawableStart="@drawable/icon_email"
                             android:drawablePadding="8dp"/>
 
@@ -137,10 +139,13 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_margin="12dp"
+                        android:layout_marginTop="12dp"
+                        android:layout_marginStart="12dp"
+                        android:layout_marginEnd="12dp"
+                        android:layout_marginBottom="5dp"
                         android:background="@drawable/rounded_corner"
                         android:orientation="horizontal"
-                        android:padding="12dp">
+                        android:padding="15dp">
                         <EditText
                             android:id="@+id/edtMKhau"
                             android:layout_width="match_parent"
@@ -148,11 +153,20 @@
                             android:ems="10"
                             android:hint="Password"
                             android:inputType="text"
+                            android:background="@android:color/transparent"
                             android:drawableStart="@drawable/icon_pass"
                             android:drawableEnd="@drawable/icon_visibility_off"
                             android:drawablePadding="8dp"/>
 
                     </LinearLayout>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/dp_30"
+                        android:layout_marginEnd="@dimen/dp_30"
+                        android:text="@string/hintPassWord"
+                        android:textSize="11sp"
+                        android:textColor="#F60606"/>
                         <CheckBox
                             android:id="@+id/cbCheck"
                             android:layout_width="wrap_content"

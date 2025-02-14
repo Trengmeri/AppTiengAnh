@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:backgroundTint="#AC3B00"
-    tools:context=".activity.NewPassActivity">
+    tools:context=".ui.NewPassActivity">
 <LinearLayout
     android:layout_width="match_parent"
     android:layout_height="wrap_content"

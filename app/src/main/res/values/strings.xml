@@ -29,4 +29,5 @@
     <string name="txtschedulebasic">Basic\n10 mins per day</string>
     <string name="txtscheduleadvance">Advance\n20 mins per day</string>
     <string name="txtlevelupschedule">Level-up!\n30 mins per day</string>
+    <string name="hintPassWord">* The password must be at least 8 characters long and include uppercase, lowercase letters, and numbers.</string>
 </resources>
