@@ -38,13 +38,13 @@ public class ExploreFragment extends Fragment {
         btnFlash= view.findViewById(R.id.btnFlash);
         btnSche= view.findViewById(R.id.btnSche);
 
-        btnhome.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getActivity(), HomeActivity.class);
-                startActivity(intent);
-            }
-        });
+//        btnhome.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Intent intent = new Intent(getActivity(), HomeActivity.class);
+//                startActivity(intent);
+//            }
+//        });
 
         btnFlash.setOnClickListener(new View.OnClickListener() {
             @Override

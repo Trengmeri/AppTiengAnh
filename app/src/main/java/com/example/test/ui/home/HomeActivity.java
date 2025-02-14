@@ -17,15 +17,15 @@ import com.example.test.api.QuestionManager;
 import com.example.test.api.ResultManager;
 
 public class HomeActivity extends AppCompatActivity {
-    Button continueButton;
-    LinearLayout lessonsContainer; // LinearLayout để chứa các bài học
-    TextView courseTitle,lessonTitle1,lessonNumber; // TextView để hiển thị tên khóa học
-    ImageView btnNoti,btnstudy,btnexplore,btnprofile, icHome, icExplore;
+//    Button continueButton;
+//    LinearLayout lessonsContainer; // LinearLayout để chứa các bài học
+//    TextView courseTitle,lessonTitle1,lessonNumber; // TextView để hiển thị tên khóa học
+    ImageView btnNoti,btnstudy,btnexplore,btnprofile, icHome;
     ViewPager2 vpgMain;
     GridLayout bottomBar;
-    QuestionManager quesManager = new QuestionManager(this);
-    LessonManager lesManager = new LessonManager();
-    ResultManager resultManager = new ResultManager(this);
+//    QuestionManager quesManager = new QuestionManager(this);
+//    LessonManager lesManager = new LessonManager();
+//    ResultManager resultManager = new ResultManager(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,13 +49,13 @@ public class HomeActivity extends AppCompatActivity {
         vpgMain.setCurrentItem(0);
 
         icHome= bottomBar.findViewById(R.id.ic_home);
-        icExplore= bottomBar.findViewById(R.id.ic_explore);
+        btnexplore= bottomBar.findViewById(R.id.ic_explore);
 
         icHome.setOnClickListener(v -> {
             vpgMain.setCurrentItem(0);
         });
 
-        icExplore.setOnClickListener(v -> {
+        btnexplore.setOnClickListener(v -> {
             vpgMain.setCurrentItem(1);
         });
 
