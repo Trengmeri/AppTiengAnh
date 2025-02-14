@@ -25,6 +25,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.test.R;
 import com.example.test.ui.explore.ExploreActivity;
+import com.example.test.ui.explore.ExploreFragment;
 
 public class GroupFlashcardActivity extends AppCompatActivity {
 
@@ -57,13 +58,16 @@ public class GroupFlashcardActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent intent= new Intent(GroupFlashcardActivity.this, FLashcardActivity.class);
                 startActivity(intent);
+                finish();
             }
         });
         backtoExplore.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent= new Intent(GroupFlashcardActivity.this, ExploreActivity.class);
-                startActivity(intent);
+//                Intent intent= new Intent(GroupFlashcardActivity.this, ExploreFragment.class);
+//                startActivity(intent);
+                finish();
+
             }
         });
 

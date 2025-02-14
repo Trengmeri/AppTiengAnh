@@ -1,5 +1,7 @@
 package com.example.test.ui;
 
+import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
@@ -8,10 +10,11 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.test.R;
+import com.example.test.ui.explore.ExploreFragment;
 
 public class ScheduleActivity extends AppCompatActivity {
 
-    private TextView textViewReminderTimeHour, textViewReminderTimeMins;
+    private TextView textViewReminderTimeHour, textViewReminderTimeMins,btnBacktoEx;
     private ImageView up, down; // Single ImageView for Up/Down
     ImageView Mon,Tue,Wed,Thu,Fri,Sat,Sun,check_icon2,check_icon3,check_icon4,check_icon5,check_icon6,check_icon7,check_icon0;
     ImageView Basic, Advance,LevelUp, check_basic, check_advance,check_levelup;
@@ -20,6 +23,7 @@ public class ScheduleActivity extends AppCompatActivity {
     private int currentMinute = 0;
     private int selectedGoal = 0; // 0: None, 1: Basic, 2: Advance, 3: LevelUp
 
+    @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,6 +31,7 @@ public class ScheduleActivity extends AppCompatActivity {
 
         textViewReminderTimeHour = findViewById(R.id.textViewReminderTimeHour);
         textViewReminderTimeMins = findViewById(R.id.textViewReminderTimeMins);
+        btnBacktoEx= findViewById(R.id.btnBacktoEx);
 
         Sun = findViewById(R.id.sun);
         Mon = findViewById(R.id.mon);
@@ -198,6 +203,15 @@ public class ScheduleActivity extends AppCompatActivity {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 // You can add visual feedback here
+            }
+        });
+
+        btnBacktoEx.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+//                Intent intent= new Intent(ScheduleActivity.this, ExploreFragment.class);
+//                startActivity(intent);
+                finish();
             }
         });
     }

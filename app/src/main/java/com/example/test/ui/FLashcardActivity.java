@@ -51,6 +51,7 @@ public class FLashcardActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent intent = new Intent(FLashcardActivity.this, GroupFlashcardActivity.class);
                 startActivity(intent);
+                finish();
             }
         });
         flcid.setOnClickListener(new View.OnClickListener() {
