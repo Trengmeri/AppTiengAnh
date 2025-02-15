@@ -28,6 +28,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.test.R;
+import com.example.test.response.ApiResponseFlashcard;
 import com.example.test.ui.explore.ExploreActivity;
 import com.example.test.ui.explore.ExploreFragment;
 import com.example.test.api.FlashcardApiCallback;
@@ -207,11 +208,13 @@ public class GroupFlashcardActivity extends AppCompatActivity {
                 flashcardManager.createFlashcardGroup(groupName, userId, new FlashcardApiCallback() {
                     @Override
                     public void onSuccess(ApiResponseFlashcardGroup response) {
-                        // Lấy đối tượng FlashcardGroup từ phản hồi
-                        FlashcardGroup newGroup = response.getData(); // Đảm bảo rằng getData() trả về FlashcardGroup
-                        addGroupButton(newGroup.getName()); // Sử dụng tên nhóm từ phản hồi
-                        fetchFlashcardGroups(); // Cập nhật danh sách nhóm
-                        dialog.dismiss(); // Đóng hộp thoại
+                        runOnUiThread(() -> { // Đảm bảo cập nhật UI trên UI thread
+                            FlashcardGroup newGroup = response.getData(); // Đảm bảo rằng getData() trả về
+                                                                          // FlashcardGroup
+                            addGroupButton(newGroup.getName(), newGroup.getId()); // Sử dụng tên nhóm từ phản hồi
+                            fetchFlashcardGroups(); // Cập nhật danh sách nhóm
+                            dialog.dismiss(); // Đóng hộp thoại
+                        });
                     }
 
                     @Override
@@ -220,9 +223,13 @@ public class GroupFlashcardActivity extends AppCompatActivity {
                     }
 
                     @Override
+                    public void onSuccess(ApiResponseFlashcard response) {
+
+                    }
+
+                    @Override
                     public void onFailure(String errorMessage) {
                         Log.e("GroupFlashcardActivity", "Error creating group: " + errorMessage);
-                        // Hiển thị thông báo cho người dùng trên UI thread
                         runOnUiThread(() -> {
                             Toast.makeText(GroupFlashcardActivity.this, "Error creating group: " + errorMessage,
                                     Toast.LENGTH_LONG).show();
@@ -252,10 +259,15 @@ public class GroupFlashcardActivity extends AppCompatActivity {
                     if (response.getData() != null && response.getData().getContent() != null) {
                         List<FlashcardGroup> groups = response.getData().getContent();
                         for (FlashcardGroup group : groups) {
-                            addGroupButton(group.getName());
+                            addGroupButton(group.getName(), group.getId());
                         }
                     }
                 });
+            }
+
+            @Override
+            public void onSuccess(ApiResponseFlashcard response) {
+
             }
 
             @Override
@@ -265,7 +277,7 @@ public class GroupFlashcardActivity extends AppCompatActivity {
         });
     }
 
-    private void addGroupButton(String groupName) {
+    private void addGroupButton(String groupName, int groupId) {
         LinearLayout layoutFlashcards = findViewById(R.id.groupContainer);
 
         AppCompatButton newGroup = new AppCompatButton(this);
@@ -281,7 +293,12 @@ public class GroupFlashcardActivity extends AppCompatActivity {
         newGroup.setBackground(ContextCompat.getDrawable(this, R.drawable.btn_flash));
 
         newGroup.setLayoutParams(params);
-        // Thêm flashcard vào layout
+        newGroup.setOnClickListener(v -> {
+            Intent intent = new Intent(GroupFlashcardActivity.this, FlashcardActivity.class);
+            intent.putExtra("GROUP_ID", groupId); // Gửi ID nhóm
+            startActivity(intent);
+        });
+
         layoutFlashcards.addView(newGroup);
     }
 }

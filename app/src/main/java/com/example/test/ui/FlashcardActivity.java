@@ -5,13 +5,14 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AlertDialog;
@@ -19,16 +20,25 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.test.R;
+import com.example.test.adapter.FlashcardAdapter;
+import com.example.test.api.FlashcardApiCallback;
+import com.example.test.api.FlashcardManager;
+import com.example.test.model.Flashcard;
+import com.example.test.response.ApiResponseFlashcard;
+import com.example.test.response.ApiResponseFlashcardGroup;
+import com.example.test.response.FlashcardGroupResponse;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 
-public class FLashcardActivity extends AppCompatActivity {
+import java.util.List;
 
-    TextView flBack;
-    LinearLayout flcid;
-    ImageView btnAddflash,btnRemove;
-    LinearLayout flashContainer;
+public class FlashcardActivity extends AppCompatActivity {
+
+    private RecyclerView recyclerViewFlashcards;
+    private FlashcardManager flashcardManager;
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -41,30 +51,51 @@ public class FLashcardActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-        flBack = findViewById(R.id.flBack);
-        flcid = findViewById(R.id.flcid);
-        btnAddflash = findViewById(R.id.btnAddflash);
-        btnRemove = findViewById(R.id.btnRemove);
-        flashContainer = findViewById(R.id.flashContainer);
-        flBack.setOnClickListener(new View.OnClickListener() {
+        LinearLayout flashContainer = findViewById(R.id.flashContainer);
+        recyclerViewFlashcards = findViewById(R.id.recyclerViewFlashcards);
+        flashcardManager = new FlashcardManager();
+
+        int groupId = getIntent().getIntExtra("GROUP_ID", -1);
+        fetchFlashcards(groupId);
+    }
+
+    private void fetchFlashcards(int groupId) {
+        flashcardManager.fetchFlashcardsInGroup(groupId, new FlashcardApiCallback() {
             @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(FLashcardActivity.this, GroupFlashcardActivity.class);
-                startActivity(intent);
-                finish();
+            public void onSuccess(ApiResponseFlashcardGroup response) {
+
+            }
+
+            @Override
+            public void onSuccess(FlashcardGroupResponse response) {
+
+            }
+
+            @Override
+            public void onSuccess(ApiResponseFlashcard response) {
+                List<Flashcard> flashcards = response.getData().getContent();
+                if (flashcards != null && !flashcards.isEmpty()) {
+                    updateRecyclerView(flashcards);
+                } else {
+                    // Xử lý trường hợp không có flashcard nào
+                    Log.w("FlashcardActivity", "No flashcards found for group ID: " + groupId);
+                }
+            }
+
+            @Override
+            public void onFailure(String errorMessage) {
+                Log.e("FlashcardActivity", "Error fetching flashcards: " + errorMessage);
+                runOnUiThread(() -> {
+                    Toast.makeText(FlashcardActivity.this, "Error fetching flashcards: " + errorMessage, Toast.LENGTH_LONG).show();
+                });
             }
         });
-        flcid.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(FLashcardActivity.this, FlashcardInfomationActivity.class);
-                startActivity(intent);
-            }
-        });
+    }
 
-        btnAddflash.setOnClickListener(view -> showAddFlashDialog());
-        btnRemove.setOnClickListener(view -> showRemoveDialog(flashContainer));
-
+    private void updateRecyclerView(List<Flashcard> flashcards) {
+        FlashcardAdapter adapter = new FlashcardAdapter(this, flashcards);
+        recyclerViewFlashcards.setLayoutManager(new LinearLayoutManager(this));
+        recyclerViewFlashcards.setAdapter(adapter);
     }
 
     private void showAddFlashDialog() {
@@ -112,12 +143,13 @@ public class FLashcardActivity extends AppCompatActivity {
         btnAdd.setOnClickListener(v -> {
             String word = edtFlashName.getText().toString().trim();
             if (!word.isEmpty()) {
-                //addFlashcardButton(word); // Hàm thêm nhóm vào danh sách
+                // addFlashcardButton(word); // Hàm thêm nhóm vào danh sách
                 dialog.dismiss();
             }
         });
         dialog.show();
     }
+
     private void showRemoveDialog(View flashcardView) {
         BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(this);
         bottomSheetDialog.setContentView(R.layout.dialog_remove_flash); // Tạo file XML cho dialog
@@ -136,5 +168,4 @@ public class FLashcardActivity extends AppCompatActivity {
 
         bottomSheetDialog.show();
     }
-
 }
