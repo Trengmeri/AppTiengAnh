@@ -56,7 +56,9 @@ public class FlashcardActivity extends AppCompatActivity {
         flashcardManager = new FlashcardManager();
 
         int groupId = getIntent().getIntExtra("GROUP_ID", -1);
-        fetchFlashcards(groupId);
+        if (groupId != -1) {
+            fetchFlashcards(groupId);
+        }
     }
 
     private void fetchFlashcards(int groupId) {
@@ -86,7 +88,8 @@ public class FlashcardActivity extends AppCompatActivity {
             public void onFailure(String errorMessage) {
                 Log.e("FlashcardActivity", "Error fetching flashcards: " + errorMessage);
                 runOnUiThread(() -> {
-                    Toast.makeText(FlashcardActivity.this, "Error fetching flashcards: " + errorMessage, Toast.LENGTH_LONG).show();
+                    Toast.makeText(FlashcardActivity.this, "Error fetching flashcards: " + errorMessage,
+                            Toast.LENGTH_LONG).show();
                 });
             }
         });

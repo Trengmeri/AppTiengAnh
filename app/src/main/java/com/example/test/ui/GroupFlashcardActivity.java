@@ -330,6 +330,7 @@ public class GroupFlashcardActivity extends AppCompatActivity {
         });
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private void addGroupButton(String groupName, int groupId) {
         LinearLayout layoutFlashcards = findViewById(R.id.groupContainer);
 
@@ -356,15 +357,37 @@ public class GroupFlashcardActivity extends AppCompatActivity {
         // Lưu ID nhóm vào tag của nút
         newGroup.setTag(groupId);
 
+        // Sự kiện khi nhấn vào nút nhóm
         newGroup.setOnClickListener(v -> {
-            // Lấy ID nhóm từ tag
-            int id = (int) v.getTag();
-            // Mở dialog sửa nhóm
-            showEditGroupDialog(newGroup, id);
+            // Chuyển đến FlashcardActivity và fetch flashcards trong nhóm
+            Intent intent = new Intent(GroupFlashcardActivity.this, FlashcardActivity.class);
+            intent.putExtra("GROUP_ID", groupId); // Gửi ID nhóm đến FlashcardActivity
+            startActivity(intent);
         });
+
+        // Sự kiện khi nhấn vào biểu tượng chỉnh sửa
+        newGroup.setOnTouchListener((v, event) -> onEditIconTouch(v, event, newGroup));
 
         // Thêm nút nhóm vào groupLayout
         groupLayout.addView(newGroup);
         layoutFlashcards.addView(groupLayout);
+    }
+
+    private boolean onEditIconTouch(View v, MotionEvent event, AppCompatButton newGroup) {
+        if (event.getAction() == MotionEvent.ACTION_UP) {
+            Drawable[] drawables = newGroup.getCompoundDrawablesRelative();
+            if (drawables[2] != null) { // Kiểm tra drawableEnd có tồn tại không
+                int drawableWidth = drawables[2].getBounds().width();
+                int buttonWidth = newGroup.getWidth();
+                int touchX = (int) event.getX();
+
+                // Kiểm tra xem người dùng có chạm vào drawableEnd không
+                if (touchX >= (buttonWidth - drawableWidth - newGroup.getPaddingEnd())) {
+                    showEditGroupDialog(newGroup, (int) newGroup.getTag()); // Mở cửa sổ chỉnh sửa
+                    return true; // Trả về true để chỉ ra rằng sự kiện đã được xử lý
+                }
+            }
+        }
+        return false; // Trả về false nếu không chạm vào drawableEnd
     }
 }
