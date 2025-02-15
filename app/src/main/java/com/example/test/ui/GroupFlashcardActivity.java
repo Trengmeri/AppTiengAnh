@@ -13,6 +13,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.util.Log;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AlertDialog;
@@ -26,6 +27,11 @@ import androidx.core.view.WindowInsetsCompat;
 import com.example.test.R;
 import com.example.test.ui.explore.ExploreActivity;
 import com.example.test.ui.explore.ExploreFragment;
+import com.example.test.api.FlashcardApiCallback;
+import com.example.test.api.FlashcardManager;
+import com.example.test.model.FlashcardGroup;
+import com.example.test.response.ApiResponseFlashcardGroup;
+import java.util.List;
 
 public class GroupFlashcardActivity extends AppCompatActivity {
 
@@ -33,6 +39,7 @@ public class GroupFlashcardActivity extends AppCompatActivity {
     TextView backtoExplore;
     ImageView btnaddgroup;
     LinearLayout groupContainer;
+    private FlashcardManager flashcardManager;
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -46,17 +53,18 @@ public class GroupFlashcardActivity extends AppCompatActivity {
             return insets;
         });
 
-        groupFlcid= findViewById(R.id.groupFlcid);
-        backtoExplore= findViewById(R.id.flBacktoExplore);
-        btnaddgroup= findViewById(R.id.btnAddGroup);
+        groupFlcid = findViewById(R.id.groupFlcid);
+        backtoExplore = findViewById(R.id.flBacktoExplore);
+        btnaddgroup = findViewById(R.id.btnAddGroup);
         groupContainer = findViewById(R.id.groupContainer);
+        flashcardManager = new FlashcardManager();
 
         btnaddgroup.setOnClickListener(view -> showAddGroupDialog());
 
         groupFlcid.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent= new Intent(GroupFlashcardActivity.this, FLashcardActivity.class);
+                Intent intent = new Intent(GroupFlashcardActivity.this, FLashcardActivity.class);
                 startActivity(intent);
                 finish();
             }
@@ -64,14 +72,17 @@ public class GroupFlashcardActivity extends AppCompatActivity {
         backtoExplore.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                Intent intent= new Intent(GroupFlashcardActivity.this, ExploreFragment.class);
-//                startActivity(intent);
+                // Intent intent= new Intent(GroupFlashcardActivity.this,
+                // ExploreFragment.class);
+                // startActivity(intent);
                 finish();
 
             }
         });
 
+        fetchFlashcardGroups();
     }
+
     private void showAddGroupDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         LayoutInflater inflater = getLayoutInflater();
@@ -91,7 +102,8 @@ public class GroupFlashcardActivity extends AppCompatActivity {
         // Lắng nghe sự thay đổi của EditText
         edtGroupName.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -105,7 +117,8 @@ public class GroupFlashcardActivity extends AppCompatActivity {
             }
 
             @Override
-            public void afterTextChanged(Editable s) {}
+            public void afterTextChanged(Editable s) {
+            }
         });
 
         // Xử lý sự kiện nút Cancel
@@ -123,25 +136,31 @@ public class GroupFlashcardActivity extends AppCompatActivity {
         dialog.show();
     }
 
-    private void addGroupButton(String groupName) {
-        LinearLayout layoutFlashcards = findViewById(R.id.groupContainer);
+    private void fetchFlashcardGroups() {
+        flashcardManager.fetchFlashcardGroups(1, 1, new FlashcardApiCallback() {
+            @Override
+            public void onSuccess(ApiResponseFlashcardGroup response) {
+                List<FlashcardGroup> groups = response.getData().getContent();
+                runOnUiThread(() -> {
+                    for (FlashcardGroup group : groups) {
+                        addGroupButton(group.getName());
+                    }
+                });
+            }
 
-        AppCompatButton newGroup = new AppCompatButton(this);
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-        );
-        newGroup.setText(groupName);
-        newGroup.setTextSize(22);
-        newGroup.setPaddingRelative(16, 16, 16, 16);
-        newGroup.setPadding(16, 16, 16, 16);
-
-        newGroup.setGravity(Gravity.CENTER);
-        newGroup.setBackground(ContextCompat.getDrawable(this, R.drawable.btn_flash));
-
-        newGroup.setLayoutParams(params);
-        // Thêm flashcard vào layout
-        layoutFlashcards.addView(newGroup);
+            @Override
+            public void onFailure(String errorMessage) {
+                Log.e("GroupFlashcardActivity", "Error fetching groups: " + errorMessage);
+            }
+        });
     }
 
+    private void addGroupButton(String groupName) {
+        Button newGroupButton = new Button(this);
+        newGroupButton.setText(groupName);
+        newGroupButton.setLayoutParams(new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT));
+        groupContainer.addView(newGroupButton);
+    }
 }

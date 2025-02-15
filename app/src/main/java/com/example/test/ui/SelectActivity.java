@@ -12,6 +12,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.test.R;
+import com.example.test.ui.home.HomeActivity;
 
 public class SelectActivity extends AppCompatActivity {
     Button btnTest, btnNew;
@@ -26,8 +27,8 @@ public class SelectActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-        btnNew= findViewById(R.id.btnNextProgram);
-        btnTest= findViewById(R.id.btnTest);
+        btnNew = findViewById(R.id.btnNextProgram);
+        btnTest = findViewById(R.id.btnTest);
 
         btnTest.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -35,6 +36,14 @@ public class SelectActivity extends AppCompatActivity {
                 Intent intent = new Intent(SelectActivity.this, LoadingTestActivity.class);
                 startActivity(intent);
 
+            }
+        });
+
+        btnNew.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(SelectActivity.this, HomeActivity.class);
+                startActivity(intent);
             }
         });
     }
