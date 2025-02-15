@@ -25,7 +25,7 @@ public class FlashcardManager extends BaseApiManager {
     }
 
     public void fetchFlashcardGroups(int userId, int page, FlashcardApiCallback callback) {
-        String url = BASE_URL + "/api/v1/flashcard-groups/user/" + userId + "?page=" + page + "&size=4";
+        String url = BASE_URL + "/api/v1/flashcard-groups/user/" + userId + "?page=" + page + "&size=6";
         Request request = new Request.Builder()
                 .url(url)
                 .build();

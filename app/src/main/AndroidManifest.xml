@@ -27,9 +27,6 @@
             android:name=".ui.FlashcardInfomationActivity"
             android:exported="true" />
         <activity
-            android:name=".ui.FLashcardActivity"
-            android:exported="true" />
-        <activity
             android:name=".ui.QuestionActivity"
             android:exported="false" />
         <activity
@@ -77,7 +74,7 @@
         <activity
             android:name=".ui.NewPassActivity"
             android:exported="true" />
-
+        <activity android:name=".ui.FlashcardActivity" />
         <activity
             android:name=".ui.SignUpActivity"
             android:exported="true" />
@@ -105,7 +102,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.FlashcardActivity" />
+
     </application>
 
 </manifest>

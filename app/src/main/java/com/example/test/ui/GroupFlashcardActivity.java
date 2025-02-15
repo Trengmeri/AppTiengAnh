@@ -49,7 +49,7 @@ public class GroupFlashcardActivity extends AppCompatActivity {
     private FlashcardManager flashcardManager;
     private final ArrayList<AppCompatButton> groupButtons = new ArrayList<>();
 
-    @SuppressLint({"MissingInflatedId", "ClickableViewAccessibility"})
+    @SuppressLint({ "MissingInflatedId", "ClickableViewAccessibility" })
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -90,9 +90,8 @@ public class GroupFlashcardActivity extends AppCompatActivity {
         groupFlcid.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent= new Intent(GroupFlashcardActivity.this, FLashcardActivity.class);
+                Intent intent = new Intent(GroupFlashcardActivity.this, FlashcardActivity.class);
                 startActivity(intent);
-                finish();
             }
         });
         backtoExplore.setOnClickListener(new View.OnClickListener() {
@@ -101,13 +100,12 @@ public class GroupFlashcardActivity extends AppCompatActivity {
                 // Intent intent= new Intent(GroupFlashcardActivity.this,
                 // ExploreFragment.class);
                 // startActivity(intent);
-                finish();
-
             }
         });
 
         fetchFlashcardGroups();
     }
+
     private void showEditGroupDialog(Button groupButton) {
         LayoutInflater inflater = LayoutInflater.from(this);
         View dialogView = inflater.inflate(R.layout.dialog_edit_groupflash, null);
@@ -125,7 +123,8 @@ public class GroupFlashcardActivity extends AppCompatActivity {
         // Bật/tắt nút "Edit" nếu có thay đổi trong EditText
         edtEditGroupName.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -139,7 +138,8 @@ public class GroupFlashcardActivity extends AppCompatActivity {
             }
 
             @Override
-            public void afterTextChanged(Editable s) {}
+            public void afterTextChanged(Editable s) {
+            }
         });
 
         // Sự kiện khi nhấn "Edit" (Cập nhật tên nhóm)
@@ -180,7 +180,8 @@ public class GroupFlashcardActivity extends AppCompatActivity {
         // Lắng nghe sự thay đổi của EditText
         edtGroupName.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -194,7 +195,8 @@ public class GroupFlashcardActivity extends AppCompatActivity {
             }
 
             @Override
-            public void afterTextChanged(Editable s) {}
+            public void afterTextChanged(Editable s) {
+            }
         });
 
         // Xử lý sự kiện nút Cancel
