@@ -134,11 +134,13 @@ public class GroupFlashcardActivity extends AppCompatActivity {
                 flashcardManager.createFlashcardGroup(groupName, userId, new FlashcardApiCallback() {
                     @Override
                     public void onSuccess(ApiResponseFlashcardGroup response) {
-                        // Lấy đối tượng FlashcardGroup từ phản hồi
-                        FlashcardGroup newGroup = response.getData(); // Đảm bảo rằng getData() trả về FlashcardGroup
-                        addGroupButton(newGroup.getName()); // Sử dụng tên nhóm từ phản hồi
-                        fetchFlashcardGroups(); // Cập nhật danh sách nhóm
-                        dialog.dismiss(); // Đóng hộp thoại
+                        runOnUiThread(() -> { // Đảm bảo cập nhật UI trên UI thread
+                            FlashcardGroup newGroup = response.getData(); // Đảm bảo rằng getData() trả về
+                                                                          // FlashcardGroup
+                            addGroupButton(newGroup.getName()); // Sử dụng tên nhóm từ phản hồi
+                            fetchFlashcardGroups(); // Cập nhật danh sách nhóm
+                            dialog.dismiss(); // Đóng hộp thoại
+                        });
                     }
 
                     @Override
@@ -149,7 +151,6 @@ public class GroupFlashcardActivity extends AppCompatActivity {
                     @Override
                     public void onFailure(String errorMessage) {
                         Log.e("GroupFlashcardActivity", "Error creating group: " + errorMessage);
-                        // Hiển thị thông báo cho người dùng trên UI thread
                         runOnUiThread(() -> {
                             Toast.makeText(GroupFlashcardActivity.this, "Error creating group: " + errorMessage,
                                     Toast.LENGTH_LONG).show();
