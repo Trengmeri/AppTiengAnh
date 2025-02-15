@@ -18,6 +18,9 @@
         android:theme="@style/Theme.Test"
         tools:targetApi="31">
         <activity
+            android:name=".ui.ReviewAnswerActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.CourseActivity"
             android:exported="true" />
         <activity
@@ -77,7 +80,6 @@
         <activity
             android:name=".ui.NewPassActivity"
             android:exported="true" />
-
         <activity
             android:name=".ui.SignUpActivity"
             android:exported="true" />

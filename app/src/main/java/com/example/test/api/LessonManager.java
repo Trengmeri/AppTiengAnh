@@ -55,9 +55,9 @@ public class LessonManager extends BaseApiManager {
         });
     }
 
-    public void fetchCourseById(ApiCallback callback) {
+    public void fetchCourseById(int courseId, ApiCallback callback) {
         Request request = new Request.Builder()
-                .url(BASE_URL + "/api/v1/courses/1") // Thay bằng URL máy chủ của bạn
+                .url(BASE_URL + "/api/v1/courses/" + courseId ) // Thay bằng URL máy chủ của bạn
                 .build();
 
         client.newCall(request).enqueue(new Callback() {

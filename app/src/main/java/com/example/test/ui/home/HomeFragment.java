@@ -37,13 +37,14 @@ import java.util.List;
 public class HomeFragment extends Fragment {
     Button continueButton;
     LinearLayout lessonsContainer; // LinearLayout để chứa các bài học
-    TextView courseTitle,lessonTitle1,lessonNumber; // TextView để hiển thị tên khóa học
-    ImageView btnNoti,btnstudy,btnexplore,btnprofile, icHome, icExplore;
+    TextView courseTitle,lessonTitle1,lessonNumber,courseId; // TextView để hiển thị tên khóa học
+    ImageView btnNoti,btnstudy,btnexplore,btnprofile, icHome, icExplore,btnmins, btnplus;
     ViewPager2 vpgMain;
     GridLayout bottomBar;
     QuestionManager quesManager = new QuestionManager(getContext());
     LessonManager lesManager = new LessonManager();
     ResultManager resultManager = new ResultManager(getContext());
+    int newCourseId=1;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -65,6 +66,33 @@ public class HomeFragment extends Fragment {
         btnstudy = view.findViewById(R.id.ic_study);
         btnexplore = view.findViewById(R.id.ic_explore);
         btnprofile = view.findViewById(R.id.ic_profile);
+        btnplus = view.findViewById(R.id.plus);
+        btnmins = view.findViewById(R.id.mins);
+        courseId = view.findViewById(R.id.courseId);
+
+        fetchCourseData(newCourseId);
+
+        btnplus.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int currentCourseId = Integer.parseInt(courseId.getText().toString());
+                newCourseId = currentCourseId + 1;
+                courseId.setText(String.valueOf(newCourseId));
+                fetchCourseData(newCourseId);
+            }
+        });
+
+        btnmins.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int currentCourseId = Integer.parseInt(courseId.getText().toString());
+                if (currentCourseId > 1) {
+                    newCourseId = currentCourseId - 1;
+                    courseId.setText(String.valueOf(newCourseId));
+                    fetchCourseData(newCourseId);
+                }
+            }
+        });
 
         continueButton.setOnClickListener(v -> {
             Toast.makeText(getActivity(), "Continue studying clicked!", Toast.LENGTH_SHORT).show();
@@ -77,17 +105,10 @@ public class HomeFragment extends Fragment {
                 startActivity(intent);
             }
         });
+    }
 
-//        btnexplore.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Intent intent = new Intent(getActivity(), ExploreActivity.class);
-//                startActivity(intent);
-//            }
-//        });
-
-        // Gọi API để lấy thông tin khóa học
-        lesManager.fetchCourseById( new ApiCallback() {
+    private void fetchCourseData(int id){
+        lesManager.fetchCourseById( newCourseId , new ApiCallback() {
             @Override
             public void onSuccess(Course course) {
                 getActivity().runOnUiThread(() -> {

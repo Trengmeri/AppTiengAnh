@@ -4,7 +4,11 @@ import com.google.gson.annotations.SerializedName;
 
 public class Answer {
     private int id; // ID của câu trả lời
-    @SerializedName("point_achieved") // Ánh xạ với trường trong JSON
+
+    @SerializedName("answerContent")
+    private String answerContent;
+
+//    @SerializedName("point_achieved") // Ánh xạ với trường trong JSON
     private int pointAchieved; // Điểm đạt được
     private int sessionId; // ID của phiên
 
@@ -15,6 +19,14 @@ public class Answer {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public String getAnswerContent(){
+        return answerContent;
+    }
+
+    public void setAnswerContent(String answerContent){
+        this.answerContent = answerContent;
     }
 
     // Getter và Setter cho pointAchieved

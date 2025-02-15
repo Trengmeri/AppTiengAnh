@@ -49,23 +49,6 @@ public class ApiResponseAnswer {
         this.message = message;
     }
 
-    // Getters và Setters cho page và totalPages
-    public int getPage() {
-        return page;
-    }
-
-    public void setPage(int page) {
-        this.page = page;
-    }
-
-    public int getTotalPages() {
-        return totalPages;
-    }
-
-    public void setTotalPages(int totalPages) {
-        this.totalPages = totalPages;
-    }
-
     public Data getData() {
         return data;
     }

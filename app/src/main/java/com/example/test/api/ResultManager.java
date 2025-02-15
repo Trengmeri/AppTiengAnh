@@ -27,8 +27,9 @@ public class ResultManager extends BaseApiManager {
     }
 
 
-    public void createResult(int lessonId, int sessionId, int enrollmentId, ApiCallback callback) {
+    public void createResult(int lessonId, int sessionId,  ApiCallback callback) {
         String userId = SharedPreferencesManager.getInstance(context).getID();
+        String enrollmentId = userId;
 
         String json = "{ \"lessonId\":" + lessonId + ", \"sessionId\":" + sessionId + ", \"enrollmentId\":" + enrollmentId + "}";
         RequestBody body = RequestBody.create(json, MediaType.get("application/json; charset=utf-8"));
@@ -74,7 +75,7 @@ public class ResultManager extends BaseApiManager {
                     Answer answer = gson.fromJson(responseBody, Answer.class); // Thay đổi ở đây
 
                     if (answer != null) {
-                        Log.d("ResultManager", "Answer ID: " + answer.getId() + ", Điểm đạt được: " + answer.getPointAchieved() + ", Session ID: " + answer.getSessionId());
+                        Log.d("ResultManager", "Answer ID: " + answer.getId() + "Cau tra loi: "+ answer.getAnswerContent() +", Điểm đạt được: " + answer.getPointAchieved() + ", Session ID: " + answer.getSessionId());
                         callback.onSuccess(answer); // Thay đổi ở đây
                     } else {
                         callback.onFailure("Không có câu trả lời nào.");

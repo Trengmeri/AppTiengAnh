@@ -41,11 +41,12 @@ public class PointResultActivity extends AppCompatActivity {
         setContentView(R.layout.activity_point_result);
 
         initializeViews();
-        fetchCourseData();
+        fetchCourseData(1);
 
-        btnReview.setOnClickListener(v ->
-                Toast.makeText(PointResultActivity.this, "Review button clicked", Toast.LENGTH_SHORT).show()
-        );
+        btnReview.setOnClickListener(v -> {
+            Intent intent = new Intent(PointResultActivity.this, ReviewAnswerActivity.class);
+            startActivity(intent);
+        });
 
         btnNext.setOnClickListener(v -> {
             Intent intent = new Intent(PointResultActivity.this, HomeActivity.class);
@@ -68,8 +69,8 @@ public class PointResultActivity extends AppCompatActivity {
         compWrite = findViewById(R.id.comp_write);
     }
 
-    private void fetchCourseData() {
-        lesManager.fetchCourseById(new ApiCallback() {
+    private void fetchCourseData(int courseId) {
+        lesManager.fetchCourseById(courseId,new ApiCallback() {
             @Override
             public void onSuccess() {}
 
@@ -228,57 +229,10 @@ public class PointResultActivity extends AppCompatActivity {
     }
 
     private void createResultForLesson(int lessonId, int sessionId, String skillType) {
-        resultManager.createResult(lessonId, sessionId, 1, new ApiCallback() {
+        resultManager.createResult(lessonId, sessionId, new ApiCallback() {
             @Override
             public void onSuccess() {
                     Log.d("PointResultActivity", "createResultForLesson: Gọi fetchResultByLesson"); // Log trước khi gọi fetchResultByLesson
-                    resultManager.fetchResultByLesson(lessonId, new ApiCallback() {
-                        @Override
-                        public void onSuccess() {}
-
-                        @Override
-                        public void onSuccess(Question questions) {
-
-                        }
-
-                        @Override
-                        public void onSuccess(Lesson lesson) {}
-
-                        @Override
-                        public void onSuccess(Course course) {}
-
-                        @Override
-                        public void onSuccess(Result result) {
-                            if (result!= null) {
-                                Log.d("PointResultActivity", "fetchResultByLesson: Lấy Result thành công");
-                                runOnUiThread(() -> updateUI(skillType, result.getComLevel(), result.getTotalPoints()));
-                            } else {
-                                Log.e("PointResultActivity", "fetchResultByLesson: Kết quả không hợp lệ.");
-                            }
-                        }
-
-                        @Override
-                        public void onFailure(String errorMessage) {
-                            Log.e("PointResultActivity", "fetchResultByLesson: " + errorMessage);
-                        }
-
-                        @Override
-                        public void onSuccess(Answer answer) {}
-
-                        @Override
-                        public void onSuccess(MediaFile mediaFile) {
-
-                        }
-
-
-                        @Override
-                        public void onSuccessWithOtpID(String otpID) {}
-
-                        @Override
-                        public void onSuccessWithToken(String token) {
-
-                        }
-                    });
 
             }
 
@@ -317,6 +271,53 @@ public class PointResultActivity extends AppCompatActivity {
 
             }
             public void onSuccessWithOtpID(String otpID) {}
+        });
+        resultManager.fetchResultByLesson(lessonId, new ApiCallback() {
+            @Override
+            public void onSuccess() {}
+
+            @Override
+            public void onSuccess(Question questions) {
+
+            }
+
+            @Override
+            public void onSuccess(Lesson lesson) {}
+
+            @Override
+            public void onSuccess(Course course) {}
+
+            @Override
+            public void onSuccess(Result result) {
+                if (result!= null) {
+                    Log.d("PointResultActivity", "fetchResultByLesson: Lấy Result thành công");
+                    runOnUiThread(() -> updateUI(skillType, result.getComLevel(), result.getTotalPoints()));
+                } else {
+                    Log.e("PointResultActivity", "fetchResultByLesson: Kết quả không hợp lệ.");
+                }
+            }
+
+            @Override
+            public void onFailure(String errorMessage) {
+                Log.e("PointResultActivity", "fetchResultByLesson: " + errorMessage);
+            }
+
+            @Override
+            public void onSuccess(Answer answer) {}
+
+            @Override
+            public void onSuccess(MediaFile mediaFile) {
+
+            }
+
+
+            @Override
+            public void onSuccessWithOtpID(String otpID) {}
+
+            @Override
+            public void onSuccessWithToken(String token) {
+
+            }
         });
     }
 
