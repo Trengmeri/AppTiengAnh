@@ -3,7 +3,7 @@ package com.example.test.model;
 public class Schedule {
 
     private int id;
-    private int userId;
+    private String userId;
     private String scheduleTime; // Định dạng ISO 8601 (yyyy-MM-ddTHH:mm:ssZ)
     private boolean isDaily;
     private Integer courseId; // Có thể null nếu không liên quan đến khóa học
@@ -12,7 +12,7 @@ public class Schedule {
     public Schedule() {
     }
 
-    public Schedule(int userId, String scheduleTime, boolean isDaily, Integer courseId) {
+    public Schedule(String userId, String scheduleTime, boolean isDaily, Integer courseId) {
         this.userId = userId;
         this.scheduleTime = scheduleTime;
         this.isDaily = isDaily;
@@ -28,11 +28,11 @@ public class Schedule {
         this.id = id;
     }
 
-    public int getUserId() {
+    public String getUserId() {
         return userId;
     }
 
-    public void setUserId(int userId) {
+    public void setUserId(String userId) {
         this.userId = userId;
     }
 

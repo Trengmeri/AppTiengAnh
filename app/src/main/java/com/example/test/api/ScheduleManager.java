@@ -3,6 +3,8 @@ package com.example.test.api;
 import android.content.Context;
 import android.util.Log;
 
+import com.example.test.NotificationManager;
+import com.example.test.NotificationStorage;
 import com.example.test.SharedPreferencesManager;
 import com.example.test.model.Schedule;
 
@@ -10,6 +12,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -54,7 +59,21 @@ public class ScheduleManager extends BaseApiManager {
                 public void onResponse(Call call, Response response) throws IOException {
                     if (response.isSuccessful()) {
                         Log.d("Schedule:","Tao lich hoc thanh cong");
+                        String responseBody = response.body().string();
                         callback.onSuccess(); // Hoặc có thể truyền thêm dữ liệu từ response
+                        try {
+                            JSONObject responseJson = new JSONObject(responseBody);
+                            String message = responseJson.optString("message", "Your schedule has been created.");
+                            String currentDate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
+                            String id = SharedPreferencesManager.getInstance(context).getID();
+                            //  Lưu userID vào SharedPreferences
+                            SharedPreferencesManager.getInstance(context).saveID(id);
+                            // 📌 Lưu thông báo vào SharedPreferences theo userID
+                            // Lưu thông báo vào SharedPreferences theo userID
+                            NotificationStorage.getInstance(context).saveNotification(id, "Create schedule successful", message, currentDate);
+                        } catch (JSONException e) {
+                            callback.onFailure("Lỗi phân tích phản hồi JSON: " + e.getMessage());
+                        }
                     } else {
                         // Xử lý response không thành công
                         callback.onFailure("Lỗi server: " + response.code());

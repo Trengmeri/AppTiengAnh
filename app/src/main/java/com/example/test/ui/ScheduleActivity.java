@@ -1,23 +1,39 @@
 package com.example.test.ui;
 
 import android.annotation.SuppressLint;
-import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.test.R;
-import com.example.test.ui.explore.ExploreFragment;
+import com.example.test.SharedPreferencesManager;
+import com.example.test.api.ApiCallback;
+import com.example.test.api.ScheduleManager;
+import com.example.test.model.Answer;
+import com.example.test.model.Course;
+import com.example.test.model.Lesson;
+import com.example.test.model.MediaFile;
+import com.example.test.model.Question;
+import com.example.test.model.Result;
+import com.example.test.model.Schedule;
+
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ScheduleActivity extends AppCompatActivity {
 
-    private TextView textViewReminderTimeHour, textViewReminderTimeMins,btnBacktoEx;
-    private ImageView up, down; // Single ImageView for Up/Down
-    ImageView Mon,Tue,Wed,Thu,Fri,Sat,Sun,check_icon2,check_icon3,check_icon4,check_icon5,check_icon6,check_icon7,check_icon0;
-    ImageView Basic, Advance,LevelUp, check_basic, check_advance,check_levelup;
+    private TextView textViewReminderTimeHour, textViewReminderTimeMins, btnBacktoEx;
+    private ImageView up, down;
+    ImageView Mon, Tue, Wed, Thu, Fri, Sat, Sun, check_icon2, check_icon3, check_icon4, check_icon5, check_icon6, check_icon7, check_icon0;
+    ImageView Basic, Advance, LevelUp, check_basic, check_advance, check_levelup;
 
     private int currentHour = 0;
     private int currentMinute = 0;
@@ -31,7 +47,7 @@ public class ScheduleActivity extends AppCompatActivity {
 
         textViewReminderTimeHour = findViewById(R.id.textViewReminderTimeHour);
         textViewReminderTimeMins = findViewById(R.id.textViewReminderTimeMins);
-        btnBacktoEx= findViewById(R.id.btnBacktoEx);
+        btnBacktoEx = findViewById(R.id.btnBacktoEx);
 
         Sun = findViewById(R.id.sun);
         Mon = findViewById(R.id.mon);
@@ -214,6 +230,15 @@ public class ScheduleActivity extends AppCompatActivity {
                 finish();
             }
         });
+
+        // Add an onClick listener to a button to trigger scheduling
+        findViewById(R.id.textViewDone).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                createSchedule();
+                finish();
+            }
+        });
     }
 
     private void updateGoalSelectionUI() {
@@ -263,90 +288,130 @@ public class ScheduleActivity extends AppCompatActivity {
         textViewReminderTimeMins.setText(minuteStr);
     }
 
-//    private void createSchedule() {
-//        for (int i = 0; i < dayButtons.length; i++) {
-//            if (dayButtons[i].isChecked()) {
-//                String selectedDay = convertDayOfWeekToDate(i);
-//                String scheduleTime = selectedDay + "T" + hourStr + ":" + minuteStr + ":00Z";
-//
-//        Schedule request = new Schedule();
-//        request.setScheduleTime(scheduleTime);
-//        request.setDaily(isDaily);
-//        request.setCourseId(courseId);
-//
-//        ScheduleManager scheduleManager = new ScheduleManager(this);
-//        scheduleManager.createSchedule(request, new ApiCallback() {
-//            @Override
-//            public void onSuccess() {
-//                // Xử lý thành công
-//                Log.d("ScheduleActivity", "Tạo lịch học thành công");
-//            }
-//
-//            @Override
-//            public void onSuccess(Question questions) {
-//
-//            }
-//
-//            @Override
-//            public void onSuccess(Lesson lesson) {
-//
-//            }
-//
-//            @Override
-//            public void onSuccess(Course course) {
-//
-//            }
-//
-//            @Override
-//            public void onSuccess(Result result) {
-//
-//            }
-//
-//            @Override
-//            public void onSuccess(Answer answer) {
-//
-//            }
-//
-//            @Override
-//            public void onSuccess(MediaFile mediaFile) {
-//
-//            }
-//
-//            @Override
-//            public void onFailure(String errorMessage) {
-//                // Xử lý lỗi
-//                Log.e("ScheduleActivity", "Lỗi tạo lịch học: " + errorMessage);
-//            }
-//
-//            @Override
-//            public void onSuccessWithOtpID(String otpID) {
-//
-//            }
-//
-//            @Override
-//            public void onSuccessWithToken(String token) {
-//
-//            }
-//
-//            //... (Các phương thức onSuccess và onFailure khác)
-//        });
-//    }
-//
-//    private String convertDayOfWeekToDate(int dayOfWeek) {
-//        // Lấy ngày hiện tại
-//        LocalDate currentDate = LocalDate.now();
-//
-//        // Lấy thứ trong tuần tương ứng với số nguyên đầu vào (0 = Chủ nhật, 1 = Thứ hai,...)
-//        DayOfWeek selectedDayOfWeek = DayOfWeek.of(dayOfWeek % 7 + 1);
-//
-//        // Tính toán số ngày cần cộng thêm để đến ngày được chọn
-//        int daysToAdd = (selectedDayOfWeek.getValue() - currentDate.getDayOfWeek().getValue() + 7) % 7;
-//
-//        // Cộng thêm số ngày vào ngày hiện tại để có được ngày tháng của thứ được chọn
-//        LocalDate selectedDate = currentDate.plusDays(daysToAdd);
-//
-//        // Định dạng ngày tháng theo chuẩn ISO 8601 (yyyy-MM-dd)
-//        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.getDefault());
-//        return selectedDate.format(formatter);
-//    }
+    private void createSchedule() {
+        List<Schedule> schedules = gatherScheduleData();
+
+        if (schedules.isEmpty()) {
+            Toast.makeText(this, "Please select at least one day", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        ScheduleManager scheduleManager = new ScheduleManager(this);
+        for (Schedule schedule: schedules) {
+            scheduleManager.createSchedule(schedule, new ApiCallback() {
+                @Override
+                public void onSuccess() {
+                    // Xử lý thành công
+                    Log.d("ScheduleActivity", "Tạo lịch học thành công: " + schedule.toString());
+                }
+
+                @Override
+                public void onSuccess(Question questions) {
+
+                }
+
+                @Override
+                public void onSuccess(Lesson lesson) {
+
+                }
+
+                @Override
+                public void onSuccess(Course course) {
+
+                }
+
+                @Override
+                public void onSuccess(Result result) {
+
+                }
+
+                @Override
+                public void onSuccess(Answer answer) {
+
+                }
+
+                @Override
+                public void onSuccess(MediaFile mediaFile) {
+
+                }
+
+                @Override
+                public void onFailure(String errorMessage) {
+                    // Xử lý lỗi
+                    Log.e("ScheduleActivity", "Lỗi tạo lịch học: " + errorMessage);
+                }
+
+                @Override
+                public void onSuccessWithOtpID(String otpID) {
+
+                }
+
+                @Override
+                public void onSuccessWithToken(String token) {
+
+                }
+            });
+        }
+    }
+
+    private List<Schedule> gatherScheduleData() {
+        String hourStr = textViewReminderTimeHour.getText().toString();
+        String minuteStr = textViewReminderTimeMins.getText().toString();
+
+        List<Schedule> schedules = new ArrayList<>();
+        String userId = SharedPreferencesManager.getInstance(this).getID(); // Replace with your actual method
+
+        // Check each day and add a schedule if selected
+        if (Mon.isSelected()) {
+            String mondayDate = convertDayOfWeekToDate(DayOfWeek.MONDAY);
+            String scheduleTime = mondayDate + "T" + hourStr + ":" + minuteStr + ":00Z";
+            schedules.add(new Schedule(userId, scheduleTime, false, null));
+        }
+        if (Tue.isSelected()) {
+            String tuesdayDate = convertDayOfWeekToDate(DayOfWeek.TUESDAY);
+            String scheduleTime = tuesdayDate + "T" + hourStr + ":" + minuteStr + ":00Z";
+            schedules.add(new Schedule(userId, scheduleTime, false, null));
+        }
+        if (Wed.isSelected()) {
+            String wednesdayDate = convertDayOfWeekToDate(DayOfWeek.WEDNESDAY);
+            String scheduleTime = wednesdayDate + "T" + hourStr + ":" + minuteStr + ":00Z";
+            schedules.add(new Schedule(userId, scheduleTime, false, null));
+        }
+        if (Thu.isSelected()) {
+            String thursdayDate = convertDayOfWeekToDate(DayOfWeek.THURSDAY);
+            String scheduleTime = thursdayDate + "T" + hourStr + ":" + minuteStr + ":00Z";
+            schedules.add(new Schedule(userId, scheduleTime, false, null));
+        }
+        if (Fri.isSelected()) {
+            String fridayDate = convertDayOfWeekToDate(DayOfWeek.FRIDAY);
+            String scheduleTime = fridayDate + "T" + hourStr + ":" + minuteStr + ":00Z";
+            schedules.add(new Schedule(userId, scheduleTime, false, null));
+        }
+        if (Sat.isSelected()) {
+            String saturdayDate = convertDayOfWeekToDate(DayOfWeek.SATURDAY);
+            String scheduleTime = saturdayDate + "T" + hourStr + ":" + minuteStr + ":00Z";
+            schedules.add(new Schedule(userId, scheduleTime, false, null));
+        }
+        if (Sun.isSelected()) {
+            String sundayDate = convertDayOfWeekToDate(DayOfWeek.SUNDAY);
+            String scheduleTime = sundayDate + "T" + hourStr + ":" + minuteStr + ":00Z";
+            schedules.add(new Schedule(userId, scheduleTime, false, null));
+        }
+
+        return schedules;
+    }
+
+    private String convertDayOfWeekToDate(DayOfWeek dayOfWeek) {
+        // Get today's date
+        LocalDate currentDate = LocalDate.now();
+
+        // Calculate the number of days to add to reach the selected day
+        int daysToAdd = (dayOfWeek.getValue() - currentDate.getDayOfWeek().getValue() + 7) % 7;
+
+        // Add the days to the current date to get the date of the selected day
+        LocalDate selectedDate = currentDate.plusDays(daysToAdd);
+
+        // Format the date according to ISO 8601 (yyyy-MM-dd)
+        return selectedDate.format(DateTimeFormatter.ISO_LOCAL_DATE);
+    }
 }
