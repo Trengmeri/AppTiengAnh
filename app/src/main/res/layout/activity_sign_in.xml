@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_constraintDimensionRatio="16:9"
-    tools:context=".activity.SignInActivity">
+    tools:context=".ui.SignInActivity">
 
     <ImageView
         android:layout_width="wrap_content"

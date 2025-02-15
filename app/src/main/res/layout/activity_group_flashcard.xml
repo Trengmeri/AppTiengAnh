@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#F6F2F2"
-    tools:context=".activity.GroupFlashcardActivity">
+    tools:context=".ui.GroupFlashcardActivity">
 
     <FrameLayout
         android:layout_width="match_parent"

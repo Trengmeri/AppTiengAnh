@@ -18,88 +18,86 @@
         android:theme="@style/Theme.Test"
         tools:targetApi="31">
         <activity
-            android:name=".activity.QuestionActivity"
+            android:name=".ui.CourseActivity"
+            android:exported="true" />
+        <activity
+            android:name=".ui.GroupFlashcardActivity"
+            android:exported="true" />
+        <activity
+            android:name=".ui.FlashcardInfomationActivity"
+            android:exported="true" />
+        <activity
+            android:name=".ui.FLashcardActivity"
+            android:exported="true" />
+        <activity
+            android:name=".ui.QuestionActivity"
             android:exported="false" />
         <activity
-            android:name=".activity.CourseActivity"
-            android:exported="true" />
-        <activity
-            android:name=".activity.GroupFlashcardActivity"
-            android:exported="true" />
-        <activity
-            android:name=".activity.FlashcardInfomationActivity"
-            android:exported="true" />
-        <activity
-            android:name=".activity.FLashcardActivity"
-            android:exported="true" />
-        <activity
-            android:name=".activity.ExploreActivity"
+            android:name=".ui.explore.ExploreActivity"
             android:exported="false" />
         <activity
-            android:name=".activity.ScheduleActivity"
+            android:name=".ui.ScheduleActivity"
             android:exported="true" />
         <activity
-            android:name=".activity.NotificationActivity"
+            android:name=".ui.NotificationActivity"
             android:exported="true" />
         <activity
-            android:name=".activity.PointResultActivity"
+            android:name=".ui.PointResultActivity"
             android:exported="true" />
         <activity
-            android:name=".activity.RecordQuestionActivity"
+            android:name=".ui.RecordQuestionActivity"
             android:exported="true" />
         <activity
-            android:name=".activity.LoadingTestActivity"
+            android:name=".ui.LoadingTestActivity"
             android:exported="false" />
         <activity
-            android:name=".activity.ChooseFieldsActivity"
+            android:name=".ui.ChooseFieldsActivity"
             android:exported="false" />
         <activity
-            android:name=".activity.GrammarPickManyActivity"
+            android:name=".ui.GrammarPickManyActivity"
             android:exported="true" />
         <activity
-            android:name=".activity.ListeningQuestionActivity"
+            android:name=".ui.ListeningQuestionActivity"
             android:exported="true" />
         <activity
-            android:name=".activity.GrammarPick1QuestionActivity"
+            android:name=".ui.GrammarPick1QuestionActivity"
             android:exported="true" />
         <activity
-            android:name=".activity.SetUpAccountActivity"
+            android:name=".ui.SetUpAccountActivity"
             android:exported="false" />
         <activity
-            android:name=".activity.ConfirmCode2Activity"
+            android:name=".ui.ConfirmCode2Activity"
             android:exported="true" />
         <activity
-            android:name=".activity.HomeActivity"
+            android:name=".ui.home.HomeActivity"
             android:exported="true" />
         <activity
-            android:name=".activity.LoadPassActivity"
+            android:name=".ui.LoadPassActivity"
             android:exported="false" />
         <activity
-            android:name=".activity.NewPassActivity"
+            android:name=".ui.NewPassActivity"
+            android:exported="true" />
+
+        <activity
+            android:name=".ui.SignUpActivity"
             android:exported="true" />
         <activity
-            android:name=".activity.ConfirmCodeActivity"
-            android:exported="true" />
-        <activity
-            android:name=".activity.SignUpActivity"
-            android:exported="true" />
-        <activity
-            android:name=".activity.Intro2Activity"
+            android:name=".ui.Intro2Activity"
             android:exported="false" />
         <activity
-            android:name=".activity.ForgotPassWordActivity"
+            android:name=".ui.ForgotPassWordActivity"
             android:exported="true" />
         <activity
-            android:name=".activity.SelectActivity"
+            android:name=".ui.SelectActivity"
             android:exported="true" />
         <activity
-            android:name=".activity.SignInActivity"
+            android:name=".ui.SignInActivity"
             android:exported="true" /> <!-- <activity -->
         <!-- android:name=".ui.login.LoginActivity" -->
         <!-- android:exported="false" -->
         <!-- android:label="@string/title_activity_login" /> -->
         <activity
-            android:name=".activity.MainActivity"
+            android:name=".ui.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
