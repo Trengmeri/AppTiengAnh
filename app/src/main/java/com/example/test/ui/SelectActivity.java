@@ -27,8 +27,8 @@ public class SelectActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-        btnNew= findViewById(R.id.btnNextProgram);
-        btnTest= findViewById(R.id.btnTest);
+        btnNew = findViewById(R.id.btnNextProgram);
+        btnTest = findViewById(R.id.btnTest);
 
         btnTest.setOnClickListener(new View.OnClickListener() {
             @Override

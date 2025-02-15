@@ -6,6 +6,9 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -37,6 +40,7 @@ public class SignUpActivity extends AppCompatActivity {
     Button btnUp, btnIn;
     NetworkChangeReceiver networkReceiver;
     AuthenticationManager apiManager;
+    private long lastClickTime = 0;
     //private boolean isPasswordVisible = false;
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -48,18 +52,38 @@ public class SignUpActivity extends AppCompatActivity {
         AnhXa();
         //setupPasswordField();
 
-        // Lắng nghe trạng thái checkbox
-        cbCheck.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            // Bật hoặc tắt nút Sign Up dựa trên trạng thái checkbox
-            btnUp.setEnabled(isChecked);
-            btnUp.setBackgroundColor(ContextCompat.getColor(this, R.color.btncolor));
-        });
+        TextWatcher textWatcher = new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                checkInputFields();
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+        };
+
+        edtName.addTextChangedListener(textWatcher);
+        edtEmail.addTextChangedListener(textWatcher);
+        edtMKhau1.addTextChangedListener(textWatcher);
+
+        cbCheck.setOnCheckedChangeListener((buttonView, isChecked) -> checkInputFields());
+
 
         // Tạo đối tượng NetworkChangeReceiver
         networkReceiver = new NetworkChangeReceiver();
         apiManager = new AuthenticationManager(this);
 
         btnUp.setOnClickListener(view -> {
+            // Chặn multi-click
+            long currentTime = System.currentTimeMillis();
+            if (currentTime - lastClickTime < 5000) { // Chặn bấm liên tục trong 2 giây
+                return;
+            }
+            lastClickTime = currentTime;
+
             if (!apiManager.isInternetAvailable(SignUpActivity.this)) {
                 Toast.makeText(SignUpActivity.this, "Vui lòng kiểm tra kết nối Internet của bạn.", Toast.LENGTH_LONG).show();
             } else {
@@ -67,6 +91,17 @@ public class SignUpActivity extends AppCompatActivity {
                 String hoten = edtName.getText().toString();
                 String email = edtEmail.getText().toString();
                 String pass = edtMKhau1.getText().toString();
+                if (!isValidEmail(email)) {
+                    Toast.makeText(SignUpActivity.this, "Email không đúng định dạng!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if (!isValidPassword(pass)) {
+                    Toast.makeText(SignUpActivity.this, "Mật khẩu không đúng định dạng. Vui lòng thử lại", Toast.LENGTH_LONG).show();
+                    return;
+                }
+                // Tạm thời vô hiệu hóa nút để tránh spam
+                btnUp.setEnabled(false);
+                btnUp.setAlpha(0.5f);
 
                 apiManager.sendSignUpRequest(this,hoten, email, pass, new ApiCallback() {
                     @Override
@@ -124,6 +159,10 @@ public class SignUpActivity extends AppCompatActivity {
 
                     }
                 });
+                new Handler().postDelayed(() -> {
+                    btnUp.setEnabled(true);
+                    btnUp.setAlpha(1.0f);
+                }, 5000);
             }
         });
 
@@ -211,6 +250,20 @@ public class SignUpActivity extends AppCompatActivity {
         unregisterReceiver(networkReceiver);
     }
 
+    private void checkInputFields() {
+        String name = edtName.getText().toString().trim();
+        String email = edtEmail.getText().toString().trim();
+        String password = edtMKhau1.getText().toString().trim();
+        boolean isChecked = cbCheck.isChecked();
+
+        if (!name.isEmpty() && !email.isEmpty() && !password.isEmpty() && isChecked) {
+            btnUp.setEnabled(true);
+            btnUp.setAlpha(1.0f); // Làm sáng nút
+        } else {
+            btnUp.setEnabled(false);
+            btnUp.setAlpha(0.5f); // Làm mờ nút
+        }
+    }
     private void AnhXa() {
         edtEmail = findViewById(R.id.edtEmail);
         edtName = findViewById(R.id.edtTen);
@@ -229,15 +282,16 @@ public class SignUpActivity extends AppCompatActivity {
         return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches();
     }
 
-    private boolean isValidPhoneNumber(String phoneNumber) {
-        String phonePattern = "^[0-9]{10,11}$";
-        Pattern pattern = Pattern.compile(phonePattern);
-        Matcher matcher = pattern.matcher(phoneNumber);
-        return matcher.matches();
-    }
+//    private boolean isValidPhoneNumber(String phoneNumber) {
+//        String phonePattern = "^[0-9]{10,11}$";
+//        Pattern pattern = Pattern.compile(phonePattern);
+//        Matcher matcher = pattern.matcher(phoneNumber);
+//        return matcher.matches();
+//    }
 
     private boolean isValidPassword(String password) {
-        String passwordPattern = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[@#$%^&+=!_&*]).{8,}$";
+//        String passwordPattern = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[@#$%^&+=!_&*]).{8,}$";
+        String passwordPattern = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d).{8,}$";
         Pattern pattern = Pattern.compile(passwordPattern);
         Matcher matcher = pattern.matcher(password);
         return matcher.matches();
