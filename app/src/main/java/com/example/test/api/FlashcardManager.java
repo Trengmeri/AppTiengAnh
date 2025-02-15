@@ -106,4 +106,28 @@ public class FlashcardManager extends BaseApiManager {
             }
         });
     }
+
+    public void updateFlashcardGroup(int groupId, String newName, FlashcardApiCallback callback) {
+        String url = BASE_URL + "/api/v1/flashcard-groups/" + groupId + "?newName=" + newName;
+        Request request = new Request.Builder()
+                .url(url)
+                .put(RequestBody.create("", MediaType.parse("application/json; charset=utf-8"))) // Body rỗng cho PUT
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    callback.onSuccess(new ApiResponseFlashcardGroup()); // Tạo một đối tượng thành công
+                } else {
+                    callback.onFailure("Error: " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Call call, IOException e) {
+                callback.onFailure("Network error: " + e.getMessage());
+            }
+        });
+    }
 }

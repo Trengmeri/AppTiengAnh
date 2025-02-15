@@ -79,7 +79,8 @@ public class GroupFlashcardActivity extends AppCompatActivity {
 
                     // Kiểm tra xem người dùng có chạm vào drawableEnd không
                     if (touchX >= (buttonWidth - drawableWidth - groupFlcid.getPaddingEnd())) {
-                        showEditGroupDialog(groupFlcid);
+                        int groupId = (int) groupFlcid.getTag(); // Retrieve the groupId from the button's tag
+                        showEditGroupDialog(groupFlcid, groupId); // Pass the groupId
                         return true;
                     }
                 }
@@ -106,7 +107,7 @@ public class GroupFlashcardActivity extends AppCompatActivity {
         fetchFlashcardGroups();
     }
 
-    private void showEditGroupDialog(Button groupButton) {
+    private void showEditGroupDialog(Button groupButton, int groupId) {
         LayoutInflater inflater = LayoutInflater.from(this);
         View dialogView = inflater.inflate(R.layout.dialog_edit_groupflash, null);
 
@@ -128,13 +129,8 @@ public class GroupFlashcardActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (s.toString().trim().isEmpty() || s.toString().equals(groupButton.getText().toString())) {
-                    btnEdit.setEnabled(false);
-                    btnEdit.setAlpha(0.5f);
-                } else {
-                    btnEdit.setEnabled(true);
-                    btnEdit.setAlpha(1.0f);
-                }
+                btnEdit.setEnabled(
+                        !s.toString().trim().isEmpty() && !s.toString().equals(groupButton.getText().toString()));
             }
 
             @Override
@@ -145,16 +141,42 @@ public class GroupFlashcardActivity extends AppCompatActivity {
         // Sự kiện khi nhấn "Edit" (Cập nhật tên nhóm)
         btnEdit.setOnClickListener(v -> {
             String newName = edtEditGroupName.getText().toString().trim();
-            if (!newName.isEmpty()) {
-                groupButton.setText(newName);
-                dialog.dismiss();
-            }
+
+            // Gọi API để cập nhật tên nhóm
+            flashcardManager.updateFlashcardGroup(groupId, newName, new FlashcardApiCallback() {
+                @Override
+                public void onSuccess(ApiResponseFlashcardGroup response) {
+                    runOnUiThread(() -> {
+                        groupButton.setText(newName);
+                        dialog.dismiss();
+                        Toast.makeText(GroupFlashcardActivity.this, "Group updated successfully", Toast.LENGTH_SHORT)
+                                .show();
+                    });
+                }
+
+                @Override
+                public void onSuccess(FlashcardGroupResponse response) {
+
+                }
+
+                @Override
+                public void onSuccess(ApiResponseFlashcard response) {
+
+                }
+
+                @Override
+                public void onFailure(String errorMessage) {
+                    runOnUiThread(() -> {
+                        Toast.makeText(GroupFlashcardActivity.this, "Error updating group: " + errorMessage,
+                                Toast.LENGTH_LONG).show();
+                    });
+                }
+            });
         });
 
         // Sự kiện khi nhấn "Delete" (Xóa nhóm)
         btnDelete.setOnClickListener(v -> {
             groupContainer.removeView(groupButton);
-            groupButtons.remove(groupButton);
             dialog.dismiss();
         });
 
@@ -301,7 +323,16 @@ public class GroupFlashcardActivity extends AppCompatActivity {
         newGroup.setPaddingRelative(16, 16, 16, 16);
         newGroup.setPadding(16, 16, 16, 16);
         newGroup.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.icon_edit, 0);
-        newGroup.setOnClickListener(v -> showEditGroupDialog(newGroup));
+
+        // Lưu ID nhóm vào tag của nút
+        newGroup.setTag(groupId);
+
+        newGroup.setOnClickListener(v -> {
+            // Lấy ID nhóm từ tag
+            int id = (int) v.getTag();
+            // Mở dialog sửa nhóm
+            showEditGroupDialog(newGroup, id);
+        });
 
         // Thêm nút nhóm vào groupLayout
         groupLayout.addView(newGroup);
