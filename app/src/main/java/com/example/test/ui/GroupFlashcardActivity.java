@@ -176,8 +176,37 @@ public class GroupFlashcardActivity extends AppCompatActivity {
 
         // Sự kiện khi nhấn "Delete" (Xóa nhóm)
         btnDelete.setOnClickListener(v -> {
-            groupContainer.removeView(groupButton);
-            dialog.dismiss();
+            // Gọi API để xóa nhóm
+            flashcardManager.deleteFlashcardGroup(groupId, new FlashcardApiCallback() {
+                @Override
+                public void onSuccess(ApiResponseFlashcardGroup response) {
+                    runOnUiThread(() -> {
+                        groupContainer.removeView(groupButton);
+                        dialog.dismiss();
+                        Toast.makeText(GroupFlashcardActivity.this, "Group deleted successfully", Toast.LENGTH_SHORT)
+                                .show();
+                        fetchFlashcardGroups();
+                    });
+                }
+
+                @Override
+                public void onSuccess(FlashcardGroupResponse response) {
+
+                }
+
+                @Override
+                public void onSuccess(ApiResponseFlashcard response) {
+
+                }
+
+                @Override
+                public void onFailure(String errorMessage) {
+                    runOnUiThread(() -> {
+                        Toast.makeText(GroupFlashcardActivity.this, "Error deleting group: " + errorMessage,
+                                Toast.LENGTH_LONG).show();
+                    });
+                }
+            });
         });
 
         dialog.show();
