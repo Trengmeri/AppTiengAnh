@@ -282,25 +282,29 @@ public class GroupFlashcardActivity extends AppCompatActivity {
     private void addGroupButton(String groupName, int groupId) {
         LinearLayout layoutFlashcards = findViewById(R.id.groupContainer);
 
+        // Tạo một LinearLayout mới cho mỗi nhóm
+        LinearLayout groupLayout = new LinearLayout(this);
+        groupLayout.setOrientation(LinearLayout.VERTICAL);
+        groupLayout.setGravity(Gravity.CENTER);
+        groupLayout.setLayoutParams(new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT));
+
+        // Nút nhóm
         AppCompatButton newGroup = new AppCompatButton(this);
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT);
         newGroup.setText(groupName);
         newGroup.setTextSize(22);
+        newGroup.setBackground(ContextCompat.getDrawable(this, R.drawable.btn_flash));
+        newGroup.setLayoutParams(new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT));
         newGroup.setPaddingRelative(16, 16, 16, 16);
         newGroup.setPadding(16, 16, 16, 16);
+        newGroup.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.icon_edit, 0);
+        newGroup.setOnClickListener(v -> showEditGroupDialog(newGroup));
 
-        newGroup.setGravity(Gravity.CENTER);
-        newGroup.setBackground(ContextCompat.getDrawable(this, R.drawable.btn_flash));
-
-        newGroup.setLayoutParams(params);
-        newGroup.setOnClickListener(v -> {
-            Intent intent = new Intent(GroupFlashcardActivity.this, FlashcardActivity.class);
-            intent.putExtra("GROUP_ID", groupId); // Gửi ID nhóm
-            startActivity(intent);
-        });
-
-        layoutFlashcards.addView(newGroup);
+        // Thêm nút nhóm vào groupLayout
+        groupLayout.addView(newGroup);
+        layoutFlashcards.addView(groupLayout);
     }
 }
