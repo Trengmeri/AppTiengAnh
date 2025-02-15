@@ -2,8 +2,9 @@ package com.example.test.response;
 
 import com.example.test.model.FlashcardGroup;
 import com.google.gson.annotations.SerializedName;
+import java.util.List;
 
-public class ApiResponseFlashcardGroup {
+public class FlashcardGroupResponse {
     @SerializedName("statusCode")
     private int statusCode;
 
@@ -11,7 +12,20 @@ public class ApiResponseFlashcardGroup {
     private String message;
 
     @SerializedName("data")
-    private FlashcardGroup data;
+    private FlashcardGroupData data;
+
+    public static class FlashcardGroupData {
+        @SerializedName("content")
+        private List<FlashcardGroup> content;
+
+        public List<FlashcardGroup> getContent() {
+            return content;
+        }
+
+        public void setContent(List<FlashcardGroup> content) {
+            this.content = content;
+        }
+    }
 
     // Getters và Setters
     public int getStatusCode() {
@@ -30,11 +44,11 @@ public class ApiResponseFlashcardGroup {
         this.message = message;
     }
 
-    public FlashcardGroup getData() {
+    public FlashcardGroupData getData() {
         return data;
     }
 
-    public void setData(FlashcardGroup data) {
+    public void setData(FlashcardGroupData data) {
         this.data = data;
     }
 }
