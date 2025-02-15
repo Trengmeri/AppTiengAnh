@@ -2,11 +2,13 @@ package com.example.test.ui;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -35,15 +37,18 @@ import com.example.test.response.ApiResponseFlashcardGroup;
 import com.example.test.response.FlashcardGroupResponse;
 import java.util.List;
 
+import java.util.ArrayList;
+
 public class GroupFlashcardActivity extends AppCompatActivity {
 
-    // AppCompatButton groupFlcid;
+    AppCompatButton groupFlcid;
     TextView backtoExplore;
     ImageView btnaddgroup;
     LinearLayout groupContainer;
     private FlashcardManager flashcardManager;
+    private final ArrayList<AppCompatButton> groupButtons = new ArrayList<>();
 
-    @SuppressLint("MissingInflatedId")
+    @SuppressLint({"MissingInflatedId", "ClickableViewAccessibility"})
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,7 +60,7 @@ public class GroupFlashcardActivity extends AppCompatActivity {
             return insets;
         });
 
-        // groupFlcid = findViewById(R.id.groupFlcid);
+        groupFlcid = findViewById(R.id.groupFlcid);
         backtoExplore = findViewById(R.id.flBacktoExplore);
         btnaddgroup = findViewById(R.id.btnAddGroup);
         groupContainer = findViewById(R.id.groupContainer);
@@ -63,15 +68,32 @@ public class GroupFlashcardActivity extends AppCompatActivity {
 
         btnaddgroup.setOnClickListener(view -> showAddGroupDialog());
 
-        // groupFlcid.setOnClickListener(new View.OnClickListener() {
-        // @Override
-        // public void onClick(View view) {
-        // Intent intent = new Intent(GroupFlashcardActivity.this,
-        // FLashcardActivity.class);
-        // startActivity(intent);
-        // finish();
-        // }
-        // });
+        groupFlcid.setOnTouchListener((v, event) -> {
+            if (event.getAction() == MotionEvent.ACTION_UP) {
+                Drawable[] drawables = groupFlcid.getCompoundDrawablesRelative();
+                if (drawables[2] != null) { // Kiểm tra drawableEnd có tồn tại không
+                    int drawableWidth = drawables[2].getBounds().width();
+                    int buttonWidth = groupFlcid.getWidth();
+                    int touchX = (int) event.getX();
+
+                    // Kiểm tra xem người dùng có chạm vào drawableEnd không
+                    if (touchX >= (buttonWidth - drawableWidth - groupFlcid.getPaddingEnd())) {
+                        showEditGroupDialog(groupFlcid);
+                        return true;
+                    }
+                }
+            }
+            return false;
+        });
+
+        groupFlcid.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent= new Intent(GroupFlashcardActivity.this, FLashcardActivity.class);
+                startActivity(intent);
+                finish();
+            }
+        });
         backtoExplore.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -84,6 +106,58 @@ public class GroupFlashcardActivity extends AppCompatActivity {
         });
 
         fetchFlashcardGroups();
+    }
+    private void showEditGroupDialog(Button groupButton) {
+        LayoutInflater inflater = LayoutInflater.from(this);
+        View dialogView = inflater.inflate(R.layout.dialog_edit_groupflash, null);
+
+        EditText edtEditGroupName = dialogView.findViewById(R.id.edtEditGroupName);
+        Button btnEdit = dialogView.findViewById(R.id.btnEdit);
+        Button btnDelete = dialogView.findViewById(R.id.btnDelete);
+
+        edtEditGroupName.setText(groupButton.getText().toString().trim());
+
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setView(dialogView)
+                .create();
+
+        // Bật/tắt nút "Edit" nếu có thay đổi trong EditText
+        edtEditGroupName.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (s.toString().trim().isEmpty() || s.toString().equals(groupButton.getText().toString())) {
+                    btnEdit.setEnabled(false);
+                    btnEdit.setAlpha(0.5f);
+                } else {
+                    btnEdit.setEnabled(true);
+                    btnEdit.setAlpha(1.0f);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+        });
+
+        // Sự kiện khi nhấn "Edit" (Cập nhật tên nhóm)
+        btnEdit.setOnClickListener(v -> {
+            String newName = edtEditGroupName.getText().toString().trim();
+            if (!newName.isEmpty()) {
+                groupButton.setText(newName);
+                dialog.dismiss();
+            }
+        });
+
+        // Sự kiện khi nhấn "Delete" (Xóa nhóm)
+        btnDelete.setOnClickListener(v -> {
+            groupContainer.removeView(groupButton);
+            groupButtons.remove(groupButton);
+            dialog.dismiss();
+        });
+
+        dialog.show();
     }
 
     private void showAddGroupDialog() {
@@ -98,14 +172,14 @@ public class GroupFlashcardActivity extends AppCompatActivity {
         Button btnAdd = dialogView.findViewById(R.id.btnAdd);
         Button btnCancel = dialogView.findViewById(R.id.btnCancel);
 
+        // Ban đầu disable nút Add
         btnAdd.setEnabled(false);
         btnAdd.setAlpha(0.5f); // Làm mờ nút Add
 
         // Lắng nghe sự thay đổi của EditText
         edtGroupName.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -119,8 +193,7 @@ public class GroupFlashcardActivity extends AppCompatActivity {
             }
 
             @Override
-            public void afterTextChanged(Editable s) {
-            }
+            public void afterTextChanged(Editable s) {}
         });
 
         // Xử lý sự kiện nút Cancel

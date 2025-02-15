@@ -94,29 +94,44 @@
             android:textColor="#7A7A7A"
             android:textSize="14sp"
             android:layout_marginLeft="30dp"/>
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/emailInputLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
+                    app:errorEnabled="true"
+                    app:boxBackgroundMode="none">
+                <LinearLayout
+                    android:id="@+id/linearLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="12dp"
+                    android:background="@drawable/rounded_corner"
+                    android:orientation="horizontal"
+                    android:padding="12dp">
+                    <EditText
+                        android:id="@+id/edtPass"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="5dp"
+                        android:ems="10"
+                        android:hint="Email"
+                        android:inputType="text"
+                        android:background="@android:color/transparent"
+                        android:drawableStart="@drawable/icon_email"
+                        android:drawablePadding="8dp"/>
 
-    <LinearLayout
-        android:id="@+id/linearLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="12dp"
-        android:background="@drawable/rounded_corner"
-        android:orientation="horizontal"
-        android:padding="12dp">
-        <EditText
-            android:id="@+id/edtPass"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="5dp"
-            android:ems="10"
-            android:hint="Email"
-            android:inputType="text"
-            android:background="@android:color/transparent"
-            android:drawableStart="@drawable/icon_email"
-            android:drawablePadding="8dp"/>
-
-    </LinearLayout>
-    <LinearLayout
+                </LinearLayout>
+                </com.google.android.material.textfield.TextInputLayout>
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/passInputLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
+                    android:hint="Password"
+                    app:errorEnabled="true"
+                    app:boxBackgroundMode="none">
+                <LinearLayout
         android:id="@+id/linearLayout1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -137,7 +152,8 @@
             android:drawablePadding="8dp"/>
 
     </LinearLayout>
-    <!-- Checkbox đồng ý điều khoản -->
+                </com.google.android.material.textfield.TextInputLayout>
+
 
     <!-- Nút Sign Up -->
     <LinearLayout
@@ -170,19 +186,17 @@
         android:id="@+id/btnIn"
         android:layout_width="270dp"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="12dp"
-        android:layout_weight="1"
+        android:layout_marginLeft="@dimen/dp_16"
         android:backgroundTint="#BC6136"
         android:text="Sign In"
+        android:enabled="false"
+        android:alpha="0.5"
         android:textColor="#FFFFFF"
         android:textColorLink="#9E3A00"/>
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="18dp"
-            android:layout_marginRight="25dp"
-            android:layout_marginBottom="5dp"
-            android:layout_weight="1"
+            android:layout_marginLeft="@dimen/dp_16"
             android:background="@drawable/icon_vantay"/>
 
     </LinearLayout>
@@ -199,19 +213,20 @@
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center">
+        android:layout_gravity="center"
+        android:padding="@dimen/dp_16">
         <ImageView
             android:id="@+id/imageView5"
             android:layout_width="wrap_content"
-            android:layout_height="74dp"
-            android:background="@drawable/icon_gg"/>
+            android:layout_height="wrap_content"
+            android:background="@drawable/chrome"/>
 
             <ImageView
             android:id="@+id/imageView6"
             android:layout_width="wrap_content"
-            android:layout_height="74dp"
+            android:layout_height="wrap_content"
             android:layout_marginLeft="25dp"
-            android:background="@drawable/icon_fb" />
+            android:background="@drawable/facebook" />
     </LinearLayout>
     </LinearLayout>
     <LinearLayout

@@ -181,7 +181,9 @@
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="12dp"
                             android:layout_marginRight="18dp"
-                            android:backgroundTint="#EBCBBC"
+                            android:backgroundTint="#BC6136"
+                            android:enabled="false"
+                            android:alpha="0.5"
                             android:text="Sign Up"
                             android:textColor="#FFFFFF"
                             android:textColorLink="#9E3A00"/>
@@ -196,19 +198,20 @@
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center">
+                        android:layout_gravity="center"
+                        android:padding="@dimen/dp_16">
                         <ImageView
                             android:id="@+id/imageView5"
                             android:layout_width="wrap_content"
-                            android:layout_height="74dp"
-                            android:background="@drawable/icon_gg"/>
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/chrome"/>
 
                         <ImageView
                             android:id="@+id/imageView6"
                             android:layout_width="wrap_content"
-                            android:layout_height="74dp"
+                            android:layout_height="wrap_content"
                             android:layout_marginLeft="25dp"
-                            android:background="@drawable/icon_fb" />
+                            android:background="@drawable/facebook" />
                     </LinearLayout>
                 </LinearLayout>
                 <LinearLayout

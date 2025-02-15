@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.method.HideReturnsTransformationMethod;
@@ -42,6 +43,7 @@ public class SignInActivity extends AppCompatActivity {
     NetworkChangeReceiver networkReceiver;
     AuthenticationManager apiManager;
     private boolean isPasswordVisible = false;
+    private long lastClickTime = 0; // Biến để chặn multi-click
     @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +52,26 @@ public class SignInActivity extends AppCompatActivity {
         setContentView(R.layout.activity_sign_in);
         AnhXa();
         setupPasswordField();
+        // Ban đầu vô hiệu hóa nút
+        btnIn.setEnabled(false);
+        btnIn.setAlpha(0.5f);
+
+        // Lắng nghe thay đổi trên EditText
+        TextWatcher textWatcher = new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                checkInputFields();
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+        };
+        edtEmail.addTextChangedListener(textWatcher);
+        edtMKhau.addTextChangedListener(textWatcher);
+
 
         // Tạo đối tượng NetworkChangeReceiver
         networkReceiver = new NetworkChangeReceiver();
@@ -58,13 +80,34 @@ public class SignInActivity extends AppCompatActivity {
         btnIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                // Chặn bấm nhiều lần liên tiếp
+                long currentTime = System.currentTimeMillis();
+                if (currentTime - lastClickTime < 20000) { // Chặn bấm liên tục
+                    return;
+                }
+                lastClickTime = currentTime;
+
                 String email = edtEmail.getText().toString();
                 String pass = edtMKhau.getText().toString();
+                if (!isValidEmail(email)) {
+                    Toast.makeText(SignInActivity.this, "Email không đúng định dạng!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if (!isValidPassword(pass)) {
+                    Toast.makeText(SignInActivity.this, "Mật khẩu không đúng định dạng. Vui lòng thử lại", Toast.LENGTH_LONG).show();
+                    return;
+                }
+
+                // Tạm thời vô hiệu hóa nút để tránh spam
+                btnIn.setEnabled(false);
+                btnIn.setAlpha(0.5f);
+
                 if (!apiManager.isInternetAvailable(SignInActivity.this)) {
                     Toast.makeText(SignInActivity.this, "Không có kết nối Internet!", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                apiManager.sendLoginRequest(email, pass, new ApiCallback() {
+                 else {
+                    apiManager.sendLoginRequest(email, pass, new ApiCallback() {
                     @Override
                     public void onSuccess() {
                         Intent intent = new Intent(SignInActivity.this, ChooseFieldsActivity.class);
@@ -110,19 +153,14 @@ public class SignInActivity extends AppCompatActivity {
                     }
 
                 });
-                // if (email.isEmpty() || pass.isEmpty()) {
-                // Toast.makeText(Sign_In.this, "Vui lòng điền đầy đủ thông tin!",
-                // Toast.LENGTH_LONG).show();
-                // } else if (!isValidEmail(email)) {
-                // Toast.makeText(Sign_In.this, "Email không đúng định dạng!",
-                // Toast.LENGTH_LONG).show();
-                // } else if (!isValidPassword(pass)) {
-                // Toast.makeText(Sign_In.this, "Mật khẩu ít nhất 8 ký tự gồm chữ hoa, chữ
-                // thường, số và ký tự đặc biệt", Toast.LENGTH_LONG).show();
-                // }else {
-                // sendLoginRequest(email, pass);
-                // }
+                }
+                new Handler().postDelayed(() -> {
+                    btnIn.setEnabled(true);
+                    btnIn.setAlpha(1.0f);
+                }, 20000);
             }
+
+
         });
 
         btnForgot.setOnClickListener(new View.OnClickListener() {
@@ -214,6 +252,18 @@ public class SignInActivity extends AppCompatActivity {
     }
 
 
+    private void checkInputFields() {
+        String email = edtEmail.getText().toString().trim();
+        String password = edtMKhau.getText().toString().trim();
+
+        if (!email.isEmpty() && !password.isEmpty()) {
+            btnIn.setEnabled(true);
+            btnIn.setAlpha(1.0f);
+        } else {
+            btnIn.setEnabled(false);
+            btnIn.setAlpha(0.5f);
+        }
+    }
     private void AnhXa() {
         edtEmail = findViewById(R.id.edtPass);
         edtMKhau = findViewById(R.id.edtMKhau);
@@ -221,6 +271,8 @@ public class SignInActivity extends AppCompatActivity {
         btnIn = findViewById(R.id.btnIn);
         btnUp = findViewById(R.id.btnUp);
         btnForgot =(Button) findViewById(R.id.btnForgot);
+
+
     }
 
     private boolean isValidEmail(String email) {
@@ -231,7 +283,8 @@ public class SignInActivity extends AppCompatActivity {
     }
 
     private boolean isValidPassword(String password) {
-        String passwordPattern = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[@#$%^&+=!_&*]).{8,}$";
+//        String passwordPattern = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[@#$%^&+=!_&*]).{8,}$";
+        String passwordPattern = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d).{8,}$";
         Pattern pattern = Pattern.compile(passwordPattern);
         Matcher matcher = pattern.matcher(password);
         return matcher.matches();
