@@ -24,6 +24,7 @@ import com.example.test.api.QuestionManager;
 import com.example.test.api.ResultManager;
 import com.example.test.model.Answer;
 import com.example.test.model.Course;
+import com.example.test.model.Enrollment;
 import com.example.test.model.Lesson;
 import com.example.test.model.MediaFile;
 import com.example.test.model.Question;
@@ -91,6 +92,8 @@ public class GrammarPick1QuestionActivity extends AppCompatActivity {
                 String answerContent = sb.toString();
                 // Lưu câu trả lời của người dùng
                 quesManager.saveUserAnswer(questionIds.get(currentStep), answerContent, new ApiCallback() {
+                    @Override
+                    public void onSuccess(Enrollment enrollment) {}
 
                     @Override
                     public void onSuccess() {
@@ -122,6 +125,9 @@ public class GrammarPick1QuestionActivity extends AppCompatActivity {
                             public void onSuccess(Question questions) {
 
                             }
+
+                            @Override
+                            public void onSuccess(Enrollment enrollment) {}
 
                             @Override
                             public void onSuccess(Lesson lesson) {
@@ -284,6 +290,8 @@ public class GrammarPick1QuestionActivity extends AppCompatActivity {
 
             @Override
             public void onSuccess(Question question) {}
+            @Override
+            public void onSuccess(Enrollment enrollment) {}
         });
     }
 
@@ -336,6 +344,9 @@ public class GrammarPick1QuestionActivity extends AppCompatActivity {
 
             @Override
             public void onSuccess(Answer answer) {}
+
+            @Override
+            public void onSuccess(Enrollment enrollment) {}
 
             @Override
             public void onSuccess(MediaFile mediaFile) {

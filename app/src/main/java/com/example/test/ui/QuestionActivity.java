@@ -11,6 +11,7 @@ import com.example.test.api.ApiCallback;
 import com.example.test.api.QuestionManager;
 import com.example.test.model.Answer;
 import com.example.test.model.Course;
+import com.example.test.model.Enrollment;
 import com.example.test.model.Lesson;
 import com.example.test.model.MediaFile;
 import com.example.test.model.Question;
@@ -41,6 +42,8 @@ public class QuestionActivity extends AppCompatActivity {
                 public void onSuccess() {
 
                 }
+                @Override
+                public void onSuccess(Enrollment enrollment) {}
 
                 @Override
                 public void onSuccess(Question question) {

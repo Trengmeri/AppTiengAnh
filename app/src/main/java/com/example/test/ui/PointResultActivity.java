@@ -2,12 +2,15 @@ package com.example.test.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.test.R;
+import com.example.test.model.Enrollment;
 import com.example.test.ui.home.HomeActivity;
 import com.example.test.api.ApiCallback;
 import com.example.test.api.LessonManager;
@@ -19,6 +22,10 @@ import com.example.test.model.Lesson;
 import com.example.test.model.MediaFile;
 import com.example.test.model.Question;
 import com.example.test.model.Result;
+
+import java.util.HashSet;
+import java.util.Set;
+
 
 public class PointResultActivity extends AppCompatActivity {
     private TextView pointTextView, totalComp;
@@ -34,6 +41,7 @@ public class PointResultActivity extends AppCompatActivity {
     QuestionManager quesManager = new QuestionManager(this);
     LessonManager lesManager = new LessonManager();
     ResultManager resultManager = new ResultManager(this);
+    private Set<Integer> addedResultIds = new HashSet<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,143 +78,95 @@ public class PointResultActivity extends AppCompatActivity {
     }
 
     private void fetchCourseData(int courseId) {
-        lesManager.fetchCourseById(courseId,new ApiCallback() {
+        resultManager.createEnrollment(courseId, new ApiCallback() {
             @Override
-            public void onSuccess() {}
+            public void onSuccess() {
+                lesManager.fetchCourseById(courseId,new ApiCallback() {
+                    @Override
+                    public void onSuccess() {}
 
-            @Override
-            public void onSuccess(Question questions) {
+                    @Override
+                    public void onSuccess(Question questions) {
 
-            }
+                    }
 
-            @Override
-            public void onSuccess(Lesson lesson) {}
+                    @Override
+                    public void onSuccess(Lesson lesson) {}
 
-            @Override
-            public void onSuccess(Course course) {
-                runOnUiThread(() -> {
-                    if (course!= null && course.getLessonIds()!= null) {
-                        for (Integer lessonId: course.getLessonIds()) {
-                            fetchLessonAndCreateResult(lessonId);
-                        }
-                    } else {
-                        Log.e("PointResultActivity","Không có khóa học nào.");
+                    @Override
+                    public void onSuccess(Course course) {
+                        runOnUiThread(() -> {
+                            if (course!= null && course.getLessonIds()!= null) {
+                                int courseId = course.getId();
+                                for (Integer lessonId: course.getLessonIds()) {
+                                    fetchLessonAndCreateResult(lessonId,courseId);
+                                }
+                            } else {
+                                Log.e("PointResultActivity","Không có khóa học nào.");
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onSuccess(Result result) {}
+
+                    @Override
+                    public void onSuccess(Answer answer) {}
+
+                    @Override
+                    public void onSuccess(Enrollment enrollment) {
+
+                    }
+
+                    @Override
+                    public void onSuccess(MediaFile mediaFile) {
+
+                    }
+
+                    @Override
+                    public void onFailure(String errorMessage) {
+                        Log.e("PointResultActivity",errorMessage);
+                    }
+
+                    @Override
+                    public void onSuccessWithOtpID(String otpID) {}
+
+                    @Override
+                    public void onSuccessWithToken(String token) {
+
                     }
                 });
             }
 
             @Override
-            public void onSuccess(Result result) {}
-
-            @Override
-            public void onSuccess(Answer answer) {}
-
-            @Override
-            public void onSuccess(MediaFile mediaFile) {
-
-            }
-
-            @Override
-            public void onFailure(String errorMessage) {
-                Log.e("PointResultActivity",errorMessage);
-            }
-
-            @Override
-            public void onSuccessWithOtpID(String otpID) {}
-
-            @Override
-            public void onSuccessWithToken(String token) {
-
-            }
-        });
-    }
-
-    private void fetchLessonAndCreateResult(int lessonId) {
-        lesManager.fetchLessonById(lessonId, new ApiCallback() {
-            @Override
-            public void onSuccess() {}
-
-            @Override
             public void onSuccess(Question questions) {
 
             }
 
             @Override
             public void onSuccess(Lesson lesson) {
-                if (lesson!= null && lesson.getSkillType()!= null) {
-                    String skillType = lesson.getSkillType();
-                    if (lesson!= null && lesson.getQuestionIds()!= null) {
-                        for (Integer questionId : lesson.getQuestionIds()) {
-                            resultManager.fetchAnswerPointsByQuesId(questionId, new ApiCallback() {
-                                @Override
-                                public void onSuccess() {
-                                }
 
-                                @Override
-                                public void onSuccess(Question questions) {
-
-                                }
-
-                                @Override
-                                public void onSuccess(Lesson lesson) {
-                                }
-
-                                @Override
-                                public void onSuccess(Course course) {
-                                }
-
-                                @Override
-                                public void onSuccess(Result result) {
-                                }
-
-                                @Override
-                                public void onSuccess(Answer answer) {
-                                    if (answer != null) {
-                                        sessionId = answer.getSessionId();
-                                    } else {
-                                        Log.e("PointResultActivity", "Không có câu trả lời nào.");
-                                    }
-                                }
-
-                                @Override
-                                public void onSuccess(MediaFile mediaFile) {
-
-                                }
-
-                                @Override
-                                public void onFailure(String errorMessage) {
-                                    Log.e("PointResultActivity",errorMessage);
-                                }
-
-                                @Override
-                                public void onSuccessWithOtpID(String otpID) {
-                                }
-
-                                @Override
-                                public void onSuccessWithToken(String token) {
-
-                                }
-                            });
-                        }
-                    }
-                    if (sessionId!= -1) { // Kiểm tra sessionId có khác 0 hay không
-                        createResultForLesson(lessonId, sessionId, skillType);
-                    } else {
-                        Log.e("PointResultActivity", "Không thể lấy sessionId.");
-                    }
-                } else {
-                    Log.e("PointResultActivity", "Bài học hoặc skillType không hợp lệ.");
-                }
             }
 
             @Override
-            public void onSuccess(Course course) {}
+            public void onSuccess(Course course) {
+
+            }
 
             @Override
-            public void onSuccess(Result result) {}
+            public void onSuccess(Result result) {
+
+            }
 
             @Override
-            public void onSuccess(Answer answer) {}
+            public void onSuccess(Answer answer) {
+
+            }
+
+            @Override
+            public void onSuccess(Enrollment enrollment) {
+
+            }
 
             @Override
             public void onSuccess(MediaFile mediaFile) {
@@ -215,11 +175,13 @@ public class PointResultActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(String errorMessage) {
-                Log.e("PointResultActivity", errorMessage);
+
             }
 
             @Override
-            public void onSuccessWithOtpID(String otpID) {}
+            public void onSuccessWithOtpID(String otpID) {
+
+            }
 
             @Override
             public void onSuccessWithToken(String token) {
@@ -228,12 +190,183 @@ public class PointResultActivity extends AppCompatActivity {
         });
     }
 
-    private void createResultForLesson(int lessonId, int sessionId, String skillType) {
-        resultManager.createResult(lessonId, sessionId, new ApiCallback() {
+    private void fetchLessonAndCreateResult(int lessonId, int courseId) {
+        resultManager.getEnrollments(courseId, new ApiCallback() {
             @Override
             public void onSuccess() {
-                    Log.d("PointResultActivity", "createResultForLesson: Gọi fetchResultByLesson"); // Log trước khi gọi fetchResultByLesson
 
+            }
+
+            @Override
+            public void onSuccess(Question questions) {
+
+            }
+
+            @Override
+            public void onSuccess(Lesson lesson) {
+
+            }
+
+            @Override
+            public void onSuccess(Course course) {
+
+            }
+
+            @Override
+            public void onSuccess(Result result) {
+
+            }
+
+            @Override
+            public void onSuccess(Answer answer) {
+
+            }
+
+            @Override
+            public void onSuccess(Enrollment enrollment) {
+                if(enrollment != null){
+                    int enrollmentId = enrollment.getId();
+                    Log.e("ErollmentId: ", String.valueOf(enrollment.getId()));
+                    lesManager.fetchLessonById(lessonId, new ApiCallback() {
+                        @Override
+                        public void onSuccess() {}
+
+                        @Override
+                        public void onSuccess(Question questions) {
+
+                        }
+
+                        @Override
+                        public void onSuccess(Lesson lesson) {
+                            if (lesson!= null && lesson.getSkillType()!= null) {
+                                String skillType = lesson.getSkillType();
+                                if (lesson!= null && lesson.getQuestionIds()!= null) {
+                                    for (Integer questionId : lesson.getQuestionIds()) {
+                                        resultManager.fetchAnswerPointsByQuesId(questionId, new ApiCallback() {
+                                            @Override
+                                            public void onSuccess() {
+                                            }
+
+                                            @Override
+                                            public void onSuccess(Question questions) {
+
+                                            }
+
+                                            @Override
+                                            public void onSuccess(Lesson lesson) {
+                                            }
+
+                                            @Override
+                                            public void onSuccess(Course course) {
+                                            }
+
+                                            @Override
+                                            public void onSuccess(Result result) {
+                                            }
+
+                                            @Override
+                                            public void onSuccess(Answer answer) {
+                                                if (answer != null) {
+                                                    createResultForLesson(lessonId, answer.getSessionId(), enrollmentId, skillType);
+                                                } else {
+                                                    Log.e("PointResultActivity", "Không có câu trả lời nào.");
+                                                }
+                                            }
+
+                                            @Override
+                                            public void onSuccess(Enrollment enrollment) {
+
+                                            }
+
+                                            @Override
+                                            public void onSuccess(MediaFile mediaFile) {
+
+                                            }
+
+                                            @Override
+                                            public void onFailure(String errorMessage) {
+                                                Log.e("PointResultActivity",errorMessage);
+                                            }
+
+                                            @Override
+                                            public void onSuccessWithOtpID(String otpID) {
+                                            }
+
+                                            @Override
+                                            public void onSuccessWithToken(String token) {
+
+                                            }
+                                        });
+                                    }
+                                }
+                            } else {
+                                Log.e("PointResultActivity", "Bài học hoặc skillType không hợp lệ.");
+                            }
+                        }
+
+                        @Override
+                        public void onSuccess(Course course) {}
+
+                        @Override
+                        public void onSuccess(Result result) {}
+
+                        @Override
+                        public void onSuccess(Answer answer) {}
+
+                        @Override
+                        public void onSuccess(Enrollment enrollment) {
+
+                        }
+
+                        @Override
+                        public void onSuccess(MediaFile mediaFile) {
+
+                        }
+
+                        @Override
+                        public void onFailure(String errorMessage) {
+                            Log.e("PointResultActivity", errorMessage);
+                        }
+
+                        @Override
+                        public void onSuccessWithOtpID(String otpID) {}
+
+                        @Override
+                        public void onSuccessWithToken(String token) {
+
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onSuccess(MediaFile mediaFile) {
+
+            }
+
+            @Override
+            public void onFailure(String errorMessage) {
+
+            }
+
+            @Override
+            public void onSuccessWithOtpID(String otpID) {
+
+            }
+
+            @Override
+            public void onSuccessWithToken(String token) {
+
+            }
+        });
+
+    }
+
+    private void createResultForLesson(int lessonId, int sessionId, int enrollmentId, String skillType) {
+        resultManager.createResult(lessonId, sessionId, enrollmentId, new ApiCallback() {
+            @Override
+            public void onSuccess() {
+                Log.d("PointResultActivity", "createResultForLesson: Gọi fetchResultByLesson"); // Log trước khi gọi fetchResultByLesson
             }
 
             @Override
@@ -257,6 +390,11 @@ public class PointResultActivity extends AppCompatActivity {
             public void onSuccess(Answer answer) {}
 
             @Override
+            public void onSuccess(Enrollment enrollment) {
+
+            }
+
+            @Override
             public void onSuccess(MediaFile mediaFile) {
 
             }
@@ -272,81 +410,93 @@ public class PointResultActivity extends AppCompatActivity {
             }
             public void onSuccessWithOtpID(String otpID) {}
         });
-        resultManager.fetchResultByLesson(lessonId, new ApiCallback() {
-            @Override
-            public void onSuccess() {}
+        new Handler(Looper.getMainLooper()).postDelayed(() -> { // Delay trước khi gọi fetchResultByLesson
+            resultManager.fetchResultByLesson(lessonId, new ApiCallback() {
+                @Override
+                public void onSuccess() {}
 
-            @Override
-            public void onSuccess(Question questions) {
+                @Override
+                public void onSuccess(Question questions) {
 
-            }
+                }
 
-            @Override
-            public void onSuccess(Lesson lesson) {}
+                @Override
+                public void onSuccess(Lesson lesson) {}
 
-            @Override
-            public void onSuccess(Course course) {}
+                @Override
+                public void onSuccess(Course course) {}
 
-            @Override
-            public void onSuccess(Result result) {
-                if (result!= null) {
-                    Log.d("PointResultActivity", "fetchResultByLesson: Lấy Result thành công");
-                    runOnUiThread(() -> updateUI(skillType, result.getComLevel(), result.getTotalPoints()));
-                } else {
-                    Log.e("PointResultActivity", "fetchResultByLesson: Kết quả không hợp lệ.");
+                @Override
+                public void onSuccess(Result result) {
+                    if (result!= null) {
+                        Log.d("PointResultActivity", "fetchResultByLesson: Lấy Result thành công");
+                        runOnUiThread(() -> updateUI(skillType, result.getComLevel(), result.getTotalPoints(), result.getId()));
+                    } else {
+                        Log.e("PointResultActivity", "fetchResultByLesson: Kết quả không hợp lệ.");
+                    }
+                }
+
+                @Override
+                public void onFailure(String errorMessage) {
+                    Log.e("PointResultActivity", "fetchResultByLesson: " + errorMessage);
+                }
+
+                @Override
+                public void onSuccess(Answer answer) {}
+
+                @Override
+                public void onSuccess(Enrollment enrollment) {
+
+                }
+
+                @Override
+                public void onSuccess(MediaFile mediaFile) {
+
+                }
+
+
+                @Override
+                public void onSuccessWithOtpID(String otpID) {}
+
+                @Override
+                public void onSuccessWithToken(String token) {
+
+                }
+            });
+        }, 500);
+    }
+
+    private void updateUI(String skillType, double complete, int totalPoints, int resultId) {
+        runOnUiThread(() -> {
+            if (!addedResultIds.contains(resultId)) { // Kiểm tra resultId
+                addedResultIds.add(resultId); // Thêm resultId vào tập hợp
+
+                switch (skillType) {
+                    case "READING":
+                        totalPointR += totalPoints;
+                        comR += complete;
+                        r++;
+                        break;
+                    case "LISTENING":
+                        totalPointL += totalPoints;
+                        comL += complete;
+                        l++;
+                        break;
+                    case "SPEAKING":
+                        totalPointS += totalPoints;
+                        comS += complete;
+                        s++;
+                        break;
+                    case "WRITING":
+                        totalPointW += totalPoints;
+                        comW += complete;
+                        w++;
+                        break;
+                    default:
+                        Log.e("PointResultActivity", "Skill type không hợp lệ: " + skillType);
                 }
             }
 
-            @Override
-            public void onFailure(String errorMessage) {
-                Log.e("PointResultActivity", "fetchResultByLesson: " + errorMessage);
-            }
-
-            @Override
-            public void onSuccess(Answer answer) {}
-
-            @Override
-            public void onSuccess(MediaFile mediaFile) {
-
-            }
-
-
-            @Override
-            public void onSuccessWithOtpID(String otpID) {}
-
-            @Override
-            public void onSuccessWithToken(String token) {
-
-            }
-        });
-    }
-
-    private void updateUI(String skillType, double complete, int totalPoints) {
-        runOnUiThread(() -> {
-            switch (skillType) {
-                case "READING":
-                    totalPointR += totalPoints;
-                    comR += complete;
-                    r++;
-                    break;
-                case "LISTENING":
-                    totalPointL += totalPoints;
-                    comL += complete;
-                    l++;
-                    break;
-                case "SPEAKING":
-                    totalPointS += totalPoints;
-                    comS += complete;
-                    s++;
-                    break;
-                case "WRITING":
-                    totalPointW += totalPoints;
-                    comW += complete;
-                    w++;
-                    break;
-                default:
-                    Log.e("PointResultActivity", "Skill type không hợp lệ: " + skillType);
-            }
             correctRead.setText("Point: " + totalPointR);
             compRead.setText("Complete: " + String.format("%.1f",comR/r));
             correctLis.setText("Point: " + totalPointL);

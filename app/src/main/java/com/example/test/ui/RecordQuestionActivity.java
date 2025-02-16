@@ -26,6 +26,7 @@ import com.example.test.api.QuestionManager;
 import com.example.test.api.ResultManager;
 import com.example.test.model.Answer;
 import com.example.test.model.Course;
+import com.example.test.model.Enrollment;
 import com.example.test.model.Lesson;
 import com.example.test.model.MediaFile;
 import com.example.test.model.Question;
@@ -129,6 +130,8 @@ public class RecordQuestionActivity extends AppCompatActivity implements SpeechR
                             @Override
                             public void onSuccess() {
                             }
+                            @Override
+                            public void onSuccess(Enrollment enrollment) {}
 
                             @Override
                             public void onSuccess(Question questions) {
@@ -180,6 +183,7 @@ public class RecordQuestionActivity extends AppCompatActivity implements SpeechR
 
                             }
 
+
                             @Override
                             public void onFailure(String errorMessage) {
 
@@ -202,6 +206,8 @@ public class RecordQuestionActivity extends AppCompatActivity implements SpeechR
 
                     @Override
                     public void onSuccess(Lesson lesson) {}
+                    @Override
+                    public void onSuccess(Enrollment enrollment) {}
 
                     @Override
                     public void onSuccess(Course course) {}
@@ -257,6 +263,8 @@ public class RecordQuestionActivity extends AppCompatActivity implements SpeechR
 
             @Override
             public void onSuccess(Course course) {}
+            @Override
+            public void onSuccess(Enrollment enrollment) {}
 
             @Override
             public void onSuccess(Result result) {}
@@ -322,6 +330,8 @@ public class RecordQuestionActivity extends AppCompatActivity implements SpeechR
 
             @Override
             public void onSuccess(Lesson lesson) {}
+            @Override
+            public void onSuccess(Enrollment enrollment) {}
 
             @Override
             public void onSuccess(Result result) {}
