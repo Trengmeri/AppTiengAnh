@@ -15,6 +15,9 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import android.widget.Toast;
 import android.util.Log;
+import android.media.MediaPlayer;
+import android.media.AudioAttributes;
+import java.io.IOException;
 
 import com.example.test.R;
 import com.example.test.response.ApiResponseFlashcard;
@@ -37,6 +40,8 @@ public class FlashcardInformationActivity extends AppCompatActivity {
     private TextView tvPronunciation;
     private AppCompatButton btnDefinition;
     private AppCompatButton btnExample;
+    private ImageView btnSound;
+    private MediaPlayer mediaPlayer;
 
     @SuppressLint({ "ResourceType", "MissingInflatedId" })
     @Override
@@ -63,6 +68,8 @@ public class FlashcardInformationActivity extends AppCompatActivity {
             Log.e("FlashcardInfo", "Invalid flashcard ID");
             Toast.makeText(this, "Không tìm thấy flashcard", Toast.LENGTH_SHORT).show();
         }
+
+        mediaPlayer = new MediaPlayer();
     }
 
     private void initializeViews() {
@@ -76,6 +83,7 @@ public class FlashcardInformationActivity extends AppCompatActivity {
         tvExamples = findViewById(R.id.tvExamples);
         tvWord = findViewById(R.id.tvWord);
         tvPronunciation = findViewById(R.id.tvPronunciation);
+        btnSound = findViewById(R.id.btnAudio);
     }
 
     private void setupAnimations() {
@@ -153,6 +161,23 @@ public class FlashcardInformationActivity extends AppCompatActivity {
                 flipCard(examples);
             });
 
+            // Xử lý nút phát âm thanh
+            String audioUrlRaw = flashcard.getPhoneticAudio();
+            if (audioUrlRaw != null && !audioUrlRaw.isEmpty()) {
+                // Loại bỏ dấu chấm phẩy và khoảng trắng ở cuối URL
+                final String audioUrl = audioUrlRaw.trim().replaceAll(";\\s*$", "");
+                Log.d("FlashcardInfo", "Cleaned Audio URL: " + audioUrl);
+
+                btnSound.setEnabled(true);
+                btnSound.setOnClickListener(v -> {
+                    Toast.makeText(this, "Đang tải âm thanh...", Toast.LENGTH_SHORT).show();
+                    playAudio(audioUrl);
+                });
+            } else {
+                Log.w("FlashcardInfo", "No audio URL available");
+                btnSound.setEnabled(false);
+            }
+
             Log.d("FlashcardInfo", "UI update completed");
         } else {
             Log.e("FlashcardInfo", "Cannot update UI - flashcard is null");
@@ -212,5 +237,67 @@ public class FlashcardInformationActivity extends AppCompatActivity {
             });
         }
         isFrontVisible = !isFrontVisible;
+    }
+
+    private void playAudio(String audioUrl) {
+        try {
+            // Reset MediaPlayer nếu đang phát
+            mediaPlayer.reset();
+
+            // Hiển thị loading indicator
+            btnSound.setEnabled(false);
+
+            Log.d("FlashcardInfo", "Starting to play audio from URL: " + audioUrl);
+
+            mediaPlayer.setDataSource(audioUrl);
+            mediaPlayer.setAudioAttributes(new AudioAttributes.Builder()
+                    .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                    .setUsage(AudioAttributes.USAGE_MEDIA)
+                    .build());
+
+            mediaPlayer.prepareAsync();
+
+            mediaPlayer.setOnPreparedListener(mp -> {
+                Log.d("FlashcardInfo", "MediaPlayer prepared, starting playback");
+                btnSound.setEnabled(true);
+                mp.start();
+                Toast.makeText(this, "Đang phát âm thanh", Toast.LENGTH_SHORT).show();
+            });
+
+            mediaPlayer.setOnCompletionListener(mp -> {
+                Log.d("FlashcardInfo", "Playback completed");
+                btnSound.setEnabled(true);
+            });
+
+            mediaPlayer.setOnErrorListener((mp, what, extra) -> {
+                btnSound.setEnabled(true);
+                String errorMessage = "Lỗi: " + what + ", " + extra;
+                Toast.makeText(this, "Không thể phát âm thanh: " + errorMessage, Toast.LENGTH_SHORT).show();
+                Log.e("FlashcardInfo", "MediaPlayer error: " + errorMessage);
+                return true;
+            });
+
+        } catch (IOException e) {
+            Log.e("FlashcardInfo", "Error playing audio", e);
+            Toast.makeText(this, "Lỗi khi phát âm thanh: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            btnSound.setEnabled(true);
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+            mediaPlayer.pause();
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (mediaPlayer != null) {
+            mediaPlayer.release();
+            mediaPlayer = null;
+        }
     }
 }
