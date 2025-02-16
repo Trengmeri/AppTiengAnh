@@ -14,6 +14,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import android.widget.Toast;
+import android.util.Log;
 
 import com.example.test.R;
 import com.example.test.response.ApiResponseFlashcard;
@@ -34,6 +35,8 @@ public class FlashcardInformationActivity extends AppCompatActivity {
     private TextView tvExamples;
     private TextView tvWord;
     private TextView tvPronunciation;
+    private AppCompatButton btnDefinition;
+    private AppCompatButton btnExample;
 
     @SuppressLint({ "ResourceType", "MissingInflatedId" })
     @Override
@@ -47,93 +50,117 @@ public class FlashcardInformationActivity extends AppCompatActivity {
             return insets;
         });
 
+        initializeViews();
+        setupAnimations();
+        setupClickListeners();
+
+        // Lấy ID flashcard từ Intent
+        int flashcardId = getIntent().getIntExtra("FLASHCARD_ID", -1);
+        if (flashcardId != -1) {
+            Log.d("FlashcardInfo", "Starting to fetch flashcard with ID: " + flashcardId);
+            fetchFlashcardData(flashcardId);
+        } else {
+            Log.e("FlashcardInfo", "Invalid flashcard ID");
+            Toast.makeText(this, "Không tìm thấy flashcard", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void initializeViews() {
         frontSide = findViewById(R.id.frontSide);
         backSide = findViewById(R.id.backSide);
         tvBackContent = findViewById(R.id.tvBackContent);
-        AppCompatButton btnDefinition = findViewById(R.id.btnDefinition);
-        AppCompatButton btnExample = findViewById(R.id.btnExample);
+        btnDefinition = findViewById(R.id.btnDefinition);
+        btnExample = findViewById(R.id.btnExample);
         btnX = findViewById(R.id.btnX);
         tvAddedDate = findViewById(R.id.tvAddedDate);
         tvExamples = findViewById(R.id.tvExamples);
         tvWord = findViewById(R.id.tvWord);
         tvPronunciation = findViewById(R.id.tvPronunciation);
+    }
 
-        flipIn = (AnimatorSet) AnimatorInflater.loadAnimator(this, R.anim.flip_in);
-        flipOut = (AnimatorSet) AnimatorInflater.loadAnimator(this, R.anim.flip_out);
+    private void setupAnimations() {
+        flipIn = (AnimatorSet) AnimatorInflater.loadAnimator(this, R.animator.flip_in);
+        flipOut = (AnimatorSet) AnimatorInflater.loadAnimator(this, R.animator.flip_out);
+    }
 
-        btnDefinition.setOnClickListener(v -> flipCard(
-                "Definition: A message or document, or a set of messages or documents, sent using this system"));
-        btnExample.setOnClickListener(v -> flipCard("Example: I sent an email to my boss"));
-
-        btnX.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish(); // Đóng Activity hiện tại
-                overridePendingTransition(R.anim.stay, R.anim.slide_down); // Áp dụng hiệu ứng
-            }
+    private void setupClickListeners() {
+        btnX.setOnClickListener(view -> {
+            finish();
+            overridePendingTransition(R.anim.stay, R.anim.slide_down);
         });
-
-        // Lấy ID flashcard từ Intent
-        int flashcardId = getIntent().getIntExtra("FLASHCARD_ID", -1);
-        if (flashcardId != -1) {
-            // Gọi phương thức để lấy dữ liệu flashcard dựa trên ID
-            fetchFlashcardData(flashcardId);
-        } else {
-            // Xử lý trường hợp không có ID hợp lệ
-            Toast.makeText(this, "Không tìm thấy flashcard", Toast.LENGTH_SHORT).show();
-        }
     }
 
     private void fetchFlashcardData(int flashcardId) {
+        Log.d("FlashcardInfo", "Fetching flashcard with ID: " + flashcardId);
+
         FlashcardManager flashcardManager = new FlashcardManager();
         flashcardManager.fetchFlashcardById(flashcardId, new FlashcardApiCallback() {
             @Override
-            public void onSuccess(ApiResponseFlashcardGroup response) {
-
-            }
-
-            @Override
-            public void onSuccess(FlashcardGroupResponse response) {
-
-            }
-
-            @Override
-            public void onSuccess(ApiResponseFlashcard response) {
-
-            }
-
-            @Override
             public void onSuccess(ApiResponseOneFlashcard response) {
-                runOnUiThread(() -> {
-                    // Lấy dữ liệu flashcard từ response
-                    Flashcard flashcard = response.getData(); // Bây giờ getData() trả về Flashcard
-
-                    // Cập nhật UI với dữ liệu flashcard
-                    tvWord.setText(flashcard.getWord());
-                    tvPronunciation.setText(flashcard.getPhoneticText());
-                    tvBackContent.setText(flashcard.getDefinitions());
-                    tvAddedDate.setText("Added date: " + flashcard.getAddedDate());
-
-                    // Hiển thị ví dụ nếu có
-                    if (flashcard.getExamples() != null && !flashcard.getExamples().isEmpty()) {
-                        tvExamples.setText(flashcard.getExamples());
-                    } else {
-                        tvExamples.setText("No examples available.");
-                    }
-                });
+                Log.d("FlashcardInfo", "API call successful");
+                if (response != null && response.getData() != null) {
+                    Flashcard flashcard = response.getData();
+                    Log.d("FlashcardInfo", "Received flashcard: " + flashcard.toString());
+                    runOnUiThread(() -> updateUI(flashcard));
+                } else {
+                    Log.e("FlashcardInfo", "Response or data is null");
+                }
             }
 
             @Override
             public void onFailure(String errorMessage) {
+                Log.e("FlashcardInfo", "API call failed: " + errorMessage);
                 runOnUiThread(() -> {
-                    Toast.makeText(FlashcardInformationActivity.this, "Error fetching flashcard: " + errorMessage,
+                    Toast.makeText(FlashcardInformationActivity.this,
+                            "Lỗi khi lấy dữ liệu: " + errorMessage,
                             Toast.LENGTH_LONG).show();
                 });
+            }
+
+            // Implement remaining callback methods
+            @Override
+            public void onSuccess(ApiResponseFlashcardGroup response) {
+            }
+
+            @Override
+            public void onSuccess(FlashcardGroupResponse response) {
+            }
+
+            @Override
+            public void onSuccess(ApiResponseFlashcard response) {
             }
         });
     }
 
+    private void updateUI(Flashcard flashcard) {
+        if (flashcard != null) {
+            Log.d("FlashcardInfo", "Updating UI with flashcard data");
+            tvWord.setText(flashcard.getWord());
+            tvPronunciation.setText(flashcard.getPhoneticText());
+            tvAddedDate.setText("Added date: " + flashcard.getAddedDate());
+
+            // Thiết lập sự kiện click cho các nút với dữ liệu từ flashcard
+            final String definitions = flashcard.getDefinitions();
+            final String examples = flashcard.getExamples();
+
+            btnDefinition.setOnClickListener(v -> {
+                Log.d("FlashcardInfo", "Definition button clicked. Content: " + definitions);
+                flipCard(definitions);
+            });
+
+            btnExample.setOnClickListener(v -> {
+                Log.d("FlashcardInfo", "Example button clicked. Content: " + examples);
+                flipCard(examples);
+            });
+
+            Log.d("FlashcardInfo", "UI update completed");
+        } else {
+            Log.e("FlashcardInfo", "Cannot update UI - flashcard is null");
+        }
+    }
+
     private void flipCard(String content) {
+        Log.d("FlashcardInfo", "Flipping card with content: " + content);
         if (isFrontVisible) {
             flipOut.setTarget(frontSide);
             flipIn.setTarget(backSide);
