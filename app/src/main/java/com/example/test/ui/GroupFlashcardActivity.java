@@ -14,6 +14,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.util.Log;
 import android.widget.Toast;
@@ -334,10 +335,10 @@ public class GroupFlashcardActivity extends AppCompatActivity {
     private void addGroupButton(String groupName, int groupId) {
         LinearLayout layoutFlashcards = findViewById(R.id.groupContainer);
 
-        // Tạo một LinearLayout mới cho mỗi nhóm
+        // Tạo một LinearLayout cho mỗi nhóm
         LinearLayout groupLayout = new LinearLayout(this);
-        groupLayout.setOrientation(LinearLayout.VERTICAL);
-        groupLayout.setGravity(Gravity.CENTER);
+        groupLayout.setOrientation(LinearLayout.HORIZONTAL); // Đặt orientation là horizontal
+        groupLayout.setGravity(Gravity.CENTER_VERTICAL); // Căn giữa theo chiều dọc
         groupLayout.setLayoutParams(new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT));
@@ -348,46 +349,37 @@ public class GroupFlashcardActivity extends AppCompatActivity {
         newGroup.setTextSize(22);
         newGroup.setBackground(ContextCompat.getDrawable(this, R.drawable.btn_flash));
         newGroup.setLayoutParams(new LinearLayout.LayoutParams(
+                0, // Chiều rộng sẽ được điều chỉnh
                 LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT));
+                1)); // Tỉ lệ trọng số
         newGroup.setPaddingRelative(16, 16, 16, 16);
         newGroup.setPadding(16, 16, 16, 16);
-        newGroup.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.icon_edit, 0);
+
+        // Tạo ImageView cho biểu tượng chỉnh sửa
+        ImageView editIcon = new ImageView(this);
+        editIcon.setImageResource(R.drawable.icon_edit); // Thay đổi drawable theo nhu cầu
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(48, 48); // Kích thước biểu tượng
+        params.setMargins(16, 0, 0, 0); // Thêm khoảng cách bên trái
+        editIcon.setLayoutParams(params);
 
         // Lưu ID nhóm vào tag của nút
         newGroup.setTag(groupId);
 
         // Sự kiện khi nhấn vào nút nhóm
         newGroup.setOnClickListener(v -> {
-            // Chuyển đến FlashcardActivity và fetch flashcards trong nhóm
             Intent intent = new Intent(GroupFlashcardActivity.this, FlashcardActivity.class);
-            intent.putExtra("GROUP_ID", groupId); // Gửi ID nhóm đến FlashcardActivity
+            intent.putExtra("GROUP_ID", groupId);
             startActivity(intent);
         });
 
         // Sự kiện khi nhấn vào biểu tượng chỉnh sửa
-        newGroup.setOnTouchListener((v, event) -> onEditIconTouch(v, event, newGroup));
+        editIcon.setOnClickListener(v -> {
+            showEditGroupDialog(newGroup, groupId); // Mở cửa sổ chỉnh sửa
+        });
 
-        // Thêm nút nhóm vào groupLayout
+        // Thêm nút nhóm và biểu tượng chỉnh sửa vào layout
         groupLayout.addView(newGroup);
+        groupLayout.addView(editIcon);
         layoutFlashcards.addView(groupLayout);
-    }
-
-    private boolean onEditIconTouch(View v, MotionEvent event, AppCompatButton newGroup) {
-        if (event.getAction() == MotionEvent.ACTION_UP) {
-            Drawable[] drawables = newGroup.getCompoundDrawablesRelative();
-            if (drawables[2] != null) { // Kiểm tra drawableEnd có tồn tại không
-                int drawableWidth = drawables[2].getBounds().width();
-                int buttonWidth = newGroup.getWidth();
-                int touchX = (int) event.getX();
-
-                // Kiểm tra xem người dùng có chạm vào drawableEnd không
-                if (touchX >= (buttonWidth - drawableWidth - newGroup.getPaddingEnd())) {
-                    showEditGroupDialog(newGroup, (int) newGroup.getTag()); // Mở cửa sổ chỉnh sửa
-                    return true; // Trả về true để chỉ ra rằng sự kiện đã được xử lý
-                }
-            }
-        }
-        return false; // Trả về false nếu không chạm vào drawableEnd
     }
 }
