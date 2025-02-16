@@ -79,9 +79,10 @@ public class FlashcardActivity extends AppCompatActivity {
             public void onSuccess(ApiResponseFlashcard response) {
                 List<Flashcard> flashcards = response.getData().getContent();
                 if (flashcards != null && !flashcards.isEmpty()) {
-                    updateRecyclerView(flashcards);
+                    runOnUiThread(() -> {
+                        updateRecyclerView(flashcards);
+                    });
                 } else {
-                    // Xử lý trường hợp không có flashcard nào
                     Log.w("FlashcardActivity", "No flashcards found for group ID: " + groupId);
                 }
             }
@@ -103,9 +104,14 @@ public class FlashcardActivity extends AppCompatActivity {
     }
 
     private void updateRecyclerView(List<Flashcard> flashcards) {
-        FlashcardAdapter adapter = new FlashcardAdapter(this, flashcards);
-        recyclerViewFlashcards.setLayoutManager(new LinearLayoutManager(this));
-        recyclerViewFlashcards.setAdapter(adapter);
+        if (recyclerViewFlashcards != null) {
+            FlashcardAdapter adapter = new FlashcardAdapter(this, flashcards);
+            recyclerViewFlashcards.setLayoutManager(new LinearLayoutManager(this));
+            recyclerViewFlashcards.setAdapter(adapter);
+            adapter.notifyDataSetChanged();
+        } else {
+            Log.e("FlashcardActivity", "RecyclerView is null");
+        }
     }
 
     private void showAddFlashDialog() {
