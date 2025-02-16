@@ -94,18 +94,14 @@
             android:textColor="#7A7A7A"
             android:textSize="14sp"
             android:layout_marginLeft="30dp"/>
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/emailInputLayout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="8dp"
-                    app:errorEnabled="true"
-                    app:boxBackgroundMode="none">
+
                 <LinearLayout
                     android:id="@+id/linearLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="12dp"
+                   android:layout_marginLeft="12dp"
+                    android:layout_marginRight="12dp"
+                    android:layout_marginTop="@dimen/dp_16"
                     android:background="@drawable/rounded_corner"
                     android:orientation="horizontal"
                     android:padding="12dp">
@@ -122,37 +118,49 @@
                         android:drawablePadding="8dp"/>
 
                 </LinearLayout>
-                </com.google.android.material.textfield.TextInputLayout>
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/passInputLayout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="8dp"
-                    android:hint="Password"
-                    app:errorEnabled="true"
-                    app:boxBackgroundMode="none">
-                <LinearLayout
-        android:id="@+id/linearLayout1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="12dp"
-        android:background="@drawable/rounded_corner"
-        android:orientation="horizontal"
-        android:padding="12dp">
-        <EditText
-            android:id="@+id/edtMKhau"
+               <TextView
+                   android:id="@+id/tvEmailError"
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:textColor="@android:color/holo_red_dark"
+                   android:textSize="12sp"
+                   android:padding="3dp"
+                   android:layout_marginStart="@dimen/dp_16"
+                   android:visibility="gone"
+                   />
+            <LinearLayout
+            android:id="@+id/linearLayout1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="5dp"
-            android:hint="Password"
-            android:inputType="text"
-            android:background="@android:color/transparent"
-            android:drawableStart="@drawable/icon_pass"
-            android:drawableEnd="@drawable/icon_visibility_off"
-            android:drawablePadding="8dp"/>
+            android:layout_marginLeft="12dp"
+            android:layout_marginRight="12dp"
+            android:layout_marginTop="@dimen/dp_16"
+            android:background="@drawable/rounded_corner"
+            android:orientation="horizontal"
+            android:padding="12dp">
+            <EditText
+                android:id="@+id/edtMKhau"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="5dp"
+                android:hint="Password"
+                android:inputType="text"
+                android:background="@android:color/transparent"
+                android:drawableStart="@drawable/icon_pass"
+                android:drawableEnd="@drawable/icon_visibility_off"
+                android:drawablePadding="8dp"/>
 
-    </LinearLayout>
-                </com.google.android.material.textfield.TextInputLayout>
+        </LinearLayout>
+                <TextView
+                    android:id="@+id/tvPassError"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@android:color/holo_red_dark"
+                    android:textSize="12sp"
+                    android:padding="3dp"
+                    android:layout_marginStart="@dimen/dp_16"
+                   android:visibility="gone"
+                    />
 
 
     <!-- Nút Sign Up -->

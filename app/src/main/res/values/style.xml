@@ -28,5 +28,10 @@
         <item name="android:layout_marginEnd">@dimen/dp_16</item>
         <item name="android:layout_marginTop">@dimen/margin_all</item>
     </style>
+    <style name="DialogAnimation">
+        <item name="android:windowEnterAnimation">@anim/slide_down_top</item>
+        <item name="android:windowExitAnimation">@anim/slide_up_top</item>
+    </style>
+
 
 </resources>

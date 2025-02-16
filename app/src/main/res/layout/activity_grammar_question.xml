@@ -68,7 +68,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="40dp"
+        android:layout_marginStart="@dimen/dp_16"
         android:drawableStart="@drawable/jam_write"
+        android:drawablePadding="10dp"
         android:text="@string/fill_blank"
         android:textSize="22sp"
         android:textStyle="bold" />
@@ -78,6 +80,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="60dp"
+        android:layout_marginStart="@dimen/dp_16"
         android:padding="10dp"
         android:text=""
         android:textSize="18sp"

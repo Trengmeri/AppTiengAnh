@@ -1,6 +1,7 @@
 package com.example.test.ui;
 
 import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -10,9 +11,15 @@ import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -36,12 +43,14 @@ import java.util.regex.Pattern;
 public class SignUpActivity extends AppCompatActivity {
 
     EditText edtName, edtEmail, edtMKhau1;
+    TextView txtEmailerror, txtPasserror;
     CheckBox cbCheck;
     Button btnUp, btnIn;
     NetworkChangeReceiver networkReceiver;
     AuthenticationManager apiManager;
-    private long lastClickTime = 0;
+    boolean isvalid =true;
     //private boolean isPasswordVisible = false;
+    private Dialog loadingDialog;
     @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +60,11 @@ public class SignUpActivity extends AppCompatActivity {
 
         AnhXa();
         //setupPasswordField();
+        // Khởi tạo Dialog loading
+        loadingDialog = new Dialog(this);
+        loadingDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        loadingDialog.setContentView(R.layout.dialog_loading);
+        loadingDialog.setCancelable(false); // Không cho phép đóng khi chạm ngoài màn hình
 
         TextWatcher textWatcher = new TextWatcher() {
             @Override
@@ -77,92 +91,84 @@ public class SignUpActivity extends AppCompatActivity {
         apiManager = new AuthenticationManager(this);
 
         btnUp.setOnClickListener(view -> {
-            // Chặn multi-click
-            long currentTime = System.currentTimeMillis();
-            if (currentTime - lastClickTime < 5000) { // Chặn bấm liên tục trong 2 giây
-                return;
-            }
-            lastClickTime = currentTime;
+            showError();
+            btnUp.setEnabled(false);
+            btnUp.setAlpha(0.5f);
 
-            if (!apiManager.isInternetAvailable(SignUpActivity.this)) {
-                Toast.makeText(SignUpActivity.this, "Vui lòng kiểm tra kết nối Internet của bạn.", Toast.LENGTH_LONG).show();
-            } else {
-                // Thực hiện yêu cầu nếu có Internet
-                String hoten = edtName.getText().toString();
-                String email = edtEmail.getText().toString();
-                String pass = edtMKhau1.getText().toString();
-                if (!isValidEmail(email)) {
-                    Toast.makeText(SignUpActivity.this, "Email không đúng định dạng!", Toast.LENGTH_SHORT).show();
-                    return;
+            String hoten = edtName.getText().toString();
+            String email = edtEmail.getText().toString();
+            String pass = edtMKhau1.getText().toString();
+            if(isvalid) {
+                showLoading();
+                if (!apiManager.isInternetAvailable(SignUpActivity.this)) {
+                    Toast.makeText(SignUpActivity.this, "Vui lòng kiểm tra kết nối Internet của bạn.", Toast.LENGTH_LONG).show();
+                } else {
+                    apiManager.sendSignUpRequest(this, hoten, email, pass, new ApiCallback() {
+                        @Override
+                        public void onSuccess() {
+                        }
+
+                        @Override
+                        public void onSuccess(Question question) {
+                        }
+
+                        @Override
+                        public void onSuccess(Result result) {
+                        }
+
+                        @Override
+                        public void onSuccess(Answer answer) {
+                        }
+
+                        @Override
+                        public void onSuccess(MediaFile mediaFile) {
+
+                        }
+
+                        @Override
+                        public void onSuccess(Lesson lesson) {
+                        }
+
+                        @Override
+                        public void onSuccess(Course course) {
+                        }
+
+                        @Override
+                        public void onFailure(String errorMessage) {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    hideLoading();
+                                    showCustomDialog("Sign up failed. Email was used.");
+                                    //Toast.makeText(SignUpActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
+                                    btnUp.setEnabled(true); // Bật lại nút nếu thất bại
+                                    btnUp.setAlpha(1.0f);
+                                }
+                            });
+                        }
+
+                        @Override
+                        public void onSuccessWithOtpID(String otpID) {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    hideLoading();
+                                    //Toast.makeText(SignUpActivity.this, "Đăng ký thành công! Vui lòng kiểm tra email của bạn.", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                            saveOtpId(otpID); // Lưu otpID vào SharedPreferences
+                            Log.d("ConfirmCode", "otpID được lưu: " + otpID);
+
+                            Intent intent = new Intent(SignUpActivity.this, ConfirmCode2Activity.class);
+                            intent.putExtra("source", "register");
+                            startActivity(intent);
+                        }
+
+                        @Override
+                        public void onSuccessWithToken(String token) {
+                        }
+                    });
                 }
-                if (!isValidPassword(pass)) {
-                    Toast.makeText(SignUpActivity.this, "Mật khẩu không đúng định dạng. Vui lòng thử lại", Toast.LENGTH_LONG).show();
-                    return;
-                }
-                // Tạm thời vô hiệu hóa nút để tránh spam
-                btnUp.setEnabled(false);
-                btnUp.setAlpha(0.5f);
-
-                apiManager.sendSignUpRequest(this,hoten, email, pass, new ApiCallback() {
-                    @Override
-                    public void onSuccess() {
-                    }
-
-                    @Override
-                    public void onSuccess(Question question) {}
-
-                    @Override
-                    public void onSuccess(Result result) {}
-
-                    @Override
-                    public void onSuccess(Answer answer) {}
-
-                    @Override
-                    public void onSuccess(MediaFile mediaFile) {
-
-                    }
-
-                    @Override
-                    public void onSuccess(Lesson lesson) {}
-                    @Override
-                    public void onSuccess(Course course) {}
-
-                    @Override
-                    public void onFailure(String errorMessage) {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Toast.makeText(SignUpActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                    }
-
-                    @Override
-                    public void onSuccessWithOtpID(String otpID) {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Toast.makeText(SignUpActivity.this, "Đăng ký thành công! Vui lòng kiểm tra email của bạn.", Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                        saveOtpId(otpID); // Lưu otpID vào SharedPreferences
-                        Log.d("ConfirmCode", "otpID được lưu: " + otpID);
-
-                        Intent intent = new Intent(SignUpActivity.this, ConfirmCode2Activity.class);
-                        intent.putExtra("source", "register");
-                        startActivity(intent);
-
-                    }
-
-                    @Override
-                    public void onSuccessWithToken(String token) {
-
-                    }
-                });
-                new Handler().postDelayed(() -> {
-                    btnUp.setEnabled(true);
-                    btnUp.setAlpha(1.0f);
-                }, 5000);
             }
         });
 
@@ -170,6 +176,24 @@ public class SignUpActivity extends AppCompatActivity {
         btnIn.setOnClickListener(view -> {
             Intent intent = new Intent(SignUpActivity.this, SignInActivity.class);
             startActivity(intent);
+        });
+
+        // Ẩn lỗi khi người dùng nhấn vào EditText để sửa
+        edtEmail.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+                    txtEmailerror.setVisibility(View.GONE);
+                }
+            }
+        });
+        edtMKhau1.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+                    txtPasserror.setVisibility(View.GONE);
+                }
+            }
         });
     }
     private void saveOtpId(String otpID) {
@@ -250,6 +274,65 @@ public class SignUpActivity extends AppCompatActivity {
         unregisterReceiver(networkReceiver);
     }
 
+    private void showCustomDialog(String message) {
+        Dialog dialog = new Dialog(this);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.custom_dialog_alert);
+        dialog.setCancelable(false);
+
+        // Ánh xạ View
+        TextView tvMessage = dialog.findViewById(R.id.tvMessage);
+        ImageView imgIcon = dialog.findViewById(R.id.imgIcon);
+
+        tvMessage.setText(message);
+        //imgIcon.setImageResource(iconResId);
+
+        // Thiết lập vị trí hiển thị trên cùng màn hình
+        Window window = dialog.getWindow();
+        if (window != null) {
+            window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
+            window.setGravity(Gravity.TOP);
+            window.setWindowAnimations(R.style.DialogAnimation); // Gán animation
+        }
+
+        dialog.show();
+
+        // Ẩn Dialog sau 2 giây
+        new Handler().postDelayed(() -> {
+            dialog.dismiss();
+        }, 2000);
+    }
+    private void showLoading() {
+        if (!loadingDialog.isShowing()) {
+            loadingDialog.show();
+        }
+    }
+
+    private void hideLoading() {
+        if (loadingDialog.isShowing()) {
+            loadingDialog.dismiss();
+        }
+    }
+    private void showError() {
+        isvalid= true;
+        String email = edtEmail.getText().toString().trim();
+        String pass = edtMKhau1.getText().toString().trim();
+
+        txtEmailerror.setVisibility(View.GONE); // Ẩn lỗi ban đầu
+        txtPasserror.setVisibility(View.GONE);
+        // Kiểm tra Email
+        if (!isValidEmail(email)) {
+            txtEmailerror.setText("Email format is incorrect!");
+            txtEmailerror.setVisibility(View.VISIBLE);
+            isvalid = false;
+        }
+        // Kiểm tra Password
+        if (!isValidPassword(pass)) {
+            txtPasserror.setText("Password format is incorrect!");
+            txtPasserror.setVisibility(View.VISIBLE);
+            isvalid = false;
+        }
+    }
     private void checkInputFields() {
         String name = edtName.getText().toString().trim();
         String email = edtEmail.getText().toString().trim();
@@ -271,6 +354,8 @@ public class SignUpActivity extends AppCompatActivity {
         cbCheck = findViewById(R.id.cbCheck);
         btnUp = findViewById(R.id.btnUp);
         btnIn = findViewById(R.id.btnIn);
+        txtEmailerror= findViewById(R.id.txtEmailError);
+        txtPasserror= findViewById(R.id.txtPassError);
         // Vô hiệu hóa button ban đầu
         btnUp.setEnabled(false);
     }

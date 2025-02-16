@@ -104,7 +104,7 @@ public class ListeningQuestionActivity extends AppCompatActivity {
                                     fetchQuestion(questionIds.get(currentStep)); // Lấy câu hỏi tiếp theo
                                     updateProgressBar(progressBar, currentStep); // Cập nhật thanh tiến trình
                                 } else {
-                                    Intent intent = new Intent(ListeningQuestionActivity.this, RecordQuestionActivity.class);
+                                    Intent intent = new Intent(ListeningQuestionActivity.this, PointResultActivity.class);
                                     startActivity(intent);
                                     finish();
                                 }

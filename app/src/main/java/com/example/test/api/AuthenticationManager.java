@@ -133,7 +133,7 @@ public class AuthenticationManager extends BaseApiManager {
                         callback.onFailure("Lỗi phân tích phản hồi JSON: " + e.getMessage());
                     }
                 } else {
-                    callback.onFailure("Đăng ký thất bại!" + response.message());
+                    callback.onFailure("Register failed! Email was used." + response.message());
                 }
             }
         });

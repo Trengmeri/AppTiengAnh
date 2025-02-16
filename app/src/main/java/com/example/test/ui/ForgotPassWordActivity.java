@@ -1,13 +1,19 @@
 package com.example.test.ui;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Patterns;
+import android.view.Gravity;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -31,6 +37,7 @@ public class ForgotPassWordActivity extends AppCompatActivity {
     ImageView imgBack;
     NetworkChangeReceiver networkReceiver;
     AuthenticationManager apiManager;
+    boolean valid= true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,13 +54,20 @@ public class ForgotPassWordActivity extends AppCompatActivity {
             public void onClick(View view) {
                 String email = edtEmail.getText().toString();
                 if (email.isEmpty()) {
-                    Toast.makeText(ForgotPassWordActivity.this, "Vui lòng nhập email!", Toast.LENGTH_SHORT).show();
+                    showCustomDialog("Please enter email.");
+                    valid = false;
+                    //Toast.makeText(ForgotPassWordActivity.this, "Vui lòng nhập email!", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-                    Toast.makeText(ForgotPassWordActivity.this, "Email không hợp lệ!", Toast.LENGTH_SHORT).show();
+                if (!isValidEmail(email)) {
+                    showCustomDialog("Email format incorrect");
+                    valid = false;
+                    //Toast.makeText(ForgotPassWordActivity.this, "Email không hợp lệ!", Toast.LENGTH_SHORT).show();
                     return;
                 }
+                if(valid) {
+                    btnContinue.setEnabled(false);
+                    btnContinue.setAlpha(0.5f);
                 if (!apiManager.isInternetAvailable(ForgotPassWordActivity.this)) {
                     Toast.makeText(ForgotPassWordActivity.this, "Không có kết nối Internet!", Toast.LENGTH_SHORT).show();
                     return;
@@ -67,17 +81,22 @@ public class ForgotPassWordActivity extends AppCompatActivity {
                     public void onSuccess(Question question) {
 
                     }
+
                     @Override
-                    public void onSuccess(Lesson lesson) {}
+                    public void onSuccess(Lesson lesson) {
+                    }
+
                     @Override
-                    public void onSuccess(Course course) {}
+                    public void onSuccess(Course course) {
+                    }
 
                     @Override
                     public void onFailure(String errorMessage) {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                Toast.makeText(ForgotPassWordActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
+                                showCustomDialog("Lỗi: " + errorMessage);
+                                //Toast.makeText(ForgotPassWordActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
                             }
                         });
                     }
@@ -87,7 +106,8 @@ public class ForgotPassWordActivity extends AppCompatActivity {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                Toast.makeText(ForgotPassWordActivity.this, "Vui lòng kiểm tra email của bạn.", Toast.LENGTH_SHORT).show();
+                                showCustomDialog("OTP was sent to your email.Please check!");
+                                //Toast.makeText(ForgotPassWordActivity.this, "Vui lòng kiểm tra email của bạn.", Toast.LENGTH_SHORT).show();
                             }
                         });
                         saveOtpId(otpID); // Lưu otpID vào SharedPreferences
@@ -102,7 +122,8 @@ public class ForgotPassWordActivity extends AppCompatActivity {
                     }
 
                     @Override
-                    public void onSuccess(Result result) {}
+                    public void onSuccess(Result result) {
+                    }
 
                     @Override
                     public void onSuccess(Answer answer) {
@@ -115,6 +136,7 @@ public class ForgotPassWordActivity extends AppCompatActivity {
                     }
 
                 });
+            }
             }
         });
 
@@ -133,6 +155,34 @@ public class ForgotPassWordActivity extends AppCompatActivity {
         edtEmail = (EditText) findViewById(R.id.edt_email);
         btnContinue = findViewById(R.id.btn_continue);
         imgBack = (ImageView) findViewById(R.id.imgBack);
+    }
+    private void showCustomDialog(String message) {
+        Dialog dialog = new Dialog(this);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.custom_dialog_alert);
+        dialog.setCancelable(false);
+
+        // Ánh xạ View
+        TextView tvMessage = dialog.findViewById(R.id.tvMessage);
+        ImageView imgIcon = dialog.findViewById(R.id.imgIcon);
+
+        tvMessage.setText(message);
+        //imgIcon.setImageResource(iconResId);
+
+        // Thiết lập vị trí hiển thị trên cùng màn hình
+        Window window = dialog.getWindow();
+        if (window != null) {
+            window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
+            window.setGravity(Gravity.TOP);
+            window.setWindowAnimations(R.style.DialogAnimation); // Gán animation
+        }
+
+        dialog.show();
+
+        // Ẩn Dialog sau 2 giây
+        new Handler().postDelayed(() -> {
+            dialog.dismiss();
+        }, 2000);
     }
     private boolean isValidEmail(String email) {
         if (email == null || email.trim().isEmpty()) {
