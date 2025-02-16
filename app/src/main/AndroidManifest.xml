@@ -24,7 +24,7 @@
             android:name=".ui.GroupFlashcardActivity"
             android:exported="true" />
         <activity
-            android:name=".ui.FlashcardInfomationActivity"
+            android:name=".ui.FlashcardInformationActivity"
             android:exported="true" />
         <activity
             android:name=".ui.QuestionActivity"

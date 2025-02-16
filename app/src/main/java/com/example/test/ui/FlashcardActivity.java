@@ -30,8 +30,10 @@ import com.example.test.api.FlashcardManager;
 import com.example.test.model.Flashcard;
 import com.example.test.response.ApiResponseFlashcard;
 import com.example.test.response.ApiResponseFlashcardGroup;
+import com.example.test.response.ApiResponseOneFlashcard;
 import com.example.test.response.FlashcardGroupResponse;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.android.material.button.MaterialButton;
 
 import java.util.List;
 
@@ -82,6 +84,11 @@ public class FlashcardActivity extends AppCompatActivity {
                     // Xử lý trường hợp không có flashcard nào
                     Log.w("FlashcardActivity", "No flashcards found for group ID: " + groupId);
                 }
+            }
+
+            @Override
+            public void onSuccess(ApiResponseOneFlashcard response) {
+
             }
 
             @Override
@@ -170,5 +177,24 @@ public class FlashcardActivity extends AppCompatActivity {
         });
 
         bottomSheetDialog.show();
+    }
+
+    private void addFlashcardButton(Flashcard flashcard) {
+        MaterialButton flashcardButton = new MaterialButton(this);
+        flashcardButton.setText(flashcard.getWord());
+        flashcardButton.setLayoutParams(new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT));
+
+        // Sự kiện khi nhấn vào nút flashcard
+        flashcardButton.setOnClickListener(v -> {
+            Intent intent = new Intent(FlashcardActivity.this, FlashcardInformationActivity.class);
+            intent.putExtra("FLASHCARD_ID", flashcard.getId()); // Gửi ID flashcard đến FlashcardInfomationActivity
+            startActivity(intent); // Chuyển hướng đến FlashcardInfomationActivity
+        });
+
+        // Thêm nút vào layout
+        LinearLayout flashcardContainer = findViewById(R.id.flashContainer);
+        flashcardContainer.addView(flashcardButton);
     }
 }

@@ -30,6 +30,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.test.R;
 import com.example.test.response.ApiResponseFlashcard;
+import com.example.test.response.ApiResponseOneFlashcard;
 import com.example.test.ui.explore.ExploreActivity;
 import com.example.test.ui.explore.ExploreFragment;
 import com.example.test.api.FlashcardApiCallback;
@@ -166,6 +167,11 @@ public class GroupFlashcardActivity extends AppCompatActivity {
                 }
 
                 @Override
+                public void onSuccess(ApiResponseOneFlashcard response) {
+
+                }
+
+                @Override
                 public void onFailure(String errorMessage) {
                     runOnUiThread(() -> {
                         Toast.makeText(GroupFlashcardActivity.this, "Error updating group: " + errorMessage,
@@ -197,6 +203,11 @@ public class GroupFlashcardActivity extends AppCompatActivity {
 
                 @Override
                 public void onSuccess(ApiResponseFlashcard response) {
+
+                }
+
+                @Override
+                public void onSuccess(ApiResponseOneFlashcard response) {
 
                 }
 
@@ -282,6 +293,11 @@ public class GroupFlashcardActivity extends AppCompatActivity {
                     }
 
                     @Override
+                    public void onSuccess(ApiResponseOneFlashcard response) {
+
+                    }
+
+                    @Override
                     public void onFailure(String errorMessage) {
                         Log.e("GroupFlashcardActivity", "Error creating group: " + errorMessage);
                         runOnUiThread(() -> {
@@ -321,6 +337,11 @@ public class GroupFlashcardActivity extends AppCompatActivity {
 
             @Override
             public void onSuccess(ApiResponseFlashcard response) {
+
+            }
+
+            @Override
+            public void onSuccess(ApiResponseOneFlashcard response) {
 
             }
 
