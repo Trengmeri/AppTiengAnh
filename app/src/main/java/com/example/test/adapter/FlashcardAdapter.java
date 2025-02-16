@@ -1,6 +1,7 @@
 package com.example.test.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.test.R;
 import com.example.test.model.Flashcard;
+import com.example.test.ui.FlashcardInformationActivity;
 
 import java.util.List;
 
@@ -36,7 +38,13 @@ public class FlashcardAdapter extends RecyclerView.Adapter<FlashcardAdapter.Flas
         Flashcard flashcard = flashcards.get(position);
         holder.wordTextView.setText(flashcard.getWord());
         holder.meaningTextView.setText(flashcard.getVietNameseMeaning());
-        // Bạn có thể thêm các trường khác nếu cần
+
+        // Thêm sự kiện click cho item flashcard
+        holder.itemView.setOnClickListener(v -> {
+            Intent intent = new Intent(context, FlashcardInformationActivity.class);
+            intent.putExtra("FLASHCARD_ID", flashcard.getId()); // Gửi ID flashcard đến FlashcardInformationActivity
+            context.startActivity(intent); // Khởi động activity thông tin flashcard
+        });
     }
 
     @Override

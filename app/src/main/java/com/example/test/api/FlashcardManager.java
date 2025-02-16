@@ -154,4 +154,29 @@ public class FlashcardManager extends BaseApiManager {
             }
         });
     }
+
+    public void fetchFlashcardById(int flashcardId, FlashcardApiCallback callback) {
+        String url = BASE_URL + "/api/v1/flashcards/" + flashcardId; // Đường dẫn API
+        Request request = new Request.Builder()
+                .url(url)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    String responseBody = response.body().string();
+                    ApiResponseFlashcard apiResponse = gson.fromJson(responseBody, ApiResponseFlashcard.class);
+                    callback.onSuccess(apiResponse);
+                } else {
+                    callback.onFailure("Error: " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Call call, IOException e) {
+                callback.onFailure("Network error: " + e.getMessage());
+            }
+        });
+    }
 }
