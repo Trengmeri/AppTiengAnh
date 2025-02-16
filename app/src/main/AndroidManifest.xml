@@ -30,7 +30,7 @@
             android:name=".ui.FlashcardInfomationActivity"
             android:exported="true" />
         <activity
-            android:name=".ui.FLashcardActivity"
+            android:name=".ui.FlashcardActivity"
             android:exported="true" />
         <activity
             android:name=".ui.QuestionActivity"
