@@ -96,6 +96,7 @@ public class FlashcardInformationActivity extends AppCompatActivity {
             finish();
             overridePendingTransition(R.anim.stay, R.anim.slide_down);
         });
+
     }
 
     private void fetchFlashcardData(int flashcardId) {
@@ -187,7 +188,7 @@ public class FlashcardInformationActivity extends AppCompatActivity {
     private void flipCard(String content) {
         Log.d("FlashcardInfo", "Flipping card with content: " + content);
         if (isFrontVisible) {
-            flipOut.setTarget(frontSide);
+           // flipOut.setTarget(frontSide);
             flipIn.setTarget(backSide);
             flipOut.start();
             flipOut.addListener(new android.animation.Animator.AnimatorListener() {
