@@ -57,6 +57,7 @@ public class FlashcardActivity extends AppCompatActivity {
         });
         LinearLayout flashContainer = findViewById(R.id.flashContainer);
         recyclerViewFlashcards = findViewById(R.id.recyclerViewFlashcards);
+        flBack= findViewById(R.id.flBack);
         flashcardManager = new FlashcardManager();
         flBack= findViewById(R.id.flBack);
 
@@ -74,6 +75,15 @@ public class FlashcardActivity extends AppCompatActivity {
         if (groupId != -1) {
             fetchFlashcards(groupId);
         }
+
+        flBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent= new Intent(FlashcardActivity.this, GroupFlashcardActivity.class);
+                startActivity(intent);
+                finish();
+            }
+        });
     }
 
     private void fetchFlashcards(int groupId) {
