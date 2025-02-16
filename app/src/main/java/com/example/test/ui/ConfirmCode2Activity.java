@@ -1,12 +1,17 @@
 package com.example.test.ui;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.os.Handler;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -25,7 +30,6 @@ import com.example.test.api.ApiCallback;
 import com.example.test.api.AuthenticationManager;
 import com.example.test.model.Answer;
 import com.example.test.model.Course;
-import com.example.test.model.Enrollment;
 import com.example.test.model.Lesson;
 import com.example.test.model.MediaFile;
 import com.example.test.model.Question;
@@ -45,6 +49,7 @@ public class ConfirmCode2Activity extends AppCompatActivity {
     NetworkChangeReceiver networkReceiver;
     AuthenticationManager apiManager;
     private String typeScreen;
+    private boolean isRequesting = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -90,7 +95,6 @@ public class ConfirmCode2Activity extends AppCompatActivity {
             public void onClick(View view) {
                 btnRe.setEnabled(false); // Ngăn người dùng nhấn liên tục
                 btnRe.setAlpha(0.3f);
-                resetCountdown();// Gọi phương thức reset lại bộ đếm
                 String otpID = getOtpIdFromPreferences(); // Lấy OTP ID đã lưu
                 apiManager.resendConfirmCodeRequest(otpID, new ApiCallback() {
                     @Override
@@ -98,7 +102,9 @@ public class ConfirmCode2Activity extends AppCompatActivity {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                Toast.makeText(ConfirmCode2Activity.this, "Mã OTP đã được gửi lại. Vui lòng kiểm tra email.", Toast.LENGTH_SHORT).show();
+                                showCustomDialog("Mã OTP đã được gửi lại. Vui lòng kiểm tra email.");
+                                resetCountdown();// Gọi phương thức reset lại bộ đếm
+                                //Toast.makeText(ConfirmCode2Activity.this, "Mã OTP đã được gửi lại. Vui lòng kiểm tra email.", Toast.LENGTH_SHORT).show();
                             }
                         });
                     }
@@ -129,11 +135,6 @@ public class ConfirmCode2Activity extends AppCompatActivity {
                     }
 
                     @Override
-                    public void onSuccess(Enrollment enrollment) {
-
-                    }
-
-                    @Override
                     public void onSuccess(MediaFile mediaFile) {
 
                     }
@@ -144,7 +145,8 @@ public class ConfirmCode2Activity extends AppCompatActivity {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                Toast.makeText(ConfirmCode2Activity.this, "Lỗi: " + errorMessage, Toast.LENGTH_SHORT).show();
+                                showCustomDialog("Lỗi: " + errorMessage);
+                                //Toast.makeText(ConfirmCode2Activity.this, "Lỗi: " + errorMessage, Toast.LENGTH_SHORT).show();
                                 btnRe.setEnabled(true);
                                 btnRe.setAlpha(1.0f); // Cho phép bấm lại nếu lỗi
                             }
@@ -183,13 +185,29 @@ public class ConfirmCode2Activity extends AppCompatActivity {
                 R.id.button8, R.id.button9
         };
 
+
         // Gắn sự kiện cho từng nút
         for (int i = 0; i < buttonIds.length; i++) {
             int finalI = i;
             findViewById(buttonIds[i]).setOnClickListener(v -> {
                 if (currentInputIndex < codeInputs.length) {
-                    codeInputs[currentInputIndex].setText(String.valueOf(finalI)); // Hiển thị số vào ô nhập
-                    currentInputIndex++; // Chuyển sang ô tiếp theo
+                    // Hiển thị số vừa nhập
+                    codeInputs[currentInputIndex].setText(String.valueOf(finalI));
+                    // Lưu giá trị để kiểm tra sau này
+                    String enteredValue = String.valueOf(finalI);
+
+                    //codeInputs[currentInputIndex].setText(String.valueOf(finalI)); // Hiển thị số vào ô nhập
+                    // Nếu chưa đến ô cuối cùng thì sau 500ms ẩn đi
+                    if (currentInputIndex < codeInputs.length - 1) {
+                        new Handler().postDelayed(() -> {
+                            if (codeInputs[currentInputIndex].getText().toString().equals(enteredValue)) {
+                                codeInputs[currentInputIndex].setTransformationMethod(new android.text.method.PasswordTransformationMethod());
+                            }
+                        }, 200);
+                    }
+
+                    currentInputIndex++;
+                    //currentInputIndex++; // Chuyển sang ô tiếp theo
                 }
             });
         }
@@ -211,150 +229,138 @@ public class ConfirmCode2Activity extends AppCompatActivity {
             @Override
             public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
                 if (charSequence.length() == 1) {
+                    new Handler().postDelayed(() -> {
+                        if (isRequesting) return; // Nếu đang request thì không gọi lại
+                        isRequesting = true; // Đánh dấu là đang gọi API
+                        for (EditText input : codeInputs) {
+                            input.setTransformationMethod(new android.text.method.PasswordTransformationMethod());
+                        }
                     String otpID = getOtpIdFromPreferences();// Khi người dùng nhập vào ô cuối cùng
                     String code = getCode(); // Lấy mã đã nhập
                     // Gọi API xác nhận mã OTP
-                    if (Objects.equals(typeScreen, "forgot")){
-                        // di luong quen mk
-                        apiManager.sendConfirmForgotPasswordRequest(otpID,code, new ApiCallback() {
-                            @Override
-                            public void onSuccess() {
-                                // Chuyển đến Activity tiếp theo nếu mã đúng
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {}
-                                });
-                                clearOtpId();
-                                Intent intent = new Intent(ConfirmCode2Activity.this, NewPassActivity.class);
-                                startActivity(intent);
-                                finish();
-                            }
+                        if (Objects.equals(typeScreen, "register")) {
+                            // di luong DK
+                            apiManager.sendConfirmCodeRequest(otpID,code, new ApiCallback() {
+                                @Override
+                                public void onSuccess() {
+                                    // Chuyển đến Activity tiếp theo nếu mã đúng
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {}
+                                    });
+                                    Log.d("OTP", "OTP verification success");
+                                    clearOtpId();
+                                    Intent intent = new Intent(ConfirmCode2Activity.this, SetUpAccountActivity.class);
+                                    startActivity(intent);
+                                    finish();
+                                }
 
-                            @Override
-                            public void onSuccess(Question questions) {
+                                @Override
+                                public void onSuccess(Question questions) {
 
-                            }
+                                }
 
-                            @Override
-                            public void onSuccess(Lesson lesson) {}
+                                @Override
+                                public void onSuccess(Lesson lesson) {}
 
-                            @Override
-                            public void onSuccess(Result result) {}
+                                @Override
+                                public void onSuccess(Result result) {}
 
-                            @Override
-                            public void onSuccess(Answer answer) {
+                                @Override
+                                public void onSuccess(Answer answer) {
 
-                            }
+                                }
 
-                            @Override
-                            public void onSuccess(Enrollment enrollment) {
+                                @Override
+                                public void onSuccess(MediaFile mediaFile) {
 
-                            }
-
-                            @Override
-                            public void onSuccess(MediaFile mediaFile) {
-
-                            }
+                                }
 
 
-                            @Override
-                            public void onSuccess(Course course) {}
+                                @Override
+                                public void onSuccess(Course course) {}
 
 
-                            @Override
-                            public void onFailure(String errorMessage) {
-                                // Hiển thị thông báo lỗi nếu mã sai
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        Toast.makeText(ConfirmCode2Activity.this, errorMessage, Toast.LENGTH_SHORT).show();
-                                    }
-                                });
-                            }
+                                @Override
+                                public void onFailure(String errorMessage) {
+                                    // Hiển thị thông báo lỗi nếu mã sai
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            showCustomDialog("Lỗi: " + errorMessage);
+                                            //Toast.makeText(ConfirmCode2Activity.this, errorMessage, Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                                }
 
-                            @Override
-                            public void onSuccessWithOtpID(String otpID) {
+                                @Override
+                                public void onSuccessWithOtpID(String otpID) {
 
-                            }
+                                }
 
-                            @Override
-                            public void onSuccessWithToken(String token) {
+                                @Override
+                                public void onSuccessWithToken(String token) {
 
-                            }
+                                }
 
-                        });
-                    }
-                    else if (Objects.equals(typeScreen, "register")) {
-                        // di luong DK
-                        apiManager.sendConfirmCodeRequest(otpID,code, new ApiCallback() {
-                            @Override
-                            public void onSuccess() {
-                                // Chuyển đến Activity tiếp theo nếu mã đúng
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {}
-                                });
-                                Log.d("OTP", "OTP verification success");
-                                clearOtpId();
-                                Intent intent = new Intent(ConfirmCode2Activity.this, SetUpAccountActivity.class);
-                                startActivity(intent);
-                                finish();
-                            }
+                            });
+                        }
+                        else if (Objects.equals(typeScreen, "forgot")){
+                            // di luong quen mk
+                            apiManager.sendConfirmForgotPasswordRequest(otpID,code, new ApiCallback() {
+                                @Override
+                                public void onSuccess() {
+                                    // Chuyển đến Activity tiếp theo nếu mã đúng
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {}
+                                    });
+                                    Log.d("OTP", "OTP verification success for forgot password");
+                                    clearOtpId();
+                                    Intent intent = new Intent(ConfirmCode2Activity.this, NewPassActivity.class);
+                                    startActivity(intent);
+                                    finish();
+                                }
 
-                            @Override
-                            public void onSuccess(Question questions) {
+                                @Override
+                                public void onSuccess(Question questions) {
+                                }
+                                @Override
+                                public void onSuccess(Lesson lesson) {}
+                                @Override
+                                public void onSuccess(Result result) {}
+                                @Override
+                                public void onSuccess(Answer answer) {
+                                }
+                                @Override
+                                public void onSuccess(MediaFile mediaFile) {
+                                }
+                                @Override
+                                public void onSuccess(Course course) {}
+                                @Override
+                                public void onFailure(String errorMessage) {
+                                    // Hiển thị thông báo lỗi nếu mã sai
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            showCustomDialog("Lỗi: " + errorMessage);
+                                            isRequesting= false;
+                                            //Toast.makeText(ConfirmCode2Activity.this, errorMessage, Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                                }
 
-                            }
+                                @Override
+                                public void onSuccessWithOtpID(String otpID) {
+                                }
 
-                            @Override
-                            public void onSuccess(Lesson lesson) {}
+                                @Override
+                                public void onSuccessWithToken(String token) {
+                                }
+                            });
+                        }
 
-                            @Override
-                            public void onSuccess(Result result) {}
-
-                            @Override
-                            public void onSuccess(Answer answer) {
-
-                            }
-
-                            @Override
-                            public void onSuccess(Enrollment enrollment) {
-
-                            }
-
-                            @Override
-                            public void onSuccess(MediaFile mediaFile) {
-
-                            }
-
-
-                            @Override
-                            public void onSuccess(Course course) {}
-
-
-                            @Override
-                            public void onFailure(String errorMessage) {
-                                // Hiển thị thông báo lỗi nếu mã sai
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        Toast.makeText(ConfirmCode2Activity.this, errorMessage, Toast.LENGTH_SHORT).show();
-                                    }
-                                });
-                            }
-
-                            @Override
-                            public void onSuccessWithOtpID(String otpID) {
-
-                            }
-
-                            @Override
-                            public void onSuccessWithToken(String token) {
-
-                            }
-
-                        });
-                    }
+                    }, 1000); // Giữ hiển thị trong 1 giây rồi ẩn
                 }
             }
 
@@ -409,7 +415,8 @@ public class ConfirmCode2Activity extends AppCompatActivity {
 
     private void onCountdownFinished() {
         // Hành động khi đếm ngược kết thúc
-        Toast.makeText(ConfirmCode2Activity.this, "Vui lòng nhấn gửi lại mã!", Toast.LENGTH_SHORT).show(); // Hiển thị thông báo hoặc xử lý logic khác
+        showCustomDialog("Vui lòng nhấn gửi lại mã!");
+        //Toast.makeText(ConfirmCode2Activity.this, "Vui lòng nhấn gửi lại mã!", Toast.LENGTH_SHORT).show(); // Hiển thị thông báo hoặc xử lý logic khác
     }
 
     @Override
@@ -419,5 +426,33 @@ public class ConfirmCode2Activity extends AppCompatActivity {
         if (countDownTimer != null) {
             countDownTimer.cancel();
         }
+    }
+    private void showCustomDialog(String message) {
+        Dialog dialog = new Dialog(this);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.custom_dialog_alert);
+        dialog.setCancelable(false);
+
+        // Ánh xạ View
+        TextView tvMessage = dialog.findViewById(R.id.tvMessage);
+        ImageView imgIcon = dialog.findViewById(R.id.imgIcon);
+
+        tvMessage.setText(message);
+        //imgIcon.setImageResource(iconResId);
+
+        // Thiết lập vị trí hiển thị trên cùng màn hình
+        Window window = dialog.getWindow();
+        if (window != null) {
+            window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
+            window.setGravity(Gravity.TOP);
+            window.setWindowAnimations(R.style.DialogAnimation); // Gán animation
+        }
+
+        dialog.show();
+
+        // Ẩn Dialog sau 2 giây
+        new Handler().postDelayed(() -> {
+            dialog.dismiss();
+        }, 2000);
     }
 }

@@ -77,7 +77,9 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="30dp"
+                android:layout_marginTop="@dimen/dp_30"
+                android:layout_marginStart="@dimen/dp_30"
+                android:layout_marginEnd="@dimen/dp_30"
                 android:background="@drawable/rounded_corner"
                 android:orientation="horizontal"
                 android:padding="12dp">
@@ -94,10 +96,29 @@
                     android:drawableEnd="@drawable/icon_visibility_off"
                     android:drawablePadding="8dp"/>
             </LinearLayout>
+            <TextView
+                android:id="@+id/tPassError"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/holo_red_dark"
+                android:textSize="12sp"
+                android:padding="3dp"
+                android:layout_marginStart="@dimen/dp40"
+                android:visibility="gone"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/dp_30"
+                android:layout_marginEnd="@dimen/dp_30"
+                android:text="@string/hintPassWord"
+                android:textSize="11sp"
+                android:textColor="#F60606"/>
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="30dp"
+                android:layout_marginTop="@dimen/dp_16"
                 android:layout_marginRight="30dp"
                 android:background="@drawable/rounded_corner"
                 android:orientation="horizontal"
@@ -115,13 +136,25 @@
                     android:drawableEnd="@drawable/icon_visibility_off"
                     android:drawablePadding="8dp"/>
             </LinearLayout>
+            <TextView
+                android:id="@+id/tNewPassError"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/holo_red_dark"
+                android:textSize="12sp"
+                android:padding="3dp"
+                android:layout_marginStart="@dimen/dp40"
+                android:visibility="gone"/>
             <Button
                 android:id="@+id/btnNext"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_margin="20dp"
                 android:backgroundTint="#8B3000"
-                android:text="Countine"/>
+                android:text="Countine"
+                android:textColor="@color/white"
+                android:enabled="false"
+                android:alpha="0.3"/>
         </LinearLayout>
     </LinearLayout>
     </androidx.core.widget.NestedScrollView>

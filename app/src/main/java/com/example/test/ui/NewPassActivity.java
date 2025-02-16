@@ -1,19 +1,25 @@
 package com.example.test.ui;
 
 import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -25,7 +31,6 @@ import com.example.test.api.ApiCallback;
 import com.example.test.api.AuthenticationManager;
 import com.example.test.model.Answer;
 import com.example.test.model.Course;
-import com.example.test.model.Enrollment;
 import com.example.test.model.Lesson;
 import com.example.test.model.MediaFile;
 import com.example.test.model.Question;
@@ -37,11 +42,13 @@ import java.util.regex.Pattern;
 public class NewPassActivity extends AppCompatActivity {
 
     EditText edtPass, edtRePass;
+    TextView tPasserror, tNewpasserror;
     Button btnNext;
     ImageView icback;
     NetworkChangeReceiver networkReceiver;
     AuthenticationManager apiManager;
     private boolean isPasswordVisible = false;
+    boolean isValid = true;
     @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,94 +60,107 @@ public class NewPassActivity extends AppCompatActivity {
         setupPasswordField();
         networkReceiver = new NetworkChangeReceiver();
         apiManager = new AuthenticationManager(this);
+
+        btnNext.setEnabled(false);
+        btnNext.setAlpha(0.5f);
+
+        TextWatcher textWatcher = new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                checkInputFields();
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+        };
+        edtPass.addTextChangedListener(textWatcher);
+        edtRePass.addTextChangedListener(textWatcher);
         btnNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (!apiManager.isInternetAvailable(NewPassActivity.this)) {
-                    Toast.makeText(NewPassActivity.this, "Vui lòng kiểm tra kết nối Internet của bạn.", Toast.LENGTH_LONG).show();
-                } else {
-                    String pass = edtPass.getText().toString();
-                    String repass = edtRePass.getText().toString();
-                    String token =getTokenFromSharedPreferences();
-
-                if (!pass.equals(repass)) {
-                    Toast.makeText(NewPassActivity.this, "Mật khẩu nhập lại không khớp", Toast.LENGTH_SHORT).show();
-                }
-                    apiManager.updatePassword(pass, repass, token, new ApiCallback() {
-                        @Override
-                        public void onSuccess() {
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    Toast.makeText(NewPassActivity.this, "Cập nhật mật khẩu thành công!", Toast.LENGTH_SHORT).show();
-                                    Intent intent = new Intent(NewPassActivity.this, LoadPassActivity.class);
-                                    startActivity(intent);
-                                }
-                            });
-                        }
-                        @Override
-                        public void onSuccess(Enrollment enrollment) {}
-
-                        @Override
-                        public void onSuccess(Question questions) {
-
-                        }
-
-                        @Override
-                        public void onSuccess(Lesson lesson) {
-
-                        }
-
-                        @Override
-                        public void onSuccess(Course course) {
-
-                        }
-
-                        @Override
-                        public void onSuccess(Result result) {
-
-                        }
-
-                        @Override
-                        public void onSuccess(Answer answer) {
-
-                        }
-
-                        @Override
-                        public void onSuccess(MediaFile mediaFile) {
-
-                        }
-
-                        @Override
-                        public void onFailure(String errorMessage) {
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    Toast.makeText(NewPassActivity.this, "Lỗi: " + errorMessage, Toast.LENGTH_SHORT).show();
-                                }
-                            });
-                        }
-
-                        @Override
-                        public void onSuccessWithOtpID(String otpID) {
-
-                        }
-
-                        @Override
-                        public void onSuccessWithToken(String token) {
-
-                        }
-                    });
-                }
-
-//                if (!isValidPassword(pass)) {
-//                    Toast.makeText(NewPassActivity.this, "Mật khẩu ít nhất 8 ký tự gồm chữ hoa, chữ thường, số và ký tự đặc biệt", Toast.LENGTH_SHORT).show();
-//                } else if (!pass.equals(repass)) {
+                showerror();
+                btnNext.setEnabled(false);
+                btnNext.setAlpha(0.5f);
+                if(isValid) {
+                    if (!apiManager.isInternetAvailable(NewPassActivity.this)) {
+                        Toast.makeText(NewPassActivity.this, "Vui lòng kiểm tra kết nối Internet của bạn.", Toast.LENGTH_LONG).show();
+                    } else {
+                        String pass = edtPass.getText().toString();
+                        String repass = edtRePass.getText().toString();
+                        String token = getTokenFromSharedPreferences();
+//                if (!pass.equals(repass)) {
 //                    Toast.makeText(NewPassActivity.this, "Mật khẩu nhập lại không khớp", Toast.LENGTH_SHORT).show();
-//                } else{
-//                    Intent intent = new Intent(NewPassActivity.this, LoadPassActivity.class);
-//                    startActivity(intent);
 //                }
+                        apiManager.updatePassword(pass, repass, token, new ApiCallback() {
+                            @Override
+                            public void onSuccess() {
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        showCustomDialog("Update password successfully.");
+                                        //Toast.makeText(NewPassActivity.this, "Cập nhật mật khẩu thành công!", Toast.LENGTH_SHORT).show();
+                                        Intent intent = new Intent(NewPassActivity.this, LoadPassActivity.class);
+                                        startActivity(intent);
+                                    }
+                                });
+                            }
+
+                            @Override
+                            public void onSuccess(Question questions) {
+
+                            }
+
+                            @Override
+                            public void onSuccess(Lesson lesson) {
+
+                            }
+
+                            @Override
+                            public void onSuccess(Course course) {
+
+                            }
+
+                            @Override
+                            public void onSuccess(Result result) {
+
+                            }
+
+                            @Override
+                            public void onSuccess(Answer answer) {
+
+                            }
+
+                            @Override
+                            public void onSuccess(MediaFile mediaFile) {
+
+                            }
+
+                            @Override
+                            public void onFailure(String errorMessage) {
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        showCustomDialog("Lỗi: " + errorMessage);
+                                        //Toast.makeText(NewPassActivity.this, "Lỗi: " + errorMessage, Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                            }
+
+                            @Override
+                            public void onSuccessWithOtpID(String otpID) {
+
+                            }
+
+                            @Override
+                            public void onSuccessWithToken(String token) {
+
+                            }
+                        });
+                    }
+                }
             }
         });
 
@@ -269,11 +289,69 @@ public class NewPassActivity extends AppCompatActivity {
         btnNext = findViewById(R.id.btnNext);
         icback = findViewById(R.id.icback);
     }
+    private void showCustomDialog(String message) {
+        Dialog dialog = new Dialog(this);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.custom_dialog_alert);
+        dialog.setCancelable(false);
 
+        // Ánh xạ View
+        TextView tvMessage = dialog.findViewById(R.id.tvMessage);
+        ImageView imgIcon = dialog.findViewById(R.id.imgIcon);
+
+        tvMessage.setText(message);
+        //imgIcon.setImageResource(iconResId);
+
+        // Thiết lập vị trí hiển thị trên cùng màn hình
+        Window window = dialog.getWindow();
+        if (window != null) {
+            window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
+            window.setGravity(Gravity.TOP);
+            window.setWindowAnimations(R.style.DialogAnimation); // Gán animation
+        }
+
+        dialog.show();
+
+        // Ẩn Dialog sau 2 giây
+        new Handler().postDelayed(() -> {
+            dialog.dismiss();
+        }, 2000);
+    }
     private boolean isValidPassword(String password) {
         String passwordPattern = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[@#$%^&+=!_&*]).{8,}$";
         Pattern pattern = Pattern.compile(passwordPattern);
         Matcher matcher = pattern.matcher(password);
         return matcher.matches();
+    }
+    private void checkInputFields() {
+        String newpass = edtPass.getText().toString().trim();
+        String renewpass = edtRePass.getText().toString().trim();
+
+        if (!newpass.isEmpty() && !renewpass.isEmpty()) {
+            btnNext.setEnabled(true);
+            btnNext.setAlpha(1.0f);
+        } else {
+            btnNext.setEnabled(false);
+            btnNext.setAlpha(0.5f);
+        }
+    }
+    private void showerror() {
+        isValid= true;
+        String newpass = edtPass.getText().toString().trim();
+        String renewpass = edtRePass.getText().toString().trim();
+
+        tPasserror.setVisibility(View.GONE); // Ẩn lỗi ban đầu
+        tNewpasserror.setVisibility(View.GONE);
+        if (!isValidPassword(newpass)) {
+            tPasserror.setText("Password format is incorrect.");
+            tPasserror.setVisibility(View.VISIBLE);
+            isValid = false;
+        }
+        // Kiểm tra Password
+        if (!newpass.equals(renewpass)) {
+            tNewpasserror.setText("Re-Password doesn't match.");
+            tNewpasserror.setVisibility(View.VISIBLE);
+            isValid = false;
+        }
     }
 }

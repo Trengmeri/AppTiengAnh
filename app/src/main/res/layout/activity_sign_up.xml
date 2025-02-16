@@ -120,7 +120,10 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_margin="12dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginStart="12dp"
+                        android:layout_marginEnd="12dp"
+                        android:layout_marginBottom="12dp"
                         android:background="@drawable/rounded_corner"
                         android:orientation="horizontal"
                         android:padding="15dp">
@@ -136,6 +139,16 @@
                             android:drawablePadding="8dp"/>
 
                     </LinearLayout>
+                    <TextView
+                        android:id="@+id/txtEmailError"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@android:color/holo_red_dark"
+                        android:textSize="12sp"
+                        android:padding="3dp"
+                        android:layout_marginStart="@dimen/dp_16"
+                        android:visibility="gone"
+                        />
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -159,6 +172,16 @@
                             android:drawablePadding="8dp"/>
 
                     </LinearLayout>
+                    <TextView
+                        android:id="@+id/txtPassError"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@android:color/holo_red_dark"
+                        android:textSize="12sp"
+                        android:padding="3dp"
+                        android:layout_marginStart="@dimen/dp_16"
+                        android:visibility="gone"
+                        />
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
