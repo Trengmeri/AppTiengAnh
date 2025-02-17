@@ -68,42 +68,13 @@ public class SignUpActivity extends AppCompatActivity {
                 String email = edtEmail.getText().toString();
                 String pass = edtMKhau1.getText().toString();
 
-                apiManager.sendSignUpRequest(this,hoten, email, pass, new ApiCallback() {
+                apiManager.sendSignUpRequest(this,hoten, email, pass, new ApiCallback<String>() {
                     @Override
                     public void onSuccess() {
                     }
 
                     @Override
-                    public void onSuccess(Question question) {}
-
-                    @Override
-                    public void onSuccess(Result result) {}
-
-                    @Override
-                    public void onSuccess(Answer answer) {}
-
-                    @Override
-                    public void onSuccess(MediaFile mediaFile) {
-
-                    }
-
-                    @Override
-                    public void onSuccess(Lesson lesson) {}
-                    @Override
-                    public void onSuccess(Course course) {}
-
-                    @Override
-                    public void onFailure(String errorMessage) {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Toast.makeText(SignUpActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                    }
-
-                    @Override
-                    public void onSuccessWithOtpID(String otpID) {
+                    public void onSuccess(String otpID) {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
@@ -120,9 +91,15 @@ public class SignUpActivity extends AppCompatActivity {
                     }
 
                     @Override
-                    public void onSuccessWithToken(String token) {
-
+                    public void onFailure(String errorMessage) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(SignUpActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
+                            }
+                        });
                     }
+
                 });
             }
         });

@@ -72,13 +72,9 @@ public class SignInActivity extends AppCompatActivity {
                     }
 
                     @Override
-                    public void onSuccess(Question question) {
+                    public void onSuccess(Object result) {
 
                     }
-                    @Override
-                    public void onSuccess(Lesson lesson) {}
-                    @Override
-                    public void onSuccess(Course course) {}
 
                     @Override
                     public void onFailure(String errorMessage) {
@@ -88,25 +84,6 @@ public class SignInActivity extends AppCompatActivity {
                                 Toast.makeText(SignInActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
                             }
                         });
-                    }
-
-                    @Override
-                    public void onSuccessWithOtpID(String otpID) {}
-
-                    @Override
-                    public void onSuccessWithToken(String token) {
-
-                    }
-
-                    @Override
-                    public void onSuccess(Result result) {}
-
-                    @Override
-                    public void onSuccess(Answer answer) {}
-
-                    @Override
-                    public void onSuccess(MediaFile mediaFile) {
-
                     }
 
                 });

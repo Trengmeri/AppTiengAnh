@@ -128,7 +128,7 @@ public class AuthenticationManager extends BaseApiManager {
                         JSONObject responseJson = new JSONObject(responseBody);
                         JSONObject data = responseJson.getJSONObject("data");
                         String otpID = data.optString("otpID");
-                        callback.onSuccessWithOtpID(otpID);
+                        callback.onSuccess(otpID);
                     } catch (JSONException e) {
                         callback.onFailure("Lỗi phân tích phản hồi JSON: " + e.getMessage());
                     }
@@ -244,7 +244,7 @@ public class AuthenticationManager extends BaseApiManager {
                         JSONObject responseJson = new JSONObject(responseBody);
                         JSONObject data = responseJson.getJSONObject("data");
                         String otpID = data.optString("otpID");
-                        callback.onSuccessWithOtpID(otpID);
+                        callback.onSuccess(otpID);
                     } catch (JSONException e) {
                         callback.onFailure("Lỗi phân tích phản hồi JSON: " + e.getMessage());
                     }
@@ -279,7 +279,7 @@ public class AuthenticationManager extends BaseApiManager {
                     try {
                         JSONObject responseJson = new JSONObject(responseBody);
                         String token = responseJson.optString("token");
-                        callback.onSuccessWithToken(token);
+                        callback.onSuccess(token);
                     } catch (JSONException e) {
                         callback.onFailure("Lỗi phân tích phản hồi JSON: " + e.getMessage());
                     }
