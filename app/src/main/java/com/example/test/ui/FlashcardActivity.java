@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -41,6 +42,7 @@ public class FlashcardActivity extends AppCompatActivity {
 
     private RecyclerView recyclerViewFlashcards;
     private FlashcardManager flashcardManager;
+    TextView flBack;
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -56,6 +58,17 @@ public class FlashcardActivity extends AppCompatActivity {
         LinearLayout flashContainer = findViewById(R.id.flashContainer);
         recyclerViewFlashcards = findViewById(R.id.recyclerViewFlashcards);
         flashcardManager = new FlashcardManager();
+        flBack= findViewById(R.id.flBack);
+
+        flBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+                Intent intent= new Intent(FlashcardActivity.this, GroupFlashcardActivity.class);
+                startActivity(intent);
+
+            }
+        });
 
         int groupId = getIntent().getIntExtra("GROUP_ID", -1);
         if (groupId != -1) {

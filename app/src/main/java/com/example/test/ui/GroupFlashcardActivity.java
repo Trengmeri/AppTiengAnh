@@ -102,7 +102,8 @@ public class GroupFlashcardActivity extends AppCompatActivity {
             public void onClick(View view) {
                 // Intent intent= new Intent(GroupFlashcardActivity.this,
                 // ExploreFragment.class);
-                // startActivity(intent);
+                // startActivtity(intent);
+                finish();
             }
         });
 
