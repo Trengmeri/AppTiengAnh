@@ -30,7 +30,7 @@
                 android:hint="Enter word"
                 android:padding="10dp"/>
             <ImageView
-                android:id="@+id/btnSreach"
+                android:id="@+id/btnSearch"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@drawable/icon_search"

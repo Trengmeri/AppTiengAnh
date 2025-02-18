@@ -4,22 +4,44 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:padding="16dp"
-    android:background="@android:color/white"
+    android:background="@drawable/item_flashcard"
     android:layout_marginBottom="8dp"
     android:elevation="2dp">
 
-    <TextView
-        android:id="@+id/textViewWord"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        android:textColor="@android:color/black" />
+                    <ImageView
+                        android:id="@+id/iconRemove"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/btn_remove"
+                        android:layout_gravity="end"
+                        android:layout_marginRight="@dimen/dp_30"
+                        android:layout_marginTop="@dimen/dp_16"/>
 
-    <TextView
-        android:id="@+id/textViewMeaning"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="16sp"
-        android:textColor="@android:color/darker_gray" />
+                    <TextView
+                        android:id="@+id/textViewWord"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textStyle="bold"
+                        android:textSize="26sp"
+                        android:textColor="@color/black"
+                        android:layout_marginStart="@dimen/dp_30"
+                        />
+                    <TextView
+                        android:id="@+id/textViewMeaning"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="16sp"
+                        android:layout_marginStart="@dimen/dp_30"
+                        android:text="jdhjkfhdkj"
+                        android:textColor="@android:color/darker_gray"
+                        android:layout_marginTop="10dp"/>
+<!--                    <TextView-->
+<!--                        android:layout_width="wrap_content"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:textSize="12sp"-->
+<!--                        android:layout_marginTop="@dimen/dp_30"-->
+<!--                        android:layout_marginRight="@dimen/dp_30"-->
+<!--                        android:layout_gravity="end"-->
+<!--                        android:text="Last reviewed: 10 minutes ago"/>-->
+
 </LinearLayout>
