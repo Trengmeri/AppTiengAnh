@@ -1,6 +1,8 @@
 package com.example.test.model;
 
-public class QuestionChoice {
+import java.io.Serializable;
+
+public class QuestionChoice implements Serializable {
     private int id;
     private String choiceContent;
     private boolean choiceKey;

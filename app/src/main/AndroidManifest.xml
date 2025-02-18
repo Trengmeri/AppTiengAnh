@@ -33,7 +33,7 @@
             android:name=".ui.FlashcardActivity"
             android:exported="true" />
         <activity
-            android:name=".ui.QuestionActivity"
+            android:name=".NevigateQuestion"
             android:exported="false" />
         <activity
             android:name=".ui.explore.ExploreActivity"

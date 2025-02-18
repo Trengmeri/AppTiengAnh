@@ -1,18 +1,15 @@
 package com.example.test.model;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class Question {
+public class Question implements Serializable {
     private int id;
     private String quesContent;
     private String keyword;
     private String quesType;
     private String skillType;
     private int point;
-    private String createBy;
-    private String createAt;
-    private String updateBy;
-    private String updateAt;
     private List<Answer> answers;
     private List<Lesson> lessonQuestions;
     private List<QuestionChoice> questionChoices;
@@ -67,38 +64,6 @@ public class Question {
         this.point = point;
     }
 
-    public String getCreateBy() {
-        return createBy;
-    }
-
-    public void setCreateBy(String createBy) {
-        this.createBy = createBy;
-    }
-
-    public String getCreateAt() {
-        return createAt;
-    }
-
-    public void setCreateAt(String createAt) {
-        this.createAt = createAt;
-    }
-
-    public String getUpdateBy() {
-        return updateBy;
-    }
-
-    public void setUpdateBy(String updateBy) {
-        this.updateBy = updateBy;
-    }
-
-    public String getUpdateAt() {
-        return updateAt;
-    }
-
-    public void setUpdateAt(String updateAt) {
-        this.updateAt = updateAt;
-    }
-
     public List<Answer> getAnswers() {
         return answers;
     }
@@ -129,5 +94,12 @@ public class Question {
 
     public void setLearningMaterial(Object learningMaterial) {
         this.learningMaterial = learningMaterial;
+    }
+    @Override
+    public String toString() {
+        return "Question{id=" + id +
+                ", type='" + quesType + '\'' +
+                ", content='" + quesContent + '\'' +
+                '}';
     }
 }

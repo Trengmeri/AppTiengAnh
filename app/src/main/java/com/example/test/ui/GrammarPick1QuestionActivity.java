@@ -33,6 +33,7 @@ import com.example.test.model.QuestionChoice;
 import com.example.test.model.Result;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -54,8 +55,9 @@ public class GrammarPick1QuestionActivity extends AppCompatActivity {
     ResultManager resultManager = new ResultManager(this);
     TextView tvContent;
     NetworkChangeReceiver networkReceiver;
-    private List<Integer> questionIds;
-    private int answerIds;// Danh sách questionIds
+    private int answerIds;
+    private List<Question> questions; // Danh sách câu hỏi
+    private int currentQuestionIndex; // Vị trí câu hỏi hiện tại
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,9 +76,17 @@ public class GrammarPick1QuestionActivity extends AppCompatActivity {
         updateProgressBar(progressBar, currentStep);
         networkReceiver = new NetworkChangeReceiver();
 
-        // Lấy lessonId từ intent hoặc một nguồn khác
-        int lessonId = 1;
-        fetchLessonAndQuestions(lessonId); // Gọi phương thức để lấy bài học và câu hỏi
+        // Nhận dữ liệu từ Intent
+        currentQuestionIndex = getIntent().getIntExtra("currentQuestionIndex", 0);
+        questions = (List<Question>) getIntent().getSerializableExtra("questions");
+
+
+        // Hiển thị câu hỏi hiện tại
+        loadQuestion(currentQuestionIndex);
+
+//        // Lấy lessonId từ intent hoặc một nguồn khác
+//        int lessonId = 1;
+//        fetchLessonAndQuestions(lessonId); // Gọi phương thức để lấy bài học và câu hỏi
 
         btnCheckAnswer.setOnClickListener(v -> {
             if (userAnswers.isEmpty()) {
@@ -92,7 +102,7 @@ public class GrammarPick1QuestionActivity extends AppCompatActivity {
                 }
                 String answerContent = sb.toString();
                 // Lưu câu trả lời của người dùng
-                quesManager.saveUserAnswer(questionIds.get(currentStep), answerContent, new ApiCallback() {
+                quesManager.saveUserAnswer(questions.get(currentStep).getId(), answerContent, new ApiCallback() {
 
                     @Override
                     public void onSuccess() {
@@ -103,19 +113,25 @@ public class GrammarPick1QuestionActivity extends AppCompatActivity {
                                 // Callback khi nhấn Next Question trên popup
                                 resetAnswerColors();
                                 currentStep++; // Tăng currentStep
-
-                                // Kiểm tra nếu hoàn thành
-                                if (currentStep < totalSteps) {
-                                    fetchQuestion(questionIds.get(currentStep)); // Lấy câu hỏi tiếp theo
-                                    updateProgressBar(progressBar, currentStep); // Cập nhật thanh tiến trình
+                                currentQuestionIndex++;
+                                if (currentQuestionIndex < questions.size()) {
+                                    Question nextQuestion = questions.get(currentQuestionIndex);
+                                    updateProgressBar(progressBar, currentStep);
+                                    if (nextQuestion.getQuesType().equals("MULTIPLE")) {
+                                        Intent intent = new Intent(GrammarPick1QuestionActivity.this, GrammarPickManyActivity.class);
+                                        intent.putExtra("currentQuestionIndex", currentQuestionIndex);
+                                        intent.putExtra("questions", (Serializable) questions);
+                                        startActivity(intent);
+                                        finish(); // Đóng Activity hiện tại
+                                    } else {
+                                        loadQuestion(currentQuestionIndex);
+                                    }
                                 } else {
-                                    Intent intent = new Intent(GrammarPick1QuestionActivity.this, GrammarPickManyActivity.class);
-                                    startActivity(intent);
-                                    finish();
+                                    finishLesson();
                                 }
                             });
                         });
-                        resultManager.fetchAnswerPointsByQuesId(questionIds.get(currentStep), new ApiCallback<Answer>() {
+                        resultManager.fetchAnswerPointsByQuesId(questions.get(currentQuestionIndex).getId(), new ApiCallback<Answer>() {
                                 @Override
                                 public void onSuccess() {
                                 }
@@ -167,90 +183,61 @@ public class GrammarPick1QuestionActivity extends AppCompatActivity {
             }
         });
     }
+    private void loadQuestion(int index) {
+        if (index < questions.size()) {
+            Question question = questions.get(index);
+            quesManager.fetchQuestionContentFromApi(question.getId(), new ApiCallback<Question>() {
+                @Override
+                public void onSuccess(Question question) {
+                    if (question != null) {
+                        // Lấy nội dung câu hỏi
+                        String questionContent = question.getQuesContent();
+                        Log.d("GrammarPick1QuestionActivity", "Câu hỏi: " + questionContent);
 
-    private void fetchLessonAndQuestions(int lessonId) {
-        lesManager.fetchLessonById(lessonId, new ApiCallback<Lesson>() {
-            @Override
-            public void onSuccess(Lesson lesson) {
-                if (lesson != null) {
-                    // Lấy danh sách questionIds từ lesson
-                    questionIds = lesson.getQuestionIds(); // Lưu trữ danh sách questionIds
-                    totalSteps = questionIds.size(); // Cập nhật tổng số bước
-                    if (questionIds != null && !questionIds.isEmpty()) {
-                        fetchQuestion(questionIds.get(currentStep)); // Lấy câu hỏi đầu tiên
+                        // Lấy danh sách lựa chọn
+                        List<QuestionChoice> choices = question.getQuestionChoices();
+                        if (choices != null && !choices.isEmpty()) {
+                            for (QuestionChoice choice : choices) {
+                                Log.d("GrammarPick1QuestionActivity", "Lựa chọn: " + choice.getChoiceContent() +
+                                        " (Đáp án đúng: " + choice.isChoiceKey() + ")");
+                            }
+
+                            // Cập nhật giao diện người dùng
+                            runOnUiThread(() -> {
+                                tvContent.setText(questionContent);
+                                btnAnswer1.setText(choices.get(0).getChoiceContent());
+                                btnAnswer2.setText(choices.get(1).getChoiceContent());
+                                btnAnswer3.setText(choices.get(2).getChoiceContent());
+                                btnAnswer4.setText(choices.get(3).getChoiceContent());
+
+                                correctAnswers = choices.stream()
+                                        .filter(QuestionChoice::isChoiceKey) // Lọc ra các đáp án đúng
+                                        .map(QuestionChoice::getChoiceContent) // Chuyển đổi thành nội dung đáp án
+                                        .collect(Collectors.toList());
+                            });
+                        } else {
+                            Log.e("GrammarPick1QuestionActivity", "Câu hỏi không có lựa chọn.");
+                        }
                     } else {
-                        Log.e("GrammarPick1QuestionActivity", "Bài học không có câu hỏi.");
+                        Log.e("GrammarPick1QuestionActivity", "Câu hỏi trả về là null.");
                     }
-                } else {
-                    Log.e("GrammarPick1QuestionActivity", "Bài học trả về là null.");
                 }
-            }
 
+                @Override
+                public void onFailure(String errorMessage) {
+                    Log.e("GrammarPick1QuestionActivity", errorMessage);
+                }
 
-
-            @Override
-            public void onFailure(String errorMessage) {
-                Log.e("GrammarPick1QuestionActivity", errorMessage);
-            }
-
-
-            @Override
-            public void onSuccess() {}
-
-
-        });
+                @Override
+                public void onSuccess() {}
+            });
+        } else {
+            finishLesson();
+        }
     }
 
-    private void fetchQuestion(int questionId) {
-        quesManager.fetchQuestionContentFromApi(questionId, new ApiCallback<Question>() {
-            @Override
-            public void onSuccess(Question question) {
-                if (question != null) {
-                    // Lấy nội dung câu hỏi
-                    String questionContent = question.getQuesContent();
-                    Log.d("GrammarPick1QuestionActivity", "Câu hỏi: " + questionContent);
-
-                    // Lấy danh sách lựa chọn
-                    List<QuestionChoice> choices = question.getQuestionChoices();
-                    if (choices != null && !choices.isEmpty()) {
-                        for (QuestionChoice choice : choices) {
-                            Log.d("GrammarPick1QuestionActivity", "Lựa chọn: " + choice.getChoiceContent() +
-                                    " (Đáp án đúng: " + choice.isChoiceKey() + ")");
-                        }
-
-                        // Cập nhật giao diện người dùng
-                        runOnUiThread(() -> {
-                            tvContent.setText(questionContent);
-                            btnAnswer1.setText(choices.get(0).getChoiceContent());
-                            btnAnswer2.setText(choices.get(1).getChoiceContent());
-                            btnAnswer3.setText(choices.get(2).getChoiceContent());
-                            btnAnswer4.setText(choices.get(3).getChoiceContent());
-
-                            correctAnswers = choices.stream()
-                                    .filter(QuestionChoice::isChoiceKey) // Lọc ra các đáp án đúng
-                                    .map(QuestionChoice::getChoiceContent) // Chuyển đổi thành nội dung đáp án
-                                    .collect(Collectors.toList());
-                        });
-                    } else {
-                        Log.e("GrammarPick1QuestionActivity", "Câu hỏi không có lựa chọn.");
-                    }
-                } else {
-                    Log.e("GrammarPick1QuestionActivity", "Câu hỏi trả về là null.");
-                }
-            }
-
-
-
-            @Override
-            public void onFailure(String errorMessage) {
-                Log.e("GrammarPick1QuestionActivity", errorMessage);
-            }
-
-
-
-            @Override
-            public void onSuccess() {}
-        });
+    private void finishLesson() {
+        finish(); // Hoặc chuyển đến activity khác
     }
 
     private void updateProgressBar(LinearLayout progressBarSteps, int step) {

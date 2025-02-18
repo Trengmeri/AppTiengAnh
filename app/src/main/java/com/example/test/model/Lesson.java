@@ -1,8 +1,9 @@
 package com.example.test.model;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class Lesson {
+public class Lesson implements Serializable {
     private int id;
     private String name;
     private String skillType;

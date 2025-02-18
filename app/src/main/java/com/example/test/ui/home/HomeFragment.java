@@ -2,6 +2,7 @@ package com.example.test.ui.home;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,16 +23,12 @@ import com.example.test.api.ApiCallback;
 import com.example.test.api.LessonManager;
 import com.example.test.api.QuestionManager;
 import com.example.test.api.ResultManager;
-import com.example.test.model.Answer;
 import com.example.test.model.Course;
 import com.example.test.model.Lesson;
-import com.example.test.model.MediaFile;
-import com.example.test.model.Question;
-import com.example.test.model.Result;
 import com.example.test.ui.NotificationActivity;
-import com.example.test.ui.QuestionActivity;
-import com.example.test.ui.explore.ExploreActivity;
+import com.example.test.NevigateQuestion;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class HomeFragment extends Fragment {
@@ -134,12 +131,26 @@ public class HomeFragment extends Fragment {
                                             lessonsContainer.addView(lessonView);
 
                                             lessonTitle.setOnClickListener(v -> {
-                                                Intent intent = new Intent(getActivity(), QuestionActivity.class);
-                                                Bundle bundle = new Bundle();
-                                                bundle.putInt("lessonId", lessonId);
-                                                bundle.putInt("questionId", lesson.getQuestionIds().get(0)); // Truyền questionId đầu tiên
-                                                intent.putExtras(bundle);
-                                                startActivity(intent);
+                                                int lessonId = lesson.getId();
+                                                lesManager.fetchLessonById(lessonId, new ApiCallback<Lesson>() {
+                                                    @Override
+                                                    public void onSuccess() {}
+
+                                                    @Override
+                                                    public void onFailure(String errorMessage) {
+                                                        Log.e(getActivity().toString(),errorMessage);
+                                                    }
+
+                                                    @Override
+                                                    public void onSuccess(Lesson lesson) {
+                                                        if (lesson != null) {
+                                                            Intent intent = new Intent(getActivity(), NevigateQuestion.class);
+                                                            intent.putExtra("skill", lesson.getSkillType());
+                                                            intent.putExtra("questionIds", new ArrayList<>(lesson.getQuestionIds())); // Truyền danh sách câu hỏi
+                                                            startActivity(intent);
+                                                        }
+                                                    }
+                                                });
                                             });
                                         }
                                     });
@@ -147,7 +158,7 @@ public class HomeFragment extends Fragment {
                                 @Override
                                 public void onFailure(String errorMessage) {
                                     getActivity().runOnUiThread(() -> {
-                                        Toast.makeText(getActivity(), errorMessage, Toast.LENGTH_SHORT).show();
+                                        Log.e(getActivity().toString(),errorMessage);
                                     });
                                 }
 

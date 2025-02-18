@@ -33,6 +33,7 @@ import com.example.test.model.QuestionChoice;
 import com.example.test.model.Result;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,7 +51,8 @@ public class RecordQuestionActivity extends AppCompatActivity implements SpeechR
 
     private List<String> userAnswers = new ArrayList<>();
     List<String> correctAnswers = new ArrayList<>();
-    private List<Integer> questionIds;
+    private List<Question> questions; // Danh sách câu hỏi
+    private int currentQuestionIndex; // Vị trí câu hỏi hiện tại
     private int currentStep = 0; // Bước hiện tại (bắt đầu từ 0)
     private int totalSteps; // Tổng số bước trong thanh tiến trình
     QuestionManager quesManager = new QuestionManager(this);
@@ -69,8 +71,15 @@ public class RecordQuestionActivity extends AppCompatActivity implements SpeechR
         btnPlayAudio = findViewById(R.id.btn_play);
         Button btnCheckResult = findViewById(R.id.btnCheckResult);
         seekBar = findViewById(R.id.seekBar);
-        int lessonId = 4;
-        fetchLessonAndQuestions(lessonId);
+        // Nhận dữ liệu từ Intent
+        currentQuestionIndex = getIntent().getIntExtra("currentQuestionIndex", 0);
+        questions = (List<Question>) getIntent().getSerializableExtra("questions");
+
+
+        // Hiển thị câu hỏi hiện tại
+        loadQuestion(currentQuestionIndex);
+        fetchAudioUrl(questions.get(currentQuestionIndex).getId());
+
 
         // Kiểm tra quyền microphone
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
@@ -80,16 +89,6 @@ public class RecordQuestionActivity extends AppCompatActivity implements SpeechR
             imgVoice.setOnClickListener(v ->initializeSpeechRecognition());
         }
 
-        // Audio playback setup
-        mediaPlayer = MediaPlayer.create(this, R.raw.uaifein); // Thay thế với tệp âm thanh của bạn
-        btnPlayAudio.setOnClickListener(v -> {
-            if (!mediaPlayer.isPlaying()) {
-                mediaPlayer.start();
-                updateSeekBar();
-            }
-        });
-
-        mediaPlayer.setOnCompletionListener(mp -> seekBar.setProgress(0));
 
         LinearLayout progressBar = findViewById(R.id.progressBar); // Ánh xạ ProgressBar
 
@@ -104,28 +103,25 @@ public class RecordQuestionActivity extends AppCompatActivity implements SpeechR
                 Toast.makeText(RecordQuestionActivity.this, "Vui lòng trả lời câu hỏi!", Toast.LENGTH_SHORT).show();
             } else {
                 // Lưu câu trả lời của người dùng
-                quesManager.saveUserAnswer(questionIds.get(currentStep), userAnswer, new ApiCallback() {
+                quesManager.saveUserAnswer(questions.get(currentStep).getId(), userAnswer, new ApiCallback() {
                     @Override
                     public void onSuccess() {
                         Log.e("RecordQuestionActivity", "Câu trả lời đã được lưu: " + userAnswers.toString());
                         // Hiển thị kết quả sau khi lưu thành công
                         runOnUiThread(() -> {
                             PopupHelper.showResultPopup(findViewById(R.id.popupContainer), userAnswers, correctAnswers, () -> {
-                                // Callback khi nhấn Next Question trên popup
                                 currentStep++; // Tăng currentStep
-
-                                // Kiểm tra nếu hoàn thành
-                                if (currentStep < totalSteps) {
-                                    fetchQuestion(questionIds.get(currentStep)); // Lấy câu hỏi tiếp theo
-                                    updateProgressBar(progressBar, currentStep); // Cập nhật thanh tiến trình
+                                currentQuestionIndex++;
+                                if (currentQuestionIndex < questions.size()) {
+                                    updateProgressBar(progressBar, currentStep);
+                                    fetchAudioUrl(questions.get(currentQuestionIndex).getId());
+                                    loadQuestion(currentQuestionIndex);
                                 } else {
-                                    Intent intent = new Intent(RecordQuestionActivity.this, PointResultActivity.class);
-                                    startActivity(intent);
-                                    finish();
+                                    finishLesson();
                                 }
                             });
                         });
-                        resultManager.fetchAnswerPointsByQuesId(questionIds.get(currentStep), new ApiCallback<Answer>() {
+                        resultManager.fetchAnswerPointsByQuesId(questions.get(currentStep).getId(), new ApiCallback<Answer>() {
                             @Override
                             public void onSuccess() {
                             }
@@ -179,70 +175,96 @@ public class RecordQuestionActivity extends AppCompatActivity implements SpeechR
         });
     }
 
-    private void fetchLessonAndQuestions(int lessonId) {
-        lesManager.fetchLessonById(lessonId, new ApiCallback<Lesson>() {
+    private void fetchAudioUrl(int questionId) {
+
+        // Gọi phương thức fetchAudioUrl từ ApiManager
+        quesManager.fetchMediaByQuesId(questionId, new ApiCallback<MediaFile>() {
+
             @Override
             public void onSuccess() {
 
             }
 
             @Override
-            public void onSuccess(Lesson lesson) {
-                if (lesson != null) {
-                    questionIds = lesson.getQuestionIds();
-                    Log.d("RecordQuestionActivity", "Danh sách questionIds: " + questionIds);
-                    totalSteps = questionIds.size();
-                    if (questionIds != null && !questionIds.isEmpty()) {
-                        fetchQuestion(questionIds.get(currentStep));
-                    } else {
-                        Log.e("RecordQuestionActivity", "Bài học không có câu hỏi.");
+            public void onSuccess(MediaFile mediaFile) {
+                runOnUiThread(() -> { // Sử dụng runOnUiThread ở đây
+                    if (mediaFile!= null) {
+                        btnPlayAudio.setOnClickListener(v -> playAudio(mediaFile.getMaterLink()));
                     }
-                } else {
-                    Log.e("RecordQuestionActivity", "Bài học trả về là null.");
-                }
+                });
             }
 
             @Override
             public void onFailure(String errorMessage) {
-                Log.e("RecordQuestionActivity", errorMessage);
+                // Hiển thị thông báo lỗi nếu có
+                Log.e("media",errorMessage);
             }
         });
     }
+    private void playAudio (String audioUrl){
+        try {
+            mediaPlayer = new MediaPlayer();
+            mediaPlayer = MediaPlayer.create(this, R.raw.uaifein);
+            mediaPlayer.setOnCompletionListener(mp -> seekBar.setProgress(0));
+            mediaPlayer.start();
+            /*mediaPlayer.setDataSource(BaseApiManager.BASE_URL + "/" + audioUrl); // Sử dụng đường dẫn đầy đủ
+            mediaPlayer.prepare();
+            mediaPlayer.start();*/
+        } catch (IllegalArgumentException e) {
+            Log.e("MediaPlayerError", "IllegalArgumentException: " + e.getMessage()); // In ra lỗi chi tiết
+        } /*catch (SecurityException e) {
+            Log.e("MediaPlayerError", "SecurityException: " + e.getMessage()); // In ra lỗi chi tiết
+        } catch (IllegalStateException e) {
+            Log.e("MediaPlayerError", "IllegalStateException: " + e.getMessage()); // In ra lỗi chi tiết
+        } catch (IOException e) {
+            Log.e("MediaPlayerError", "IOException: " + e.getMessage()); // In ra lỗi chi tiết
+        }*/
+    }
 
-    private void fetchQuestion(int questionId) {
-        quesManager.fetchQuestionContentFromApi(questionId, new ApiCallback<Question>() {
-            @Override
-            public void onSuccess(Question question) {
-                if (question != null) {
-                    // Cập nhật giao diện người dùng với nội dung câu hỏi
-                    runOnUiThread(() -> {
-                        // Giả sử bạn có một TextView để hiển thị câu hỏi
-                        TextView tvQuestion = findViewById(R.id.tvQuestion);
-                        tvQuestion.setText(question.getQuesContent());
+    private void loadQuestion(int index) {
+        if (index < questions.size()) {
+            Question question = questions.get(index);
+            quesManager.fetchQuestionContentFromApi(question.getId(), new ApiCallback<Question>() {
+                @Override
+                public void onSuccess(Question question) {
+                    if (question != null) {
+                        // Cập nhật giao diện người dùng với nội dung câu hỏi
+                        runOnUiThread(() -> {
+                            // Giả sử bạn có một TextView để hiển thị câu hỏi
+                            TextView tvQuestion = findViewById(R.id.tvQuestion);
+                            tvQuestion.setText(question.getQuesContent());
 
-                        // Lưu trữ đáp án đúng để kiểm tra sau
-                        List<QuestionChoice> choices = question.getQuestionChoices();
-                        correctAnswers.clear();
-                        for (QuestionChoice choice : choices) {
-                            if (choice.isChoiceKey()) {
-                                correctAnswers.add(choice.getChoiceContent());
+                            // Lưu trữ đáp án đúng để kiểm tra sau
+                            List<QuestionChoice> choices = question.getQuestionChoices();
+                            correctAnswers.clear();
+                            for (QuestionChoice choice : choices) {
+                                if (choice.isChoiceKey()) {
+                                    correctAnswers.add(choice.getChoiceContent());
+                                }
                             }
-                        }
-                    });
-                } else {
-                    Log.e("RecordQuestionActivity", "Câu hỏi trả về là null.");
+                        });
+                    } else {
+                        Log.e("RecordQuestionActivity", "Câu hỏi trả về là null.");
+                    }
                 }
-            }
 
-            @Override
-            public void onFailure(String errorMessage) {
-                Log.e("RecordQuestionActivity", errorMessage);
-            }
+                @Override
+                public void onFailure(String errorMessage) {
+                    Log.e("GrammarPick1QuestionActivity", errorMessage);
+                }
 
-            @Override
-            public void onSuccess() {}
-        });
+                @Override
+                public void onSuccess() {}
+            });
+        } else {
+            finishLesson();
+        }
     }
+
+    private void finishLesson() {
+        finish(); // Hoặc chuyển đến activity khác
+    }
+
 
     private void initializeSpeechRecognition() {
         speechRecognitionHelper = new SpeechRecognitionHelper(this, this);

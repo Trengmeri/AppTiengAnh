@@ -34,6 +34,7 @@ import com.example.test.model.QuestionChoice;
 import com.example.test.model.Result;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,7 +46,8 @@ public class ListeningQuestionActivity extends AppCompatActivity {
     List<String> correctAnswers = new ArrayList<>();
     private MediaPlayer mediaPlayer;
     private EditText etAnswer;
-    private List<Integer> questionIds;
+    private List<Question> questions; // Danh sách câu hỏi
+    private int currentQuestionIndex; // Vị trí câu hỏi hiện tại
     private List<String> userAnswers = new ArrayList<>();
     private int currentStep = 0; // Bước hiện tại (bắt đầu từ 0)
     private int totalSteps; // Tổng số bước trong thanh tiến trình
@@ -65,8 +67,14 @@ public class ListeningQuestionActivity extends AppCompatActivity {
         btnListen = findViewById(R.id.btnListen);
         Button btnCheckResult = findViewById(R.id.btnCheckResult);
         etAnswer = findViewById(R.id.etAnswer);
-        int lessonId = 3;
-        fetchLessonAndQuestions(lessonId);
+        // Nhận dữ liệu từ Intent
+        currentQuestionIndex = getIntent().getIntExtra("currentQuestionIndex", 0);
+        questions = (List<Question>) getIntent().getSerializableExtra("questions");
+
+
+        // Hiển thị câu hỏi hiện tại
+        loadQuestion(currentQuestionIndex);
+        fetchAudioUrl(questions.get(currentQuestionIndex).getId());
 
         LinearLayout progressBar = findViewById(R.id.progressBar); // Ánh xạ ProgressBar
 
@@ -89,7 +97,7 @@ public class ListeningQuestionActivity extends AppCompatActivity {
                 }
                 String answerContent = sb.toString();
                 // Lưu câu trả lời của người dùng
-                quesManager.saveUserAnswer(questionIds.get(currentStep), answerContent, new ApiCallback() {
+                quesManager.saveUserAnswer(questions.get(currentStep).getId(), answerContent, new ApiCallback() {
 
                     @Override
                     public void onSuccess() {
@@ -97,21 +105,18 @@ public class ListeningQuestionActivity extends AppCompatActivity {
                         // Hiển thị popup
                         runOnUiThread(() -> {
                             PopupHelper.showResultPopup(findViewById(R.id.popupContainer), userAnswers, correctAnswers, () -> {
-                                // Callback khi nhấn Next Question trên popup
                                 currentStep++; // Tăng currentStep
-
-                                // Kiểm tra nếu hoàn thành
-                                if (currentStep < totalSteps) {
-                                    fetchQuestion(questionIds.get(currentStep)); // Lấy câu hỏi tiếp theo
-                                    updateProgressBar(progressBar, currentStep); // Cập nhật thanh tiến trình
+                                currentQuestionIndex++;
+                                if (currentQuestionIndex < questions.size()) {
+                                    updateProgressBar(progressBar, currentStep);
+                                    fetchAudioUrl(questions.get(currentQuestionIndex).getId());
+                                    loadQuestion(currentQuestionIndex);
                                 } else {
-                                    Intent intent = new Intent(ListeningQuestionActivity.this, RecordQuestionActivity.class);
-                                    startActivity(intent);
-                                    finish();
+                                    finishLesson();
                                 }
                             });
                         });
-                        resultManager.fetchAnswerPointsByQuesId(questionIds.get(currentStep), new ApiCallback<Answer>() {
+                        resultManager.fetchAnswerPointsByQuesId(questions.get(currentStep).getId(), new ApiCallback<Answer>() {
                             @Override
                             public void onSuccess() {
                             }
@@ -212,67 +217,48 @@ public class ListeningQuestionActivity extends AppCompatActivity {
         }*/
     }
 
-    private void fetchLessonAndQuestions(int lessonId) {
-        lesManager.fetchLessonById(lessonId, new ApiCallback<Lesson>() {
-            @Override
-            public void onSuccess(Lesson lesson) {
-                if (lesson != null) {
-                    questionIds = lesson.getQuestionIds();
-                    Log.d("ListeningQuestionActivity", "Danh sách questionIds: " + questionIds);
-                    totalSteps = questionIds.size();
-                    if (questionIds != null && !questionIds.isEmpty()) {
-                        fetchQuestion(questionIds.get(currentStep));
-                        fetchAudioUrl(questionIds.get(currentStep));
-                    } else {
-                        Log.e("ListeningQuestionActivity", "Bài học không có câu hỏi.");
-                    }
-                } else {
-                    Log.e("ListeningQuestionActivity", "Bài học trả về là null.");
-                }
-            }
+    private void loadQuestion(int index) {
+        if (index < questions.size()) {
+            Question question = questions.get(index);
+            quesManager.fetchQuestionContentFromApi(question.getId(), new ApiCallback<Question>() {
+                @Override
+                public void onSuccess(Question question) {
+                    if (question != null) {
+                        // Cập nhật giao diện người dùng với nội dung câu hỏi
+                        runOnUiThread(() -> {
+                            // Giả sử bạn có một TextView để hiển thị câu hỏi
+                            TextView tvQuestion = findViewById(R.id.tvQuestion);
+                            tvQuestion.setText(question.getQuesContent());
 
-            @Override
-            public void onFailure(String errorMessage) {
-                Log.e("ListeningQuestionActivity", errorMessage);
-            }
-            @Override
-            public void onSuccess() {}
-        });
+                            // Lưu trữ đáp án đúng để kiểm tra sau
+                            List<QuestionChoice> choices = question.getQuestionChoices();
+                            correctAnswers.clear();
+                            for (QuestionChoice choice : choices) {
+                                if (choice.isChoiceKey()) {
+                                    correctAnswers.add(choice.getChoiceContent());
+                                }
+                            }
+                        });
+                    } else {
+                        Log.e("ListeningQuestionActivity", "Câu hỏi trả về là null.");
+                    }
+                }
+
+                @Override
+                public void onFailure(String errorMessage) {
+                    Log.e("GrammarPick1QuestionActivity", errorMessage);
+                }
+
+                @Override
+                public void onSuccess() {}
+            });
+        } else {
+            finishLesson();
+        }
     }
 
-    private void fetchQuestion(int questionId) {
-        quesManager.fetchQuestionContentFromApi(questionId, new ApiCallback<Question>() {
-            @Override
-            public void onSuccess(Question question) {
-                if (question != null) {
-                    // Cập nhật giao diện người dùng với nội dung câu hỏi
-                    runOnUiThread(() -> {
-                        // Giả sử bạn có một TextView để hiển thị câu hỏi
-                        TextView tvQuestion = findViewById(R.id.tvQuestion);
-                        tvQuestion.setText(question.getQuesContent());
-
-                        // Lưu trữ đáp án đúng để kiểm tra sau
-                        List<QuestionChoice> choices = question.getQuestionChoices();
-                        correctAnswers.clear();
-                        for (QuestionChoice choice : choices) {
-                            if (choice.isChoiceKey()) {
-                                correctAnswers.add(choice.getChoiceContent());
-                            }
-                        }
-                    });
-                } else {
-                    Log.e("ListeningQuestionActivity", "Câu hỏi trả về là null.");
-                }
-            }
-
-            @Override
-            public void onFailure(String errorMessage) {
-                Log.e("ListeningQuestionActivity", errorMessage);
-            }
-
-            @Override
-            public void onSuccess() {}
-        });
+    private void finishLesson() {
+        finish(); // Hoặc chuyển đến activity khác
     }
 
     @Override
