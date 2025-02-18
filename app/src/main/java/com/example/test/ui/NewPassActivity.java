@@ -87,7 +87,7 @@ public class NewPassActivity extends AppCompatActivity {
                 showerror();
                 btnNext.setEnabled(false);
                 btnNext.setAlpha(0.5f);
-                if(isValid) {
+                if (isValid) {
                     if (!apiManager.isInternetAvailable(NewPassActivity.this)) {
                         Toast.makeText(NewPassActivity.this, "Vui lòng kiểm tra kết nối Internet của bạn.", Toast.LENGTH_LONG).show();
                     } else {
@@ -97,9 +97,9 @@ public class NewPassActivity extends AppCompatActivity {
 //                if (!pass.equals(repass)) {
 //                    Toast.makeText(NewPassActivity.this, "Mật khẩu nhập lại không khớp", Toast.LENGTH_SHORT).show();
 //                }
-                        apiManager.updatePassword(pass, repass, token, new ApiCallback() {
+                        apiManager.updatePassword(pass, repass, token, new ApiCallback<String>() {
                             @Override
-                            public void onSuccess() {
+                            public void onSuccess(String token) {
                                 runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
@@ -111,10 +111,10 @@ public class NewPassActivity extends AppCompatActivity {
                                 });
                             }
 
-                        @Override
-                        public void onSuccess(Object result) {
+                            @Override
+                            public void onSuccess() {
 
-                        }
+                            }
 
 
                             @Override
@@ -128,7 +128,8 @@ public class NewPassActivity extends AppCompatActivity {
                                 });
                             }
 
-                    });
+                        });
+                    }
                 }
             }
         });
@@ -257,6 +258,8 @@ public class NewPassActivity extends AppCompatActivity {
         edtRePass = (EditText) findViewById(R.id.edtRePass);
         btnNext = findViewById(R.id.btnNext);
         icback = findViewById(R.id.icback);
+        tPasserror = findViewById(R.id.tPassError); // Thay thế bằng ID của TextView
+        tNewpasserror = findViewById(R.id.tNewPassError);
     }
     private void showCustomDialog(String message) {
         Dialog dialog = new Dialog(this);
@@ -287,7 +290,8 @@ public class NewPassActivity extends AppCompatActivity {
         }, 2000);
     }
     private boolean isValidPassword(String password) {
-        String passwordPattern = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[@#$%^&+=!_&*]).{8,}$";
+        String passwordPattern = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d).{8,}$";
+//        String passwordPattern = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[@#$%^&+=!_&*]).{8,}$";
         Pattern pattern = Pattern.compile(passwordPattern);
         Matcher matcher = pattern.matcher(password);
         return matcher.matches();
@@ -308,6 +312,7 @@ public class NewPassActivity extends AppCompatActivity {
         isValid= true;
         String newpass = edtPass.getText().toString().trim();
         String renewpass = edtRePass.getText().toString().trim();
+
 
         tPasserror.setVisibility(View.GONE); // Ẩn lỗi ban đầu
         tNewpasserror.setVisibility(View.GONE);

@@ -113,6 +113,9 @@ public class PointResultActivity extends AppCompatActivity {
             public void onFailure(String errorMessage) {
 
             }
+
+            @Override
+            public void onSuccess(Object result){}
         });
     }
 
@@ -131,7 +134,6 @@ public class PointResultActivity extends AppCompatActivity {
                     lesManager.fetchLessonById(lessonId, new ApiCallback<Lesson>() {
                         @Override
                         public void onSuccess() {}
-
 
                         @Override
                         public void onSuccess(Lesson lesson) {
@@ -189,7 +191,29 @@ public class PointResultActivity extends AppCompatActivity {
             @Override
             public void onSuccess() {
                 Log.d("PointResultActivity", "createResultForLesson: Gọi fetchResultByLesson"); // Log trước khi gọi fetchResultByLesson
+                resultManager.fetchResultByLesson(lessonId, new ApiCallback<Result>() {
+                    @Override
+                    public void onSuccess() {}
+
+                    @Override
+                    public void onSuccess(Result result) {
+                        if (result!= null) {
+                            Log.d("PointResultActivity", "fetchResultByLesson: Lấy Result thành công");
+                            runOnUiThread(() -> updateUI(skillType, result.getComLevel(), result.getTotalPoints(), result.getId()));
+                        } else {
+                            Log.e("PointResultActivity", "fetchResultByLesson: Kết quả không hợp lệ.");
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(String errorMessage) {
+                        Log.e("PointResultActivity", "fetchResultByLesson: " + errorMessage);
+                    }
+                });
             }
+
+            @Override
+            public void onSuccess(Object result){}
 
 
             @Override
@@ -199,27 +223,6 @@ public class PointResultActivity extends AppCompatActivity {
 
 
         });
-        new Handler(Looper.getMainLooper()).postDelayed(() -> { // Delay trước khi gọi fetchResultByLesson
-            resultManager.fetchResultByLesson(lessonId, new ApiCallback<Result>() {
-                @Override
-                public void onSuccess() {}
-
-                @Override
-                public void onSuccess(Result result) {
-                    if (result!= null) {
-                        Log.d("PointResultActivity", "fetchResultByLesson: Lấy Result thành công");
-                        runOnUiThread(() -> updateUI(skillType, result.getComLevel(), result.getTotalPoints(), result.getId()));
-                    } else {
-                        Log.e("PointResultActivity", "fetchResultByLesson: Kết quả không hợp lệ.");
-                    }
-                }
-
-                @Override
-                public void onFailure(String errorMessage) {
-                    Log.e("PointResultActivity", "fetchResultByLesson: " + errorMessage);
-                }
-            });
-        }, 500);
     }
 
     private void updateUI(String skillType, double complete, int totalPoints, int resultId) {

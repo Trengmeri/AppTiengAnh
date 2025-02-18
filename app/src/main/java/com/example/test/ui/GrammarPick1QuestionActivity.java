@@ -116,62 +116,52 @@ public class GrammarPick1QuestionActivity extends AppCompatActivity {
                             });
                         });
                         resultManager.fetchAnswerPointsByQuesId(questionIds.get(currentStep), new ApiCallback<Answer>() {
-                            @Override
-                            public void onSuccess() {
-                            }
-
-
-
-                            @Override
-                            public void onSuccess(Answer answer) {
-                                if (answer != null) {
-                                    answerIds = answer.getId();
-                                    Log.e("GrammarPick1QuestionActivity", "Answer ID từ API: " + answer.getId());
-                                    if (answerIds != 0) {
-                                        QuestionManager.gradeAnswer(answerIds, new Callback() {
-                                            @Override
-                                            public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                                                Log.e("GrammarPick1QuestionActivity", "Lỗi khi chấm điểm: " + e.getMessage());
-                                            }
-
-                                            @Override
-                                            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                                                if (response.isSuccessful()) {
-                                                    Log.e("GrammarPick1QuestionActivity", "Chấm điểm thành công cho Answer ID: " + answerIds +"Diem: "+ answer.getPointAchieved());
-                                                } else {
-                                                    Log.e("GrammarPick1QuestionActivity", "Lỗi từ server: " + response.code());
-                                                }
-                                            }
-                                        });
-                                    } else {
-                                        Log.e("GrammarPick1QuestionActivity", "Bài học không có câu trl.");
-                                    }
-                                } else {
-                                    Log.e("GrammarPick1QuestionActivity", "Không nhận được câu trả lời từ API.");
+                                @Override
+                                public void onSuccess() {
                                 }
-                            }
 
-                            @Override
-                            public void onFailure(String errorMessage) {
+                                @Override
+                                public void onSuccess(Answer answer) {
+                                    if (answer != null) {
+                                        answerIds = answer.getId();
+                                        Log.e("GrammarPick1QuestionActivity", "Answer ID từ API: " + answer.getId());
+                                        if (answerIds != 0) {
+                                            QuestionManager.gradeAnswer(answerIds, new Callback() {
+                                                @Override
+                                                public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                                                    Log.e("GrammarPick1QuestionActivity", "Lỗi khi chấm điểm: " + e.getMessage());
+                                                }
 
-                            }
+                                                @Override
+                                                public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                                                    if (response.isSuccessful()) {
+                                                        Log.e("GrammarPick1QuestionActivity", "Chấm điểm thành công cho Answer ID: " + answerIds +"Diem: "+ answer.getPointAchieved());
+                                                    } else {
+                                                        Log.e("GrammarPick1QuestionActivity", "Lỗi từ server: " + response.code());
+                                                    }
+                                                }
+                                            });
+                                        } else {
+                                            Log.e("GrammarPick1QuestionActivity", "Bài học không có câu trl.");
+                                        }
+                                    } else {
+                                        Log.e("GrammarPick1QuestionActivity", "Không nhận được câu trả lời từ API.");
+                                    }
+                                }
 
+                                @Override
+                                public void onFailure(String errorMessage) {
 
-                        });
-                    }
+                                }
+                            });
+                        }
 
                     @Override
-                    public void onSuccess(Object result) {
-
-                    }
-
-
+                    public void onSuccess(Object result) {}
                     @Override
                     public void onFailure(String errorMessage) {
                         Log.e("GrammarPick1QuestionActivity", errorMessage);
                     }
-
-
                 });
 
             }

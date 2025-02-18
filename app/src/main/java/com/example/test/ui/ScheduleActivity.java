@@ -307,51 +307,12 @@ public class ScheduleActivity extends AppCompatActivity {
                 }
 
                 @Override
-                public void onSuccess(Question questions) {
-
-                }
-                @Override
-                public void onSuccess(Enrollment enrollment) {}
-
-                @Override
-                public void onSuccess(Lesson lesson) {
-
-                }
-
-                @Override
-                public void onSuccess(Course course) {
-
-                }
-
-                @Override
-                public void onSuccess(Result result) {
-
-                }
-
-                @Override
-                public void onSuccess(Answer answer) {
-
-                }
-
-                @Override
-                public void onSuccess(MediaFile mediaFile) {
-
-                }
+                public void onSuccess(Object result) {}
 
                 @Override
                 public void onFailure(String errorMessage) {
                     // Xử lý lỗi
                     Log.e("ScheduleActivity", "Lỗi tạo lịch học: " + errorMessage);
-                }
-
-                @Override
-                public void onSuccessWithOtpID(String otpID) {
-
-                }
-
-                @Override
-                public void onSuccessWithToken(String token) {
-
                 }
             });
         }

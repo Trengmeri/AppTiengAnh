@@ -139,11 +139,10 @@ public class SignUpActivity extends AppCompatActivity {
                             intent.putExtra("source", "register");
                             startActivity(intent);
                         }
-                    }
-                });
+                    });
+                }
             }
         });
-
 
         btnIn.setOnClickListener(view -> {
             Intent intent = new Intent(SignUpActivity.this, SignInActivity.class);

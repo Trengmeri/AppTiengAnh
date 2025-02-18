@@ -117,11 +117,6 @@ public class ConfirmCode2Activity extends AppCompatActivity {
 
                     }
 
-                    @Override
-                    public void onSuccess(MediaFile mediaFile) {
-
-                    }
-
 
                     @Override
                     public void onFailure(String errorMessage) {
@@ -227,10 +222,8 @@ public class ConfirmCode2Activity extends AppCompatActivity {
                                     finish();
                                 }
 
-                            @Override
-                            public void onSuccess(Object result) {
-
-                                }
+                                @Override
+                                public void onSuccess(Object result) {}
 
 
                                 @Override
@@ -244,15 +237,13 @@ public class ConfirmCode2Activity extends AppCompatActivity {
                                         }
                                     });
                                 }
-
-
                             });
                         }
                         else if (Objects.equals(typeScreen, "forgot")){
                             // di luong quen mk
-                            apiManager.sendConfirmForgotPasswordRequest(otpID,code, new ApiCallback() {
+                            apiManager.sendConfirmForgotPasswordRequest(otpID,code, new ApiCallback<String>() {
                                 @Override
-                                public void onSuccess() {
+                                public void onSuccess(String token) {
                                     // Chuyển đến Activity tiếp theo nếu mã đúng
                                     runOnUiThread(new Runnable() {
                                         @Override
@@ -265,35 +256,32 @@ public class ConfirmCode2Activity extends AppCompatActivity {
                                     finish();
                                 }
 
-                            @Override
-                            public void onSuccess(Object result) {
+                                @Override
+                                public void onSuccess() {
+                                }
 
-                            }
 
-
-                            @Override
-                            public void onFailure(String errorMessage) {
-                                // Hiển thị thông báo lỗi nếu mã sai
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        showCustomDialog("Lỗi: " + errorMessage);
-                                        isRequesting= false;
-                                        //Toast.makeText(ConfirmCode2Activity.this, errorMessage, Toast.LENGTH_SHORT).show();
+                                @Override
+                                public void onFailure(String errorMessage) {
+                                    // Hiển thị thông báo lỗi nếu mã sai
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            showCustomDialog("Lỗi: " + errorMessage);
+                                            isRequesting = false;
+                                            //Toast.makeText(ConfirmCode2Activity.this, errorMessage, Toast.LENGTH_SHORT).show();
                                         }
-                                });
-                            }
-
-
-
-                        });
-                    }
+                                    });
+                                }
+                            });
+                        }
+                    }, 1000);
                 }
             }
 
             @Override
             public void afterTextChanged(android.text.Editable editable) {}
-        });
+            });
     }
     // Lấy otpID từ SharedPreferences
     private String getOtpIdFromPreferences() {

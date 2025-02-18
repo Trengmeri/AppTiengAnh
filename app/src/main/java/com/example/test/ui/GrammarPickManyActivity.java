@@ -108,8 +108,6 @@ public class GrammarPickManyActivity extends AppCompatActivity {
                             @Override
                             public void onSuccess() {
                             }
-
-
                             @Override
                             public void onSuccess(Answer answer) {
                                 if (answer != null) {
@@ -139,10 +137,8 @@ public class GrammarPickManyActivity extends AppCompatActivity {
                                 }
                             }
 
-
                             @Override
                             public void onFailure(String errorMessage) {
-
                             }
                         });
                     }
@@ -151,7 +147,6 @@ public class GrammarPickManyActivity extends AppCompatActivity {
                     public void onSuccess(Object result) {
 
                     }
-
 
                     @Override
                     public void onFailure(String errorMessage) {

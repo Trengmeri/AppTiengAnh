@@ -72,21 +72,9 @@ public class ReviewAnswerActivity extends AppCompatActivity {
     }
 
     private void fetchCourseData(int courseId) {
-        lesManager.fetchCourseById(courseId, new ApiCallback() {
+        lesManager.fetchCourseById(courseId, new ApiCallback<Course>() {
             @Override
             public void onSuccess() {
-            }
-            @Override
-            public void onSuccess(Enrollment enrollment) {}
-
-            @Override
-            public void onSuccess(Question questions) {
-
-            }
-
-            @Override
-            public void onSuccess(Lesson lesson) {
-
             }
 
             @Override
@@ -109,48 +97,16 @@ public class ReviewAnswerActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onSuccess(Result result) {
-
-            }
-
-            @Override
-            public void onSuccess(Answer answer) {
-
-            }
-
-            @Override
-            public void onSuccess(MediaFile mediaFile) {
-
-            }
-
-            @Override
             public void onFailure(String errorMessage) {
-
-            }
-
-            @Override
-            public void onSuccessWithOtpID(String otpID) {
-
-            }
-
-            @Override
-            public void onSuccessWithToken(String token) {
 
             }
         });
     }
 
     private void fetchLessonData(int lessonId) {
-        lesManager.fetchLessonById(lessonId, new ApiCallback() {
+        lesManager.fetchLessonById(lessonId, new ApiCallback<Lesson>() {
             @Override
             public void onSuccess() {
-
-            }
-            @Override
-            public void onSuccess(Enrollment enrollment) {}
-
-            @Override
-            public void onSuccess(Question questions) {
 
             }
 
@@ -170,38 +126,9 @@ public class ReviewAnswerActivity extends AppCompatActivity {
                 });
             }
 
-            @Override
-            public void onSuccess(Course course) {
-
-            }
-
-            @Override
-            public void onSuccess(Result result) {
-
-            }
-
-            @Override
-            public void onSuccess(Answer answer) {
-
-            }
-
-            @Override
-            public void onSuccess(MediaFile mediaFile) {
-
-            }
 
             @Override
             public void onFailure(String errorMessage) {
-
-            }
-
-            @Override
-            public void onSuccessWithOtpID(String otpID) {
-
-            }
-
-            @Override
-            public void onSuccessWithToken(String token) {
 
             }
 
@@ -209,44 +136,19 @@ public class ReviewAnswerActivity extends AppCompatActivity {
     }
 
     private void fetchQuestionAndAnswer(int questionId, LinearLayout questionsContainer) {
-        quesManager.fetchQuestionContentFromApi(questionId, new ApiCallback() {
+        quesManager.fetchQuestionContentFromApi(questionId, new ApiCallback<Question>() {
             @Override
             public void onSuccess() {
 
             }
-            @Override
-            public void onSuccess(Enrollment enrollment) {}
 
             @Override
             public void onSuccess(Question question) {
-                resultManager.fetchAnswerPointsByQuesId(questionId, new ApiCallback() {
+                resultManager.fetchAnswerPointsByQuesId(questionId, new ApiCallback<Answer>() {
                     @Override
                     public void onSuccess() {
 
                     }
-                    @Override
-                    public void onSuccess(Enrollment enrollment) {}
-
-                    @Override
-                    public void onSuccess(Question questions) {
-
-                    }
-
-                    @Override
-                    public void onSuccess(Lesson lesson) {
-
-                    }
-
-                    @Override
-                    public void onSuccess(Course course) {
-
-                    }
-
-                    @Override
-                    public void onSuccess(Result result) {
-
-                    }
-
                     @Override
                     public void onSuccess(Answer answer) {
                         runOnUiThread(() -> {
@@ -287,22 +189,7 @@ public class ReviewAnswerActivity extends AppCompatActivity {
                     }
 
                     @Override
-                    public void onSuccess(MediaFile mediaFile) {
-
-                    }
-
-                    @Override
                     public void onFailure(String errorMessage) {
-
-                    }
-
-                    @Override
-                    public void onSuccessWithOtpID(String otpID) {
-
-                    }
-
-                    @Override
-                    public void onSuccessWithToken(String token) {
 
                     }
 
@@ -310,42 +197,7 @@ public class ReviewAnswerActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onSuccess(Lesson lesson) {
-
-            }
-
-            @Override
-            public void onSuccess(Course course) {
-
-            }
-
-            @Override
-            public void onSuccess(Result result) {
-
-            }
-
-            @Override
-            public void onSuccess(Answer answer) {
-
-            }
-
-            @Override
-            public void onSuccess(MediaFile mediaFile) {
-
-            }
-
-            @Override
             public void onFailure(String errorMessage) {
-
-            }
-
-            @Override
-            public void onSuccessWithOtpID(String otpID) {
-
-            }
-
-            @Override
-            public void onSuccessWithToken(String token) {
 
             }
 

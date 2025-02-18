@@ -94,7 +94,7 @@ public class SignInActivity extends AppCompatActivity {
                 String email = edtEmail.getText().toString();
                 String pass = edtMKhau.getText().toString();
 
-                if (isValid){
+                if (isValid) {
                     if (!apiManager.isInternetAvailable(SignInActivity.this)) {
                         Toast.makeText(SignInActivity.this, "Không có kết nối Internet!", Toast.LENGTH_SHORT).show();
                     } else {
@@ -105,10 +105,10 @@ public class SignInActivity extends AppCompatActivity {
                                 startActivity(intent); // Chuyển hướng đến Home Activity
                             }
 
-                    @Override
-                    public void onSuccess(Object result) {
+                            @Override
+                            public void onSuccess(Object result) {
 
-                    }
+                            }
 
                             @Override
                             public void onFailure(String errorMessage) {
@@ -121,20 +121,9 @@ public class SignInActivity extends AppCompatActivity {
                                     }
                                 });
                             }
-
-                });
-                // if (email.isEmpty() || pass.isEmpty()) {
-                // Toast.makeText(Sign_In.this, "Vui lòng điền đầy đủ thông tin!",
-                // Toast.LENGTH_LONG).show();
-                // } else if (!isValidEmail(email)) {
-                // Toast.makeText(Sign_In.this, "Email không đúng định dạng!",
-                // Toast.LENGTH_LONG).show();
-                // } else if (!isValidPassword(pass)) {
-                // Toast.makeText(Sign_In.this, "Mật khẩu ít nhất 8 ký tự gồm chữ hoa, chữ
-                // thường, số và ký tự đặc biệt", Toast.LENGTH_LONG).show();
-                // }else {
-                // sendLoginRequest(email, pass);
-                // }
+                        });
+                    }
+                }
             }
         });
 

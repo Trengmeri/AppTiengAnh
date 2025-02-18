@@ -69,47 +69,44 @@ public class ForgotPassWordActivity extends AppCompatActivity {
                     //Toast.makeText(ForgotPassWordActivity.this, "Email không hợp lệ!", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                if(valid) {
+                if (valid) {
                     btnContinue.setEnabled(false);
                     btnContinue.setAlpha(0.5f);
-                if (!apiManager.isInternetAvailable(ForgotPassWordActivity.this)) {
-                    Toast.makeText(ForgotPassWordActivity.this, "Không có kết nối Internet!", Toast.LENGTH_SHORT).show();
-                    return;
+                    if (!apiManager.isInternetAvailable(ForgotPassWordActivity.this)) {
+                        Toast.makeText(ForgotPassWordActivity.this, "Không có kết nối Internet!", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    apiManager.sendForgotPasswordRequest(email, new ApiCallback<String>() {
+                        @Override
+                        public void onSuccess() {
+                        }
+
+                        @Override
+                        public void onSuccess(String otpID) {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    showCustomDialog("OTP was sent to your email.Please check!");
+                                    //Toast.makeText(ForgotPassWordActivity.this, "Vui lòng kiểm tra email của bạn.", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                            saveOtpId(otpID); // Lưu otpID vào SharedPreferences
+                            Intent intent = new Intent(ForgotPassWordActivity.this, ConfirmCode2Activity.class);
+                            intent.putExtra("source", "forgot");
+                            startActivity(intent);
+                        }
+
+                        @Override
+                        public void onFailure(String errorMessage) {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(ForgotPassWordActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        }
+                    });
                 }
-                apiManager.sendForgotPasswordRequest(email, new ApiCallback<String>() {
-                    @Override
-                    public void onSuccess() {
-                    }
-
-                    @Override
-                    public void onSuccess(String otpID) {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                showCustomDialog("OTP was sent to your email.Please check!");
-                                //Toast.makeText(ForgotPassWordActivity.this, "Vui lòng kiểm tra email của bạn.", Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                        saveOtpId(otpID); // Lưu otpID vào SharedPreferences
-                        Intent intent = new Intent(ForgotPassWordActivity.this, ConfirmCode2Activity.class);
-                        intent.putExtra("source", "forgot");
-                        startActivity(intent);
-                    }
-
-                    @Override
-                    public void onFailure(String errorMessage) {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Toast.makeText(ForgotPassWordActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                    }
-
-
-                    }
-
-                });
             }
         });
 
