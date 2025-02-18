@@ -30,6 +30,7 @@ import com.example.test.api.ApiCallback;
 import com.example.test.api.AuthenticationManager;
 import com.example.test.model.Answer;
 import com.example.test.model.Course;
+import com.example.test.model.Discussion;
 import com.example.test.model.Enrollment;
 import com.example.test.model.Lesson;
 import com.example.test.model.MediaFile;
@@ -96,6 +97,7 @@ public class ConfirmCode2Activity extends AppCompatActivity {
             public void onClick(View view) {
                 btnRe.setEnabled(false); // Ngăn người dùng nhấn liên tục
                 btnRe.setAlpha(0.3f);
+                resetCountdown();// Gọi phương thức reset lại bộ đếm
                 String otpID = getOtpIdFromPreferences(); // Lấy OTP ID đã lưu
                 apiManager.resendConfirmCodeRequest(otpID, new ApiCallback() {
                     @Override
@@ -111,32 +113,7 @@ public class ConfirmCode2Activity extends AppCompatActivity {
                     }
 
                     @Override
-                    public void onSuccess(Question questions) {
-
-                    }
-
-                    @Override
-                    public void onSuccess(Lesson lesson) {
-
-                    }
-
-                    @Override
-                    public void onSuccess(Course course) {
-
-                    }
-
-                    @Override
-                    public void onSuccess(Result result) {
-
-                    }
-
-                    @Override
-                    public void onSuccess(Answer answer) {
-
-                    }
-
-                    @Override
-                    public void onSuccess(Enrollment enrollment) {
+                    public void onSuccess(Object result) {
 
                     }
 
@@ -157,16 +134,6 @@ public class ConfirmCode2Activity extends AppCompatActivity {
                                 btnRe.setAlpha(1.0f); // Cho phép bấm lại nếu lỗi
                             }
                         });
-                    }
-
-                    @Override
-                    public void onSuccessWithOtpID(String otpID) {
-
-                    }
-
-                    @Override
-                    public void onSuccessWithToken(String token) {
-
                     }
                 });
             }
@@ -190,7 +157,6 @@ public class ConfirmCode2Activity extends AppCompatActivity {
                 R.id.button4, R.id.button5, R.id.button6, R.id.button7,
                 R.id.button8, R.id.button9
         };
-
 
         // Gắn sự kiện cho từng nút
         for (int i = 0; i < buttonIds.length; i++) {
@@ -261,35 +227,10 @@ public class ConfirmCode2Activity extends AppCompatActivity {
                                     finish();
                                 }
 
-                                @Override
-                                public void onSuccess(Question questions) {
+                            @Override
+                            public void onSuccess(Object result) {
 
                                 }
-
-                                @Override
-                                public void onSuccess(Lesson lesson) {}
-
-                                @Override
-                                public void onSuccess(Result result) {}
-
-                                @Override
-                                public void onSuccess(Answer answer) {
-
-                                }
-
-                                @Override
-                                public void onSuccess(Enrollment enrollment) {
-
-                                }
-
-                                @Override
-                                public void onSuccess(MediaFile mediaFile) {
-
-                                }
-
-
-                                @Override
-                                public void onSuccess(Course course) {}
 
 
                                 @Override
@@ -304,15 +245,6 @@ public class ConfirmCode2Activity extends AppCompatActivity {
                                     });
                                 }
 
-                                @Override
-                                public void onSuccessWithOtpID(String otpID) {
-
-                                }
-
-                                @Override
-                                public void onSuccessWithToken(String token) {
-
-                                }
 
                             });
                         }
@@ -333,51 +265,29 @@ public class ConfirmCode2Activity extends AppCompatActivity {
                                     finish();
                                 }
 
-                                @Override
-                                public void onSuccess(Question questions) {
-                                }
-                                @Override
-                                public void onSuccess(Lesson lesson) {}
-                                @Override
-                                public void onSuccess(Result result) {}
-                                @Override
-                                public void onSuccess(Answer answer) {
-                                }
+                            @Override
+                            public void onSuccess(Object result) {
 
-                                @Override
-                                public void onSuccess(Enrollment enrollment) {
+                            }
 
-                                }
 
-                                @Override
-                                public void onSuccess(MediaFile mediaFile) {
-                                }
-                                @Override
-                                public void onSuccess(Course course) {}
-                                @Override
-                                public void onFailure(String errorMessage) {
-                                    // Hiển thị thông báo lỗi nếu mã sai
-                                    runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            showCustomDialog("Lỗi: " + errorMessage);
-                                            isRequesting= false;
-                                            //Toast.makeText(ConfirmCode2Activity.this, errorMessage, Toast.LENGTH_SHORT).show();
+                            @Override
+                            public void onFailure(String errorMessage) {
+                                // Hiển thị thông báo lỗi nếu mã sai
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        showCustomDialog("Lỗi: " + errorMessage);
+                                        isRequesting= false;
+                                        //Toast.makeText(ConfirmCode2Activity.this, errorMessage, Toast.LENGTH_SHORT).show();
                                         }
-                                    });
-                                }
+                                });
+                            }
 
-                                @Override
-                                public void onSuccessWithOtpID(String otpID) {
-                                }
 
-                                @Override
-                                public void onSuccessWithToken(String token) {
-                                }
-                            });
-                        }
 
-                    }, 1000); // Giữ hiển thị trong 1 giây rồi ẩn
+                        });
+                    }
                 }
             }
 

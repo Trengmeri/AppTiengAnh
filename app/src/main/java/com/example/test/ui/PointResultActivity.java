@@ -11,6 +11,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.test.R;
 import com.example.test.model.Enrollment;
+import com.example.test.model.Discussion;
 import com.example.test.ui.home.HomeActivity;
 import com.example.test.api.ApiCallback;
 import com.example.test.api.LessonManager;
@@ -26,6 +27,8 @@ import com.example.test.model.Result;
 import java.util.HashSet;
 import java.util.Set;
 
+
+import java.util.List;
 
 public class PointResultActivity extends AppCompatActivity {
     private TextView pointTextView, totalComp;
@@ -81,17 +84,9 @@ public class PointResultActivity extends AppCompatActivity {
         resultManager.createEnrollment(courseId, new ApiCallback() {
             @Override
             public void onSuccess() {
-                lesManager.fetchCourseById(courseId,new ApiCallback() {
+                lesManager.fetchCourseById(courseId,new ApiCallback<Course>() {
                     @Override
                     public void onSuccess() {}
-
-                    @Override
-                    public void onSuccess(Question questions) {
-
-                    }
-
-                    @Override
-                    public void onSuccess(Lesson lesson) {}
 
                     @Override
                     public void onSuccess(Course course) {
@@ -108,117 +103,23 @@ public class PointResultActivity extends AppCompatActivity {
                     }
 
                     @Override
-                    public void onSuccess(Result result) {}
-
-                    @Override
-                    public void onSuccess(Answer answer) {}
-
-                    @Override
-                    public void onSuccess(Enrollment enrollment) {
-
-                    }
-
-                    @Override
-                    public void onSuccess(MediaFile mediaFile) {
-
-                    }
-
-                    @Override
                     public void onFailure(String errorMessage) {
                         Log.e("PointResultActivity",errorMessage);
                     }
-
-                    @Override
-                    public void onSuccessWithOtpID(String otpID) {}
-
-                    @Override
-                    public void onSuccessWithToken(String token) {
-
-                    }
                 });
-            }
-
-            @Override
-            public void onSuccess(Question questions) {
-
-            }
-
-            @Override
-            public void onSuccess(Lesson lesson) {
-
-            }
-
-            @Override
-            public void onSuccess(Course course) {
-
-            }
-
-            @Override
-            public void onSuccess(Result result) {
-
-            }
-
-            @Override
-            public void onSuccess(Answer answer) {
-
-            }
-
-            @Override
-            public void onSuccess(Enrollment enrollment) {
-
-            }
-
-            @Override
-            public void onSuccess(MediaFile mediaFile) {
-
             }
 
             @Override
             public void onFailure(String errorMessage) {
 
             }
-
-            @Override
-            public void onSuccessWithOtpID(String otpID) {
-
-            }
-
-            @Override
-            public void onSuccessWithToken(String token) {
-
-            }
         });
     }
 
     private void fetchLessonAndCreateResult(int lessonId, int courseId) {
-        resultManager.getEnrollments(courseId, new ApiCallback() {
+        resultManager.getEnrollments(courseId, new ApiCallback<Enrollment>() {
             @Override
             public void onSuccess() {
-
-            }
-
-            @Override
-            public void onSuccess(Question questions) {
-
-            }
-
-            @Override
-            public void onSuccess(Lesson lesson) {
-
-            }
-
-            @Override
-            public void onSuccess(Course course) {
-
-            }
-
-            @Override
-            public void onSuccess(Result result) {
-
-            }
-
-            @Override
-            public void onSuccess(Answer answer) {
 
             }
 
@@ -227,14 +128,10 @@ public class PointResultActivity extends AppCompatActivity {
                 if(enrollment != null){
                     int enrollmentId = enrollment.getId();
                     Log.e("ErollmentId: ", String.valueOf(enrollment.getId()));
-                    lesManager.fetchLessonById(lessonId, new ApiCallback() {
+                    lesManager.fetchLessonById(lessonId, new ApiCallback<Lesson>() {
                         @Override
                         public void onSuccess() {}
 
-                        @Override
-                        public void onSuccess(Question questions) {
-
-                        }
 
                         @Override
                         public void onSuccess(Lesson lesson) {
@@ -242,26 +139,9 @@ public class PointResultActivity extends AppCompatActivity {
                                 String skillType = lesson.getSkillType();
                                 if (lesson!= null && lesson.getQuestionIds()!= null) {
                                     for (Integer questionId : lesson.getQuestionIds()) {
-                                        resultManager.fetchAnswerPointsByQuesId(questionId, new ApiCallback() {
+                                        resultManager.fetchAnswerPointsByQuesId(questionId, new ApiCallback<Answer>() {
                                             @Override
                                             public void onSuccess() {
-                                            }
-
-                                            @Override
-                                            public void onSuccess(Question questions) {
-
-                                            }
-
-                                            @Override
-                                            public void onSuccess(Lesson lesson) {
-                                            }
-
-                                            @Override
-                                            public void onSuccess(Course course) {
-                                            }
-
-                                            @Override
-                                            public void onSuccess(Result result) {
                                             }
 
                                             @Override
@@ -273,29 +153,12 @@ public class PointResultActivity extends AppCompatActivity {
                                                 }
                                             }
 
-                                            @Override
-                                            public void onSuccess(Enrollment enrollment) {
-
-                                            }
-
-                                            @Override
-                                            public void onSuccess(MediaFile mediaFile) {
-
-                                            }
 
                                             @Override
                                             public void onFailure(String errorMessage) {
                                                 Log.e("PointResultActivity",errorMessage);
                                             }
 
-                                            @Override
-                                            public void onSuccessWithOtpID(String otpID) {
-                                            }
-
-                                            @Override
-                                            public void onSuccessWithToken(String token) {
-
-                                            }
                                         });
                                     }
                                 }
@@ -305,43 +168,11 @@ public class PointResultActivity extends AppCompatActivity {
                         }
 
                         @Override
-                        public void onSuccess(Course course) {}
-
-                        @Override
-                        public void onSuccess(Result result) {}
-
-                        @Override
-                        public void onSuccess(Answer answer) {}
-
-                        @Override
-                        public void onSuccess(Enrollment enrollment) {
-
-                        }
-
-                        @Override
-                        public void onSuccess(MediaFile mediaFile) {
-
-                        }
-
-                        @Override
                         public void onFailure(String errorMessage) {
                             Log.e("PointResultActivity", errorMessage);
                         }
-
-                        @Override
-                        public void onSuccessWithOtpID(String otpID) {}
-
-                        @Override
-                        public void onSuccessWithToken(String token) {
-
-                        }
                     });
                 }
-            }
-
-            @Override
-            public void onSuccess(MediaFile mediaFile) {
-
             }
 
             @Override
@@ -349,15 +180,6 @@ public class PointResultActivity extends AppCompatActivity {
 
             }
 
-            @Override
-            public void onSuccessWithOtpID(String otpID) {
-
-            }
-
-            @Override
-            public void onSuccessWithToken(String token) {
-
-            }
         });
 
     }
@@ -369,62 +191,18 @@ public class PointResultActivity extends AppCompatActivity {
                 Log.d("PointResultActivity", "createResultForLesson: Gọi fetchResultByLesson"); // Log trước khi gọi fetchResultByLesson
             }
 
-            @Override
-            public void onSuccess(Question questions) {
-
-            }
-
-            @Override
-            public void onSuccess(Lesson lesson) {
-
-            }
-
-            @Override
-            public void onSuccess(Course course) {}
-
-            @Override
-            public void onSuccess(Result result) {
-            }
-
-            @Override
-            public void onSuccess(Answer answer) {}
-
-            @Override
-            public void onSuccess(Enrollment enrollment) {
-
-            }
-
-            @Override
-            public void onSuccess(MediaFile mediaFile) {
-
-            }
 
             @Override
             public void onFailure(String errorMessage) {
                 Log.e("PointResultActivity",errorMessage);
             }
 
-            @Override
-            public void onSuccessWithToken(String token) {
 
-            }
-            public void onSuccessWithOtpID(String otpID) {}
         });
         new Handler(Looper.getMainLooper()).postDelayed(() -> { // Delay trước khi gọi fetchResultByLesson
-            resultManager.fetchResultByLesson(lessonId, new ApiCallback() {
+            resultManager.fetchResultByLesson(lessonId, new ApiCallback<Result>() {
                 @Override
                 public void onSuccess() {}
-
-                @Override
-                public void onSuccess(Question questions) {
-
-                }
-
-                @Override
-                public void onSuccess(Lesson lesson) {}
-
-                @Override
-                public void onSuccess(Course course) {}
 
                 @Override
                 public void onSuccess(Result result) {
@@ -439,28 +217,6 @@ public class PointResultActivity extends AppCompatActivity {
                 @Override
                 public void onFailure(String errorMessage) {
                     Log.e("PointResultActivity", "fetchResultByLesson: " + errorMessage);
-                }
-
-                @Override
-                public void onSuccess(Answer answer) {}
-
-                @Override
-                public void onSuccess(Enrollment enrollment) {
-
-                }
-
-                @Override
-                public void onSuccess(MediaFile mediaFile) {
-
-                }
-
-
-                @Override
-                public void onSuccessWithOtpID(String otpID) {}
-
-                @Override
-                public void onSuccessWithToken(String token) {
-
                 }
             });
         }, 500);

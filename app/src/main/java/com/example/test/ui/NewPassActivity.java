@@ -32,11 +32,13 @@ import com.example.test.api.AuthenticationManager;
 import com.example.test.model.Answer;
 import com.example.test.model.Course;
 import com.example.test.model.Enrollment;
+import com.example.test.model.Discussion;
 import com.example.test.model.Lesson;
 import com.example.test.model.MediaFile;
 import com.example.test.model.Question;
 import com.example.test.model.Result;
 
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -109,40 +111,11 @@ public class NewPassActivity extends AppCompatActivity {
                                 });
                             }
 
-                            @Override
-                            public void onSuccess(Question questions) {
+                        @Override
+                        public void onSuccess(Object result) {
 
-                            }
+                        }
 
-                            @Override
-                            public void onSuccess(Lesson lesson) {
-
-                            }
-
-                            @Override
-                            public void onSuccess(Course course) {
-
-                            }
-
-                            @Override
-                            public void onSuccess(Result result) {
-
-                            }
-
-                            @Override
-                            public void onSuccess(Answer answer) {
-
-                            }
-
-                            @Override
-                            public void onSuccess(Enrollment enrollment) {
-
-                            }
-
-                            @Override
-                            public void onSuccess(MediaFile mediaFile) {
-
-                            }
 
                             @Override
                             public void onFailure(String errorMessage) {
@@ -155,17 +128,7 @@ public class NewPassActivity extends AppCompatActivity {
                                 });
                             }
 
-                            @Override
-                            public void onSuccessWithOtpID(String otpID) {
-
-                            }
-
-                            @Override
-                            public void onSuccessWithToken(String token) {
-
-                            }
-                        });
-                    }
+                    });
                 }
             }
         });

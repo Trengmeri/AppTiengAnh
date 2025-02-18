@@ -105,18 +105,10 @@ public class SignInActivity extends AppCompatActivity {
                                 startActivity(intent); // Chuyển hướng đến Home Activity
                             }
 
-                            @Override
-                            public void onSuccess(Question question) {
+                    @Override
+                    public void onSuccess(Object result) {
 
-                            }
-
-                            @Override
-                            public void onSuccess(Lesson lesson) {
-                            }
-
-                            @Override
-                            public void onSuccess(Course course) {
-                            }
+                    }
 
                             @Override
                             public void onFailure(String errorMessage) {
@@ -130,39 +122,20 @@ public class SignInActivity extends AppCompatActivity {
                                 });
                             }
 
-                            @Override
-                            public void onSuccessWithOtpID(String otpID) {
-                            }
-
-                            @Override
-                            public void onSuccessWithToken(String token) {
-
-                            }
-
-                            @Override
-                            public void onSuccess(Result result) {
-                            }
-
-                            @Override
-                            public void onSuccess(Answer answer) {
-                            }
-
-                            @Override
-                            public void onSuccess(Enrollment enrollment) {
-
-                            }
-
-                            @Override
-                            public void onSuccess(MediaFile mediaFile) {
-
-                            }
-
-                        });
-                    }
-                }
+                });
+                // if (email.isEmpty() || pass.isEmpty()) {
+                // Toast.makeText(Sign_In.this, "Vui lòng điền đầy đủ thông tin!",
+                // Toast.LENGTH_LONG).show();
+                // } else if (!isValidEmail(email)) {
+                // Toast.makeText(Sign_In.this, "Email không đúng định dạng!",
+                // Toast.LENGTH_LONG).show();
+                // } else if (!isValidPassword(pass)) {
+                // Toast.makeText(Sign_In.this, "Mật khẩu ít nhất 8 ký tự gồm chữ hoa, chữ
+                // thường, số và ký tự đặc biệt", Toast.LENGTH_LONG).show();
+                // }else {
+                // sendLoginRequest(email, pass);
+                // }
             }
-
-
         });
 
         btnForgot.setOnClickListener(new View.OnClickListener() {

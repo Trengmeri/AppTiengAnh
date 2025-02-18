@@ -104,77 +104,43 @@ public class SignUpActivity extends AppCompatActivity {
                 if (!apiManager.isInternetAvailable(SignUpActivity.this)) {
                     Toast.makeText(SignUpActivity.this, "Vui lòng kiểm tra kết nối Internet của bạn.", Toast.LENGTH_LONG).show();
                 } else {
-                    apiManager.sendSignUpRequest(this, hoten, email, pass, new ApiCallback() {
+                    apiManager.sendSignUpRequest(this, hoten, email, pass, new ApiCallback<String>() {
                         @Override
                         public void onSuccess() {
                         }
 
-                        @Override
-                        public void onSuccess(Question question) {
-                        }
+                    @Override
+                    public void onFailure(String errorMessage) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                hideLoading();
+                                showCustomDialog("Sign up failed. Email was used.");
+                                //Toast.makeText(SignUpActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
+                                btnUp.setEnabled(true); // Bật lại nút nếu thất bại
+                                btnUp.setAlpha(1.0f);
+                            }
+                        });
+                    }
 
-                        @Override
-                        public void onSuccess(Result result) {
-                        }
-
-                        @Override
-                        public void onSuccess(Answer answer) {
-                        }
-
-                        @Override
-                        public void onSuccess(Enrollment enrollment) {
-
-                        }
-
-                        @Override
-                        public void onSuccess(MediaFile mediaFile) {
-
-                        }
-
-                        @Override
-                        public void onSuccess(Lesson lesson) {
-                        }
-
-                        @Override
-                        public void onSuccess(Course course) {
-                        }
-
-                        @Override
-                        public void onFailure(String errorMessage) {
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    hideLoading();
-                                    showCustomDialog("Sign up failed. Email was used.");
-                                    //Toast.makeText(SignUpActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
-                                    btnUp.setEnabled(true); // Bật lại nút nếu thất bại
-                                    btnUp.setAlpha(1.0f);
-                                }
-                            });
-                        }
-
-                        @Override
-                        public void onSuccessWithOtpID(String otpID) {
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    hideLoading();
-                                    //Toast.makeText(SignUpActivity.this, "Đăng ký thành công! Vui lòng kiểm tra email của bạn.", Toast.LENGTH_SHORT).show();
-                                }
-                            });
-                            saveOtpId(otpID); // Lưu otpID vào SharedPreferences
-                            Log.d("ConfirmCode", "otpID được lưu: " + otpID);
+                    @Override
+                    public void onSuccess(String otpID) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                hideLoading();
+//                                Toast.makeText(SignUpActivity.this, "Đăng ký thành công! Vui lòng kiểm tra email của bạn.", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                        saveOtpId(otpID); // Lưu otpID vào SharedPreferences
+                        Log.d("ConfirmCode", "otpID được lưu: " + otpID);
 
                             Intent intent = new Intent(SignUpActivity.this, ConfirmCode2Activity.class);
                             intent.putExtra("source", "register");
                             startActivity(intent);
                         }
-
-                        @Override
-                        public void onSuccessWithToken(String token) {
-                        }
-                    });
-                }
+                    }
+                });
             }
         });
 

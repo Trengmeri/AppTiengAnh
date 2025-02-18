@@ -24,7 +24,6 @@ import com.example.test.api.QuestionManager;
 import com.example.test.api.ResultManager;
 import com.example.test.model.Answer;
 import com.example.test.model.Course;
-import com.example.test.model.Enrollment;
 import com.example.test.model.Lesson;
 import com.example.test.model.MediaFile;
 import com.example.test.model.Question;
@@ -109,7 +108,7 @@ public class HomeFragment extends Fragment {
     }
 
     private void fetchCourseData(int id){
-        lesManager.fetchCourseById( newCourseId , new ApiCallback() {
+        lesManager.fetchCourseById( newCourseId , new ApiCallback<Course>() {
             @Override
             public void onSuccess(Course course) {
                 getActivity().runOnUiThread(() -> {
@@ -123,7 +122,7 @@ public class HomeFragment extends Fragment {
                         List<Integer> lessonIds = course.getLessonIds();
                         for (Integer lessonId : lessonIds) {
                             // Gọi API để lấy thông tin bài học
-                            lesManager.fetchLessonById(lessonId, new ApiCallback() {
+                            lesManager.fetchLessonById(lessonId, new ApiCallback<Lesson>() {
                                 @Override
                                 public void onSuccess(Lesson lesson) {
                                     getActivity().runOnUiThread(() -> {
@@ -145,10 +144,6 @@ public class HomeFragment extends Fragment {
                                         }
                                     });
                                 }
-
-                                @Override
-                                public void onSuccess(Course course) {}
-
                                 @Override
                                 public void onFailure(String errorMessage) {
                                     getActivity().runOnUiThread(() -> {
@@ -157,36 +152,7 @@ public class HomeFragment extends Fragment {
                                 }
 
                                 @Override
-                                public void onSuccessWithOtpID(String otpID) {}
-
-                                @Override
-                                public void onSuccessWithToken(String token) {
-
-                                }
-
-                                @Override
                                 public void onSuccess() {}
-
-                                @Override
-                                public void onSuccess(Result result) {}
-
-                                @Override
-                                public void onSuccess(Answer answer) {}
-
-                                @Override
-                                public void onSuccess(Enrollment enrollment) {
-
-                                }
-
-                                @Override
-                                public void onSuccess(MediaFile mediaFile) {
-
-                                }
-
-                                @Override
-                                public void onSuccess(Question question) {
-
-                                }
                             });
                         }
                     } else {
@@ -203,39 +169,7 @@ public class HomeFragment extends Fragment {
             }
 
             @Override
-            public void onSuccessWithOtpID(String otpID) {}
-
-            @Override
-            public void onSuccessWithToken(String token) {
-
-            }
-
-            @Override
             public void onSuccess() {}
-
-            @Override
-            public void onSuccess(Result result) {}
-
-            @Override
-            public void onSuccess(Answer answer) {}
-
-            @Override
-            public void onSuccess(Enrollment enrollment) {
-
-            }
-
-            @Override
-            public void onSuccess(MediaFile mediaFile) {
-
-            }
-
-            @Override
-            public void onSuccess(Question question) {}
-
-            @Override
-            public void onSuccess(Lesson lesson) {
-
-            }
         });
     }
 }

@@ -25,6 +25,7 @@ import com.example.test.api.ResultManager;
 import com.example.test.model.Answer;
 import com.example.test.model.Course;
 import com.example.test.model.Enrollment;
+import com.example.test.model.Discussion;
 import com.example.test.model.Lesson;
 import com.example.test.model.MediaFile;
 import com.example.test.model.Question;
@@ -92,8 +93,6 @@ public class GrammarPick1QuestionActivity extends AppCompatActivity {
                 String answerContent = sb.toString();
                 // Lưu câu trả lời của người dùng
                 quesManager.saveUserAnswer(questionIds.get(currentStep), answerContent, new ApiCallback() {
-                    @Override
-                    public void onSuccess(Enrollment enrollment) {}
 
                     @Override
                     public void onSuccess() {
@@ -116,33 +115,12 @@ public class GrammarPick1QuestionActivity extends AppCompatActivity {
                                 }
                             });
                         });
-                        resultManager.fetchAnswerPointsByQuesId(questionIds.get(currentStep), new ApiCallback() {
+                        resultManager.fetchAnswerPointsByQuesId(questionIds.get(currentStep), new ApiCallback<Answer>() {
                             @Override
                             public void onSuccess() {
                             }
 
-                            @Override
-                            public void onSuccess(Question questions) {
 
-                            }
-
-                            @Override
-                            public void onSuccess(Enrollment enrollment) {}
-
-                            @Override
-                            public void onSuccess(Lesson lesson) {
-
-                            }
-
-                            @Override
-                            public void onSuccess(Course course) {
-
-                            }
-
-                            @Override
-                            public void onSuccess(Result result) {
-
-                            }
 
                             @Override
                             public void onSuccess(Answer answer) {
@@ -174,49 +152,16 @@ public class GrammarPick1QuestionActivity extends AppCompatActivity {
                             }
 
                             @Override
-                            public void onSuccess(MediaFile mediaFile) {
-
-                            }
-
-                            @Override
                             public void onFailure(String errorMessage) {
 
                             }
 
-                            @Override
-                            public void onSuccessWithOtpID(String otpID) {
 
-                            }
-
-                            @Override
-                            public void onSuccessWithToken(String token) {
-
-                            }
                         });
                     }
 
                     @Override
-                    public void onSuccess(Question question) {
-                    }
-
-                    @Override
-                    public void onSuccess(Lesson lesson) {
-                    }
-
-                    @Override
-                    public void onSuccess(Course course) {
-                    }
-
-                    @Override
-                    public void onSuccess(Result result) {
-                    }
-
-                    @Override
-                    public void onSuccess(Answer answer) {
-                    }
-
-                    @Override
-                    public void onSuccess(MediaFile mediaFile) {
+                    public void onSuccess(Object result) {
 
                     }
 
@@ -226,14 +171,7 @@ public class GrammarPick1QuestionActivity extends AppCompatActivity {
                         Log.e("GrammarPick1QuestionActivity", errorMessage);
                     }
 
-                    @Override
-                    public void onSuccessWithOtpID(String otpID) {
-                    }
 
-                    @Override
-                    public void onSuccessWithToken(String token) {
-
-                    }
                 });
 
             }
@@ -241,7 +179,7 @@ public class GrammarPick1QuestionActivity extends AppCompatActivity {
     }
 
     private void fetchLessonAndQuestions(int lessonId) {
-        lesManager.fetchLessonById(lessonId, new ApiCallback() {
+        lesManager.fetchLessonById(lessonId, new ApiCallback<Lesson>() {
             @Override
             public void onSuccess(Lesson lesson) {
                 if (lesson != null) {
@@ -258,45 +196,23 @@ public class GrammarPick1QuestionActivity extends AppCompatActivity {
                 }
             }
 
-            @Override
-            public void onSuccess(Course course) {}
 
-            @Override
-            public void onSuccess(Result result) {}
-
-            @Override
-            public void onSuccess(Answer answer) {}
-
-            @Override
-            public void onSuccess(MediaFile mediaFile) {
-
-            }
 
             @Override
             public void onFailure(String errorMessage) {
                 Log.e("GrammarPick1QuestionActivity", errorMessage);
             }
 
-            @Override
-            public void onSuccessWithOtpID(String otpID) {}
-
-            @Override
-            public void onSuccessWithToken(String token) {
-
-            }
 
             @Override
             public void onSuccess() {}
 
-            @Override
-            public void onSuccess(Question question) {}
-            @Override
-            public void onSuccess(Enrollment enrollment) {}
+
         });
     }
 
     private void fetchQuestion(int questionId) {
-        quesManager.fetchQuestionContentFromApi(questionId, new ApiCallback() {
+        quesManager.fetchQuestionContentFromApi(questionId, new ApiCallback<Question>() {
             @Override
             public void onSuccess(Question question) {
                 if (question != null) {
@@ -333,38 +249,14 @@ public class GrammarPick1QuestionActivity extends AppCompatActivity {
                 }
             }
 
-            @Override
-            public void onSuccess(Lesson lesson) {}
 
-            @Override
-            public void onSuccess(Course course) {}
-
-            @Override
-            public void onSuccess(Result result) {}
-
-            @Override
-            public void onSuccess(Answer answer) {}
-
-            @Override
-            public void onSuccess(Enrollment enrollment) {}
-
-            @Override
-            public void onSuccess(MediaFile mediaFile) {
-
-            }
 
             @Override
             public void onFailure(String errorMessage) {
                 Log.e("GrammarPick1QuestionActivity", errorMessage);
             }
 
-            @Override
-            public void onSuccessWithOtpID(String otpID) {}
 
-            @Override
-            public void onSuccessWithToken(String token) {
-
-            }
 
             @Override
             public void onSuccess() {}
