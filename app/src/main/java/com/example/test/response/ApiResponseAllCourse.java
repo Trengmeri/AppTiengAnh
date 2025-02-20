@@ -1,10 +1,11 @@
 package com.example.test.response;
 
-import com.example.test.model.Answer;
+import com.example.test.model.Course;
 import com.google.gson.annotations.SerializedName;
+
 import java.util.List;
 
-public class ApiResponseAnswer {
+public class ApiResponseAllCourse {
     @SerializedName("statusCode")
     private int statusCode;
 
@@ -15,14 +16,7 @@ public class ApiResponseAnswer {
     private String message;
 
     @SerializedName("data")
-    private Data data; // Sử dụng lớp Data để chứa danh sách Answer
-
-    // Thêm thông tin phân trang
-    @SerializedName("page")
-    private int page;
-
-    @SerializedName("totalPages")
-    private int totalPages;
+    private Data data;
 
     // Getters và Setters
     public int getStatusCode() {
@@ -57,17 +51,28 @@ public class ApiResponseAnswer {
         this.data = data;
     }
 
-    // Lớp Data để chứa danh sách Answer
     public static class Data {
         @SerializedName("content")
-        private List<Answer> content; // Danh sách các Answer
+        private List<Course> courses;
 
-        public List<Answer> getContent() {
-            return content;
+        @SerializedName("totalPages")
+        private int totalPages;
+
+        // Getters and setters
+        public List<Course> getCourses() {
+            return courses;
         }
 
-        public void setContent(List<Answer> content) {
-            this.content = content;
+        public void setCourses(List<Course> courses) {
+            this.courses = courses;
+        }
+
+        public int getTotalPages() {
+            return totalPages;
+        }
+
+        public void setTotalPages(int totalPages) {
+            this.totalPages = totalPages;
         }
     }
 }

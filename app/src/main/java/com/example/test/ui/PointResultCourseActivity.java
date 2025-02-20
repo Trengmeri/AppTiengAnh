@@ -2,16 +2,15 @@ package com.example.test.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.test.R;
 import com.example.test.model.Enrollment;
-import com.example.test.model.Discussion;
 import com.example.test.ui.home.HomeActivity;
 import com.example.test.api.ApiCallback;
 import com.example.test.api.LessonManager;
@@ -20,17 +19,13 @@ import com.example.test.api.ResultManager;
 import com.example.test.model.Answer;
 import com.example.test.model.Course;
 import com.example.test.model.Lesson;
-import com.example.test.model.MediaFile;
-import com.example.test.model.Question;
 import com.example.test.model.Result;
 
 import java.util.HashSet;
 import java.util.Set;
 
-
-import java.util.List;
-
-public class PointResultActivity extends AppCompatActivity {
+public class PointResultCourseActivity extends AppCompatActivity {
+    private LinearLayout readingSkillLayout, listeningSkillLayout, speakingSkillLayout, writingSkillLayout;
     private TextView pointTextView, totalComp;
     private Button btnReview, btnNext;
     private TextView correctRead, compRead;
@@ -40,7 +35,6 @@ public class PointResultActivity extends AppCompatActivity {
     private int totalPointR = 0,totalPointL = 0,totalPointS = 0,totalPointW = 0;
     private int r =0,l=0,s=0,w=0;
     private double comR, comL, comS, comW;
-    int sessionId;
     QuestionManager quesManager = new QuestionManager(this);
     LessonManager lesManager = new LessonManager();
     ResultManager resultManager = new ResultManager(this);
@@ -55,19 +49,18 @@ public class PointResultActivity extends AppCompatActivity {
         fetchCourseData(1);
 
         btnReview.setOnClickListener(v -> {
-            Intent intent = new Intent(PointResultActivity.this, ReviewAnswerActivity.class);
+            Intent intent = new Intent(PointResultCourseActivity.this, ReviewAnswerActivity.class);
             startActivity(intent);
         });
 
         btnNext.setOnClickListener(v -> {
-            Intent intent = new Intent(PointResultActivity.this, HomeActivity.class);
+            Intent intent = new Intent(PointResultCourseActivity.this, HomeActivity.class);
             startActivity(intent);
         });
     }
 
     private void initializeViews() {
         pointTextView = findViewById(R.id.point);
-/*        totalComp = findViewById(R.id.totalComp);*/
         btnReview = findViewById(R.id.btnReview);
         btnNext = findViewById(R.id.btnNext);
         correctRead = findViewById(R.id.correct_read);
@@ -78,6 +71,14 @@ public class PointResultActivity extends AppCompatActivity {
         compSpeak = findViewById(R.id.comp_speak);
         correctWrite = findViewById(R.id.correct_write);
         compWrite = findViewById(R.id.comp_write);
+        readingSkillLayout = findViewById(R.id.readingSkillLayout);
+        listeningSkillLayout = findViewById(R.id.listeningSkillLayout);
+        speakingSkillLayout = findViewById(R.id.speakingSkillLayout);
+        writingSkillLayout = findViewById(R.id.writingSkillLayout);
+        readingSkillLayout.setVisibility(View.GONE);
+        listeningSkillLayout.setVisibility(View.GONE);
+        speakingSkillLayout.setVisibility(View.GONE);
+        writingSkillLayout.setVisibility(View.GONE);
     }
 
     private void fetchCourseData(int courseId) {
@@ -235,21 +236,25 @@ public class PointResultActivity extends AppCompatActivity {
                         totalPointR += totalPoints;
                         comR += complete;
                         r++;
+                        readingSkillLayout.setVisibility(View.VISIBLE);
                         break;
                     case "LISTENING":
                         totalPointL += totalPoints;
                         comL += complete;
                         l++;
+                        listeningSkillLayout.setVisibility(View.VISIBLE);
                         break;
                     case "SPEAKING":
                         totalPointS += totalPoints;
                         comS += complete;
                         s++;
+                        speakingSkillLayout.setVisibility(View.VISIBLE);
                         break;
                     case "WRITING":
                         totalPointW += totalPoints;
                         comW += complete;
                         w++;
+                        writingSkillLayout.setVisibility(View.VISIBLE);
                         break;
                     default:
                         Log.e("PointResultActivity", "Skill type không hợp lệ: " + skillType);

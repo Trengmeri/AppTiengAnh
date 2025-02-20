@@ -5,7 +5,7 @@
     android:background="#F0F0F0"
     android:padding="10dp"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".ui.PointResultActivity">
+    tools:context=".ui.PointResultCourseActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -177,6 +177,7 @@
 
             <!-- Kỹ năng Reading -->
             <LinearLayout
+                android:id="@+id/readingSkillLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/rounded_corner"
@@ -241,6 +242,7 @@
             <!-- Kỹ năng Listening -->
 
             <LinearLayout
+                android:id="@+id/listeningSkillLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/rounded_corner"
@@ -304,6 +306,7 @@
             <!-- Kỹ năng Speaking -->
 
             <LinearLayout
+                android:id="@+id/speakingSkillLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/rounded_corner"
@@ -367,6 +370,7 @@
             <!-- Kỹ năng Writing -->
 
             <LinearLayout
+                android:id="@+id/writingSkillLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/rounded_corner"

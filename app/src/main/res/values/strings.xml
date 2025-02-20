@@ -13,6 +13,7 @@
     <string name="listen_rewrite">Listen and rewrite the answer</string>
     <string name="ques_lis">What are they talking about ?</string>
     <string name="check">Check Result</string>
+    <string name="review">Review Answer</string>
     <string name="grammar">Grammar</string>
     <string name="lis">Listening</string>
     <string name="speak">Speaking</string>

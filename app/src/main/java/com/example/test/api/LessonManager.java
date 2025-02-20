@@ -4,11 +4,14 @@ import android.util.Log;
 
 import com.example.test.model.Course;
 import com.example.test.model.Lesson;
+import com.example.test.response.ApiResponseAllCourse;
 import com.example.test.response.ApiResponseCourse;
 import com.example.test.response.ApiResponseLesson;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.Call;
@@ -73,6 +76,42 @@ public class LessonManager extends BaseApiManager {
                     if (apiResponse.getStatusCode() == 200) {
                         Course course = apiResponse.getData();
                         callback.onSuccess(course);
+                    } else {
+                        callback.onFailure("Lỗi từ server: " + apiResponse.getMessage());
+                    }
+                } else {
+                    Log.e("LessonManager", "Lỗi từ server: Mã lỗi " + response.code());
+                    callback.onFailure("Lỗi từ server: Mã lỗi " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.e("LessonManager", "Lỗi kết nối: " + e.getMessage());
+                callback.onFailure("Không thể kết nối tới API.");
+            }
+        });
+    }
+    public void fetchCourses(int page, int size, final ApiCallback<ApiResponseAllCourse> callback) {
+        String url = BASE_URL + "/api/v1/courses?page=" + page + "&size=" + size; // Thay bằng URL máy chủ của bạn
+
+        Request request = new Request.Builder()
+                .url(url)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    String responseBody = response.body().string();
+                    Log.d("LessonManager", "Phản hồi từ server: " + responseBody);
+
+                    Gson gson = new Gson();
+                    Type courseListType = new TypeToken<ApiResponseCourse>() {}.getType();
+                    ApiResponseAllCourse apiResponse = gson.fromJson(responseBody, courseListType);
+
+                    if (apiResponse.getStatusCode() == 200) {
+                        callback.onSuccess(apiResponse);
                     } else {
                         callback.onFailure("Lỗi từ server: " + apiResponse.getMessage());
                     }

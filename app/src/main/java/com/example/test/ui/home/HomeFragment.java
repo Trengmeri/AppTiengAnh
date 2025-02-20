@@ -146,6 +146,7 @@ public class HomeFragment extends Fragment {
                                                         if (lesson != null) {
                                                             Intent intent = new Intent(getActivity(), NevigateQuestion.class);
                                                             intent.putExtra("skill", lesson.getSkillType());
+                                                            intent.putExtra("lessonId", lesson.getId());
                                                             intent.putExtra("questionIds", new ArrayList<>(lesson.getQuestionIds())); // Truyền danh sách câu hỏi
                                                             startActivity(intent);
                                                         }

@@ -23,14 +23,8 @@ import com.example.test.api.LessonManager;
 import com.example.test.api.QuestionManager;
 import com.example.test.api.ResultManager;
 import com.example.test.model.Answer;
-import com.example.test.model.Course;
-import com.example.test.model.Enrollment;
-import com.example.test.model.Discussion;
-import com.example.test.model.Lesson;
-import com.example.test.model.MediaFile;
 import com.example.test.model.Question;
 import com.example.test.model.QuestionChoice;
-import com.example.test.model.Result;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -237,7 +231,9 @@ public class GrammarPick1QuestionActivity extends AppCompatActivity {
     }
 
     private void finishLesson() {
-        finish(); // Hoặc chuyển đến activity khác
+        Intent intent = new Intent(GrammarPick1QuestionActivity.this, PointResultCourseActivity.class);
+        startActivity(intent);
+        finish();
     }
 
     private void updateProgressBar(LinearLayout progressBarSteps, int step) {

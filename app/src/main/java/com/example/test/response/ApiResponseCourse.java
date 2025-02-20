@@ -1,7 +1,11 @@
 package com.example.test.response;
 
+import androidx.annotation.Nullable;
+
 import com.example.test.model.Course;
 import com.google.gson.annotations.SerializedName;
+
+import java.util.List;
 
 public class ApiResponseCourse {
     @SerializedName("statusCode")
