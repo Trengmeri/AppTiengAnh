@@ -10,5 +10,8 @@
     <color name="light_green">#66C263</color>
     <color name="none">#F5F5F5</color>
     <color name="cotinute">#3FB8D2</color>
+    <color name="color_selected">#CE9566</color>  <!-- Màu khi được chọn -->
+    <color name="color_unselected">#FF000000</color>  <!-- Màu mặc định -->
+
 
 </resources>
