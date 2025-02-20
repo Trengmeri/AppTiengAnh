@@ -169,7 +169,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
     <CheckBox
-        android:id="@+id/cbCheck"
+        android:id="@+id/cbRemember"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="12dp"
@@ -192,7 +192,7 @@
         android:orientation="horizontal">
     <Button
         android:id="@+id/btnIn"
-        android:layout_width="270dp"
+        android:layout_width="250dp"
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/dp_16"
         android:backgroundTint="#BC6136"
@@ -204,7 +204,7 @@
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/dp_16"
+            android:layout_marginLeft="@dimen/dp40"
             android:background="@drawable/icon_vantay"/>
 
     </LinearLayout>

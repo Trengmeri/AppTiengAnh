@@ -146,11 +146,13 @@ public class ResultManager extends BaseApiManager {
 
     public void createEnrollment(int courseId, ApiCallback callback) {
         String userId = SharedPreferencesManager.getInstance(context).getID();
+        String token = SharedPreferencesManager.getInstance(context).getAccessToken();
         String json = "{ \"userId\":" + userId + ", \"courseId\":" + courseId + "}";
         RequestBody body = RequestBody.create(json, MediaType.get("application/json; charset=utf-8"));
 
         Request request = new Request.Builder()
                 .url(BASE_URL + "/api/v1/enrollments")
+                .addHeader("Authorization", "Bearer " + token)
                 .post(body)
                 .build();
 
@@ -167,6 +169,7 @@ public class ResultManager extends BaseApiManager {
                     callback.onSuccess();
                 } else {
                     Log.e("ResultManager", "createEnrollment: Lỗi " + response.code());
+                    Log.d("ID","userid: " + userId + "courseid: " + courseId);
                     callback.onFailure("Lỗi: " + response.code());
                 }
             }
@@ -175,9 +178,11 @@ public class ResultManager extends BaseApiManager {
 
     public void getEnrollments(int courseId, ApiCallback callback) {
         String userId = SharedPreferencesManager.getInstance(context).getID();
+        String token = SharedPreferencesManager.getInstance(context).getAccessToken();
 
         Request request = new Request.Builder()
-                .url(BASE_URL + "/api/v1/enrollments/user/" + userId) // Thay đổi URL endpoint cho phù hợp
+                .url(BASE_URL + "/api/v1/enrollments/user/" + userId +"?proStatus=false") // Thay đổi URL endpoint cho phù hợp
+                .addHeader("Authorization", "Bearer " + token)
                 .build();
 
         client.newCall(request).enqueue(new Callback() {

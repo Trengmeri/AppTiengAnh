@@ -98,6 +98,7 @@ public class ConfirmCode2Activity extends AppCompatActivity {
                 btnRe.setEnabled(false); // Ngăn người dùng nhấn liên tục
                 btnRe.setAlpha(0.3f);
                 resetCountdown();// Gọi phương thức reset lại bộ đếm
+                setupKeyboardListeners();
                 String otpID = getOtpIdFromPreferences(); // Lấy OTP ID đã lưu
                 apiManager.resendConfirmCodeRequest(otpID, new ApiCallback() {
                     @Override
@@ -213,17 +214,19 @@ public class ConfirmCode2Activity extends AppCompatActivity {
                                     // Chuyển đến Activity tiếp theo nếu mã đúng
                                     runOnUiThread(new Runnable() {
                                         @Override
-                                        public void run() {}
+                                        public void run() {
+                                            Log.d("OTP", "OTP verification success");
+                                            clearOtpId();
+                                            Intent intent = new Intent(ConfirmCode2Activity.this, SetUpAccountActivity.class);
+                                            startActivity(intent);
+                                            finish();
+                                        }
                                     });
-                                    Log.d("OTP", "OTP verification success");
-                                    clearOtpId();
-                                    Intent intent = new Intent(ConfirmCode2Activity.this, SetUpAccountActivity.class);
-                                    startActivity(intent);
-                                    finish();
+
                                 }
 
                                 @Override
-                                public void onSuccess(Object result) {}
+                                public void onSuccess(Object object) {}
 
 
                                 @Override

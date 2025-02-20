@@ -3,6 +3,7 @@ package com.example.test.ui;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.os.Handler;
@@ -35,6 +36,7 @@ import com.example.test.model.Lesson;
 import com.example.test.model.MediaFile;
 import com.example.test.model.Question;
 import com.example.test.model.Result;
+import com.example.test.ui.home.HomeActivity;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.regex.Matcher;
@@ -44,21 +46,46 @@ public class SignInActivity extends AppCompatActivity {
 
     EditText edtEmail, edtMKhau;
    TextView tvEmailerror, tvPasserror;
-    CheckBox cbCheck;
+    CheckBox cbRemember;
     Button btnIn, btnForgot, btnUp;
     NetworkChangeReceiver networkReceiver;
     AuthenticationManager apiManager;
     boolean isValid = true;
     private boolean isPasswordVisible = false;
     private long lastClickTime = 0; // Biến để chặn multi-click
+    SharedPreferences sharedPreferences;
+    SharedPreferences.Editor editor;
     @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
+
+        // Khởi tạo SharedPreferences
+        sharedPreferences = getSharedPreferences("LoginPrefs", MODE_PRIVATE);
+
+        // Nếu Remember Me đã được bật, chuyển thẳng đến HomeActivity
+        boolean isRemembered = sharedPreferences.getBoolean("rememberMe", false);
+        if (isRemembered) {
+            Intent intent = new Intent(SignInActivity.this, HomeActivity.class);
+            startActivity(intent);
+            finish(); // Đóng LoginActivity để không quay lại khi nhấn back
+        }
+
         setContentView(R.layout.activity_sign_in);
+
         AnhXa();
         setupPasswordField();
+
+
+        editor = sharedPreferences.edit();
+        // Hiển thị thông tin đăng nhập nếu Remember Me được chọn trước đó
+        if (sharedPreferences.getBoolean("rememberMe", false)) {
+            edtEmail.setText(sharedPreferences.getString("email", ""));
+            edtMKhau.setText(sharedPreferences.getString("password", ""));
+            cbRemember.setChecked(true);
+        }
+
         // Ban đầu vô hiệu hóa nút
         btnIn.setEnabled(false);
         btnIn.setAlpha(0.5f);
@@ -101,15 +128,22 @@ public class SignInActivity extends AppCompatActivity {
                         apiManager.sendLoginRequest(email, pass, new ApiCallback() {
                             @Override
                             public void onSuccess() {
+
+                                if (cbRemember.isChecked()) {
+                                    editor.putBoolean("rememberMe", true);
+                                    editor.putString("email", email);
+                                    editor.putString("password", pass);
+                                } else {
+                                    editor.clear(); // Xóa thông tin nếu không chọn Remember Me
+                                }
+                                editor.apply();
+
                                 Intent intent = new Intent(SignInActivity.this, ChooseFieldsActivity.class);
                                 startActivity(intent); // Chuyển hướng đến Home Activity
                             }
-
                             @Override
                             public void onSuccess(Object result) {
-
                             }
-
                             @Override
                             public void onFailure(String errorMessage) {
                                 runOnUiThread(new Runnable() {
@@ -268,13 +302,12 @@ public class SignInActivity extends AppCompatActivity {
     private void AnhXa() {
         edtEmail = findViewById(R.id.edtPass);
         edtMKhau = findViewById(R.id.edtMKhau);
-        cbCheck = findViewById(R.id.cbCheck);
+        cbRemember = findViewById(R.id.cbRemember);
         btnIn = findViewById(R.id.btnIn);
         btnUp = findViewById(R.id.btnUp);
         btnForgot =(Button) findViewById(R.id.btnForgot);
         tvEmailerror= findViewById(R.id.tvEmailError);
         tvPasserror= findViewById(R.id.tvPassError);
-
     }
 
     private boolean isValidEmail(String email) {

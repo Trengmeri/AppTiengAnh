@@ -116,7 +116,6 @@ public class SignUpActivity extends AppCompatActivity {
                             public void run() {
                                 hideLoading();
                                 showCustomDialog("Sign up failed. Email was used.");
-                                //Toast.makeText(SignUpActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
                                 btnUp.setEnabled(true); // Bật lại nút nếu thất bại
                                 btnUp.setAlpha(1.0f);
                             }
@@ -129,12 +128,10 @@ public class SignUpActivity extends AppCompatActivity {
                             @Override
                             public void run() {
                                 hideLoading();
-//                                Toast.makeText(SignUpActivity.this, "Đăng ký thành công! Vui lòng kiểm tra email của bạn.", Toast.LENGTH_SHORT).show();
                             }
                         });
                         saveOtpId(otpID); // Lưu otpID vào SharedPreferences
                         Log.d("ConfirmCode", "otpID được lưu: " + otpID);
-
                             Intent intent = new Intent(SignUpActivity.this, ConfirmCode2Activity.class);
                             intent.putExtra("source", "register");
                             startActivity(intent);

@@ -14,7 +14,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_columnWeight="1"
-        android:src="@drawable/home_clicked"/>
+        android:src="@drawable/home"/>
     <ImageView
         android:id="@+id/ic_study"
         android:layout_width="0dp"
