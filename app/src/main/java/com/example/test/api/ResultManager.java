@@ -228,4 +228,40 @@ public class ResultManager extends BaseApiManager {
             }
         });
     }
+    public void calculateEnrollment(int enrollmentId, ApiCallback callback) {
+        String token = SharedPreferencesManager.getInstance(context).getAccessToken();
+        Request request = new Request.Builder()
+                .url(BASE_URL + "/api/v1/enrollments/calculate-result")
+                .addHeader("Authorization", "Bearer " + token)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    String responseBody = response.body().string();
+                    Log.d("ResultManager", "Phản hồi từ server: " + responseBody);
+
+                    Gson gson = new Gson();
+                    Enrollment enrollment = gson.fromJson(responseBody, Enrollment.class); // Thay đổi ở đây
+
+                    if (enrollment != null) {
+                        Log.d("ResultManager", "Enrollment ID: " + enrollment.getId() + "Point: "+ enrollment.getTotalPoints() +", Comp: " + enrollment.getComLevel());
+                        callback.onSuccess(enrollment); // Thay đổi ở đây
+                    } else {
+                        callback.onFailure("Không có câu trả lời nào.");
+                    }
+                } else {
+                    Log.e("ResultManager", "Lỗi từ server: Mã lỗi " + response.code());
+                    callback.onFailure("Lỗi từ server: Mã lỗi " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.e("ResultManager", "Lỗi kết nối: " + e.getMessage());
+                callback.onFailure("Không thể kết nối tới API.");
+            }
+        });
+    }
 }

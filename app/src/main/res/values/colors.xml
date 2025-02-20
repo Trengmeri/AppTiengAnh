@@ -12,6 +12,7 @@
     <color name="cotinute">#3FB8D2</color>
     <color name="color_selected">#CE9566</color>  <!-- Màu khi được chọn -->
     <color name="color_unselected">#FF000000</color>  <!-- Màu mặc định -->
+    <color name="yellow">#FFC31F</color>
 
 
 </resources>

@@ -1,10 +1,33 @@
 package com.example.test.model;
 
+import com.google.gson.annotations.SerializedName;
+
 public class Enrollment {
     private int id;
+    private int enrollmentId;
     private int userId;
     private int courseId;
+    private int totalPoints;
+    private double comLevel;
 
+    public int getEnrollmentId() {
+        return enrollmentId;
+    }
+    public void setEnrollmentId(int enrollmentId) {
+        this.enrollmentId = enrollmentId;
+    }
+    public double getComLevel() {
+        return comLevel;
+    }
+    public void setComLevel(double comLevel) {
+        this.comLevel = comLevel;
+    }
+    public int getTotalPoints() {
+        return totalPoints;
+    }
+    public void setTotalPoints(int totalPoints) {
+        this.totalPoints = totalPoints;
+    }
     public int getId() {
         return id;
     }
@@ -17,6 +40,10 @@ public class Enrollment {
         return userId;
     }
 
+    public void setUserId(int userId) {
+        this.userId = userId;
+    }
+
     public void setCourseId(int courseId) {
         this.courseId = courseId;
     }
@@ -25,7 +52,4 @@ public class Enrollment {
         return courseId;
     }
 
-    public void setUserId(int userId) {
-        this.userId = userId;
-    }
 }
