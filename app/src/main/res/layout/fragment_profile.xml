@@ -21,14 +21,15 @@
             android:layout_marginEnd="@dimen/dp_30">
 
             <TextView
+                android:id="@+id/userName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Treng"
                 android:layout_marginTop="80dp"
                 android:gravity="center"
                 android:textSize="25sp"
                 android:textStyle="bold"/>
             <TextView
+                android:id="@+id/userEmail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="merinotran@gmail.com"
@@ -37,6 +38,7 @@
                 android:textSize="15sp"/>
 
             <LinearLayout
+
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/dp_30"

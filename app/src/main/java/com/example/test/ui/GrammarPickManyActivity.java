@@ -65,7 +65,7 @@ public class GrammarPickManyActivity extends AppCompatActivity {
         Button btnCheckAnswers = findViewById(R.id.btnCheckAnswers);
         progressBar = findViewById(R.id.progressBar);
 
-        int lessonId = 2;
+        int lessonId = 4;
         fetchLessonAndQuestions(lessonId);
 
         btnCheckAnswers.setOnClickListener(v -> {

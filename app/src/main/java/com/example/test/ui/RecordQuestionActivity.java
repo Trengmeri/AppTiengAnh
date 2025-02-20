@@ -69,7 +69,7 @@ public class RecordQuestionActivity extends AppCompatActivity implements SpeechR
         btnPlayAudio = findViewById(R.id.btn_play);
         Button btnCheckResult = findViewById(R.id.btnCheckResult);
         seekBar = findViewById(R.id.seekBar);
-        int lessonId = 4;
+        int lessonId = 3;
         fetchLessonAndQuestions(lessonId);
 
         // Kiểm tra quyền microphone
