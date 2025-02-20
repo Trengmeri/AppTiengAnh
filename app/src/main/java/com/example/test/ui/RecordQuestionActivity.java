@@ -262,7 +262,9 @@ public class RecordQuestionActivity extends AppCompatActivity implements SpeechR
     }
 
     private void finishLesson() {
-        finish(); // Hoặc chuyển đến activity khác
+        Intent intent = new Intent(RecordQuestionActivity.this, PointResultLessonActivity.class);
+        startActivity(intent);
+        finish();
     }
 
 

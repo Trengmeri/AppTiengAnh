@@ -258,7 +258,9 @@ public class ListeningQuestionActivity extends AppCompatActivity {
     }
 
     private void finishLesson() {
-        finish(); // Hoặc chuyển đến activity khác
+        Intent intent = new Intent(ListeningQuestionActivity.this, PointResultLessonActivity.class);
+        startActivity(intent);
+        finish();
     }
 
     @Override

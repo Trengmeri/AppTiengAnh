@@ -221,6 +221,8 @@ public class GrammarPickManyActivity extends AppCompatActivity {
     }
 
     private void finishLesson() {
+        Intent intent = new Intent(GrammarPickManyActivity.this, PointResultLessonActivity.class);
+        startActivity(intent);
         finish();
     }
 
