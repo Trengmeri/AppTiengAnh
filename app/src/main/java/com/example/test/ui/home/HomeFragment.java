@@ -105,6 +105,7 @@ public class HomeFragment extends Fragment {
     }
 
     private void fetchCourseData(int id){
+        lessonsContainer.removeAllViews();
         lesManager.fetchCourseById( newCourseId , new ApiCallback<Course>() {
             @Override
             public void onSuccess(Course course) {
@@ -117,59 +118,64 @@ public class HomeFragment extends Fragment {
 
                         // Hiển thị danh sách bài học
                         List<Integer> lessonIds = course.getLessonIds();
-                        for (Integer lessonId : lessonIds) {
-                            // Gọi API để lấy thông tin bài học
-                            lesManager.fetchLessonById(lessonId, new ApiCallback<Lesson>() {
-                                @Override
-                                public void onSuccess(Lesson lesson) {
-                                    getActivity().runOnUiThread(() -> {
-                                        if (lesson != null) {
-                                            // Hiển thị thông tin bài học trong LinearLayout
-                                            View lessonView = getLayoutInflater().inflate(R.layout.item_lesson, null);
-                                            TextView lessonTitle = lessonView.findViewById(R.id.lessonTitle);
-                                            lessonTitle.setText(lesson.getName());
-                                            lessonsContainer.addView(lessonView);
+                        if (lessonIds != null) {
+                            for (Integer lessonId : lessonIds) {
+                                // Gọi API để lấy thông tin bài học
+                                lesManager.fetchLessonById(lessonId, new ApiCallback<Lesson>() {
+                                    @Override
+                                    public void onSuccess(Lesson lesson) {
+                                        getActivity().runOnUiThread(() -> {
+                                            if (lesson != null) {
+                                                // Hiển thị thông tin bài học trong LinearLayout
+                                                View lessonView = getLayoutInflater().inflate(R.layout.item_lesson, null);
+                                                TextView lessonTitle = lessonView.findViewById(R.id.lessonTitle);
+                                                lessonTitle.setText(lesson.getName());
+                                                lessonsContainer.addView(lessonView);
 
-                                            lessonTitle.setOnClickListener(v -> {
-                                                int lessonId = lesson.getId();
-                                                lesManager.fetchLessonById(lessonId, new ApiCallback<Lesson>() {
-                                                    @Override
-                                                    public void onSuccess() {}
-
-                                                    @Override
-                                                    public void onFailure(String errorMessage) {
-                                                        Log.e(getActivity().toString(),errorMessage);
-                                                    }
-
-                                                    @Override
-                                                    public void onSuccess(Lesson lesson) {
-                                                        if (lesson != null) {
-                                                            Intent intent = new Intent(getActivity(), NevigateQuestion.class);
-                                                            intent.putExtra("skill", lesson.getSkillType());
-                                                            intent.putExtra("courseId",newCourseId);
-                                                            intent.putExtra("lessonId",lesson.getId());
-                                                            intent.putExtra("questionIds", new ArrayList<>(lesson.getQuestionIds())); // Truyền danh sách câu hỏi
-                                                            startActivity(intent);
+                                                lessonTitle.setOnClickListener(v -> {
+                                                    int lessonId = lesson.getId();
+                                                    lesManager.fetchLessonById(lessonId, new ApiCallback<Lesson>() {
+                                                        @Override
+                                                        public void onSuccess() {
                                                         }
-                                                    }
-                                                });
-                                            });
-                                        }
-                                    });
-                                }
-                                @Override
-                                public void onFailure(String errorMessage) {
-                                    getActivity().runOnUiThread(() -> {
-                                        Log.e(getActivity().toString(),errorMessage);
-                                    });
-                                }
 
-                                @Override
-                                public void onSuccess() {}
-                            });
+                                                        @Override
+                                                        public void onFailure(String errorMessage) {
+                                                            Log.e(getActivity().toString(), errorMessage);
+                                                        }
+
+                                                        @Override
+                                                        public void onSuccess(Lesson lesson) {
+                                                            if (lesson != null) {
+                                                                Intent intent = new Intent(getActivity(), NevigateQuestion.class);
+                                                                intent.putExtra("skill", lesson.getSkillType());
+                                                                intent.putExtra("courseId", newCourseId);
+                                                                intent.putExtra("lessonId", lesson.getId());
+                                                                intent.putExtra("questionIds", new ArrayList<>(lesson.getQuestionIds())); // Truyền danh sách câu hỏi
+                                                                startActivity(intent);
+                                                            }
+                                                        }
+                                                    });
+                                                });
+                                            }
+                                        });
+                                    }
+
+                                    @Override
+                                    public void onFailure(String errorMessage) {
+                                        getActivity().runOnUiThread(() -> {
+                                            Log.e(getActivity().toString(), errorMessage);
+                                        });
+                                    }
+
+                                    @Override
+                                    public void onSuccess() {
+                                    }
+                                });
+                            }
                         }
                     } else {
-                        Toast.makeText(getActivity(), "Không có khóa học nào.", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), "No further courses.", Toast.LENGTH_SHORT).show();
                     }
                 });
             }
@@ -177,7 +183,7 @@ public class HomeFragment extends Fragment {
             @Override
             public void onFailure(String errorMessage) {
                 getActivity().runOnUiThread(() -> {
-                    Toast.makeText(getActivity(), errorMessage, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), "No further courses.", Toast.LENGTH_SHORT).show();
                 });
             }
 

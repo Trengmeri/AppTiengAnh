@@ -92,7 +92,6 @@ public class PointResultLessonActivity extends AppCompatActivity {
                                 @Override
                                 public void onSuccess(Lesson lesson) {
                                     if (lesson != null && lesson.getSkillType() != null) {
-                                        String skillType = lesson.getSkillType();
                                         if (lesson != null && lesson.getQuestionIds() != null) {
                                             for (Integer questionId : lesson.getQuestionIds()) {
                                                 resultManager.fetchAnswerPointsByQuesId(questionId, new ApiCallback<Answer>() {

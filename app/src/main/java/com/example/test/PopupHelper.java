@@ -1,56 +1,49 @@
 package com.example.test;
 
 import android.app.Activity;
-import android.content.Context;
+import android.app.Dialog;
+import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.os.IBinder; // Import IBinder
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.LinearLayout;
-import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import java.util.List;
 
 public class PopupHelper {
 
-    public static void showResultPopup(View anchorView, List<String> userAnswers, List<String> correctAnswers, Runnable onNextQuestion) {
-        final Context context = anchorView.getContext();
-        View popupView = LayoutInflater.from(context).inflate(R.layout.popup_result, null);
+    public static void showResultPopup(Activity activity, List<String> userAnswers, List<String> correctAnswers, Runnable onNextQuestion) {
+        // Tạo Dialog thay vì PopupWindow
+        Dialog dialog = new Dialog(activity);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        View popupView = LayoutInflater.from(activity).inflate(R.layout.popup_result, null);
+        dialog.setContentView(popupView);
 
-        PopupWindow popupWindow = new PopupWindow(popupView,
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT, true);
+        // Ngăn chặn bấm ra ngoài và nút Back
+        dialog.setCancelable(false);
+        dialog.setCanceledOnTouchOutside(false);
 
-        popupWindow.setFocusable(true);
-        popupWindow.setOutsideTouchable(false);
-        popupWindow.setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        // Đặt nền trong suốt
+        if (dialog.getWindow() != null) {
+            Window window = dialog.getWindow();
+            window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT)); // Nền trong suốt
 
-        // Get the window token from the anchor view (crucial!)
-        IBinder token = anchorView.getWindowToken();
+            // Hiển thị ở cuối màn hình
+            WindowManager.LayoutParams layoutParams = window.getAttributes();
+            layoutParams.width = WindowManager.LayoutParams.MATCH_PARENT; // Chiều rộng = màn hình
+            layoutParams.height = WindowManager.LayoutParams.WRAP_CONTENT; // Chiều cao tự động theo nội dung
+            layoutParams.gravity = Gravity.BOTTOM; // Hiển thị ở cuối màn hình
 
-        // Dim the background (improved version)
-        if (context instanceof Activity && token != null) {
-            Activity activity = (Activity) context;
-            WindowManager.LayoutParams params = activity.getWindow().getAttributes();
-            params.alpha = 0.5f;
-            activity.getWindow().setAttributes(params);
-            activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+            // Tạo lớp phủ mờ phía sau
+            layoutParams.dimAmount = 0.5f; // Độ mờ nền (0.0 = không mờ, 1.0 = tối đen)
+            window.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
 
-            popupWindow.setOnDismissListener(() -> {
-                WindowManager.LayoutParams p = activity.getWindow().getAttributes();
-                p.alpha = 1.0f;
-                activity.getWindow().setAttributes(p);
-                activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
-            });
+            window.setAttributes(layoutParams);
         }
-
-        popupWindow.showAtLocation(anchorView, Gravity.BOTTOM, 0, 0); // Use the token here!
-
-
 
         TextView tvMessage = popupView.findViewById(R.id.tvResultMessage);
         TextView tvDetail = popupView.findViewById(R.id.tvResultDetail);
@@ -58,23 +51,24 @@ public class PopupHelper {
 
         if (userAnswers.equals(correctAnswers)) {
             tvMessage.setText("That's right!\nAnswer:");
-            tvMessage.setTextColor(anchorView.getResources().getColor(android.R.color.holo_green_dark));
-            String correctAnswerText = String.join(", ", correctAnswers);
-            tvDetail.setText(correctAnswerText);
+            tvMessage.setTextColor(activity.getResources().getColor(android.R.color.holo_green_dark));
+            tvDetail.setText(String.join(", ", correctAnswers));
             popupView.setBackgroundResource(R.drawable.popup_background_correct);
-            btnNext.setBackgroundColor(anchorView.getResources().getColor(android.R.color.holo_green_dark));
+            btnNext.setBackgroundColor(activity.getResources().getColor(android.R.color.holo_green_dark));
         } else {
             tvMessage.setText("Oops... That's not the answer.\nCorrect answer:");
-            tvMessage.setTextColor(anchorView.getResources().getColor(android.R.color.holo_red_dark));
-            String correctAnswerText = String.join(", ", correctAnswers);
-            tvDetail.setText(correctAnswerText);
+            tvMessage.setTextColor(activity.getResources().getColor(android.R.color.holo_red_dark));
+            tvDetail.setText(String.join(", ", correctAnswers));
             popupView.setBackgroundResource(R.drawable.popup_background_incorrect);
-            btnNext.setBackgroundColor(anchorView.getResources().getColor(android.R.color.holo_red_dark));
+            btnNext.setBackgroundColor(activity.getResources().getColor(android.R.color.holo_red_dark));
         }
+
         btnNext.setOnClickListener(v -> {
-            popupWindow.dismiss(); // Đóng popup
+            dialog.dismiss();
             onNextQuestion.run();
-            // Gọi hàm để chuyển sang câu hỏi tiếp theo
         });
+
+        // Hiển thị Dialog
+        dialog.show();
     }
 }

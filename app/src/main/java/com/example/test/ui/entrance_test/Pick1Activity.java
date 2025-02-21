@@ -99,7 +99,7 @@ public class Pick1Activity extends AppCompatActivity {
                         Log.e("Pick1Activity", "Câu trả lời đã được lưu: " + answerContent);
                         // Hiển thị popup
                         runOnUiThread(() -> {
-                            PopupHelper.showResultPopup(findViewById(R.id.popupContainer), userAnswers, correctAnswers, () -> {
+                            PopupHelper.showResultPopup(Pick1Activity.this, userAnswers, correctAnswers, () -> {
                                 // Callback khi nhấn Next Question trên popup
                                 resetAnswerColors();
                                 currentStep++; // Tăng currentStep

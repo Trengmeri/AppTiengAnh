@@ -112,7 +112,7 @@ public class RecordQuestionActivity extends AppCompatActivity implements SpeechR
                         Log.e("RecordQuestionActivity", "Câu trả lời đã được lưu: " + userAnswers.toString());
                         // Hiển thị kết quả sau khi lưu thành công
                         runOnUiThread(() -> {
-                            PopupHelper.showResultPopup(findViewById(R.id.popupContainer), userAnswers, correctAnswers, () -> {
+                            PopupHelper.showResultPopup(RecordQuestionActivity.this, userAnswers, correctAnswers, () -> {
                                 currentStep++; // Tăng currentStep
                                 currentQuestionIndex++;
                                 if (currentQuestionIndex < questions.size()) {

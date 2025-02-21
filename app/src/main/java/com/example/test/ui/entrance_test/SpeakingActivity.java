@@ -111,7 +111,7 @@ public class SpeakingActivity extends AppCompatActivity implements SpeechRecogni
                         Log.e("SpeakingActivity", "Câu trả lời đã được lưu: " + userAnswers.toString());
                         // Hiển thị kết quả sau khi lưu thành công
                         runOnUiThread(() -> {
-                            PopupHelper.showResultPopup(findViewById(R.id.popupContainer), userAnswers, correctAnswers, () -> {
+                            PopupHelper.showResultPopup(SpeakingActivity.this, userAnswers, correctAnswers, () -> {
                                 // Callback khi nhấn Next Question trên popup
                                 currentStep++; // Tăng currentStep
 

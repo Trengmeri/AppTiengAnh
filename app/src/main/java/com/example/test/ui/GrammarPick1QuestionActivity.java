@@ -106,7 +106,7 @@ public class GrammarPick1QuestionActivity extends AppCompatActivity {
                         Log.e("GrammarPick1QuestionActivity", "Câu trả lời đã được lưu: " + answerContent);
                         // Hiển thị popup
                         runOnUiThread(() -> {
-                            PopupHelper.showResultPopup(findViewById(R.id.popupContainer), userAnswers, correctAnswers, () -> {
+                            PopupHelper.showResultPopup(GrammarPick1QuestionActivity.this, userAnswers, correctAnswers, () -> {
                                 // Callback khi nhấn Next Question trên popup
                                 resetAnswerColors();
                                 currentStep++; // Tăng currentStep

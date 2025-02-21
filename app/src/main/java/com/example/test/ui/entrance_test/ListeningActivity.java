@@ -96,7 +96,7 @@ public class ListeningActivity extends AppCompatActivity {
                         Log.e("ListeningActivity", "Câu trả lời đã được lưu: " + answerContent);
                         // Hiển thị popup
                         runOnUiThread(() -> {
-                            PopupHelper.showResultPopup(findViewById(R.id.popupContainer), userAnswers, correctAnswers, () -> {
+                            PopupHelper.showResultPopup(ListeningActivity.this, userAnswers, correctAnswers, () -> {
                                 // Callback khi nhấn Next Question trên popup
                                 currentStep++; // Tăng currentStep
 
