@@ -53,6 +53,7 @@ public class GrammarPickManyActivity extends AppCompatActivity {
     private LinearLayout progressBar;
     QuestionManager quesManager = new QuestionManager(this);
     LessonManager lesManager = new LessonManager();
+    private int lessonID,courseID;
     ResultManager resultManager = new ResultManager(this);
     private List<Question> questions; // Danh sách câu hỏi
     private int currentQuestionIndex; // Vị trí câu hỏi hiện tại
@@ -70,6 +71,8 @@ public class GrammarPickManyActivity extends AppCompatActivity {
 // Nhận dữ liệu từ Intent
         currentQuestionIndex = getIntent().getIntExtra("currentQuestionIndex", 0);
         questions = (List<Question>) getIntent().getSerializableExtra("questions");
+        courseID = getIntent().getIntExtra("courseID",1);
+        lessonID = getIntent().getIntExtra("lessonID",1);
 
 
         // Hiển thị câu hỏi hiện tại
@@ -222,6 +225,8 @@ public class GrammarPickManyActivity extends AppCompatActivity {
 
     private void finishLesson() {
         Intent intent = new Intent(GrammarPickManyActivity.this, PointResultLessonActivity.class);
+        intent.putExtra("lessonId",lessonID);
+        intent.putExtra("courseId",courseID);
         startActivity(intent);
         finish();
     }

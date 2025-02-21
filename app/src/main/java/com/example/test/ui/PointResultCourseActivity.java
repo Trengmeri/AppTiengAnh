@@ -202,23 +202,6 @@ public class PointResultCourseActivity extends AppCompatActivity {
                     public void onSuccess(Result result) {
                         if (result!= null) {
                             Log.d("PointResultActivity", "fetchResultByLesson: Lấy Result thành công");
-                            resultManager.calculateEnrollment(enrollmentId, new ApiCallback<Enrollment>() {
-                                @Override
-                                public void onSuccess() {
-
-                                }
-
-                                @Override
-                                public void onSuccess(Enrollment enrollment) {
-                                    coursePoint = enrollment.getTotalPoints();
-                                    compCourse = enrollment.getComLevel();
-                                }
-
-                                @Override
-                                public void onFailure(String errorMessage) {
-
-                                }
-                            });
                             runOnUiThread(() -> updateUI(skillType, result.getComLevel(), result.getTotalPoints(), result.getId(), coursePoint, compCourse));
                         } else {
                             Log.e("PointResultActivity", "fetchResultByLesson: Kết quả không hợp lệ.");

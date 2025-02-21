@@ -51,6 +51,7 @@ public class ListeningQuestionActivity extends AppCompatActivity {
     private List<String> userAnswers = new ArrayList<>();
     private int currentStep = 0; // Bước hiện tại (bắt đầu từ 0)
     private int totalSteps; // Tổng số bước trong thanh tiến trình
+    private int lessonID,courseID;
     private int answerIds;
     ImageView btnListen;
 
@@ -70,6 +71,8 @@ public class ListeningQuestionActivity extends AppCompatActivity {
         // Nhận dữ liệu từ Intent
         currentQuestionIndex = getIntent().getIntExtra("currentQuestionIndex", 0);
         questions = (List<Question>) getIntent().getSerializableExtra("questions");
+        courseID = getIntent().getIntExtra("courseID",1);
+        lessonID = getIntent().getIntExtra("lessonID",1);
 
 
         // Hiển thị câu hỏi hiện tại
@@ -259,6 +262,8 @@ public class ListeningQuestionActivity extends AppCompatActivity {
 
     private void finishLesson() {
         Intent intent = new Intent(ListeningQuestionActivity.this, PointResultLessonActivity.class);
+        intent.putExtra("lessonId",lessonID);
+        intent.putExtra("courseId",courseID);
         startActivity(intent);
         finish();
     }

@@ -48,6 +48,7 @@ public class GrammarPick1QuestionActivity extends AppCompatActivity {
     LessonManager lesManager = new LessonManager();
     ResultManager resultManager = new ResultManager(this);
     TextView tvContent;
+    private int lessonID,courseID;
     NetworkChangeReceiver networkReceiver;
     private int answerIds;
     private List<Question> questions; // Danh sách câu hỏi
@@ -73,6 +74,8 @@ public class GrammarPick1QuestionActivity extends AppCompatActivity {
         // Nhận dữ liệu từ Intent
         currentQuestionIndex = getIntent().getIntExtra("currentQuestionIndex", 0);
         questions = (List<Question>) getIntent().getSerializableExtra("questions");
+        courseID = getIntent().getIntExtra("courseID",1);
+        lessonID = getIntent().getIntExtra("lessonID",1);
 
 
         // Hiển thị câu hỏi hiện tại
@@ -232,6 +235,8 @@ public class GrammarPick1QuestionActivity extends AppCompatActivity {
 
     private void finishLesson() {
         Intent intent = new Intent(GrammarPick1QuestionActivity.this, PointResultLessonActivity.class);
+        intent.putExtra("lessonId",lessonID);
+        intent.putExtra("courseId",courseID);
         startActivity(intent);
         finish();
     }

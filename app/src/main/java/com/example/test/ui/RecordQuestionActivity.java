@@ -54,6 +54,7 @@ public class RecordQuestionActivity extends AppCompatActivity implements SpeechR
     private List<Question> questions; // Danh sách câu hỏi
     private int currentQuestionIndex; // Vị trí câu hỏi hiện tại
     private int currentStep = 0; // Bước hiện tại (bắt đầu từ 0)
+    private int lessonID,courseID;
     private int totalSteps; // Tổng số bước trong thanh tiến trình
     QuestionManager quesManager = new QuestionManager(this);
     LessonManager lesManager = new LessonManager();
@@ -74,6 +75,8 @@ public class RecordQuestionActivity extends AppCompatActivity implements SpeechR
         // Nhận dữ liệu từ Intent
         currentQuestionIndex = getIntent().getIntExtra("currentQuestionIndex", 0);
         questions = (List<Question>) getIntent().getSerializableExtra("questions");
+        courseID = getIntent().getIntExtra("courseID",1);
+        lessonID = getIntent().getIntExtra("lessonID",1);
 
 
         // Hiển thị câu hỏi hiện tại
@@ -263,6 +266,8 @@ public class RecordQuestionActivity extends AppCompatActivity implements SpeechR
 
     private void finishLesson() {
         Intent intent = new Intent(RecordQuestionActivity.this, PointResultLessonActivity.class);
+        intent.putExtra("lessonId",lessonID);
+        intent.putExtra("courseId",courseID);
         startActivity(intent);
         finish();
     }

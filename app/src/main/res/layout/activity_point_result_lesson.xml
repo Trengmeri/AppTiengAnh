@@ -162,7 +162,8 @@
             android:text="@string/review"
             android:textColor="@color/black"
             android:textSize="16sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:gravity="center"/>
 
         <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
@@ -173,7 +174,10 @@
                     android:id="@+id/questionsContainer"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical" />
+                    android:orientation="vertical"
+                    android:layout_marginTop="30dp"
+                    android:layout_marginStart="@dimen/dp_30"
+                    android:layout_marginEnd="@dimen/dp_30"/>
 
         </androidx.core.widget.NestedScrollView>
 
