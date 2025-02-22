@@ -33,6 +33,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.test.R;
 import com.example.test.adapter.FlashcardAdapter;
+import com.example.test.api.AddFlashCardApiCallback;
 import com.example.test.api.FlashcardApiCallback;
 import com.example.test.api.FlashcardManager;
 import com.example.test.model.Definition;
@@ -142,12 +143,9 @@ public class FlashcardActivity extends AppCompatActivity {
 
     @SuppressLint("MissingInflatedId")
     private void showDefinitionDialog(String word) {
-        flashcardManager.fetchWordDefinition(word, new FlashcardApiCallback() {
+        flashcardManager.fetchWordDefinition(word, new AddFlashCardApiCallback<WordData>() {
             @Override
-            public void onSuccess(Object response) {
-                // Thêm log để hiển thị dữ liệu trả về
-                Log.d("API Response", response.toString());
-                WordData wordData = (WordData) response;
+            public void onSuccess(WordData wordData) {
                 runOnUiThread(() -> {
                     LayoutInflater inflater = getLayoutInflater();
                     View dialogView = inflater.inflate(R.layout.dialog_add_definition, null);
@@ -244,33 +242,40 @@ public class FlashcardActivity extends AppCompatActivity {
 
                     // Kiểm tra và hiển thị meanings
                     if (wordData.getMeanings() != null) {
-                        for (Meaning meaning : wordData.getMeanings()) {
-                            String partOfSpeech = meaning.getPartOfSpeech();
-                            AppCompatButton btn = new AppCompatButton(FlashcardActivity.this);
-                            btn.setText(partOfSpeech);
-                            btn.setLayoutParams(new LinearLayout.LayoutParams(
-                                    LinearLayout.LayoutParams.MATCH_PARENT,
-                                    LinearLayout.LayoutParams.WRAP_CONTENT));
+                        // for (Meaning meaning : wordData.getMeanings()) {
+                        // String partOfSpeech = meaning.getPartOfSpeech();
+                        // AppCompatButton btn = new AppCompatButton(FlashcardActivity.this);
+                        // btn.setText(partOfSpeech);
+                        // btn.setLayoutParams(new LinearLayout.LayoutParams(
+                        // LinearLayout.LayoutParams.MATCH_PARENT,
+                        // LinearLayout.LayoutParams.WRAP_CONTENT));
 
-                            btn.setBackgroundResource(R.drawable.item_definition);
-                            btn.setTextColor(ContextCompat.getColor(FlashcardActivity.this, R.color.black));
-                            btn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
-                            btn.setPadding(20, 10, 20, 10);
-                            btn.setTag(false);
+                        // btn.setBackgroundResource(R.drawable.item_definition);
+                        // btn.setTextColor(ContextCompat.getColor(FlashcardActivity.this,
+                        // R.color.black));
+                        // btn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
+                        // btn.setPadding(20, 10, 20, 10);
+                        // btn.setTag(false);
 
-                            btn.setOnClickListener(v -> {
-                                for (AppCompatButton otherBtn : meaningButtons) {
-                                    otherBtn.setBackgroundResource(R.drawable.item_definition);
-                                    otherBtn.setTag(false);
-                                }
-                                btn.setBackgroundResource(R.drawable.item_definition_selected);
-                                btn.setTag(true);
-                                checkEnableDone(phoneticButtons, definitionButtons, meaningButtons, btnDone);
-                            });
+                        // btn.setOnClickListener(v -> {
+                        // for (AppCompatButton otherBtn : meaningButtons) {
+                        // otherBtn.setBackgroundResource(R.drawable.item_definition);
+                        // otherBtn.setTag(false);
+                        // }
+                        // btn.setBackgroundResource(R.drawable.item_definition_selected);
+                        // btn.setTag(true);
+                        // checkEnableDone(phoneticButtons, definitionButtons, meaningButtons, btnDone);
+                        // });
 
-                            meaningButtons.add(btn);
-                            meaningContainer.addView(btn);
-                        }
+                        // meaningButtons.add(btn);
+                        // meaningContainer.addView(btn);
+                        // }
+                        meaningContainer
+                                .addView(new androidx.appcompat.widget.AppCompatTextView(FlashcardActivity.this) {
+                                    {
+                                        setText("No meanings available");
+                                    }
+                                });
                     } else {
                         meaningContainer
                                 .addView(new androidx.appcompat.widget.AppCompatTextView(FlashcardActivity.this) {
@@ -290,26 +295,6 @@ public class FlashcardActivity extends AppCompatActivity {
                     });
                     dialog.show();
                 });
-            }
-
-            @Override
-            public void onSuccess(ApiResponseFlashcardGroup response) {
-
-            }
-
-            @Override
-            public void onSuccess(FlashcardGroupResponse response) {
-
-            }
-
-            @Override
-            public void onSuccess(ApiResponseFlashcard response) {
-
-            }
-
-            @Override
-            public void onSuccess(ApiResponseOneFlashcard response) {
-
             }
 
             @Override

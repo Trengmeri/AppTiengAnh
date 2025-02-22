@@ -207,7 +207,7 @@ public class FlashcardManager extends BaseApiManager {
         });
     }
 
-    public void fetchWordDefinition(String word, FlashcardApiCallback callback) {
+    public void fetchWordDefinition(String word, AddFlashCardApiCallback<WordData> callback) {
         String url = BASE_URL + "/api/v1/dictionary/" + word; // URL API
 
         // Tạo một request
@@ -221,11 +221,7 @@ public class FlashcardManager extends BaseApiManager {
             public void onResponse(Call call, Response response) throws IOException {
                 if (response.isSuccessful()) {
                     String responseData = response.body().string();
-
-                    // Thêm log để hiển thị dữ liệu trả về
                     Log.d("API Response", responseData);
-
-                    // Chuyển đổi dữ liệu JSON thành đối tượng WordData
                     WordData wordData = new Gson().fromJson(responseData, WordData.class);
                     callback.onSuccess(wordData);
                 } else {
