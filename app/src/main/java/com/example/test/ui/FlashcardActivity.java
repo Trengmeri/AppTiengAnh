@@ -8,6 +8,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
@@ -154,7 +155,7 @@ public class FlashcardActivity extends AppCompatActivity {
                     LinearLayout definitionContainer = dialogView.findViewById(R.id.definitionContainer);
                     LinearLayout meaningContainer = dialogView.findViewById(R.id.meaningContainer);
 
-                    TextView btnDone = dialogView.findViewById(R.id.btnDone);
+                    Button btnDone = dialogView.findViewById(R.id.btnDone);
                     btnDone.setEnabled(false);
                     btnDone.setAlpha(0.5f);
 
@@ -162,7 +163,7 @@ public class FlashcardActivity extends AppCompatActivity {
                     List<AppCompatButton> definitionButtons = new ArrayList<>();
                     List<AppCompatButton> meaningButtons = new ArrayList<>();
 
-                    // Kiểm tra và hiển thị phonetics
+                    // Hiển thị phonetics
                     if (wordData.getPhonetics() != null && !wordData.getPhonetics().isEmpty()) {
                         for (Phonetic phonetic : wordData.getPhonetics()) {
                             AppCompatButton btn = new AppCompatButton(FlashcardActivity.this);
@@ -170,12 +171,12 @@ public class FlashcardActivity extends AppCompatActivity {
                             btn.setLayoutParams(new LinearLayout.LayoutParams(
                                     LinearLayout.LayoutParams.WRAP_CONTENT,
                                     LinearLayout.LayoutParams.WRAP_CONTENT));
-
                             btn.setBackgroundResource(R.drawable.item_phonetic);
                             btn.setTextColor(ContextCompat.getColor(FlashcardActivity.this, R.color.black));
                             btn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
-                            btn.setPadding(20, 10, 20, 10);
+                            btn.setPadding(40, 10, 20, 10);
                             btn.setTag(false);
+                            btn.setGravity(Gravity.START | Gravity.CENTER_VERTICAL);
 
                             btn.setOnClickListener(v -> {
                                 for (AppCompatButton otherBtn : phoneticButtons) {
@@ -199,7 +200,7 @@ public class FlashcardActivity extends AppCompatActivity {
                                 });
                     }
 
-                    // Kiểm tra và hiển thị definitions
+                    // Hiển thị definitions
                     if (wordData.getMeanings() != null) {
                         for (Meaning meaning : wordData.getMeanings()) {
                             if (meaning.getDefinitions() != null && !meaning.getDefinitions().isEmpty()) {
@@ -209,12 +210,12 @@ public class FlashcardActivity extends AppCompatActivity {
                                     btn.setLayoutParams(new LinearLayout.LayoutParams(
                                             LinearLayout.LayoutParams.MATCH_PARENT,
                                             LinearLayout.LayoutParams.WRAP_CONTENT));
-
                                     btn.setBackgroundResource(R.drawable.item_definition);
                                     btn.setTextColor(ContextCompat.getColor(FlashcardActivity.this, R.color.black));
-                                    btn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
-                                    btn.setPadding(20, 10, 20, 10);
+                                    btn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 10);
+                                    btn.setPadding(40, 10, 40, 10);
                                     btn.setTag(false);
+                                    btn.setGravity(Gravity.START | Gravity.CENTER_VERTICAL);
 
                                     btn.setOnClickListener(v -> {
                                         for (AppCompatButton otherBtn : definitionButtons) {
@@ -240,50 +241,43 @@ public class FlashcardActivity extends AppCompatActivity {
                                 });
                     }
 
-                    // Kiểm tra và hiển thị meanings
-                    if (wordData.getMeanings() != null) {
-                        // for (Meaning meaning : wordData.getMeanings()) {
-                        // String partOfSpeech = meaning.getPartOfSpeech();
-                        // AppCompatButton btn = new AppCompatButton(FlashcardActivity.this);
-                        // btn.setText(partOfSpeech);
-                        // btn.setLayoutParams(new LinearLayout.LayoutParams(
-                        // LinearLayout.LayoutParams.MATCH_PARENT,
-                        // LinearLayout.LayoutParams.WRAP_CONTENT));
-
-                        // btn.setBackgroundResource(R.drawable.item_definition);
-                        // btn.setTextColor(ContextCompat.getColor(FlashcardActivity.this,
-                        // R.color.black));
-                        // btn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
-                        // btn.setPadding(20, 10, 20, 10);
-                        // btn.setTag(false);
-
-                        // btn.setOnClickListener(v -> {
-                        // for (AppCompatButton otherBtn : meaningButtons) {
-                        // otherBtn.setBackgroundResource(R.drawable.item_definition);
-                        // otherBtn.setTag(false);
-                        // }
-                        // btn.setBackgroundResource(R.drawable.item_definition_selected);
-                        // btn.setTag(true);
-                        // checkEnableDone(phoneticButtons, definitionButtons, meaningButtons, btnDone);
-                        // });
-
-                        // meaningButtons.add(btn);
-                        // meaningContainer.addView(btn);
-                        // }
-                        meaningContainer
-                                .addView(new androidx.appcompat.widget.AppCompatTextView(FlashcardActivity.this) {
-                                    {
-                                        setText("No meanings available");
-                                    }
-                                });
-                    } else {
-                        meaningContainer
-                                .addView(new androidx.appcompat.widget.AppCompatTextView(FlashcardActivity.this) {
-                                    {
-                                        setText("No meanings available");
-                                    }
-                                });
-                    }
+                    // // Hiển thị meanings
+                    // if (wordData.getMeanings() != null) {
+                    // for (Meaning meaning : wordData.getMeanings()) {
+                    // AppCompatButton btn = new AppCompatButton(FlashcardActivity.this);
+                    // btn.setText(meaning.getPartOfSpeech());
+                    // btn.setLayoutParams(new LinearLayout.LayoutParams(
+                    // LinearLayout.LayoutParams.MATCH_PARENT,
+                    // LinearLayout.LayoutParams.WRAP_CONTENT));
+                    // btn.setBackgroundResource(R.drawable.item_definition);
+                    // btn.setTextColor(ContextCompat.getColor(FlashcardActivity.this,
+                    // R.color.black));
+                    // btn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
+                    // btn.setPadding(20, 10, 20, 10);
+                    // btn.setTag(false);
+                    // btn.setGravity(Gravity.START);
+                    //
+                    // btn.setOnClickListener(v -> {
+                    // for (AppCompatButton otherBtn : meaningButtons) {
+                    // otherBtn.setBackgroundResource(R.drawable.item_definition);
+                    // otherBtn.setTag(false);
+                    // }
+                    // btn.setBackgroundResource(R.drawable.item_definition_selected);
+                    // btn.setTag(true);
+                    // checkEnableDone(phoneticButtons, definitionButtons, meaningButtons, btnDone);
+                    // });
+                    //
+                    // meaningButtons.add(btn);
+                    // meaningContainer.addView(btn);
+                    // }
+                    // } else {
+                    // meaningContainer.addView(new
+                    // androidx.appcompat.widget.AppCompatTextView(FlashcardActivity.this) {
+                    // {
+                    // setText("No meanings available");
+                    // }
+                    // });
+                    // }
 
                     AlertDialog.Builder builder = new AlertDialog.Builder(FlashcardActivity.this);
                     builder.setView(dialogView);
