@@ -155,7 +155,7 @@ public class FlashcardActivity extends AppCompatActivity {
                     LinearLayout phoneticContainer = dialogView.findViewById(R.id.phoneticContainer);
                     LinearLayout definitionContainer = dialogView.findViewById(R.id.definitionContainer);
                     LinearLayout meaningContainer = dialogView.findViewById(R.id.meaningContainer);
-
+                    LinearLayout partOfSpeechContainer = dialogView.findViewById(R.id.partOfSpeechContainer);
                     Button btnDone = dialogView.findViewById(R.id.btnDone);
                     btnDone.setEnabled(false);
                     btnDone.setAlpha(0.5f);
@@ -200,67 +200,40 @@ public class FlashcardActivity extends AppCompatActivity {
                                     }
                                 });
                     }
-                    ScrollView definitionScrollView = dialogView.findViewById(R.id.definitionScrollView);
 
-                    // Lấy số lượng định nghĩa từ meanings
-                    int numberOfButtons = 0;
+                    // Hiển thị Part of Speech
                     if (wordData.getMeanings() != null) {
-                        for (Meaning meaning : wordData.getMeanings()) {
-                            if (meaning.getDefinitions() != null) {
-                                numberOfButtons += meaning.getDefinitions().size();
-                            }
-                        }
-                    }
+                        for (int i = 0; i < wordData.getMeanings().size(); i++) {
+                            Meaning meaning = wordData.getMeanings().get(i);
+                            if (meaning.getPartOfSpeech() != null) {
+                                AppCompatButton btn = new AppCompatButton(FlashcardActivity.this);
+                                btn.setText(meaning.getPartOfSpeech());
+                                btn.setLayoutParams(new LinearLayout.LayoutParams(
+                                        LinearLayout.LayoutParams.WRAP_CONTENT,
+                                        LinearLayout.LayoutParams.WRAP_CONTENT));
 
-                    // Tính toán chiều cao cho ScrollView dựa trên số lượng button
-                    int buttonHeight = (int) getResources().getDimension(R.dimen.button_height); // Đảm bảo bạn đã định
-                                                                                                 // nghĩa button_height
-                                                                                                 // trong dimens.xml
-                    int scrollViewHeight = buttonHeight * Math.min(numberOfButtons, 3); // Giới hạn chiều cao tối đa cho
-                                                                                        // 3 button
+                                btn.setTextColor(ContextCompat.getColor(FlashcardActivity.this, R.color.black));
+                                btn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
+                                btn.setPadding(20, 10, 20, 10);
+                                btn.setTag(false);
+                                btn.setGravity(Gravity.START | Gravity.CENTER_VERTICAL);
 
-                    definitionScrollView.setLayoutParams(
-                            new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, scrollViewHeight));
-
-                    // Hiển thị definitions
-                    if (wordData.getMeanings() != null) {
-                        for (Meaning meaning : wordData.getMeanings()) {
-                            if (meaning.getDefinitions() != null && !meaning.getDefinitions().isEmpty()) {
-                                for (Definition definition : meaning.getDefinitions()) {
-                                    AppCompatButton btn = new AppCompatButton(FlashcardActivity.this);
-                                    btn.setText(definition.getDefinition());
-                                    btn.setLayoutParams(new LinearLayout.LayoutParams(
-                                            LinearLayout.LayoutParams.MATCH_PARENT,
-                                            LinearLayout.LayoutParams.WRAP_CONTENT));
-                                    btn.setBackgroundResource(R.drawable.item_definition);
-                                    btn.setTextColor(ContextCompat.getColor(FlashcardActivity.this, R.color.black));
-                                    btn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 10);
-                                    btn.setPadding(40, 10, 40, 10);
-                                    btn.setTag(false);
-                                    btn.setGravity(Gravity.START | Gravity.CENTER_VERTICAL);
-
-                                    btn.setOnClickListener(v -> {
-                                        for (AppCompatButton otherBtn : definitionButtons) {
-                                            otherBtn.setBackgroundResource(R.drawable.item_definition);
-                                            otherBtn.setTag(false);
-                                        }
-                                        btn.setBackgroundResource(R.drawable.item_definition_selected);
-                                        btn.setTag(true);
-                                        checkEnableDone(phoneticButtons, definitionButtons, meaningButtons, btnDone);
-                                    });
-
-                                    definitionButtons.add(btn);
-                                    definitionContainer.addView(btn);
-                                }
-                            }
-                        }
-                    } else {
-                        definitionContainer
-                                .addView(new androidx.appcompat.widget.AppCompatTextView(FlashcardActivity.this) {
-                                    {
-                                        setText("No definitions available");
-                                    }
+                                // Sự kiện click cho button Part of Speech
+                                btn.setOnClickListener(v -> {
+                                    // Hiển thị definitions cho part of speech đã chọn
+                                    updateDefinitions(definitionContainer, meaning, dialogView,
+                                            phoneticButtons, definitionButtons, meaningButtons, btnDone);
                                 });
+
+                                partOfSpeechContainer.addView(btn);
+                            }
+                        }
+
+                        // Hiển thị definitions cho part of speech đầu tiên
+                        if (!wordData.getMeanings().isEmpty()) {
+                            updateDefinitions(definitionContainer, wordData.getMeanings().get(0), dialogView,
+                                    phoneticButtons, definitionButtons, meaningButtons, btnDone);
+                        }
                     }
 
                     AlertDialog.Builder builder = new AlertDialog.Builder(FlashcardActivity.this);
@@ -282,6 +255,61 @@ public class FlashcardActivity extends AppCompatActivity {
                 });
             }
         });
+    }
+
+    // Phương thức cập nhật definitions dựa trên part of speech đã chọn
+    private void updateDefinitions(LinearLayout definitionContainer, Meaning meaning, View dialogView,
+                                   List<AppCompatButton> phoneticButtons, List<AppCompatButton> definitionButtons, List<AppCompatButton> meaningButtons,
+                                   Button btnDone) {
+
+        definitionContainer.removeAllViews();
+        ScrollView definitionScrollView = dialogView.findViewById(R.id.definitionScrollView);
+
+        int numberOfButtons = 0;
+        if (meaning.getDefinitions() != null) {
+            numberOfButtons += meaning.getDefinitions().size();
+        }
+
+        int buttonHeight = (int) getResources().getDimension(R.dimen.button_height);
+        int scrollViewHeight = buttonHeight * Math.min(numberOfButtons, 3);
+
+
+        definitionScrollView.setLayoutParams(
+                new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, scrollViewHeight));
+        // Hiển thị definitions cho part of speech đã chọn
+        if (meaning.getDefinitions() != null && !meaning.getDefinitions().isEmpty()) {
+            for (Definition definition : meaning.getDefinitions()) {
+                AppCompatButton btn = new AppCompatButton(FlashcardActivity.this);
+                btn.setText(definition.getDefinition());
+                btn.setLayoutParams(new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT));
+                btn.setBackgroundResource(R.drawable.item_definition);
+                btn.setTextColor(ContextCompat.getColor(FlashcardActivity.this, R.color.black));
+                btn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 10);
+                btn.setPadding(40, 10, 40, 10);
+                btn.setTag(false);
+                btn.setGravity(Gravity.START | Gravity.CENTER_VERTICAL);
+
+                btn.setOnClickListener(v -> {
+                    for (AppCompatButton otherBtn : definitionButtons) {
+                        otherBtn.setBackgroundResource(R.drawable.item_definition);
+                        otherBtn.setTag(false);
+                    }
+                    btn.setBackgroundResource(R.drawable.item_definition_selected);
+                    btn.setTag(true);
+                    checkEnableDone(phoneticButtons, definitionButtons, meaningButtons, btnDone);
+                });
+
+                definitionContainer.addView(btn);
+            }
+        } else {
+            definitionContainer.addView(new androidx.appcompat.widget.AppCompatTextView(FlashcardActivity.this) {
+                {
+                    setText("No definitions available");
+                }
+            });
+        }
     }
 
     private void checkEnableDone(List<AppCompatButton> phoneticButtons, List<AppCompatButton> definitionButtons,

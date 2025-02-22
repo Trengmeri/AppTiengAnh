@@ -13,6 +13,13 @@
             <LinearLayout android:id="@+id/phoneticContainer" android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal" android:padding="8dp" android:background="@drawable/rounded_corner" android:layout_marginBottom="8dp"/>
         </HorizontalScrollView>
 
+        <TextView android:id="@+id/partOfSpeechLabel" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Part of Speech:" android:textSize="16sp" android:textStyle="bold"/>
+
+        <HorizontalScrollView android:layout_width="match_parent" android:layout_height="wrap_content" android:fillViewport="true" android:scrollbars="horizontal">
+
+            <LinearLayout android:id="@+id/partOfSpeechContainer" android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal" android:padding="8dp" android:background="@drawable/rounded_corner" android:layout_marginBottom="8dp"/>
+        </HorizontalScrollView>
+
         <TextView android:id="@+id/definitionLabel" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Definition:" android:textSize="16sp" android:textStyle="bold"/>
 
         <ScrollView android:id="@+id/definitionScrollView" android:layout_width="wrap_content" android:layout_height="wrap_content" android:fillViewport="true" android:scrollbars="vertical">
