@@ -46,7 +46,7 @@ public class GroupFlashcardActivity extends AppCompatActivity {
 
     AppCompatButton groupFlcid;
     TextView backtoExplore;
-    ImageView btnaddgroup;
+    ImageView btnaddgroup, iconEdit;
     LinearLayout groupContainer;
     private FlashcardManager flashcardManager;
     private final ArrayList<AppCompatButton> groupButtons = new ArrayList<>();
@@ -67,28 +67,29 @@ public class GroupFlashcardActivity extends AppCompatActivity {
         backtoExplore = findViewById(R.id.flBacktoExplore);
         btnaddgroup = findViewById(R.id.btnAddGroup);
         groupContainer = findViewById(R.id.groupContainer);
+        iconEdit= findViewById(R.id.iconEdit);
         flashcardManager = new FlashcardManager();
 
         btnaddgroup.setOnClickListener(view -> showAddGroupDialog());
 
-        groupFlcid.setOnTouchListener((v, event) -> {
-            if (event.getAction() == MotionEvent.ACTION_UP) {
-                Drawable[] drawables = groupFlcid.getCompoundDrawablesRelative();
-                if (drawables[2] != null) { // Kiểm tra drawableEnd có tồn tại không
-                    int drawableWidth = drawables[2].getBounds().width();
-                    int buttonWidth = groupFlcid.getWidth();
-                    int touchX = (int) event.getX();
-
-                    // Kiểm tra xem người dùng có chạm vào drawableEnd không
-                    if (touchX >= (buttonWidth - drawableWidth - groupFlcid.getPaddingEnd())) {
-                        int groupId = (int) groupFlcid.getTag(); // Retrieve the groupId from the button's tag
-                        showEditGroupDialog(groupFlcid, groupId); // Pass the groupId
-                        return true;
-                    }
-                }
-            }
-            return false;
-        });
+//        groupFlcid.setOnTouchListener((v, event) -> {
+//            if (event.getAction() == MotionEvent.ACTION_UP) {
+//                Drawable[] drawables = groupFlcid.getCompoundDrawablesRelative();
+//                if (drawables[2] != null) { // Kiểm tra drawableEnd có tồn tại không
+//                    int drawableWidth = drawables[2].getBounds().width();
+//                    int buttonWidth = groupFlcid.getWidth();
+//                    int touchX = (int) event.getX();
+//
+//                    // Kiểm tra xem người dùng có chạm vào drawableEnd không
+//                    if (touchX >= (buttonWidth - drawableWidth - groupFlcid.getPaddingEnd())) {
+//                        int groupId = (int) groupFlcid.getTag(); // Retrieve the groupId from the button's tag
+//                        showEditGroupDialog(groupFlcid, groupId); // Pass the groupId
+//                        return true;
+//                    }
+//                }
+//            }
+//            return false;
+//        });
 
         groupFlcid.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -108,15 +109,19 @@ public class GroupFlashcardActivity extends AppCompatActivity {
         fetchFlashcardGroups();
     }
 
-    private void showEditGroupDialog(Button groupButton, int groupId) {
+    private void showEditGroupDialog(TextView groupTextView, int groupId) {
         LayoutInflater inflater = LayoutInflater.from(this);
-        View dialogView = inflater.inflate(R.layout.dialog_edit_groupflash, null);
+        View dialogView = inflater.inflate(R.layout.dialog_edit_group, null);
 
-        EditText edtEditGroupName = dialogView.findViewById(R.id.edtEditGroupName);
+        @SuppressLint({"MissingInflatedId", "LocalSuppress"})
+        EditText edtEditGroupName = dialogView.findViewById(R.id.edtGroupName);
+        @SuppressLint({"MissingInflatedId", "LocalSuppress"})
         Button btnEdit = dialogView.findViewById(R.id.btnEdit);
+        @SuppressLint({"MissingInflatedId", "LocalSuppress"})
         Button btnDelete = dialogView.findViewById(R.id.btnDelete);
+        ImageView btnClose= dialogView.findViewById(R.id.btnclose);
 
-        edtEditGroupName.setText(groupButton.getText().toString().trim());
+        edtEditGroupName.setText(groupTextView.getText().toString().trim());
 
         AlertDialog dialog = new AlertDialog.Builder(this)
                 .setView(dialogView)
@@ -131,7 +136,7 @@ public class GroupFlashcardActivity extends AppCompatActivity {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 btnEdit.setEnabled(
-                        !s.toString().trim().isEmpty() && !s.toString().equals(groupButton.getText().toString()));
+                        !s.toString().trim().isEmpty() && !s.toString().equals(groupTextView.getText().toString()));
             }
 
             @Override
@@ -148,7 +153,7 @@ public class GroupFlashcardActivity extends AppCompatActivity {
                 @Override
                 public void onSuccess(ApiResponseFlashcardGroup response) {
                     runOnUiThread(() -> {
-                        groupButton.setText(newName);
+                        groupTextView.setText(newName);
                         dialog.dismiss();
                         Toast.makeText(GroupFlashcardActivity.this, "Group updated successfully", Toast.LENGTH_SHORT)
                                 .show();
@@ -180,6 +185,8 @@ public class GroupFlashcardActivity extends AppCompatActivity {
             });
         });
 
+        btnClose.setOnClickListener(v-> dialog.dismiss());
+
         // Sự kiện khi nhấn "Delete" (Xóa nhóm)
         btnDelete.setOnClickListener(v -> {
             // Gọi API để xóa nhóm
@@ -187,7 +194,7 @@ public class GroupFlashcardActivity extends AppCompatActivity {
                 @Override
                 public void onSuccess(ApiResponseFlashcardGroup response) {
                     runOnUiThread(() -> {
-                        groupContainer.removeView(groupButton);
+                        groupContainer.removeView(groupTextView);
                         dialog.dismiss();
                         Toast.makeText(GroupFlashcardActivity.this, "Group deleted successfully", Toast.LENGTH_SHORT)
                                 .show();
@@ -231,6 +238,7 @@ public class GroupFlashcardActivity extends AppCompatActivity {
 
         AlertDialog dialog = builder.create();
 
+        @SuppressLint({"MissingInflatedId", "LocalSuppress"})
         EditText edtGroupName = dialogView.findViewById(R.id.edtGroupName);
         Button btnAdd = dialogView.findViewById(R.id.btnAdd);
         Button btnCancel = dialogView.findViewById(R.id.btnCancel);
@@ -352,41 +360,84 @@ public class GroupFlashcardActivity extends AppCompatActivity {
     }
 
     @SuppressLint("ClickableViewAccessibility")
+//    private void addGroupButton(String groupName, int groupId) {
+//        LinearLayout layoutFlashcards = findViewById(R.id.groupContainer);
+//
+//        // Tạo một LinearLayout cho mỗi nhóm
+//        LinearLayout groupLayout = new LinearLayout(this);
+//        groupLayout.setOrientation(LinearLayout.HORIZONTAL); // Đặt orientation là horizontal
+//        groupLayout.setGravity(Gravity.CENTER_VERTICAL); // Căn giữa theo chiều dọc
+//        groupLayout.setLayoutParams(new LinearLayout.LayoutParams(
+//                LinearLayout.LayoutParams.MATCH_PARENT,
+//                LinearLayout.LayoutParams.WRAP_CONTENT));
+//
+//        // Nút nhóm
+//        AppCompatButton newGroup = new AppCompatButton(this);
+//        newGroup.setText(groupName);
+//        newGroup.setTextSize(22);
+//        newGroup.setBackground(ContextCompat.getDrawable(this, R.drawable.btn_flash));
+//        newGroup.setLayoutParams(new LinearLayout.LayoutParams(
+//                0, // Chiều rộng sẽ được điều chỉnh
+//                LinearLayout.LayoutParams.WRAP_CONTENT,
+//                1)); // Tỉ lệ trọng số
+//        newGroup.setPaddingRelative(16, 16, 16, 16);
+//        newGroup.setPadding(16, 16, 16, 16);
+//
+//        // Tạo ImageView cho biểu tượng chỉnh sửa
+//        ImageView editIcon = new ImageView(this);
+//        editIcon.setImageResource(R.drawable.icon_edit); // Thay đổi drawable theo nhu cầu
+//        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(48, 48); // Kích thước biểu tượng
+//        params.setMargins(16, 0, 0, 0); // Thêm khoảng cách bên trái
+//        editIcon.setLayoutParams(params);
+//
+//        // Lưu ID nhóm vào tag của nút
+//        newGroup.setTag(groupId);
+//
+//        // Sự kiện khi nhấn vào nút nhóm
+//        newGroup.setOnClickListener(v -> {
+//            Intent intent = new Intent(GroupFlashcardActivity.this, FlashcardActivity.class);
+//            intent.putExtra("GROUP_ID", groupId);
+//            startActivity(intent);
+//        });
+//
+//        // Sự kiện khi nhấn vào biểu tượng chỉnh sửa
+//        editIcon.setOnClickListener(v -> {
+//            showEditGroupDialog(newGroup, groupId); // Mở cửa sổ chỉnh sửa
+//        });
+//
+//        // Thêm nút nhóm và biểu tượng chỉnh sửa vào layout
+//        groupLayout.addView(newGroup);
+//        groupLayout.addView(editIcon);
+//        layoutFlashcards.addView(groupLayout);
+//    }
     private void addGroupButton(String groupName, int groupId) {
         LinearLayout layoutFlashcards = findViewById(R.id.groupContainer);
 
-        // Tạo một LinearLayout cho mỗi nhóm
-        LinearLayout groupLayout = new LinearLayout(this);
-        groupLayout.setOrientation(LinearLayout.HORIZONTAL); // Đặt orientation là horizontal
-        groupLayout.setGravity(Gravity.CENTER_VERTICAL); // Căn giữa theo chiều dọc
-        groupLayout.setLayoutParams(new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT));
+        // Inflate item_groupflash.xml
+        View groupView = LayoutInflater.from(this).inflate(R.layout.item_groupflash, layoutFlashcards, false);
 
-        // Nút nhóm
-        AppCompatButton newGroup = new AppCompatButton(this);
-        newGroup.setText(groupName);
-        newGroup.setTextSize(22);
-        newGroup.setBackground(ContextCompat.getDrawable(this, R.drawable.btn_flash));
-        newGroup.setLayoutParams(new LinearLayout.LayoutParams(
-                0, // Chiều rộng sẽ được điều chỉnh
-                LinearLayout.LayoutParams.WRAP_CONTENT,
-                1)); // Tỉ lệ trọng số
-        newGroup.setPaddingRelative(16, 16, 16, 16);
-        newGroup.setPadding(16, 16, 16, 16);
+        // Kiểm tra xem inflate có thành công không
+        if (groupView == null) {
+            Log.e("addGroupButton", "groupView is null");
+            return;
+        }
 
-        // Tạo ImageView cho biểu tượng chỉnh sửa
-        ImageView editIcon = new ImageView(this);
-        editIcon.setImageResource(R.drawable.icon_edit); // Thay đổi drawable theo nhu cầu
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(48, 48); // Kích thước biểu tượng
-        params.setMargins(16, 0, 0, 0); // Thêm khoảng cách bên trái
-        editIcon.setLayoutParams(params);
+        // Tìm các thành phần trong item_groupflash.xml
+        TextView textViewGroup = groupView.findViewById(R.id.textViewGroup);
+        ImageView editIcon = groupView.findViewById(R.id.iconEdit);
 
-        // Lưu ID nhóm vào tag của nút
-        newGroup.setTag(groupId);
+        // Kiểm tra xem editIcon có null không
+        if (editIcon == null) {
+            Log.e("addGroupButton", "editIcon is null");
+            return;
+        }
 
-        // Sự kiện khi nhấn vào nút nhóm
-        newGroup.setOnClickListener(v -> {
+        // Thiết lập dữ liệu
+        textViewGroup.setText(groupName);
+        groupView.setTag(groupId);
+
+        // Sự kiện khi nhấn vào nhóm
+        groupView.setOnClickListener(v -> {
             Intent intent = new Intent(GroupFlashcardActivity.this, FlashcardActivity.class);
             intent.putExtra("GROUP_ID", groupId);
             startActivity(intent);
@@ -394,12 +445,13 @@ public class GroupFlashcardActivity extends AppCompatActivity {
 
         // Sự kiện khi nhấn vào biểu tượng chỉnh sửa
         editIcon.setOnClickListener(v -> {
-            showEditGroupDialog(newGroup, groupId); // Mở cửa sổ chỉnh sửa
+            showEditGroupDialog(textViewGroup, groupId);
         });
 
-        // Thêm nút nhóm và biểu tượng chỉnh sửa vào layout
-        groupLayout.addView(newGroup);
-        groupLayout.addView(editIcon);
-        layoutFlashcards.addView(groupLayout);
+        // Thêm View đã inflate vào container
+        layoutFlashcards.addView(groupView);
     }
+
+
+
 }

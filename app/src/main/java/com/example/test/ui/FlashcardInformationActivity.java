@@ -156,7 +156,6 @@ public class FlashcardInformationActivity extends AppCompatActivity {
                 Log.d("FlashcardInfo", "Definition button clicked. Content: " + definitions);
                 flipCard(definitions);
             });
-
             btnExample.setOnClickListener(v -> {
                 Log.d("FlashcardInfo", "Example button clicked. Content: " + examples);
                 flipCard(examples);
