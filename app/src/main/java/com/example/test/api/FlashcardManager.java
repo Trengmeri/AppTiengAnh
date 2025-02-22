@@ -18,6 +18,8 @@ import okhttp3.Response;
 import com.google.gson.Gson;
 import java.io.IOException;
 import java.util.List;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonArray;
 
 public class FlashcardManager extends BaseApiManager {
     private Gson gson;
@@ -208,22 +210,29 @@ public class FlashcardManager extends BaseApiManager {
     }
 
     public void fetchWordDefinition(String word, AddFlashCardApiCallback<WordData> callback) {
-        String url = BASE_URL + "/api/v1/dictionary/" + word; // URL API
+        String url = BASE_URL + "/api/v1/dictionary/" + word;
 
-        // Tạo một request
         Request request = new Request.Builder()
                 .url(url)
                 .build();
 
-        // Gọi API
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 if (response.isSuccessful()) {
                     String responseData = response.body().string();
                     Log.d("API Response", responseData);
-                    WordData wordData = new Gson().fromJson(responseData, WordData.class);
-                    callback.onSuccess(wordData);
+
+                    // Phân tích JSON
+                    JsonObject jsonObject = new Gson().fromJson(responseData, JsonObject.class);
+                    JsonArray dataArray = jsonObject.getAsJsonArray("data");
+
+                    if (dataArray != null && dataArray.size() > 0) {
+                        WordData wordData = new Gson().fromJson(dataArray.get(0), WordData.class);
+                        callback.onSuccess(wordData);
+                    } else {
+                        callback.onFailure("No data found");
+                    }
                 } else {
                     callback.onFailure("Error: " + response.message());
                 }
