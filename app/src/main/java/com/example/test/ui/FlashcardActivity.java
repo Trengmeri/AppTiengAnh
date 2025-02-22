@@ -245,7 +245,6 @@ public class FlashcardActivity extends AppCompatActivity {
                 btn.setTag(true);
                 checkEnableDone(phoneticButtons, definitionButtons,meaningButtons, btnDone);
             });
-
             meaningButtons.add(btn);
             meaningContainer.addView(btn);
         }
