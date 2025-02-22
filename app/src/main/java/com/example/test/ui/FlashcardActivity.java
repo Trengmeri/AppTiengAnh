@@ -2,10 +2,12 @@ package com.example.test.ui;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
@@ -21,6 +23,8 @@ import android.widget.Toast;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatButton;
+import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -42,6 +46,7 @@ import com.google.android.material.button.MaterialButton;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 public class FlashcardActivity extends AppCompatActivity {
 
@@ -50,6 +55,7 @@ public class FlashcardActivity extends AppCompatActivity {
     TextView flBack;
     ImageView btnAddFlash, btnremove;
     private List<Flashcard> flashcards = new ArrayList<>();
+    private EditText edtFlashName;
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -92,11 +98,7 @@ public class FlashcardActivity extends AppCompatActivity {
             dialog.show();
 
             // Ánh xạ các view trong dialog
-            EditText edtFlashName = dialogView.findViewById(R.id.edtFlashName);
-            ImageView btnSearch = dialogView.findViewById(R.id.btnSearch);
-            Spinner spinnerMeaning = dialogView.findViewById(R.id.spinner_meaning);
-            Spinner spinnerPhonetic = dialogView.findViewById(R.id.spinner_phonetic);
-            Spinner spinnerDefinition = dialogView.findViewById(R.id.spinner_def);
+            edtFlashName = dialogView.findViewById(R.id.edtFlashName);
             Button btnAdd = dialogView.findViewById(R.id.btnAdd);
             Button btnCancel = dialogView.findViewById(R.id.btnCancel);
             // Ban đầu disable nút Add
@@ -104,92 +106,193 @@ public class FlashcardActivity extends AppCompatActivity {
             btnAdd.setAlpha(0.5f); // Làm mờ nút Add
             edtFlashName.addTextChangedListener(new TextWatcher() {
                 @Override
-                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+
+                @Override
+                public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                    btnAdd.setEnabled(!charSequence.toString().trim().isEmpty());
+                    btnAdd.setAlpha(btnAdd.isEnabled() ? 1.0f : 0.5f);
                 }
 
                 @Override
-                public void onTextChanged(CharSequence s, int start, int before, int count) {
-                    enableAddButton(edtFlashName, spinnerMeaning, spinnerPhonetic, spinnerDefinition, btnAdd);
-                }
-
-                @Override
-                public void afterTextChanged(Editable s) {
-                }
+                public void afterTextChanged(Editable editable) {}
             });
-            // Lắng nghe sự thay đổi của Spinner
-            AdapterView.OnItemSelectedListener spinnerListener = new AdapterView.OnItemSelectedListener() {
-                @Override
-                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                    enableAddButton(edtFlashName, spinnerMeaning, spinnerPhonetic, spinnerDefinition, btnAdd);
-                }
-
-                @Override
-                public void onNothingSelected(AdapterView<?> parent) {
-                }
-            };
-
-            spinnerMeaning.setOnItemSelectedListener(spinnerListener);
-            spinnerPhonetic.setOnItemSelectedListener(spinnerListener);
-            spinnerDefinition.setOnItemSelectedListener(spinnerListener);
 
             // Xử lý sự kiện nút Cancel
             btnCancel.setOnClickListener(v -> dialog.dismiss());
 
-            // Bắt sự kiện khi nhấn nút tìm kiếm
-            btnSearch.setOnClickListener(v -> {
-                String word = edtFlashName.getText().toString().trim();
-                if (!word.isEmpty()) {
-                    fetchData(word, spinnerMeaning, spinnerPhonetic, spinnerDefinition);
-                } else {
-                    Toast.makeText(this, "Vui lòng nhập từ cần tìm!", Toast.LENGTH_SHORT).show();
-                }
-            });
+            // Xử lý sự kiện nhấn nút "Add"
             btnAdd.setOnClickListener(v -> {
+                // Lấy từ đã nhập
                 String word = edtFlashName.getText().toString().trim();
-                String meaning = spinnerMeaning.getSelectedItem().toString();  // Lấy nghĩa đã chọn
-                String phonetic = spinnerPhonetic.getSelectedItem().toString();  // Lấy phát âm đã chọn
-                String definition = spinnerDefinition.getSelectedItem().toString();  // Lấy định nghĩa đã chọn
+                // Đóng dialog_add_flash trước khi mở dialog_add_definition
+                dialog.dismiss();
+                Intent intent = new Intent(this, FlashcardActivity.class);
+                intent.putExtra("FLASHCARD_WORD", word);
+                //startActivity(intent);
 
-                // Kiểm tra nếu từ không rỗng và các spinner có dữ liệu
-                if (!word.isEmpty() && !meaning.isEmpty() && !phonetic.isEmpty() && !definition.isEmpty()) {
-                    // Tạo đối tượng flashcard mới
-                    Flashcard newFlashcard = new Flashcard();
-                    newFlashcard.setWord(word);
-                    newFlashcard.setVietNameseMeaning(meaning);
-                    newFlashcard.setPhoneticText(phonetic);
-                    newFlashcard.setDefinitions(definition);
 
-                    // Thêm flashcard mới vào danh sách flashcards (giả sử flashcards là List<Flashcard>)
-                    flashcards.add(newFlashcard);
+                // Dữ liệu giả định (sau này có thể thay bằng API)
+                List<String> phonetics = Arrays.asList("phonetic1", "phonetic2", "phonetic3");
+                List<String> definitions = Arrays.asList("definition1", "definition2", "definition3");
+                List<String> meanings = Arrays.asList("meaning1", "meaning2");
 
-                    // Cập nhật RecyclerView với danh sách flashcards mới
-                    updateRecyclerView(flashcards);
 
-                    // Đóng dialog sau khi thêm flashcard
-                    dialog.dismiss();
-                } else {
-                    Toast.makeText(this, "Vui lòng điền đầy đủ thông tin!", Toast.LENGTH_SHORT).show();
-                }
+//                // Hiển thị dialog chọn phonetic & definition
+                showDefinitionDialog(word,phonetics, definitions, meanings);
+
             });
-
 
         });
-
-
     }
-    private void enableAddButton(EditText edtFlashName, Spinner spinnerMeaning, Spinner spinnerPhonetic, Spinner spinnerDefinition, Button btnAdd) {
-        boolean isFlashNameNotEmpty = !edtFlashName.getText().toString().trim().isEmpty();
-        boolean isMeaningSelected = spinnerMeaning.getSelectedItemPosition() != AdapterView.INVALID_POSITION;
-        boolean isPhoneticSelected = spinnerPhonetic.getSelectedItemPosition() != AdapterView.INVALID_POSITION;
-        boolean isDefinitionSelected = spinnerDefinition.getSelectedItemPosition() != AdapterView.INVALID_POSITION;
+    @SuppressLint("MissingInflatedId")
+    private void showDefinitionDialog(String word,List<String> phoneticList, List<String> definitionList, List<String> meaningList) {
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.dialog_add_definition, null);
 
-        if (isFlashNameNotEmpty && isMeaningSelected && isPhoneticSelected && isDefinitionSelected) {
-            btnAdd.setEnabled(true);
-            btnAdd.setAlpha(1.0f); // Hiển thị rõ nút Add
-        } else {
-            btnAdd.setEnabled(false);
-            btnAdd.setAlpha(0.5f); // Làm mờ nút Add
+        LinearLayout phoneticContainer = dialogView.findViewById(R.id.phoneticContainer);
+        LinearLayout definitionContainer = dialogView.findViewById(R.id.definitionContainer);
+        LinearLayout meaningContainer = dialogView.findViewById(R.id.meaningContainer);
+
+        TextView btnDone = dialogView.findViewById(R.id.btnDone);
+
+        btnDone.setEnabled(false);
+        btnDone.setAlpha(0.5f);
+
+        List<AppCompatButton> phoneticButtons = new ArrayList<>();
+        List<AppCompatButton> definitionButtons = new ArrayList<>();
+        List<AppCompatButton> meaningButtons = new ArrayList<>();
+
+        // Tạo nút phonetic (Kéo ngang)
+        for (String phonetic : phoneticList) {
+            AppCompatButton btn = new AppCompatButton(this);
+            btn.setText(phonetic);
+            btn.setLayoutParams(new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+            ));
+
+            btn.setBackgroundResource(R.drawable.item_phonetic);
+            btn.setTextColor(ContextCompat.getColor(this, R.color.black));
+            btn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
+            btn.setPadding(20, 10, 20, 10);
+            btn.setTag(false);
+
+            btn.setOnClickListener(v -> {
+                for (AppCompatButton otherBtn : phoneticButtons) {
+                    otherBtn.setBackgroundResource(R.drawable.item_phonetic);
+                    otherBtn.setTag(false);
+                }
+                btn.setBackgroundResource(R.drawable.item_phonetic_selected);
+                btn.setTag(true);
+                checkEnableDone(phoneticButtons, definitionButtons,meaningButtons, btnDone);
+            });
+
+            phoneticButtons.add(btn);
+            phoneticContainer.addView(btn);
         }
+
+        // Tạo nút definition
+        for (String definition : definitionList) {
+            AppCompatButton btn = new AppCompatButton(this);
+            btn.setText(definition);
+            btn.setLayoutParams(new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+            ));
+
+            btn.setBackgroundResource(R.drawable.item_definition);
+            btn.setTextColor(ContextCompat.getColor(this, R.color.black));
+            btn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
+            btn.setPadding(20, 10, 20, 10);
+            btn.setTag(false);
+
+            btn.setOnClickListener(v -> {
+                for (AppCompatButton otherBtn : definitionButtons) {
+                    otherBtn.setBackgroundResource(R.drawable.item_definition);
+                    otherBtn.setTag(false);
+                }
+                btn.setBackgroundResource(R.drawable.item_definition_selected);
+                btn.setTag(true);
+                checkEnableDone(phoneticButtons, definitionButtons,meaningButtons, btnDone);
+            });
+
+            definitionButtons.add(btn);
+            definitionContainer.addView(btn);
+        }
+
+        //Tạo nút meaning
+        for (String meaning : meaningList) {
+            AppCompatButton btn = new AppCompatButton(this);
+            btn.setText(meaning);
+            btn.setLayoutParams(new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+            ));
+
+            btn.setBackgroundResource(R.drawable.item_definition);
+            btn.setTextColor(ContextCompat.getColor(this, R.color.black));
+            btn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
+            btn.setPadding(20, 10, 20, 10);
+            btn.setTag(false);
+
+            btn.setOnClickListener(v -> {
+                for (AppCompatButton otherBtn : meaningButtons) {
+                    otherBtn.setBackgroundResource(R.drawable.item_definition);
+                    otherBtn.setTag(false);
+                }
+                btn.setBackgroundResource(R.drawable.item_definition_selected);
+                btn.setTag(true);
+                checkEnableDone(phoneticButtons, definitionButtons,meaningButtons, btnDone);
+            });
+
+            meaningButtons.add(btn);
+            meaningContainer.addView(btn);
+        }
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setView(dialogView);
+        AlertDialog dialog = builder.create();
+        dialog.setCanceledOnTouchOutside(false);
+
+//        btnDone.setOnClickListener(v -> dialog.dismiss());
+        btnDone.setOnClickListener(v -> {
+//             String flashword = getIntent().getStringExtra("FLASHCARD_WORD");
+            addFlashcard(word, phoneticButtons, definitionButtons, meaningButtons, dialog);
+        });
+        dialog.show();
+    }
+
+    private void checkEnableDone(List<AppCompatButton> phoneticButtons, List<AppCompatButton> definitionButtons, List<AppCompatButton> meaningButtons,TextView btnDone) {
+        boolean phoneticSelected = false;
+        boolean definitionSelected = false;
+        boolean meaningSelected = false;
+
+
+        for (AppCompatButton btn : phoneticButtons) {
+            if ((boolean) btn.getTag()) { // Kiểm tra tag
+                phoneticSelected = true;
+                break;
+            }
+        }
+
+        for (AppCompatButton btn : definitionButtons) {
+            if ((boolean) btn.getTag()) { // Kiểm tra tag
+                definitionSelected = true;
+                break;
+            }
+        }
+        for (AppCompatButton btn : meaningButtons) {
+            if ((boolean) btn.getTag()) { // Kiểm tra tag
+                meaningSelected = true;
+                break;
+            }
+        }
+
+        // Cập nhật trạng thái nút btnDone
+        btnDone.setEnabled(phoneticSelected && definitionSelected && meaningSelected);
+        btnDone.setAlpha(phoneticSelected && definitionSelected && meaningSelected ? 1.0f : 0.5f);
+
     }
 
     private void fetchFlashcards(int groupId) {
@@ -232,6 +335,7 @@ public class FlashcardActivity extends AppCompatActivity {
         });
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private void updateRecyclerView(List<Flashcard> flashcards) {
         if (recyclerViewFlashcards != null) {
             FlashcardAdapter adapter = new FlashcardAdapter(this, flashcards);
@@ -243,74 +347,43 @@ public class FlashcardActivity extends AppCompatActivity {
         }
     }
 
-    @SuppressLint("ClickableViewAccessibility")
-    private void fetchData(String word, Spinner spinnerMeaning, Spinner spinnerPhonetic, Spinner spinnerDefinition) {
-        List<String> meanings = Arrays.asList("Nghia 1 ", "Nghĩa 2", "Nghĩa 3");
-        List<String> phonetics = Arrays.asList("/fəˈnetɪk/", "/fəˈnɛtɪk/");
-        List<String> definitions = Arrays.asList("Định nghĩa 1 rat dai khong the hien thi het trong spinner sdkhfdhjdf",
-                "Định nghĩa 2 rat dai khong the hien thi het trong spinnerj dhfjdhfjskfsf",
-                "Định nghĩa 3 rat dai khong the hien thi het trong spinner jhsdjhfisuhfcjdhfuie");
-
-        // Gán dữ liệu vào Spinner
-        setSpinnerData(spinnerMeaning, meanings);
-        setSpinnerData(spinnerPhonetic, phonetics);
-        setSpinnerData(spinnerDefinition, definitions);
-
-        // Biến cờ để ngăn chặn gọi onItemSelected ngay khi spinner khởi tạo
-        final boolean[] isUserInteracted = {false};
-
-        spinnerDefinition.setOnTouchListener((v, event) -> {
-            isUserInteracted[0] = true;
-            return false;
-        });
-
-        spinnerDefinition.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if (isUserInteracted[0]) { // Chỉ hiển thị khi người dùng chọn, không phải khi spinner load dữ liệu
-                    String fullDefinition = definitions.get(position);
-
-                    AlertDialog.Builder builder = new AlertDialog.Builder(FlashcardActivity.this);
-                    builder.setTitle("Definition");
-                    builder.setMessage(fullDefinition);
-                    builder.setPositiveButton("OK", null);
-                    builder.show();
-
-                    // Reset lại cờ để tránh gọi lại onItemSelected không mong muốn
-                    isUserInteracted[0] = false;
-                }
+    private void addFlashcard(String word, List<AppCompatButton> phoneticButtons,
+                              List<AppCompatButton> definitionButtons, List<AppCompatButton> meaningButtons,
+                              AlertDialog dialog) {
+        String selectedPhonetic = null;
+        for (AppCompatButton btn : phoneticButtons) {
+            if ((boolean) btn.getTag()) {
+                selectedPhonetic = btn.getText().toString();
+                break;
             }
+        }
 
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
+        String selectedDefinition = null;
+        for (AppCompatButton btn : definitionButtons) {
+            if ((boolean) btn.getTag()) {
+                selectedDefinition = btn.getText().toString();
+                break;
             }
-        });
-    }
-
-    // Hàm cập nhật dữ liệu vào Spinner
-    private void setSpinnerData(Spinner spinner, List<String> data) {
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, data);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(adapter);
-    }
-
-    private void showRemoveDialog(View flashcardView) {
-        BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(this);
-        bottomSheetDialog.setContentView(R.layout.dialog_remove_flash); // Tạo file XML cho dialog
-
-        Button btnCancel = bottomSheetDialog.findViewById(R.id.btnCancel);
-        Button btnRemove = bottomSheetDialog.findViewById(R.id.btnRemove);
-
-        btnCancel.setOnClickListener(v -> bottomSheetDialog.dismiss());
-
-        btnRemove.setOnClickListener(v -> {
-            // Xóa flashcard khỏi màn hình
-            LinearLayout layoutFlashcards = findViewById(R.id.flashContainer);
-            layoutFlashcards.removeView(flashcardView);
-            bottomSheetDialog.dismiss(); // Đóng hộp thoại sau khi xóa
-        });
-
-        bottomSheetDialog.show();
+        }
+        String selectedMeaning = null;
+        for (AppCompatButton btn : meaningButtons) {
+            if ((boolean) btn.getTag()) {
+                selectedMeaning = btn.getText().toString();
+                break;
+            }
+        }
+        if (selectedPhonetic != null && selectedDefinition != null && selectedMeaning !=null) {
+            Flashcard newFlashcard = new Flashcard();
+            newFlashcard.setWord(word);
+            newFlashcard.setPhoneticText(selectedPhonetic);
+            newFlashcard.setDefinitions(selectedDefinition);
+            newFlashcard.setVietNameseMeaning(selectedMeaning);
+            flashcards.add(newFlashcard);
+            updateRecyclerView(flashcards);
+            dialog.dismiss();
+        } else {
+            Toast.makeText(this, "Vui lòng chọn đầy đủ thông tin!", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void addFlashcardButton(Flashcard flashcard) {

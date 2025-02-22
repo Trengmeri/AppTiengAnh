@@ -66,8 +66,8 @@ public class FlashcardAdapter extends RecyclerView.Adapter<FlashcardAdapter.Flas
 
         public FlashcardViewHolder(@NonNull View itemView) {
             super(itemView);
-            wordTextView = itemView.findViewById(R.id.textViewWord);
-            meaningTextView = itemView.findViewById(R.id.textViewMeaning);
+            wordTextView = itemView.findViewById(R.id.wordTextView);
+            meaningTextView = itemView.findViewById(R.id.meaningTextView);
             iconRemove = itemView.findViewById(R.id.iconRemove);
         }
     }
