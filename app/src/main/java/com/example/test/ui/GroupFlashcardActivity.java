@@ -151,6 +151,11 @@ public class GroupFlashcardActivity extends AppCompatActivity {
             // Gọi API để cập nhật tên nhóm
             flashcardManager.updateFlashcardGroup(groupId, newName, new FlashcardApiCallback() {
                 @Override
+                public void onSuccess(Object response) {
+
+                }
+
+                @Override
                 public void onSuccess(ApiResponseFlashcardGroup response) {
                     runOnUiThread(() -> {
                         groupTextView.setText(newName);
@@ -191,6 +196,11 @@ public class GroupFlashcardActivity extends AppCompatActivity {
         btnDelete.setOnClickListener(v -> {
             // Gọi API để xóa nhóm
             flashcardManager.deleteFlashcardGroup(groupId, new FlashcardApiCallback() {
+                @Override
+                public void onSuccess(Object response) {
+
+                }
+
                 @Override
                 public void onSuccess(ApiResponseFlashcardGroup response) {
                     runOnUiThread(() -> {
@@ -279,6 +289,11 @@ public class GroupFlashcardActivity extends AppCompatActivity {
                 int userId = 1; // Thay đổi ID người dùng nếu cần
                 flashcardManager.createFlashcardGroup(groupName, userId, new FlashcardApiCallback() {
                     @Override
+                    public void onSuccess(Object response) {
+
+                    }
+
+                    @Override
                     public void onSuccess(ApiResponseFlashcardGroup response) {
                         runOnUiThread(() -> { // Đảm bảo cập nhật UI trên UI thread
                             FlashcardGroup newGroup = response.getData(); // Đảm bảo rằng getData() trả về
@@ -321,6 +336,11 @@ public class GroupFlashcardActivity extends AppCompatActivity {
 
     private void fetchFlashcardGroups() {
         flashcardManager.fetchFlashcardGroups(1, 1, new FlashcardApiCallback() {
+            @Override
+            public void onSuccess(Object response) {
+
+            }
+
             @Override
             public void onSuccess(ApiResponseFlashcardGroup response) {
                 // Không làm gì ở đây
