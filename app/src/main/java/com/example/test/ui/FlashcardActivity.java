@@ -17,6 +17,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -199,6 +200,27 @@ public class FlashcardActivity extends AppCompatActivity {
                                     }
                                 });
                     }
+                    ScrollView definitionScrollView = dialogView.findViewById(R.id.definitionScrollView);
+
+                    // Lấy số lượng định nghĩa từ meanings
+                    int numberOfButtons = 0;
+                    if (wordData.getMeanings() != null) {
+                        for (Meaning meaning : wordData.getMeanings()) {
+                            if (meaning.getDefinitions() != null) {
+                                numberOfButtons += meaning.getDefinitions().size();
+                            }
+                        }
+                    }
+
+                    // Tính toán chiều cao cho ScrollView dựa trên số lượng button
+                    int buttonHeight = (int) getResources().getDimension(R.dimen.button_height); // Đảm bảo bạn đã định
+                                                                                                 // nghĩa button_height
+                                                                                                 // trong dimens.xml
+                    int scrollViewHeight = buttonHeight * Math.min(numberOfButtons, 3); // Giới hạn chiều cao tối đa cho
+                                                                                        // 3 button
+
+                    definitionScrollView.setLayoutParams(
+                            new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, scrollViewHeight));
 
                     // Hiển thị definitions
                     if (wordData.getMeanings() != null) {
@@ -240,44 +262,6 @@ public class FlashcardActivity extends AppCompatActivity {
                                     }
                                 });
                     }
-
-                    // // Hiển thị meanings
-                    // if (wordData.getMeanings() != null) {
-                    // for (Meaning meaning : wordData.getMeanings()) {
-                    // AppCompatButton btn = new AppCompatButton(FlashcardActivity.this);
-                    // btn.setText(meaning.getPartOfSpeech());
-                    // btn.setLayoutParams(new LinearLayout.LayoutParams(
-                    // LinearLayout.LayoutParams.MATCH_PARENT,
-                    // LinearLayout.LayoutParams.WRAP_CONTENT));
-                    // btn.setBackgroundResource(R.drawable.item_definition);
-                    // btn.setTextColor(ContextCompat.getColor(FlashcardActivity.this,
-                    // R.color.black));
-                    // btn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
-                    // btn.setPadding(20, 10, 20, 10);
-                    // btn.setTag(false);
-                    // btn.setGravity(Gravity.START);
-                    //
-                    // btn.setOnClickListener(v -> {
-                    // for (AppCompatButton otherBtn : meaningButtons) {
-                    // otherBtn.setBackgroundResource(R.drawable.item_definition);
-                    // otherBtn.setTag(false);
-                    // }
-                    // btn.setBackgroundResource(R.drawable.item_definition_selected);
-                    // btn.setTag(true);
-                    // checkEnableDone(phoneticButtons, definitionButtons, meaningButtons, btnDone);
-                    // });
-                    //
-                    // meaningButtons.add(btn);
-                    // meaningContainer.addView(btn);
-                    // }
-                    // } else {
-                    // meaningContainer.addView(new
-                    // androidx.appcompat.widget.AppCompatTextView(FlashcardActivity.this) {
-                    // {
-                    // setText("No meanings available");
-                    // }
-                    // });
-                    // }
 
                     AlertDialog.Builder builder = new AlertDialog.Builder(FlashcardActivity.this);
                     builder.setView(dialogView);

@@ -8,4 +8,5 @@
     <dimen name="dp_30">30dp</dimen>
     <dimen name="size_button_all">18sp</dimen>
     <dimen name="dp40">40dp</dimen>
+    <dimen name="button_height">50dp</dimen>
 </resources>
