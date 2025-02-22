@@ -154,7 +154,7 @@ public class FlashcardActivity extends AppCompatActivity {
 
                     LinearLayout phoneticContainer = dialogView.findViewById(R.id.phoneticContainer);
                     LinearLayout definitionContainer = dialogView.findViewById(R.id.definitionContainer);
-                    LinearLayout meaningContainer = dialogView.findViewById(R.id.meaningContainer);
+
                     LinearLayout partOfSpeechContainer = dialogView.findViewById(R.id.partOfSpeechContainer);
                     Button btnDone = dialogView.findViewById(R.id.btnDone);
                     btnDone.setEnabled(false);
@@ -259,8 +259,9 @@ public class FlashcardActivity extends AppCompatActivity {
 
     // Phương thức cập nhật definitions dựa trên part of speech đã chọn
     private void updateDefinitions(LinearLayout definitionContainer, Meaning meaning, View dialogView,
-                                   List<AppCompatButton> phoneticButtons, List<AppCompatButton> definitionButtons, List<AppCompatButton> meaningButtons,
-                                   Button btnDone) {
+            List<AppCompatButton> phoneticButtons, List<AppCompatButton> definitionButtons,
+            List<AppCompatButton> meaningButtons,
+            Button btnDone) {
 
         definitionContainer.removeAllViews();
         ScrollView definitionScrollView = dialogView.findViewById(R.id.definitionScrollView);
@@ -272,7 +273,6 @@ public class FlashcardActivity extends AppCompatActivity {
 
         int buttonHeight = (int) getResources().getDimension(R.dimen.button_height);
         int scrollViewHeight = buttonHeight * Math.min(numberOfButtons, 3);
-
 
         definitionScrollView.setLayoutParams(
                 new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, scrollViewHeight));
@@ -292,6 +292,30 @@ public class FlashcardActivity extends AppCompatActivity {
                 btn.setGravity(Gravity.START | Gravity.CENTER_VERTICAL);
 
                 btn.setOnClickListener(v -> {
+                    // Gọi API để dịch nghĩa
+                    flashcardManager.translateDefinition(definition.getDefinition(),
+                            new AddFlashCardApiCallback<String>() {
+                                @Override
+                                public void onSuccess(String vietnameseMeaning) {
+                                    // Cập nhật UI trong luồng chính
+                                    runOnUiThread(() -> {
+                                        // Hiển thị nghĩa tiếng Việt
+                                        TextView vietnameseMeaningTextView = dialogView
+                                                .findViewById(R.id.vietnameseMeaningTextView);
+                                        vietnameseMeaningTextView.setText(vietnameseMeaning);
+                                    });
+                                }
+
+                                @Override
+                                public void onFailure(String errorMessage) {
+                                    runOnUiThread(() -> {
+                                        Toast.makeText(FlashcardActivity.this, "Error: " + errorMessage,
+                                                Toast.LENGTH_SHORT)
+                                                .show();
+                                    });
+                                }
+                            });
+
                     for (AppCompatButton otherBtn : definitionButtons) {
                         otherBtn.setBackgroundResource(R.drawable.item_definition);
                         otherBtn.setTag(false);

@@ -27,8 +27,8 @@
             <LinearLayout android:id="@+id/definitionContainer" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="8dp" android:background="@drawable/rounded_corner" android:layout_marginBottom="8dp"/>
         </ScrollView>
 
-        <TextView android:id="@+id/meaningLabel" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Meaning:" android:textSize="16sp" android:textStyle="bold"/>
+        <TextView android:id="@+id/vietnameseMeaningLabel" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Vietnamese Meaning:" android:textSize="16sp" android:textStyle="bold"/>
 
-        <LinearLayout android:id="@+id/meaningContainer" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="8dp" android:background="@drawable/rounded_corner" android:layout_marginBottom="16dp"/>
+        <TextView android:id="@+id/vietnameseMeaningTextView" android:layout_width="match_parent" android:layout_height="wrap_content" android:padding="8dp" android:background="@drawable/rounded_corner" android:layout_marginBottom="16dp"/>
     </LinearLayout>
 </ScrollView>

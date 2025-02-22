@@ -2,7 +2,6 @@ package com.example.test.api;
 
 import android.util.Log;
 
-import com.example.test.model.Flashcard;
 import com.example.test.response.ApiResponseFlashcard;
 import com.example.test.response.ApiResponseFlashcardGroup;
 import com.example.test.response.ApiResponseOneFlashcard;
@@ -11,15 +10,16 @@ import com.example.test.model.WordData;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 import com.google.gson.Gson;
 import java.io.IOException;
-import java.util.List;
+
 import com.google.gson.JsonObject;
 import com.google.gson.JsonArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class FlashcardManager extends BaseApiManager {
     private Gson gson;
@@ -243,5 +243,49 @@ public class FlashcardManager extends BaseApiManager {
                 callback.onFailure("Error: " + e.getMessage());
             }
         });
+    }
+
+    // Phương thức để dịch nghĩa
+    public void translateDefinition(String definition, AddFlashCardApiCallback<String> callback) {
+        String url = BASE_URL + "/api/v1/dictionary/translate?text=" + definition;
+
+        Request request = new Request.Builder()
+                .url(url)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    String responseBody = response.body().string();
+                    String vietnameseMeaning = parseJson(responseBody);
+                    callback.onSuccess(vietnameseMeaning);
+                } else {
+                    callback.onFailure("Error: " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Call call, IOException e) {
+                callback.onFailure("Network error: " + e.getMessage());
+            }
+        });
+    }
+
+    // Phương thức phân tích JSON
+    private String parseJson(String json) {
+        try {
+            JSONObject jsonObject = new JSONObject(json);
+            return jsonObject.getString("data");
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public interface TranslateCallback {
+        void onSuccess(String vietnameseMeaning);
+
+        void onFailure(String errorMessage);
     }
 }
