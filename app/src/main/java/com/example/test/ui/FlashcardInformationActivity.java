@@ -126,6 +126,11 @@ public class FlashcardInformationActivity extends AppCompatActivity {
                 });
             }
 
+            @Override
+            public void onSuccess(Object response) {
+
+            }
+
             // Implement remaining callback methods
             @Override
             public void onSuccess(ApiResponseFlashcardGroup response) {

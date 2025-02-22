@@ -6,6 +6,8 @@ import com.example.test.response.ApiResponseOneFlashcard;
 import com.example.test.response.FlashcardGroupResponse;
 
 public interface FlashcardApiCallback {
+    void onSuccess(Object response);
+
     void onSuccess(ApiResponseFlashcardGroup response);
 
     void onSuccess(FlashcardGroupResponse response);

@@ -7,6 +7,7 @@ import com.example.test.response.ApiResponseFlashcard;
 import com.example.test.response.ApiResponseFlashcardGroup;
 import com.example.test.response.ApiResponseOneFlashcard;
 import com.example.test.response.FlashcardGroupResponse;
+import com.example.test.model.WordData;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.MediaType;
@@ -202,6 +203,39 @@ public class FlashcardManager extends BaseApiManager {
                     Log.e("FlashcardManager", "Error parsing API response", e);
                     callback.onFailure("Error parsing response: " + e.getMessage());
                 }
+            }
+        });
+    }
+
+    public void fetchWordDefinition(String word, FlashcardApiCallback callback) {
+        String url = BASE_URL + "/api/v1/dictionary/" + word; // URL API
+
+        // Tạo một request
+        Request request = new Request.Builder()
+                .url(url)
+                .build();
+
+        // Gọi API
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    String responseData = response.body().string();
+
+                    // Thêm log để hiển thị dữ liệu trả về
+                    Log.d("API Response", responseData);
+
+                    // Chuyển đổi dữ liệu JSON thành đối tượng WordData
+                    WordData wordData = new Gson().fromJson(responseData, WordData.class);
+                    callback.onSuccess(wordData);
+                } else {
+                    callback.onFailure("Error: " + response.message());
+                }
+            }
+
+            @Override
+            public void onFailure(Call call, IOException e) {
+                callback.onFailure("Error: " + e.getMessage());
             }
         });
     }
