@@ -43,11 +43,11 @@
             tools:ignore="MissingConstraints">
 
             <TextView
+                android:id="@+id/tvName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/dp_30"
                 android:layout_marginTop="@dimen/dp_60"
-                android:text="Hi Treng !"
                 android:textSize="22sp"
                 android:textStyle="bold"/>
             <TextView

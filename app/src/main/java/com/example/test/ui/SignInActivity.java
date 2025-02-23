@@ -79,12 +79,12 @@ public class SignInActivity extends AppCompatActivity {
 
 
         editor = sharedPreferences.edit();
-//        // Hiển thị thông tin đăng nhập nếu Remember Me được chọn trước đó
-//        if (sharedPreferences.getBoolean("rememberMe", false)) {
-//            edtEmail.setText(sharedPreferences.getString("email", ""));
-//            edtMKhau.setText(sharedPreferences.getString("password", ""));
-//            cbRemember.setChecked(true);
-//        }
+        // Hiển thị thông tin đăng nhập nếu Remember Me được chọn trước đó
+        if (sharedPreferences.getBoolean("rememberMe", false)) {
+            edtEmail.setText(sharedPreferences.getString("email", ""));
+            edtMKhau.setText(sharedPreferences.getString("password", ""));
+            cbRemember.setChecked(true);
+        }
 
         // Ban đầu vô hiệu hóa nút
         btnIn.setEnabled(false);
@@ -129,14 +129,14 @@ public class SignInActivity extends AppCompatActivity {
                             @Override
                             public void onSuccess() {
 
-//                                if (cbRemember.isChecked()) {
-//                                    editor.putBoolean("rememberMe", true);
-//                                    editor.putString("email", email);
-//                                    editor.putString("password", pass);
-//                                } else {
-//                                    editor.clear(); // Xóa thông tin nếu không chọn Remember Me
-//                                }
-//                                editor.apply();
+                                if (cbRemember.isChecked()) {
+                                    editor.putBoolean("rememberMe", true);
+                                    editor.putString("email", email);
+                                    editor.putString("password", pass);
+                                } else {
+                                    editor.clear(); // Xóa thông tin nếu không chọn Remember Me
+                                }
+                                editor.apply();
 
                                 Intent intent = new Intent(SignInActivity.this, ChooseFieldsActivity.class);
                                 startActivity(intent); //

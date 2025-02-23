@@ -7,12 +7,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.example.test.R;
+import com.example.test.SharedPreferencesManager;
+import com.example.test.model.User;
 import com.example.test.ui.GroupFlashcardActivity;
 import com.example.test.ui.ScheduleActivity;
 import com.example.test.ui.home.HomeActivity;
@@ -20,6 +23,7 @@ import com.example.test.ui.home.HomeActivity;
 public class ExploreFragment extends Fragment {
     private ImageView btnstudy,btnhome,btnprofile;
     LinearLayout btnChat, btnDic, btnVoice, btnFlash, btnSche;
+    TextView tvName;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -37,6 +41,11 @@ public class ExploreFragment extends Fragment {
         btnprofile = view.findViewById(R.id.ic_profile);
         btnFlash= view.findViewById(R.id.btnFlash);
         btnSche= view.findViewById(R.id.btnSche);
+        tvName= view.findViewById(R.id.tvName);
+        User user = SharedPreferencesManager.getInstance(getContext()).getUser();
+        if (user != null) {
+            tvName.setText("Hi "+ user.getName() + "!");
+        }
 
 //        btnhome.setOnClickListener(new View.OnClickListener() {
 //            @Override
