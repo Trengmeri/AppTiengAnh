@@ -97,8 +97,6 @@ public class ConfirmCode2Activity extends AppCompatActivity {
             public void onClick(View view) {
                 btnRe.setEnabled(false); // Ngăn người dùng nhấn liên tục
                 btnRe.setAlpha(0.3f);
-                resetCountdown();// Gọi phương thức reset lại bộ đếm
-                setupKeyboardListeners();
                 String otpID = getOtpIdFromPreferences(); // Lấy OTP ID đã lưu
                 apiManager.resendConfirmCodeRequest(otpID, new ApiCallback() {
                     @Override
@@ -107,7 +105,10 @@ public class ConfirmCode2Activity extends AppCompatActivity {
                             @Override
                             public void run() {
                                 showCustomDialog("Mã OTP đã được gửi lại. Vui lòng kiểm tra email.");
+                                setupKeyboardListeners();
                                 resetCountdown();// Gọi phương thức reset lại bộ đếm
+                                isRequesting = false;
+
                                 //Toast.makeText(ConfirmCode2Activity.this, "Mã OTP đã được gửi lại. Vui lòng kiểm tra email.", Toast.LENGTH_SHORT).show();
                             }
                         });
@@ -175,7 +176,6 @@ public class ConfirmCode2Activity extends AppCompatActivity {
                     }
 
                     currentInputIndex++;
-                    //currentInputIndex++; // Chuyển sang ô tiếp theo
                 }
             });
         }
@@ -236,6 +236,7 @@ public class ConfirmCode2Activity extends AppCompatActivity {
                                         @Override
                                         public void run() {
                                             showCustomDialog("Lỗi: " + errorMessage);
+
                                             //Toast.makeText(ConfirmCode2Activity.this, errorMessage, Toast.LENGTH_SHORT).show();
                                         }
                                     });
@@ -250,13 +251,14 @@ public class ConfirmCode2Activity extends AppCompatActivity {
                                     // Chuyển đến Activity tiếp theo nếu mã đúng
                                     runOnUiThread(new Runnable() {
                                         @Override
-                                        public void run() {}
+                                        public void run() {
+                                            Log.d("OTP", "OTP verification success for forgot password");
+                                            clearOtpId();
+                                            Intent intent = new Intent(ConfirmCode2Activity.this, NewPassActivity.class);
+                                            startActivity(intent);
+                                            finish();
+                                        }
                                     });
-                                    Log.d("OTP", "OTP verification success for forgot password");
-                                    clearOtpId();
-                                    Intent intent = new Intent(ConfirmCode2Activity.this, NewPassActivity.class);
-                                    startActivity(intent);
-                                    finish();
                                 }
 
                                 @Override

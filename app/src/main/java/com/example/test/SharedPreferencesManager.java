@@ -2,6 +2,7 @@ package com.example.test;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 
 import com.example.test.model.User;
 import com.google.gson.Gson;
@@ -58,11 +59,19 @@ public class SharedPreferencesManager {
     public void saveAccessToken(String accessToken) {
         sharedPreferences.edit().putString("access_token", accessToken).apply();
     }
-    public void clearSession() {
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.clear(); // Xóa toàn bộ dữ liệu
-        editor.apply();
+    public void saveToken(String token) {
+        sharedPreferences.edit().putString("TOKEN_KEY", token).apply();
     }
+
+    public String getToken() {
+        String token = sharedPreferences.getString("TOKEN_KEY", "");
+        return token;
+    }
+//    public void clearSession() {
+//        SharedPreferences.Editor editor = sharedPreferences.edit();
+//        editor.clear(); // Xóa toàn bộ dữ liệu
+//        editor.apply();
+//    }
 
     public String getAccessToken() {
         return sharedPreferences.getString("access_token", null);

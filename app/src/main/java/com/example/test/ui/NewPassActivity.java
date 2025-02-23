@@ -11,6 +11,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -97,25 +98,22 @@ public class NewPassActivity extends AppCompatActivity {
 //                if (!pass.equals(repass)) {
 //                    Toast.makeText(NewPassActivity.this, "Mật khẩu nhập lại không khớp", Toast.LENGTH_SHORT).show();
 //                }
+                         Log.d("Token","Token lay duoc :" +token);
                         apiManager.updatePassword(pass, repass, token, new ApiCallback<String>() {
                             @Override
                             public void onSuccess(String token) {
+                            }
+                            @Override
+                            public void onSuccess() {
                                 runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
                                         showCustomDialog("Update password successfully.");
-                                        //Toast.makeText(NewPassActivity.this, "Cập nhật mật khẩu thành công!", Toast.LENGTH_SHORT).show();
                                         Intent intent = new Intent(NewPassActivity.this, LoadPassActivity.class);
                                         startActivity(intent);
                                     }
                                 });
                             }
-
-                            @Override
-                            public void onSuccess() {
-
-                            }
-
 
                             @Override
                             public void onFailure(String errorMessage) {
@@ -144,7 +142,7 @@ public class NewPassActivity extends AppCompatActivity {
     }
     public String getTokenFromSharedPreferences() {
         SharedPreferences sharedPreferences = getSharedPreferences("AppPrefs", Context.MODE_PRIVATE);
-        return sharedPreferences.getString("auth_token", null);  // Lấy token từ sharedPreferences, nếu không có thì trả về null
+        return sharedPreferences.getString("TOKEN_KEY", null);  // Lấy token từ sharedPreferences, nếu không có thì trả về null
     }
 
     //    Ẩn hiện mk

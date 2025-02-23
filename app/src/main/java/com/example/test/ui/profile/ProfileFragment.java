@@ -24,7 +24,6 @@ import com.example.test.model.User;
 import com.example.test.ui.SignInActivity;
 
 public class ProfileFragment extends Fragment {
-    private User user;
     TextView userName, userEmail;
     LinearLayout btnLogout;
     NetworkChangeReceiver networkReceiver;
@@ -64,25 +63,27 @@ public class ProfileFragment extends Fragment {
 
         builder.setPositiveButton("Có", (dialog, which) -> {
             // Gọi API logout
-            apiManager.sendLogoutRequest(new ApiCallback() {
-                @Override
-                public void onSuccess() {
-                    // Chuyển về màn hình đăng nhập
-                    Intent intent = new Intent(getActivity(), SignInActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                    startActivity(intent);
-                }
-
-                @Override
-                public void onSuccess(Object result) {
-
-                }
-
-                @Override
-                public void onFailure(String errorMessage) {
-                    Toast.makeText(getActivity(), errorMessage, Toast.LENGTH_SHORT).show();
-                }
-            });
+            Intent intent= new Intent(getActivity(), SignInActivity.class);
+            startActivity(intent);
+//            apiManager.sendLogoutRequest(new ApiCallback() {
+//                @Override
+//                public void onSuccess() {
+//                    // Chuyển về màn hình đăng nhập
+//                    Intent intent = new Intent(getActivity(), SignInActivity.class);
+//                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+//                    startActivity(intent);
+//                }
+//
+//                @Override
+//                public void onSuccess(Object result) {
+//
+//                }
+//
+//                @Override
+//                public void onFailure(String errorMessage) {
+//                    Toast.makeText(getActivity(), errorMessage, Toast.LENGTH_SHORT).show();
+//                }
+//            });
         });
 
         builder.setNegativeButton("Không", (dialog, which) -> dialog.dismiss());
