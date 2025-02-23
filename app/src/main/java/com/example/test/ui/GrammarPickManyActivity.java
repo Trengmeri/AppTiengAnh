@@ -193,6 +193,7 @@ public class GrammarPickManyActivity extends AppCompatActivity {
                         if (choices != null && !choices.isEmpty()) {
                             runOnUiThread(() -> {
                                 tvContent.setText(questionContent);
+                                userAnswers.clear();
                                 ChoiceAdapter choiceAdapter = new ChoiceAdapter(GrammarPickManyActivity.this, choices, userAnswers);
                                 recyclerViewChoices.setAdapter(choiceAdapter);
                                 correctAnswers.clear();
