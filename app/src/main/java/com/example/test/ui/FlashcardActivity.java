@@ -90,9 +90,10 @@ public class FlashcardActivity extends AppCompatActivity {
         flBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(FlashcardActivity.this, GroupFlashcardActivity.class);
-                startActivity(intent);
-                finish();
+//                Intent intent = new Intent(FlashcardActivity.this, GroupFlashcardActivity.class);
+//                startActivity(intent);
+//                finish();
+                onBackPressed();
             }
         });
         btnAddFlash.setOnClickListener(view -> {
