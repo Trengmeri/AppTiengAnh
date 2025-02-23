@@ -110,7 +110,6 @@
             android:textColor="@color/black"
             android:textStyle="bold"
             android:textSize="20dp"
-            android:text="abc"
             android:gravity="center"/>
 
 
