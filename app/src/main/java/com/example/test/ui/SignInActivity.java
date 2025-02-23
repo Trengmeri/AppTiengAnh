@@ -65,12 +65,12 @@ public class SignInActivity extends AppCompatActivity {
         sharedPreferences = getSharedPreferences("LoginPrefs", MODE_PRIVATE);
 
         // Nếu Remember Me đã được bật, chuyển thẳng đến HomeActivity
-        boolean isRemembered = sharedPreferences.getBoolean("rememberMe", false);
-        if (isRemembered) {
-            Intent intent = new Intent(SignInActivity.this, HomeActivity.class);
-            startActivity(intent);
-            finish(); // Đóng LoginActivity để không quay lại khi nhấn back
-        }
+//        boolean isRemembered = sharedPreferences.getBoolean("rememberMe", false);
+//        if (isRemembered) {
+//            Intent intent = new Intent(SignInActivity.this, HomeActivity.class);
+//            startActivity(intent);
+//            finish(); // Đóng LoginActivity để không quay lại khi nhấn back
+//        }
 
         setContentView(R.layout.activity_sign_in);
 
@@ -79,12 +79,12 @@ public class SignInActivity extends AppCompatActivity {
 
 
         editor = sharedPreferences.edit();
-        // Hiển thị thông tin đăng nhập nếu Remember Me được chọn trước đó
-        if (sharedPreferences.getBoolean("rememberMe", false)) {
-            edtEmail.setText(sharedPreferences.getString("email", ""));
-            edtMKhau.setText(sharedPreferences.getString("password", ""));
-            cbRemember.setChecked(true);
-        }
+//        // Hiển thị thông tin đăng nhập nếu Remember Me được chọn trước đó
+//        if (sharedPreferences.getBoolean("rememberMe", false)) {
+//            edtEmail.setText(sharedPreferences.getString("email", ""));
+//            edtMKhau.setText(sharedPreferences.getString("password", ""));
+//            cbRemember.setChecked(true);
+//        }
 
         // Ban đầu vô hiệu hóa nút
         btnIn.setEnabled(false);
@@ -129,17 +129,17 @@ public class SignInActivity extends AppCompatActivity {
                             @Override
                             public void onSuccess() {
 
-                                if (cbRemember.isChecked()) {
-                                    editor.putBoolean("rememberMe", true);
-                                    editor.putString("email", email);
-                                    editor.putString("password", pass);
-                                } else {
-                                    editor.clear(); // Xóa thông tin nếu không chọn Remember Me
-                                }
-                                editor.apply();
+//                                if (cbRemember.isChecked()) {
+//                                    editor.putBoolean("rememberMe", true);
+//                                    editor.putString("email", email);
+//                                    editor.putString("password", pass);
+//                                } else {
+//                                    editor.clear(); // Xóa thông tin nếu không chọn Remember Me
+//                                }
+//                                editor.apply();
 
                                 Intent intent = new Intent(SignInActivity.this, ChooseFieldsActivity.class);
-                                startActivity(intent); // Chuyển hướng đến Home Activity
+                                startActivity(intent); //
                             }
                             @Override
                             public void onSuccess(Object result) {

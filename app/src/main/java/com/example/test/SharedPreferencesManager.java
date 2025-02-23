@@ -58,6 +58,11 @@ public class SharedPreferencesManager {
     public void saveAccessToken(String accessToken) {
         sharedPreferences.edit().putString("access_token", accessToken).apply();
     }
+    public void clearSession() {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.clear(); // Xóa toàn bộ dữ liệu
+        editor.apply();
+    }
 
     public String getAccessToken() {
         return sharedPreferences.getString("access_token", null);

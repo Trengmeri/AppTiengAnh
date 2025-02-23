@@ -338,6 +338,50 @@ public class AuthenticationManager extends BaseApiManager {
             }
         });
     }
+    public void sendLogoutRequest(ApiCallback callback) {
+        // Lấy access token từ SharedPreferences
+        String accessToken = SharedPreferencesManager.getInstance(context).getAccessToken();
+
+        if (accessToken == null || accessToken.isEmpty()) {
+            callback.onFailure("Không tìm thấy Access Token! Vui lòng đăng nhập lại.");
+            return;
+        }
+
+        // Tạo RequestBody (nếu API yêu cầu dữ liệu, có thể để trống)
+        RequestBody body = RequestBody.create("", MediaType.parse("application/json; charset=utf-8"));
+
+        // Tạo request
+        Request request = new Request.Builder()
+                .url(BASE_URL + "/api/v1/auth/logout")
+                .header("Authorization", "Bearer " + accessToken) // Gửi token
+                .post(body)
+                .build();
+
+        // Gửi request bất đồng bộ
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.e("AuthenticationManager", "Kết nối thất bại: " + e.getMessage());
+                callback.onFailure("Kết nối thất bại! Không thể kết nối tới API.");
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String responseBody = response.body().string();
+                Log.d("AuthenticationManager", "Phản hồi từ server: " + responseBody);
+
+                if (response.isSuccessful()) {
+                    // Xóa dữ liệu người dùng sau khi đăng xuất thành công
+                    SharedPreferencesManager.getInstance(context).clearSession();
+                    callback.onSuccess();
+                } else {
+                    Log.e("AuthenticationManager", "Lỗi từ server: Mã lỗi " + response.code() + ", Nội dung: " + responseBody);
+                    callback.onFailure("Đăng xuất thất bại! Vui lòng thử lại.");
+                }
+            }
+        });
+    }
+
 
     private void handleNetworkError(IOException e, ApiCallback callback) {
         if (e instanceof SocketTimeoutException) {
