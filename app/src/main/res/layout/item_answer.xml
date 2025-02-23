@@ -8,7 +8,7 @@
         android:id="@+id/question"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="18dp"
+        android:textSize="14dp"
         android:textStyle="bold"
         android:textColor="@color/black"
         android:layout_marginTop="5dp"/>
@@ -16,7 +16,7 @@
         android:id="@+id/correct_answer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="16dp"
+        android:textSize="14dp"
         android:textStyle="bold"
         android:textColor="@color/black"
         android:layout_marginTop="5dp"/>
@@ -25,7 +25,7 @@
         android:id="@+id/youranswer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="16dp"
+        android:textSize="14dp"
         android:textStyle="bold"
         android:layout_marginTop="5dp"/>
 
@@ -33,7 +33,7 @@
         android:id="@+id/point"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="18dp"
+        android:textSize="16dp"
         android:textStyle="bold"
         android:textColor="@color/btncolor"
         android:layout_marginTop="5dp"/>

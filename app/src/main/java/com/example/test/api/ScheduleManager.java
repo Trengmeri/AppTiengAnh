@@ -34,6 +34,7 @@ public class ScheduleManager extends BaseApiManager {
 
     public void createSchedule(Schedule schedule, ApiCallback callback) {
         String userId = SharedPreferencesManager.getInstance(context).getID();
+        String token = SharedPreferencesManager.getInstance(context).getAccessToken();
         try {
             JSONObject requestBody = new JSONObject();
             requestBody.put("userId", userId);
@@ -45,6 +46,7 @@ public class ScheduleManager extends BaseApiManager {
 
             Request request = new Request.Builder()
                     .url(BASE_URL + "/api/v1/schedules")
+                    .addHeader("Authorization", "Bearer " + token)
                     .post(body)
                     .build();
 
