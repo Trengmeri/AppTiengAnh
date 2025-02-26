@@ -38,7 +38,7 @@
             android:layout_weight="2"
             android:text="Done"
             android:textStyle="bold"
-            android:textColor="@color/btncolor"
+            android:textColor="#ECD29C"
             android:textSize="18sp"
             android:gravity="end" />
 

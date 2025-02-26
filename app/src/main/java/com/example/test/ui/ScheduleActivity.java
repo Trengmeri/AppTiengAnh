@@ -327,6 +327,7 @@ public class ScheduleActivity extends AppCompatActivity {
     private void validateSchedule() {
         List<Schedule> schedules = gatherScheduleData();
         Done.setEnabled(!schedules.isEmpty());
+        Done.setTextColor((getResources().getColor(R.color.btncolor)));
     }
 
 
