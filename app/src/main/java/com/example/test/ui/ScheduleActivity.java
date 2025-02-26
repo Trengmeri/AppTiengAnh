@@ -31,7 +31,7 @@ import java.util.List;
 
 public class ScheduleActivity extends AppCompatActivity {
 
-    private TextView textViewReminderTimeHour, textViewReminderTimeMins, btnBacktoEx;
+    private TextView textViewReminderTimeHour, textViewReminderTimeMins, btnBacktoEx, Done;
     private ImageView up, down;
     ImageView Mon, Tue, Wed, Thu, Fri, Sat, Sun, check_icon2, check_icon3, check_icon4, check_icon5, check_icon6, check_icon7, check_icon0;
     ImageView Basic, Advance, LevelUp, check_basic, check_advance, check_levelup;
@@ -49,6 +49,8 @@ public class ScheduleActivity extends AppCompatActivity {
         textViewReminderTimeHour = findViewById(R.id.textViewReminderTimeHour);
         textViewReminderTimeMins = findViewById(R.id.textViewReminderTimeMins);
         btnBacktoEx = findViewById(R.id.btnBacktoEx);
+        Done = findViewById(R.id.textViewDone);
+        Done.setEnabled(false);
 
         Sun = findViewById(R.id.sun);
         Mon = findViewById(R.id.mon);
@@ -93,95 +95,39 @@ public class ScheduleActivity extends AppCompatActivity {
 
         Mon.setOnClickListener(v -> {
             Mon.setSelected(!Mon.isSelected());
-
-            // Cập nhật UI
-            if (Mon.isSelected()) {
-                // Hiển thị icon check
-                check_icon2.setVisibility(View.VISIBLE);
-            } else {
-                // Ẩn icon check
-                check_icon2.setVisibility(View.GONE);
-            }
+            check_icon2.setVisibility(Mon.isSelected() ? View.VISIBLE : View.GONE);
+            validateSchedule();
         });
-
         Tue.setOnClickListener(v -> {
             Tue.setSelected(!Tue.isSelected());
-
-            // Cập nhật UI
-            if (Tue.isSelected()) {
-                // Hiển thị icon check
-                check_icon3.setVisibility(View.VISIBLE);
-            } else {
-                // Ẩn icon check
-                check_icon3.setVisibility(View.GONE);
-            }
+            check_icon3.setVisibility(Tue.isSelected() ? View.VISIBLE : View.GONE);
+            validateSchedule();
         });
-
         Wed.setOnClickListener(v -> {
             Wed.setSelected(!Wed.isSelected());
-
-            // Cập nhật UI
-            if (Wed.isSelected()) {
-                // Hiển thị icon check
-                check_icon4.setVisibility(View.VISIBLE);
-            } else {
-                // Ẩn icon check
-                check_icon4.setVisibility(View.GONE);
-            }
+            check_icon4.setVisibility(Wed.isSelected() ? View.VISIBLE : View.GONE);
+            validateSchedule();
         });
-
         Thu.setOnClickListener(v -> {
             Thu.setSelected(!Thu.isSelected());
-
-            // Cập nhật UI
-            if (Thu.isSelected()) {
-                // Hiển thị icon check
-                check_icon5.setVisibility(View.VISIBLE);
-            } else {
-                // Ẩn icon check
-                check_icon5.setVisibility(View.GONE);
-            }
+            check_icon5.setVisibility(Thu.isSelected() ? View.VISIBLE : View.GONE);
+            validateSchedule();
         });
-
         Fri.setOnClickListener(v -> {
             Fri.setSelected(!Fri.isSelected());
-
-            // Cập nhật UI
-            if (Fri.isSelected()) {
-                // Hiển thị icon check
-                check_icon6.setVisibility(View.VISIBLE);
-            } else {
-                // Ẩn icon check
-                check_icon6.setVisibility(View.GONE);
-            }
+            check_icon6.setVisibility(Fri.isSelected() ? View.VISIBLE : View.GONE);
+            validateSchedule();
         });
-
         Sat.setOnClickListener(v -> {
             Sat.setSelected(!Sat.isSelected());
-
-            // Cập nhật UI
-            if (Sat.isSelected()) {
-                // Hiển thị icon check
-                check_icon7.setVisibility(View.VISIBLE);
-            } else {
-                // Ẩn icon check
-                check_icon7.setVisibility(View.GONE);
-            }
+            check_icon7.setVisibility(Sat.isSelected() ? View.VISIBLE : View.GONE);
+            validateSchedule();
         });
-
         Sun.setOnClickListener(v -> {
             Sun.setSelected(!Sun.isSelected());
-
-            // Cập nhật UI
-            if (Sun.isSelected()) {
-                // Hiển thị icon check
-                check_icon0.setVisibility(View.VISIBLE);
-            } else {
-                // Ẩn icon check
-                check_icon0.setVisibility(View.GONE);
-            }
+            check_icon0.setVisibility(Sun.isSelected() ? View.VISIBLE : View.GONE);
+            validateSchedule();
         });
-
 
         up.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -191,6 +137,8 @@ public class ScheduleActivity extends AppCompatActivity {
                     incrementHour();
                 } else if (textViewReminderTimeMins.isFocused()) {
                     incrementMinute();
+                } else {
+                    incrementHour();
                 }
             }
         });
@@ -203,6 +151,8 @@ public class ScheduleActivity extends AppCompatActivity {
                     decrementHour();
                 } else if (textViewReminderTimeMins.isFocused()) {
                     decrementMinute();
+                } else {
+                    incrementHour();
                 }
             }
         });
@@ -212,16 +162,25 @@ public class ScheduleActivity extends AppCompatActivity {
         textViewReminderTimeHour.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
-                // You can add visual feedback here (e.g., change background color)
+                if (hasFocus) {
+                    textViewReminderTimeHour.setBackgroundResource(R.drawable.bg_focused);
+                } else {
+                    textViewReminderTimeHour.setBackgroundResource(android.R.color.transparent);
+                }
             }
         });
 
         textViewReminderTimeMins.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
-                // You can add visual feedback here
+                if (hasFocus) {
+                    textViewReminderTimeMins.setBackgroundResource(R.drawable.bg_focused);
+                } else {
+                    textViewReminderTimeMins.setBackgroundResource(android.R.color.transparent);
+                }
             }
         });
+
 
         btnBacktoEx.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -233,7 +192,7 @@ public class ScheduleActivity extends AppCompatActivity {
         });
 
         // Add an onClick listener to a button to trigger scheduling
-        findViewById(R.id.textViewDone).setOnClickListener(new View.OnClickListener() {
+        Done.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 createSchedule();
@@ -364,6 +323,12 @@ public class ScheduleActivity extends AppCompatActivity {
 
         return schedules;
     }
+
+    private void validateSchedule() {
+        List<Schedule> schedules = gatherScheduleData();
+        Done.setEnabled(!schedules.isEmpty());
+    }
+
 
     private String convertDayOfWeekToDate(DayOfWeek dayOfWeek) {
         // Get today's date

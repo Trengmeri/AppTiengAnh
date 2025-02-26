@@ -60,7 +60,6 @@ public class NevigateQuestion extends AppCompatActivity {
                 public void onSuccess(Question question) {
                     if (question != null) {
                         questions.add(question);
-
                         // Khi đã lấy đủ tất cả câu hỏi, chuyển sang Activity tiếp theo
                         if (questions.size() == questionIds.size()) {
                             navigateToActivity(questions.get(currentQuestionIndex));
@@ -83,10 +82,12 @@ public class NevigateQuestion extends AppCompatActivity {
         Intent intent = null;
 
         if ("READING".equals(skill)) {
-            intent = new Intent(this, question.getQuesType().equals("CHOICE")
-                    ? GrammarPick1QuestionActivity.class
-                    : GrammarPickManyActivity.class);
-        } else if ("LISTENING".equals(skill)) {
+            String quesType = question.getQuesType().trim().toUpperCase();
+            intent = new Intent(this, "MULTIPLE".equals(quesType)
+                    ? GrammarPickManyActivity.class
+                    : GrammarPick1QuestionActivity.class);
+
+    } else if ("LISTENING".equals(skill)) {
             intent = new Intent(this, ListeningQuestionActivity.class);
         } else if ("SPEAKING".equals(skill)) {
             intent = new Intent(this, RecordQuestionActivity.class);
@@ -96,6 +97,7 @@ public class NevigateQuestion extends AppCompatActivity {
             intent.putExtra("currentQuestionIndex", currentQuestionIndex);
             intent.putExtra("courseID",courseID);
             intent.putExtra("lessonID",lessonID);
+            Log.e("nevigate","Lesson ID: "+ lessonID + "courseID: "+ courseID);
             if (questions == null || questions.isEmpty()) {
                 Log.e("NevigateQuestion", "Danh sách câu hỏi bị null hoặc rỗng trước khi gửi!");
             } else {

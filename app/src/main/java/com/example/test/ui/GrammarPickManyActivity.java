@@ -45,7 +45,6 @@ import okhttp3.Response;
 public class GrammarPickManyActivity extends AppCompatActivity {
     private List<String> correctAnswers = new ArrayList<>();
     private List<String> userAnswers = new ArrayList<>();
-    private int currentStep = 0;
     private int totalSteps;
     private int answerIds;// Danh sách questionIds
     private TextView tvContent;
@@ -73,6 +72,7 @@ public class GrammarPickManyActivity extends AppCompatActivity {
         questions = (List<Question>) getIntent().getSerializableExtra("questions");
         courseID = getIntent().getIntExtra("courseID",1);
         lessonID = getIntent().getIntExtra("lessonID",1);
+        Log.e("pickmany","Lesson ID: "+ lessonID + "courseID: "+ courseID);
 
 
         // Hiển thị câu hỏi hiện tại
@@ -96,7 +96,7 @@ public class GrammarPickManyActivity extends AppCompatActivity {
                 }
                 String answerContent = sb.toString();
                 // Lưu câu trả lời của người dùng
-                quesManager.saveUserAnswer(questions.get(currentStep).getId(), answerContent, new ApiCallback() {
+                quesManager.saveUserAnswer(questions.get(currentQuestionIndex).getId(), answerContent, new ApiCallback() {
 
                     @Override
                     public void onSuccess() {
@@ -106,15 +106,17 @@ public class GrammarPickManyActivity extends AppCompatActivity {
                             PopupHelper.showResultPopup(GrammarPickManyActivity.this, userAnswers, correctAnswers, () -> {
                                 // Callback khi nhấn Next Question trên popup
 //                                resetAnswerColors();
-                                currentStep++; // Tăng currentStep
                                 currentQuestionIndex++;
                                 if (currentQuestionIndex < questions.size()) {
                                     Question nextQuestion = questions.get(currentQuestionIndex);
-                                    updateProgressBar(progressBar, currentStep);
+                                    updateProgressBar(progressBar, currentQuestionIndex);
                                     if (nextQuestion.getQuesType().equals("CHOICE")) {
                                         Intent intent = new Intent(GrammarPickManyActivity.this, GrammarPick1QuestionActivity.class);
                                         intent.putExtra("currentQuestionIndex", currentQuestionIndex);
+                                        Log.e("pickmany","currentQuestionIndex");
                                         intent.putExtra("questions", (Serializable) questions);
+                                        intent.putExtra("courseID",courseID);
+                                        intent.putExtra("lessonID",lessonID);
                                         startActivity(intent);
                                         finish(); // Đóng Activity hiện tại
                                     } else {

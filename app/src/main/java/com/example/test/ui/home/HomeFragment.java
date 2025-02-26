@@ -34,7 +34,7 @@ import java.util.List;
 public class HomeFragment extends Fragment {
     Button continueButton;
     LinearLayout lessonsContainer; // LinearLayout để chứa các bài học
-    TextView courseTitle,lessonTitle1,lessonNumber,courseId; // TextView để hiển thị tên khóa học
+    TextView courseTitle,lessonTitle1,lessonNumber,courseId, tv404; // TextView để hiển thị tên khóa học
     ImageView btnNoti,btnstudy,btnexplore,btnprofile, icHome, icExplore,btnmins, btnplus;
     ViewPager2 vpgMain;
     GridLayout bottomBar;
@@ -66,6 +66,7 @@ public class HomeFragment extends Fragment {
         btnplus = view.findViewById(R.id.plus);
         btnmins = view.findViewById(R.id.mins);
         courseId = view.findViewById(R.id.courseId);
+        tv404 = view.findViewById(R.id.tv404);
 
         fetchCourseData(newCourseId);
 
@@ -106,6 +107,7 @@ public class HomeFragment extends Fragment {
 
     private void fetchCourseData(int id){
         lessonsContainer.removeAllViews();
+        tv404.setVisibility(View.GONE);
         lesManager.fetchCourseById( newCourseId , new ApiCallback<Course>() {
             @Override
             public void onSuccess(Course course) {
@@ -175,7 +177,7 @@ public class HomeFragment extends Fragment {
                             }
                         }
                     } else {
-                        Toast.makeText(getActivity(), "No further courses.", Toast.LENGTH_SHORT).show();
+                        tv404.setVisibility(View.VISIBLE);
                     }
                 });
             }
@@ -183,7 +185,7 @@ public class HomeFragment extends Fragment {
             @Override
             public void onFailure(String errorMessage) {
                 getActivity().runOnUiThread(() -> {
-                    Toast.makeText(getActivity(), "No further courses.", Toast.LENGTH_SHORT).show();
+                    tv404.setVisibility(View.VISIBLE);
                 });
             }
 

@@ -210,6 +210,8 @@ public class ResultManager extends BaseApiManager {
                             if (enrollment.getCourseId() == courseId) {
                                 lastEnrollment = enrollment;
                                 break; // Thoát khỏi vòng lặp khi tìm thấy
+                            } else {
+                                Log.e("Enrollment","CourseId khong tim duoc" + courseId);
                             }
                         }
 

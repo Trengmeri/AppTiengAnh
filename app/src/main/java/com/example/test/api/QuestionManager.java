@@ -4,9 +4,11 @@ import android.content.Context;
 import android.util.Log;
 
 import com.example.test.SharedPreferencesManager;
+import com.example.test.model.Answer;
 import com.example.test.model.MediaFile;
 import com.example.test.model.Question;
 import com.example.test.model.Result;
+import com.example.test.response.ApiResponseAnswer;
 import com.example.test.response.ApiResponseMedia;
 import com.example.test.response.ApiResponseQuestion;
 import com.google.gson.Gson;
@@ -117,6 +119,42 @@ public class QuestionManager extends BaseApiManager {
                 .build();
 
         client.newCall(request).enqueue(callback);
+    }
+
+    public void fetchAnswerId(int answerId, ApiCallback callback) {
+        Request request = new Request.Builder()
+                .url(BASE_URL + "/api/v1/answers/" + answerId)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    String responseBody = response.body().string();
+                    Log.d("QuestionManager", "Phản hồi từ server: " + responseBody);
+
+                    Gson gson = new Gson();
+                    ApiResponseAnswer apiResponse = gson.fromJson(responseBody, ApiResponseAnswer.class);
+                    Answer answer = apiResponse.getData();
+
+                    if (answer != null) {
+                        Log.d("QuestionManager", "Answer ID: " + answer.getId() + "Cau tra loi: "+ answer.getAnswerContent() +", Điểm đạt được: " + answer.getPointAchieved() + ", Session ID: " + answer.getSessionId());
+                        callback.onSuccess(answer); // Thay đổi ở đây
+                    } else {
+                        callback.onFailure("Không có câu trả lời nào.");
+                    }
+                } else {
+                    Log.e("QuestionManager", "Lỗi từ server: Mã lỗi " + response.code());
+                    callback.onFailure("Lỗi từ server: Mã lỗi " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.e("QuestionManager", "Lỗi kết nối: " + e.getMessage());
+                callback.onFailure("Không thể kết nối tới API.");
+            }
+        });
     }
 
     // Trong class QuestionManager

@@ -39,7 +39,6 @@ import okhttp3.Response;
 public class GrammarPick1QuestionActivity extends AppCompatActivity {
     List<String> correctAnswers = new ArrayList<>();
     private List<String> userAnswers = new ArrayList<>();
-    private int currentStep = 0; // Bước hiện tại (bắt đầu từ 0)
     private int totalSteps; // Tổng số bước trong thanh tiến trình
     private AppCompatButton selectedAnswer = null;
     private AppCompatButton btnAnswer1, btnAnswer2, btnAnswer3, btnAnswer4;
@@ -68,7 +67,7 @@ public class GrammarPick1QuestionActivity extends AppCompatActivity {
         tvContent = findViewById(R.id.tvContent);
         LinearLayout progressBar = findViewById(R.id.progressBar); // Ánh xạ ProgressBar
         setupAnswerClickListeners();
-        updateProgressBar(progressBar, currentStep);
+        updateProgressBar(progressBar, currentQuestionIndex);
         networkReceiver = new NetworkChangeReceiver();
 
         // Nhận dữ liệu từ Intent
@@ -76,6 +75,7 @@ public class GrammarPick1QuestionActivity extends AppCompatActivity {
         questions = (List<Question>) getIntent().getSerializableExtra("questions");
         courseID = getIntent().getIntExtra("courseID",1);
         lessonID = getIntent().getIntExtra("lessonID",1);
+        Log.e("pick1","Lesson ID: "+ lessonID + "courseID: "+ courseID);
 
 
         // Hiển thị câu hỏi hiện tại
@@ -99,7 +99,7 @@ public class GrammarPick1QuestionActivity extends AppCompatActivity {
                 }
                 String answerContent = sb.toString();
                 // Lưu câu trả lời của người dùng
-                quesManager.saveUserAnswer(questions.get(currentStep).getId(), answerContent, new ApiCallback() {
+                quesManager.saveUserAnswer(questions.get(currentQuestionIndex).getId(), answerContent, new ApiCallback() {
 
                     @Override
                     public void onSuccess() {
@@ -109,15 +109,17 @@ public class GrammarPick1QuestionActivity extends AppCompatActivity {
                             PopupHelper.showResultPopup(GrammarPick1QuestionActivity.this, userAnswers, correctAnswers, () -> {
                                 // Callback khi nhấn Next Question trên popup
                                 resetAnswerColors();
-                                currentStep++; // Tăng currentStep
                                 currentQuestionIndex++;
                                 if (currentQuestionIndex < questions.size()) {
                                     Question nextQuestion = questions.get(currentQuestionIndex);
-                                    updateProgressBar(progressBar, currentStep);
+                                    updateProgressBar(progressBar, currentQuestionIndex);
                                     if (nextQuestion.getQuesType().equals("MULTIPLE")) {
                                         Intent intent = new Intent(GrammarPick1QuestionActivity.this, GrammarPickManyActivity.class);
                                         intent.putExtra("currentQuestionIndex", currentQuestionIndex);
+                                        Log.e("pick1","currentQuestionIndex");
                                         intent.putExtra("questions", (Serializable) questions);
+                                        intent.putExtra("courseID",courseID);
+                                        intent.putExtra("lessonID",lessonID);
                                         startActivity(intent);
                                         finish(); // Đóng Activity hiện tại
                                     } else {

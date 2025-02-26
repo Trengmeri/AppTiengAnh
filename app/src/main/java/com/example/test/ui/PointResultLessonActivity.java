@@ -29,7 +29,10 @@ import com.example.test.model.QuestionChoice;
 import com.example.test.model.Result;
 import com.example.test.ui.home.HomeActivity;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class PointResultLessonActivity extends AppCompatActivity {
@@ -41,6 +44,8 @@ public class PointResultLessonActivity extends AppCompatActivity {
     ResultManager resultManager = new ResultManager(this);
     TextView point;
     ImageView star1,star2,star3;
+    // Set lưu các ID đã gọi để tránh gọi trùng
+    private Set<Integer> calledAnswerIds = new HashSet<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +56,9 @@ public class PointResultLessonActivity extends AppCompatActivity {
 
         courseID = getIntent().getIntExtra("courseId",1);
         lessonID = getIntent().getIntExtra("lessonId",1);
+
+
+        Log.e("point","Lesson ID: "+ lessonID + "courseID: "+ courseID);
 
         fetchCourseData(courseID,lessonID);
         fetchLessonData(lessonID);
