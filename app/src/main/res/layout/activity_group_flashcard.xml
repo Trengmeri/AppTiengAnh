@@ -26,78 +26,82 @@
                 android:background="@drawable/elip_cfcode2"
                 android:layout_gravity="bottom"/>
         </FrameLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        >
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/dp40"
-            android:orientation="horizontal"
-            android:gravity="center_horizontal"
-            android:layout_centerInParent="true">
-
-            <TextView
-                android:id="@+id/flBacktoExplore"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/dp_16"
-                android:textColor="@color/black"
-                android:drawableStart="@drawable/icon_back"
-                android:text=" Flashcard groups"
-                android:textSize="24sp"
-                android:textStyle="bold" />
-
-            <ImageView
-                android:id="@+id/btnAddGroup"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_marginRight="@dimen/dp_16"
-                android:background="@drawable/ic_plus" />
-        </RelativeLayout>
-
         <LinearLayout
-            android:id="@+id/groupContainer"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:orientation="vertical"
-            android:gravity="center"
-            android:layout_marginTop="@dimen/dp_16">
-                <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/groupFlcid"
+            >
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dp40"
+                android:orientation="horizontal"
+                android:gravity="center_horizontal"
+                android:layout_centerInParent="true">
+
+                <TextView
+                    android:id="@+id/flBacktoExplore"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/btn_flash"
-                    android:layout_gravity="center"
-                    android:layout_margin="@dimen/dp_16"
-                    android:drawableEnd="@drawable/icon_edit"
-                    android:paddingEnd="@dimen/dp_16"
-                    android:text="IT"
-                    android:textSize="22sp">
-                </androidx.appcompat.widget.AppCompatButton>
+                    android:layout_marginStart="@dimen/dp_16"
+                    android:textColor="@color/black"
+                    android:drawableStart="@drawable/icon_back"
+                    android:text=" Flashcard groups"
+                    android:textSize="24sp"
+                    android:textStyle="bold" />
 
+                <ImageView
+                    android:id="@+id/btnAddGroup"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginRight="@dimen/dp_16"
+                    android:background="@drawable/ic_plus" />
+            </RelativeLayout>
 
-            <androidx.appcompat.widget.AppCompatButton
-                android:layout_width="wrap_content"
+            <androidx.core.widget.NestedScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+            <LinearLayout
+                android:id="@+id/groupContainer"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/btn_flash"
-                android:layout_gravity="center"
-                android:drawableEnd="@drawable/icon_edit"
-                android:paddingEnd="@dimen/dp_16"
-                android:layout_margin="@dimen/dp_16"
-                android:text="ECONOMIC"
-                android:textSize="22sp">
-            </androidx.appcompat.widget.AppCompatButton>
+                android:orientation="vertical"
+                android:gravity="center"
+                android:layout_marginTop="@dimen/dp_16">
+    <!--                <androidx.appcompat.widget.AppCompatButton-->
+    <!--                    android:id="@+id/groupFlcid"-->
+    <!--                    android:layout_width="wrap_content"-->
+    <!--                    android:layout_height="wrap_content"-->
+    <!--                    android:background="@drawable/btn_flash"-->
+    <!--                    android:layout_gravity="center"-->
+    <!--                    android:layout_margin="@dimen/dp_16"-->
+    <!--                    android:drawableEnd="@drawable/icon_edit"-->
+    <!--                    android:paddingEnd="@dimen/dp_16"-->
+    <!--                    android:text="IT"-->
+    <!--                    android:textSize="22sp">-->
+    <!--                </androidx.appcompat.widget.AppCompatButton>-->
+
+
+    <!--            <androidx.appcompat.widget.AppCompatButton-->
+    <!--                android:layout_width="wrap_content"-->
+    <!--                android:layout_height="wrap_content"-->
+    <!--                android:background="@drawable/btn_flash"-->
+    <!--                android:layout_gravity="center"-->
+    <!--                android:drawableEnd="@drawable/icon_edit"-->
+    <!--                android:paddingEnd="@dimen/dp_16"-->
+    <!--                android:layout_margin="@dimen/dp_16"-->
+    <!--                android:text="ECONOMIC"-->
+    <!--                android:textSize="22sp">-->
+    <!--            </androidx.appcompat.widget.AppCompatButton>-->
 
 
 
+            </LinearLayout>
+            </androidx.core.widget.NestedScrollView>
         </LinearLayout>
 
-    </LinearLayout>
     </FrameLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

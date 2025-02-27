@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.WrittingActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- Tiêu đề -->
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/writting"
+            android:textColor="#CE9566"
+            android:textSize="36sp"
+            android:textStyle="bold"
+            android:layout_marginTop="20dp"
+            android:layout_gravity="center"/>
+
+        <!-- Thanh tiến trình -->
+        <LinearLayout
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_gravity="center">
+
+            <!-- Step 1 (Active) -->
+            <View
+                android:layout_width="32dp"
+                android:layout_height="8dp"
+                android:background="#C4865E"
+                android:layout_margin="4dp" />
+            <!-- Step 2 (Inactive) -->
+            <View
+                android:layout_width="32dp"
+                android:layout_height="8dp"
+                android:background="#E0E0E0"
+                android:layout_margin="4dp" />
+
+            <!-- Step 3 (Inactive) -->
+            <View
+                android:layout_width="32dp"
+                android:layout_height="8dp"
+                android:background="#E0E0E0"
+                android:layout_margin="4dp" />
+
+            <!-- Step 4 (Inactive) -->
+            <View
+                android:layout_width="32dp"
+                android:layout_height="8dp"
+                android:background="#E0E0E0"
+                android:layout_margin="4dp" />
+
+            <!-- Step 5 (Inactive) -->
+            <View
+                android:layout_width="32dp"
+                android:layout_height="8dp"
+                android:background="#E0E0E0"
+                android:layout_margin="4dp" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvQuestion"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="48dp"
+            android:layout_marginBottom="48dp"
+            android:drawableLeft="@drawable/jam_write"
+            android:drawablePadding="10dp"
+            android:text="Write the answer follow the question"
+            android:textSize="24sp"
+            android:textStyle="bold" />
+
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tvContent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:textSize="18sp"
+                    android:textStyle="bold"/>
+
+                <!-- RecyclerView cho các tùy chọn đáp án -->
+<!--                <androidx.recyclerview.widget.RecyclerView-->
+<!--                    android:id="@+id/recyclerViewChoices"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_marginBottom="16dp"/>-->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:text="Answer:"
+                    android:textSize="18sp"
+                    android:textStyle="bold"/>
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Write your answer"/>
+
+                <!-- Nút kiểm tra -->
+                <Button
+                    android:id="@+id/btnCheckAnswers"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginLeft="@dimen/dp_16"
+                    android:layout_marginRight="@dimen/dp_16"
+                    android:textColor="@color/black"
+                    android:backgroundTint="#C0CEEF"
+                    android:text="@string/check"
+                    android:layout_gravity="center"/>
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
+
+        <FrameLayout
+            android:id="@+id/popupContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom" />
+
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
