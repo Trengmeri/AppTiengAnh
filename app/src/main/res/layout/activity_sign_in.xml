@@ -167,34 +167,36 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:layout_marginRight="12dp"
+        android:layout_marginLeft="12dp">
     <CheckBox
         android:id="@+id/cbRemember"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="12dp"
         android:text="Remember me"
         android:textColor="#7A7A7A"/>
     <Button
             android:id="@+id/btnForgot"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
             android:text="Forgot Password"
             android:textColor="#AB3B00"
-            android:layout_marginLeft="65dp"/>
+            android:layout_marginLeft="60dp"/>
     <!-- Hoặc tiếp tục -->
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:layout_marginRight="12dp"
+        android:layout_marginLeft="12dp">
     <Button
         android:id="@+id/btnIn"
-        android:layout_width="250dp"
+        android:layout_width="230dp"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/dp_16"
         android:backgroundTint="#BC6136"
         android:text="Sign In"
         android:enabled="false"
@@ -222,18 +224,19 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:padding="@dimen/dp_16">
+        android:padding="8dp">
         <ImageView
             android:id="@+id/imageView5"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/chrome"/>
+            android:background="@drawable/icon_gg"/>
 
             <ImageView
             android:id="@+id/imageView6"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="25dp"
+                android:layout_marginTop="6dp"
             android:background="@drawable/facebook" />
     </LinearLayout>
     </LinearLayout>

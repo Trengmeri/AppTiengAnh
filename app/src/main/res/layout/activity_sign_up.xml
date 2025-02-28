@@ -57,7 +57,7 @@
             android:textColor="#172B4D"
             android:textSize="30sp"
             android:textStyle="bold"
-            android:layout_marginLeft="50dp"/>
+            android:layout_marginStart="50dp"/>
         <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -75,7 +75,7 @@
                     android:orientation="vertical"
                     android:background="@drawable/background_gradient"
                     android:paddingTop="16dp"
-                    android:paddingLeft="16dp"
+                    android:paddingStart="16dp"
                     android:layout_marginTop="10dp">
                     <TextView
                         android:id="@+id/textView3"
@@ -86,7 +86,7 @@
                         android:textColor="#AC3B00"
                         android:textSize="18sp"
                         android:textStyle="bold"
-                        android:layout_marginLeft="30dp"/>
+                        android:layout_marginStart="30dp"/>
 
                     <TextView
                         android:id="@+id/textView4"
@@ -96,7 +96,7 @@
                         android:text="Hello there, fill in below to create an account"
                         android:textColor="#7A7A7A"
                         android:textSize="14sp"
-                        android:layout_marginLeft="30dp"/>
+                        android:layout_marginStart="30dp"/>
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -136,7 +136,8 @@
                             android:inputType="text"
                             android:background="@android:color/transparent"
                             android:drawableStart="@drawable/icon_email"
-                            android:drawablePadding="8dp"/>
+                            android:drawablePadding="8dp"
+                            tools:ignore="HardcodedText" />
 
                     </LinearLayout>
                     <TextView
@@ -169,7 +170,8 @@
                             android:background="@android:color/transparent"
                             android:drawableStart="@drawable/icon_pass"
                             android:drawableEnd="@drawable/icon_visibility_off"
-                            android:drawablePadding="8dp"/>
+                            android:drawablePadding="8dp"
+                            tools:ignore="HardcodedText" />
 
                     </LinearLayout>
                     <TextView
@@ -194,7 +196,7 @@
                             android:id="@+id/cbCheck"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginLeft="12dp"
+                            android:layout_marginStart="12dp"
                             android:text="Agree to Terms Conditions"
                             android:textColor="#7A7A7A"/>
 
@@ -202,8 +204,8 @@
                             android:id="@+id/btnUp"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginLeft="12dp"
-                            android:layout_marginRight="18dp"
+                            android:layout_marginStart="12dp"
+                            android:layout_marginEnd="18dp"
                             android:backgroundTint="#BC6136"
                             android:enabled="false"
                             android:alpha="0.5"
@@ -222,18 +224,19 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:padding="@dimen/dp_16">
+                        android:padding="8dp">
                         <ImageView
                             android:id="@+id/imageView5"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:background="@drawable/chrome"/>
+                            android:background="@drawable/icon_gg"/>
 
                         <ImageView
                             android:id="@+id/imageView6"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginLeft="25dp"
+                            android:layout_marginStart="25dp"
+                            android:layout_marginTop="6dp"
                             android:background="@drawable/facebook" />
                     </LinearLayout>
                 </LinearLayout>
