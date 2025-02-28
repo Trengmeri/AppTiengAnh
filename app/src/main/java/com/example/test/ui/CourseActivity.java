@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -25,6 +26,7 @@ import com.example.test.SharedPreferencesManager;
 import com.example.test.adapter.DiscussionAdapter;
 import com.example.test.api.ApiCallback;
 import com.example.test.api.DiscussionManager;
+import com.example.test.api.LessonManager;
 import com.example.test.model.Answer;
 import com.example.test.model.Course;
 import com.example.test.model.Discussion;
@@ -44,10 +46,12 @@ public class CourseActivity extends AppCompatActivity {
     AppCompatButton btnAbout, btnLesson;
     ImageView btSendDiscussion;
     LinearLayout contentAbout, contentLes;
+    TextView txtcontentAbout, courseName, numLessons;
 //    ImageView btnLike,btnLike1;
     private RecyclerView recyclerView;
     private DiscussionAdapter  discussionAdapter;
-    private DiscussionManager discussionManager;
+    private DiscussionManager discussionManager = new DiscussionManager(this);
+    private LessonManager lessonManager = new LessonManager();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +67,30 @@ public class CourseActivity extends AppCompatActivity {
         btnLesson= findViewById(R.id.btnLesson);
         contentAbout = findViewById(R.id.contentAbout);
         contentLes = findViewById(R.id.contentLes);
+        courseName=findViewById(R.id.courseName);
+        txtcontentAbout= findViewById(R.id.txtContentAbout);
+
+
+        getCourseInfo(1, new ApiCallback<Course>() {
+            @Override
+            public void onSuccess() {}
+
+            @Override
+            public void onSuccess(Course course) {
+                runOnUiThread(() -> {
+                    courseName.setText(course.getName());
+                    txtcontentAbout.setText(course.getIntro()); // Hiển thị mô tả khóa học
+                    Log.d("CourseInfo", "Name: " + course.getName() + ", Intro: " + course.getIntro());
+                });
+            }
+
+            @Override
+            public void onFailure(String errorMessage) {
+                runOnUiThread(() -> Log.e("CourseInfo", "Lỗi: " + errorMessage));
+            }
+        });
+
+        loadDiscussions();
 
         btnAbout.setOnClickListener(v -> {
             btnAbout.setBackground(ContextCompat.getDrawable(this, R.drawable.bg_about));
@@ -91,9 +119,6 @@ public class CourseActivity extends AppCompatActivity {
             }
         });
 
-
-
-
 //        btnLike = findViewById(R.id.btnLike);
 //        btnLike.setOnClickListener(new View.OnClickListener() {
 //            @Override
@@ -108,13 +133,32 @@ public class CourseActivity extends AppCompatActivity {
 //            }
 //        });
 
-
     }
+    public void getCourseInfo(int courseId, ApiCallback<Course> callback) {
+        lessonManager.fetchCourseById(courseId, new ApiCallback<Course>() {
+            @Override
+            public void onSuccess() {}
+
+            @Override
+            public void onSuccess(Course course) {
+                runOnUiThread(() -> {
+                    callback.onSuccess(course);
+                });
+            }
+
+            @Override
+            public void onFailure(String errorMessage) {
+                runOnUiThread(() -> {
+                    callback.onFailure(errorMessage);
+                });
+            }
+        });
+    }
+
     private int getLessonId() {
         SharedPreferences sharedPreferences = getSharedPreferences("LESSON_DATA", MODE_PRIVATE);
         return sharedPreferences.getInt("LESSON_ID", -1);
     }
-
 
     private void sendDiscussion() {
         EditText edtDiscussion = findViewById(R.id.edtDiscussion);
@@ -127,61 +171,61 @@ public class CourseActivity extends AppCompatActivity {
 
         int lessonId = 1;
         Integer parentId = null; // Nếu là trả lời thì truyền ID của bình luận cha
+        String id = SharedPreferencesManager.getInstance(this).getID();
+        int userID= Integer.parseInt(id);// Lấy userId từ session
 
-        discussionManager.createDiscussion(lessonId, content, parentId, new ApiCallback() {
+        discussionManager.createDiscussion(userID,lessonId, content, parentId, new ApiCallback() {
             @Override
             public void onSuccess() {
-                Toast.makeText(CourseActivity.this, "Bình luận đã gửi!", Toast.LENGTH_SHORT).show();
-                edtDiscussion.setText(""); // Xóa nội dung sau khi gửi
-                loadDiscussions(); // Cập nhật danh sách discussion
-//
+                runOnUiThread(() -> {
+                    Toast.makeText(CourseActivity.this, "Bình luận đã gửi!", Toast.LENGTH_SHORT).show();
+                    edtDiscussion.setText(""); // Xóa nội dung sau khi gửi
+                    loadDiscussions(); // Cập nhật danh sách discussion
+                });
             }
-
             @Override
             public void onSuccess(Object result) {
-
             }
-
-
             @Override
             public void onFailure(String errorMessage) {
-                Toast.makeText(CourseActivity.this, "Lỗi: " + errorMessage, Toast.LENGTH_SHORT).show();
+                runOnUiThread(() ->
+                        Toast.makeText(CourseActivity.this, "Lỗi: " + errorMessage, Toast.LENGTH_SHORT).show()
+                );
             }
-
         });
-
 
     }
     private void loadDiscussions() {
-        int lessonId = getLessonId(); // Lấy lessonId
+        int lessonId = 1; // Lấy lessonId
 
         discussionManager.fetchDiscussionsByLesson(lessonId, new ApiCallback<List<Discussion>>() {
             @Override
             public void onSuccess(List<Discussion> discussion) {
 
-                if (discussion.isEmpty()) {
-                    Toast.makeText(CourseActivity.this, "Không có bình luận nào!", Toast.LENGTH_SHORT).show();
-                    return;
-                }
+                runOnUiThread(() -> {
+                    if (discussion.isEmpty()) {
+                        Toast.makeText(CourseActivity.this, "Không có bình luận nào!", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    Log.d("DEBUG", "Số bình luận: " + discussion.size());
 
-                Log.d("DEBUG", "Số bình luận: " + discussion.size());
-
-                // Gán dữ liệu vào adapter
-                discussionAdapter = new DiscussionAdapter(CourseActivity.this, discussion);
-                recyclerView.setAdapter(discussionAdapter);
+                    // Cập nhật UI trên Main Thread
+                    discussionAdapter = new DiscussionAdapter(CourseActivity.this, discussion);
+                    recyclerView.setAdapter(discussionAdapter);
+                });
             }
-
             @Override
             public void onFailure(String errorMessage) {
-
+                runOnUiThread(() ->
+                        Toast.makeText(CourseActivity.this, "Lỗi: " + errorMessage, Toast.LENGTH_SHORT).show()
+                );
             }
-
             @Override
             public void onSuccess() {
 
             }
-
         });
+
     }
 
 
