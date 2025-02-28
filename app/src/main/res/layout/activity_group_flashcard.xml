@@ -29,9 +29,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical"
-            >
-
+            android:orientation="vertical">
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -62,7 +60,7 @@
 
             <androidx.core.widget.NestedScrollView
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="wrap_content">
 
             <LinearLayout
                 android:id="@+id/groupContainer"
@@ -71,18 +69,18 @@
                 android:orientation="vertical"
                 android:gravity="center"
                 android:layout_marginTop="@dimen/dp_16">
-    <!--                <androidx.appcompat.widget.AppCompatButton-->
-    <!--                    android:id="@+id/groupFlcid"-->
-    <!--                    android:layout_width="wrap_content"-->
-    <!--                    android:layout_height="wrap_content"-->
-    <!--                    android:background="@drawable/btn_flash"-->
-    <!--                    android:layout_gravity="center"-->
-    <!--                    android:layout_margin="@dimen/dp_16"-->
-    <!--                    android:drawableEnd="@drawable/icon_edit"-->
-    <!--                    android:paddingEnd="@dimen/dp_16"-->
-    <!--                    android:text="IT"-->
-    <!--                    android:textSize="22sp">-->
-    <!--                </androidx.appcompat.widget.AppCompatButton>-->
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/groupFlcid"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/btn_flash"
+                        android:layout_gravity="center"
+                        android:layout_margin="@dimen/dp_16"
+                        android:drawableEnd="@drawable/icon_edit"
+                        android:paddingEnd="@dimen/dp_16"
+                        android:text="IT"
+                        android:textSize="22sp">
+                    </androidx.appcompat.widget.AppCompatButton>
 
 
     <!--            <androidx.appcompat.widget.AppCompatButton-->
@@ -102,6 +100,31 @@
             </LinearLayout>
             </androidx.core.widget.NestedScrollView>
         </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_gravity="bottom"
+            android:gravity="center"
+            android:layout_marginBottom="@dimen/dp_16">
 
+            <ImageView
+                android:id="@+id/btnPrevious"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/icon_prevpage"
+                android:enabled="false"
+                android:alpha="0.3f"
+                android:layout_marginEnd="8dp"/>
+
+            <ImageView
+                android:id="@+id/btnNext"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/icon_nextpage"
+                android:alpha="0.3f"
+                android:enabled="false"/>
+
+        </LinearLayout>
     </FrameLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

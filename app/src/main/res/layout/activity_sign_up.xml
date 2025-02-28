@@ -245,7 +245,7 @@
                         android:id="@+id/textView6"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Don’t have an Account? "
+                        android:text="Already have an account? "
                         android:textColor="#AC3B00"/>
                     <Button
                         android:id="@+id/btnIn"

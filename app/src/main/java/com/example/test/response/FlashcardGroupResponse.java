@@ -1,5 +1,6 @@
 package com.example.test.response;
 
+import com.example.test.model.Flashcard;
 import com.example.test.model.FlashcardGroup;
 import com.google.gson.annotations.SerializedName;
 import java.util.List;
@@ -17,6 +18,7 @@ public class FlashcardGroupResponse {
     public static class FlashcardGroupData {
         @SerializedName("content")
         private List<FlashcardGroup> content;
+        private int totalPages;
 
         public List<FlashcardGroup> getContent() {
             return content;
@@ -24,6 +26,13 @@ public class FlashcardGroupResponse {
 
         public void setContent(List<FlashcardGroup> content) {
             this.content = content;
+        }
+        public int getTotalPages() {
+            return totalPages;
+        }
+
+        public void setTotalPages(int totalPages) {
+            this.totalPages = totalPages;
         }
     }
 

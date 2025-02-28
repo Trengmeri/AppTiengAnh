@@ -50,7 +50,10 @@ public class GroupFlashcardActivity extends AppCompatActivity {
     LinearLayout groupContainer;
     private FlashcardManager flashcardManager;
     private final ArrayList<AppCompatButton> groupButtons = new ArrayList<>();
-
+    private int currentPage = 1;
+    private int totalPages = 1;
+    private final int pageSize = 4; // Mỗi trang hiển thị 5 nhóm flashcard
+    private ImageView btnNext, btnPrevious;
     @SuppressLint({ "MissingInflatedId", "ClickableViewAccessibility" })
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,7 +72,8 @@ public class GroupFlashcardActivity extends AppCompatActivity {
         groupContainer = findViewById(R.id.groupContainer);
         iconEdit= findViewById(R.id.iconEdit);
         flashcardManager = new FlashcardManager();
-
+        btnNext = findViewById(R.id.btnNext);
+        btnPrevious = findViewById(R.id.btnPrevious);
         btnaddgroup.setOnClickListener(view -> showAddGroupDialog());
 
 //        groupFlcid.setOnTouchListener((v, event) -> {
@@ -90,7 +94,19 @@ public class GroupFlashcardActivity extends AppCompatActivity {
 //            }
 //            return false;
 //        });
+        btnNext.setOnClickListener(v -> {
+            if (currentPage < totalPages) {
+                currentPage++;
+                fetchFlashcardGroups(currentPage);
+            }
+        });
 
+        btnPrevious.setOnClickListener(v -> {
+            if (currentPage > 1) {
+                currentPage--;
+                fetchFlashcardGroups(currentPage);
+            }
+        });
         groupFlcid.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -106,7 +122,7 @@ public class GroupFlashcardActivity extends AppCompatActivity {
             }
         });
 
-        fetchFlashcardGroups();
+        fetchFlashcardGroups(currentPage);
     }
 
     private void showEditGroupDialog(TextView groupTextView, int groupId) {
@@ -208,7 +224,7 @@ public class GroupFlashcardActivity extends AppCompatActivity {
                         dialog.dismiss();
                         Toast.makeText(GroupFlashcardActivity.this, "Group deleted successfully", Toast.LENGTH_SHORT)
                                 .show();
-                        fetchFlashcardGroups();
+                        fetchFlashcardGroups(currentPage);
                     });
                 }
 
@@ -299,7 +315,7 @@ public class GroupFlashcardActivity extends AppCompatActivity {
                             FlashcardGroup newGroup = response.getData(); // Đảm bảo rằng getData() trả về
                                                                           // FlashcardGroup
                             addGroupButton(newGroup.getName(), newGroup.getId()); // Sử dụng tên nhóm từ phản hồi
-                            fetchFlashcardGroups(); // Cập nhật danh sách nhóm
+                            fetchFlashcardGroups(currentPage); // Cập nhật danh sách nhóm
                             dialog.dismiss(); // Đóng hộp thoại
                         });
                     }
@@ -334,8 +350,9 @@ public class GroupFlashcardActivity extends AppCompatActivity {
         dialog.show();
     }
 
-    private void fetchFlashcardGroups() {
-        flashcardManager.fetchFlashcardGroups(1, 1, new FlashcardApiCallback() {
+    private void fetchFlashcardGroups(int page) {
+        //groupContainer.removeAllViews(); // Xóa danh sách cũ
+        flashcardManager.fetchFlashcardGroups(1, page, new FlashcardApiCallback() {
             @Override
             public void onSuccess(Object response) {
 
@@ -355,10 +372,12 @@ public class GroupFlashcardActivity extends AppCompatActivity {
                     // Kiểm tra xem có dữ liệu không
                     if (response.getData() != null && response.getData().getContent() != null) {
                         List<FlashcardGroup> groups = response.getData().getContent();
+                        totalPages = response.getData().getTotalPages();
                         for (FlashcardGroup group : groups) {
                             addGroupButton(group.getName(), group.getId());
                         }
                     }
+                    updateButtonState();
                 });
             }
 
@@ -380,56 +399,7 @@ public class GroupFlashcardActivity extends AppCompatActivity {
     }
 
     @SuppressLint("ClickableViewAccessibility")
-//    private void addGroupButton(String groupName, int groupId) {
-//        LinearLayout layoutFlashcards = findViewById(R.id.groupContainer);
-//
-//        // Tạo một LinearLayout cho mỗi nhóm
-//        LinearLayout groupLayout = new LinearLayout(this);
-//        groupLayout.setOrientation(LinearLayout.HORIZONTAL); // Đặt orientation là horizontal
-//        groupLayout.setGravity(Gravity.CENTER_VERTICAL); // Căn giữa theo chiều dọc
-//        groupLayout.setLayoutParams(new LinearLayout.LayoutParams(
-//                LinearLayout.LayoutParams.MATCH_PARENT,
-//                LinearLayout.LayoutParams.WRAP_CONTENT));
-//
-//        // Nút nhóm
-//        AppCompatButton newGroup = new AppCompatButton(this);
-//        newGroup.setText(groupName);
-//        newGroup.setTextSize(22);
-//        newGroup.setBackground(ContextCompat.getDrawable(this, R.drawable.btn_flash));
-//        newGroup.setLayoutParams(new LinearLayout.LayoutParams(
-//                0, // Chiều rộng sẽ được điều chỉnh
-//                LinearLayout.LayoutParams.WRAP_CONTENT,
-//                1)); // Tỉ lệ trọng số
-//        newGroup.setPaddingRelative(16, 16, 16, 16);
-//        newGroup.setPadding(16, 16, 16, 16);
-//
-//        // Tạo ImageView cho biểu tượng chỉnh sửa
-//        ImageView editIcon = new ImageView(this);
-//        editIcon.setImageResource(R.drawable.icon_edit); // Thay đổi drawable theo nhu cầu
-//        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(48, 48); // Kích thước biểu tượng
-//        params.setMargins(16, 0, 0, 0); // Thêm khoảng cách bên trái
-//        editIcon.setLayoutParams(params);
-//
-//        // Lưu ID nhóm vào tag của nút
-//        newGroup.setTag(groupId);
-//
-//        // Sự kiện khi nhấn vào nút nhóm
-//        newGroup.setOnClickListener(v -> {
-//            Intent intent = new Intent(GroupFlashcardActivity.this, FlashcardActivity.class);
-//            intent.putExtra("GROUP_ID", groupId);
-//            startActivity(intent);
-//        });
-//
-//        // Sự kiện khi nhấn vào biểu tượng chỉnh sửa
-//        editIcon.setOnClickListener(v -> {
-//            showEditGroupDialog(newGroup, groupId); // Mở cửa sổ chỉnh sửa
-//        });
-//
-//        // Thêm nút nhóm và biểu tượng chỉnh sửa vào layout
-//        groupLayout.addView(newGroup);
-//        groupLayout.addView(editIcon);
-//        layoutFlashcards.addView(groupLayout);
-//    }
+
     private void addGroupButton(String groupName, int groupId) {
         LinearLayout layoutFlashcards = findViewById(R.id.groupContainer);
 
@@ -471,7 +441,8 @@ public class GroupFlashcardActivity extends AppCompatActivity {
         // Thêm View đã inflate vào container
         layoutFlashcards.addView(groupView);
     }
-
-
-
+    private void updateButtonState() {
+        btnPrevious.setEnabled(currentPage > 1);
+        btnNext.setEnabled(currentPage < totalPages);
+    }
 }
