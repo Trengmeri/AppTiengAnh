@@ -3,6 +3,9 @@ package com.example.test.ui;
 import android.animation.AnimatorSet;
 import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.view.View;
@@ -34,16 +37,18 @@ public class FlashcardInformationActivity extends AppCompatActivity {
     private TextView tvBackContent;
     private AnimatorSet flipIn, flipOut;
     private ImageView btnX;
-    private TextView tvAddedDate;
-    private TextView tvExamples;
-    private TextView tvWord;
-    private TextView tvPronunciation;
+    private TextView tvAddedDate, tvWord, tvPronunciation, tvExamples, txtNumRed, txtNumGreen;
     private AppCompatButton btnDefinition;
     private AppCompatButton btnExample;
     private ImageView btnSound;
     private MediaPlayer mediaPlayer;
+    FrameLayout flashcardContainer;
+    private int countRed = 0;  // Đếm số lần vuốt phải
+    private int countGreen = 0; // Đếm số lần vuốt trái
+    private float x1, x2;
+    private static final int SWIPE_THRESHOLD = 150; // Ngưỡng vuốt tối thiểu
 
-    @SuppressLint({ "ResourceType", "MissingInflatedId" })
+    @SuppressLint({"ResourceType", "MissingInflatedId", "ClickableViewAccessibility"})
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,11 +59,9 @@ public class FlashcardInformationActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-
         initializeViews();
         setupAnimations();
         setupClickListeners();
-
         // Lấy ID flashcard từ Intent
         int flashcardId = getIntent().getIntExtra("FLASHCARD_ID", -1);
         if (flashcardId != -1) {
@@ -68,7 +71,36 @@ public class FlashcardInformationActivity extends AppCompatActivity {
             Log.e("FlashcardInfo", "Invalid flashcard ID");
             Toast.makeText(this, "Không tìm thấy flashcard", Toast.LENGTH_SHORT).show();
         }
+        flashcardContainer.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        x1 = event.getX(); // Lưu tọa độ bắt đầu
+                        return true;
 
+                    case MotionEvent.ACTION_UP:
+                        x2 = event.getX(); // Lưu tọa độ kết thúc
+                        float deltaX = x2 - x1;
+
+                        if (Math.abs(deltaX) > SWIPE_THRESHOLD) { // Kiểm tra khoảng cách vuốt
+                            if (deltaX > 0) {
+                                // Vuốt sang phải
+                                animateSwipe(flashcardContainer, 1000, true);
+                                countGreen++;
+                                txtNumGreen.setText(String.valueOf(countGreen));
+                            } else {
+                                // Vuốt sang trái
+                                animateSwipe(flashcardContainer, 1000, false);
+                                countRed++;
+                                txtNumRed.setText(String.valueOf(countRed));
+                            }
+                        }
+                        return true;
+                }
+                return false;
+            }
+        });
         mediaPlayer = new MediaPlayer();
     }
 
@@ -84,6 +116,9 @@ public class FlashcardInformationActivity extends AppCompatActivity {
         tvWord = findViewById(R.id.tvWord);
         tvPronunciation = findViewById(R.id.tvPronunciation);
         btnSound = findViewById(R.id.btnAudio);
+        txtNumGreen= findViewById(R.id.txtNumGreen);
+        txtNumRed= findViewById(R.id.txtNumRed);
+        flashcardContainer= findViewById(R.id.flashcardContainer);
     }
 
     private void setupAnimations() {
@@ -304,5 +339,14 @@ public class FlashcardInformationActivity extends AppCompatActivity {
             mediaPlayer.release();
             mediaPlayer = null;
         }
+    }
+    private void animateSwipe(View view, int duration, boolean isRight) {
+        float translationX = isRight ? 800f : -800f;
+
+        view.animate()
+                .translationX(translationX)
+                .setDuration(duration)
+                .withEndAction(() -> view.setTranslationX(0)) // Reset vị trí về 0
+                .start();
     }
 }
