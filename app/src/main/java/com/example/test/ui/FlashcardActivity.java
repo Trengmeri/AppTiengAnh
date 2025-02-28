@@ -63,7 +63,10 @@ public class FlashcardActivity extends AppCompatActivity {
     ImageView btnAddFlash, btnremove;
     private List<Flashcard> flashcards = new ArrayList<>();
     private EditText edtFlashName;
-
+    private int currentPage = 1;
+    private int totalPages = 1;
+    private final int pageSize = 4; // Mỗi trang hiển thị 5 nhóm flashcard
+    private ImageView btnNext, btnPrevious;
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,12 +84,31 @@ public class FlashcardActivity extends AppCompatActivity {
         flBack = findViewById(R.id.flBack);
         btnAddFlash = findViewById(R.id.btnAddflash);
         btnremove = findViewById(R.id.iconRemove);
+        btnNext = findViewById(R.id.btnNext);
+        btnPrevious = findViewById(R.id.btnPrevious);
+        btnNext.setAlpha(0.5f);
+        btnNext.setEnabled(false);
+
+        btnPrevious.setAlpha(0.5f);
+        btnPrevious.setEnabled(false);
 
         int groupId = getIntent().getIntExtra("GROUP_ID", -1);
         if (groupId != -1) {
-            fetchFlashcards(groupId);
+            fetchFlashcards(groupId,currentPage);
         }
+        btnNext.setOnClickListener(v -> {
+            if (currentPage < totalPages) {
+                currentPage++;
+                fetchFlashcards(groupId,currentPage);
+            }
+        });
 
+        btnPrevious.setOnClickListener(v -> {
+            if (currentPage > 1) {
+                currentPage--;
+                fetchFlashcards(groupId,currentPage);
+            }
+        });
         flBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -369,7 +391,7 @@ public class FlashcardActivity extends AppCompatActivity {
 
     }
 
-    private void fetchFlashcards(int groupId) {
+    private void fetchFlashcards(int groupId,int page) {
         flashcardManager.fetchFlashcardsInGroup(groupId, new FlashcardApiCallback() {
             @Override
             public void onSuccess(Object response) {
@@ -396,6 +418,7 @@ public class FlashcardActivity extends AppCompatActivity {
                 } else {
                     Log.w("FlashcardActivity", "No flashcards found for group ID: " + groupId);
                 }
+                updateButtonState();
             }
 
             @Override
@@ -481,5 +504,21 @@ public class FlashcardActivity extends AppCompatActivity {
         // Thêm nút vào layout
         LinearLayout flashcardContainer = findViewById(R.id.flashContainer);
         flashcardContainer.addView(flashcardButton);
+    }
+    private void updateButtonState() {
+        if (totalPages > 1) {
+            btnPrevious.setEnabled(currentPage > 1);
+            btnPrevious.setAlpha(currentPage > 1 ? 1.0f : 0.5f);
+
+            btnNext.setEnabled(currentPage < totalPages);
+            btnNext.setAlpha(currentPage < totalPages ? 1.0f : 0.5f);
+        } else {
+            // Nếu chỉ có 1 trang, làm mờ và vô hiệu hóa cả hai nút
+            btnNext.setEnabled(false);
+            btnNext.setAlpha(0.5f);
+
+            btnPrevious.setEnabled(false);
+            btnPrevious.setAlpha(0.5f);
+        }
     }
 }

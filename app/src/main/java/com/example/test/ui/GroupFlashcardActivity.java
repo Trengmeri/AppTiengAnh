@@ -75,6 +75,12 @@ public class GroupFlashcardActivity extends AppCompatActivity {
         btnNext = findViewById(R.id.btnNext);
         btnPrevious = findViewById(R.id.btnPrevious);
         btnaddgroup.setOnClickListener(view -> showAddGroupDialog());
+        btnNext.setAlpha(0.5f);
+        btnNext.setEnabled(false);
+
+        btnPrevious.setAlpha(0.5f);
+        btnPrevious.setEnabled(false);
+
 
 //        groupFlcid.setOnTouchListener((v, event) -> {
 //            if (event.getAction() == MotionEvent.ACTION_UP) {
@@ -306,9 +312,7 @@ public class GroupFlashcardActivity extends AppCompatActivity {
                 flashcardManager.createFlashcardGroup(groupName, userId, new FlashcardApiCallback() {
                     @Override
                     public void onSuccess(Object response) {
-
                     }
-
                     @Override
                     public void onSuccess(ApiResponseFlashcardGroup response) {
                         runOnUiThread(() -> { // Đảm bảo cập nhật UI trên UI thread
@@ -442,7 +446,20 @@ public class GroupFlashcardActivity extends AppCompatActivity {
         layoutFlashcards.addView(groupView);
     }
     private void updateButtonState() {
-        btnPrevious.setEnabled(currentPage > 1);
-        btnNext.setEnabled(currentPage < totalPages);
+        if (totalPages > 1) {
+            btnPrevious.setEnabled(currentPage > 1);
+            btnPrevious.setAlpha(currentPage > 1 ? 1.0f : 0.5f);
+
+            btnNext.setEnabled(currentPage < totalPages);
+            btnNext.setAlpha(currentPage < totalPages ? 1.0f : 0.5f);
+        } else {
+            // Nếu chỉ có 1 trang, làm mờ và vô hiệu hóa cả hai nút
+            btnNext.setEnabled(false);
+            btnNext.setAlpha(0.5f);
+
+            btnPrevious.setEnabled(false);
+            btnPrevious.setAlpha(0.5f);
+        }
     }
+
 }
