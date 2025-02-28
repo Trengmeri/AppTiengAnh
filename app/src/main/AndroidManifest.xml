@@ -18,6 +18,9 @@
         android:theme="@style/Theme.Test"
         tools:targetApi="31">
         <activity
+            android:name=".ui.DictionaryActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.WrittingActivity"
             android:exported="false" />
         <activity
@@ -55,7 +58,7 @@
             android:exported="false" />
         <activity
             android:name=".ui.explore.ExploreActivity"
-            android:exported="false" />
+            android:exported="true" />
         <activity
             android:name=".ui.ScheduleActivity"
             android:exported="true" />

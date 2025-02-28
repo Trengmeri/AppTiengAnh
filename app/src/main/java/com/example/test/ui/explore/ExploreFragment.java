@@ -16,6 +16,7 @@ import androidx.fragment.app.Fragment;
 import com.example.test.R;
 import com.example.test.SharedPreferencesManager;
 import com.example.test.model.User;
+import com.example.test.ui.DictionaryActivity;
 import com.example.test.ui.GroupFlashcardActivity;
 import com.example.test.ui.ScheduleActivity;
 import com.example.test.ui.home.HomeActivity;
@@ -41,19 +42,12 @@ public class ExploreFragment extends Fragment {
         btnprofile = view.findViewById(R.id.ic_profile);
         btnFlash= view.findViewById(R.id.btnFlash);
         btnSche= view.findViewById(R.id.btnSche);
+        btnDic= view.findViewById(R.id.btnDic);
         tvName= view.findViewById(R.id.tvName);
         User user = SharedPreferencesManager.getInstance(getContext()).getUser();
         if (user != null) {
             tvName.setText("Hi "+ user.getName() + "!");
         }
-
-//        btnhome.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Intent intent = new Intent(getActivity(), HomeActivity.class);
-//                startActivity(intent);
-//            }
-//        });
 
         btnFlash.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -66,6 +60,13 @@ public class ExploreFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(getActivity(), ScheduleActivity.class);
+                startActivity(intent);
+            }
+        });
+        btnDic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getActivity(), DictionaryActivity.class);
                 startActivity(intent);
             }
         });

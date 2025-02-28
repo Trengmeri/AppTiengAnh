@@ -183,7 +183,7 @@
             android:background="@android:color/transparent"
             android:text="Forgot Password"
             android:textColor="#AB3B00"
-            android:layout_marginLeft="60dp"/>
+            android:layout_marginLeft="@dimen/dp_30"/>
     <!-- Hoặc tiếp tục -->
     </LinearLayout>
 
