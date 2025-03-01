@@ -28,15 +28,15 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="15dp"
-                android:layout_marginLeft="15dp"
+                android:layout_marginStart="15dp"
                 android:src="@drawable/icon_back" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
+                android:layout_marginStart="10dp"
                 android:layout_marginTop="10dp"
-                android:text="Confirm Code"
+                android:text="@string/txt_confirmcode"
                 android:textSize="20sp"
                 android:textColor="#000" />
         </LinearLayout>
@@ -46,7 +46,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="36dp"
             android:layout_gravity="center"
-            android:text="Code has been Send to ****.gmail.com"
+            android:text="@string/txt_codewassend"
             android:textColor="#666"
             android:textSize="14sp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -141,7 +141,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:backgroundTint="@android:color/transparent"
-                android:text="Resend Code in"
+                android:text="@string/txt_resendcode"
                 android:textColor="#9E3A00"
                 android:enabled="false"
                 android:alpha="0.5"

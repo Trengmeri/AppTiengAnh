@@ -26,12 +26,19 @@
     <string name="ques_record">How do you use IT ?</string>
     <string name="txt_it">INFORMATION\n TECHNOLOGY</string>
     <string name="txt_construction">CONSTRUCTION</string>
+    <string name="txt_economic">ECONOMIC</string>
+    <string name="txt_mechanic">MECHANIC</string>
+    <string name="txt_other">OTHERS</string>
     <string name="btn_continute">Continue Studying</string>
     <string name="txtcontinute">Continue your journey!</string>
     <string name="txtschedulebasic">Basic\n10 mins per day</string>
     <string name="txtscheduleadvance">Advance\n20 mins per day</string>
     <string name="txtlevelupschedule">Level-up!\n30 mins per day</string>
     <string name="hintPassWord">* The password must be at least 8 characters long and include uppercase, lowercase letters, and numbers.</string>
+    <string name="selectMajor">SELECT YOUR MAJOR</string>
+    <string name="txt_confirmcode">Confirm Code</string>
+    <string name="txt_codewassend">Code has been Send to ****.gmail.com</string>
+    <string name="txt_resendcode">Resend Code in</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

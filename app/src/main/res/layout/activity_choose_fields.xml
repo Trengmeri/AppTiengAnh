@@ -19,9 +19,9 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="30dp"
+            android:layout_marginStart="30dp"
             android:layout_marginTop="20dp"
-            android:text="SELECT YOUR MAJOR"
+            android:text="@string/selectMajor"
             android:textColor="@color/black"
             android:textSize="22sp"
             android:textStyle="bold" />
@@ -50,7 +50,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/dp_16"
-                    android:text="ECONOMIC" />
+                    android:text="@string/txt_economic"/>
 
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/btnConstruct"
@@ -74,7 +74,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/dp_16"
-                    android:text="MECHANIC" />
+                    android:text="@string/txt_mechanic" />
 
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/btnOthers"
@@ -82,7 +82,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/dp_16"
-                    android:text="OTHERS" />
+                    android:text="@string/txt_other" />
             </LinearLayout>
         </FrameLayout>
 

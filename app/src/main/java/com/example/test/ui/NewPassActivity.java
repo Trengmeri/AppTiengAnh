@@ -78,7 +78,6 @@ public class NewPassActivity extends AppCompatActivity {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 checkInputFields();
             }
-
             @Override
             public void afterTextChanged(Editable s) {
             }
