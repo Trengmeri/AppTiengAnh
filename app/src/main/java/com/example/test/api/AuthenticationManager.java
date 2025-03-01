@@ -288,7 +288,7 @@ public class AuthenticationManager extends BaseApiManager {
                         callback.onFailure("Lỗi phân tích phản hồi JSON: " + e.getMessage());
                     }
                 } else {
-                    callback.onFailure("Thất bại: " + response.message());
+                    callback.onFailure("Mã chưa chính xác. Vui lòng thử lại! " + response.message());
                 }
             }
         });

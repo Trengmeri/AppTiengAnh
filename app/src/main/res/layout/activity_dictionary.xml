@@ -20,7 +20,7 @@
             android:layout_marginTop="@dimen/dp_30"
             android:drawableStart="@drawable/icon_back"
             android:drawablePadding="12dp"
-            android:text="Dictionary"
+            android:text="@string/txt_dictionary"
             android:textSize="24sp"
             android:textStyle="bold"/>
 

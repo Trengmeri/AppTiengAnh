@@ -44,7 +44,7 @@ public class ConfirmCode2Activity extends AppCompatActivity {
     private EditText[] codeInputs; // Mảng chứa các ô nhập mã
     private int currentInputIndex = 0; // Vị trí hiện tại của con trỏ nhập liệu
     private ImageView icback;
-    private Button btnRe;
+    private Button btnResendIn, btnResend;
     private TextView tvCountdown; // TextView hiển thị thời gian đếm ngược
     private static final long COUNTDOWN_TIME = 60000; // 60 giây
     private CountDownTimer countDownTimer;
@@ -76,7 +76,8 @@ public class ConfirmCode2Activity extends AppCompatActivity {
         };
         typeScreen = getIntent().getStringExtra("source");
         icback = findViewById(R.id.iconback);
-        btnRe = findViewById(R.id.btnRe);
+        btnResendIn = findViewById(R.id.btnResendIn);
+        btnResend = findViewById(R.id.btnReSend);
         tvCountdown = findViewById(R.id.tv_countdown); // Ánh xạ TextView đếm ngược
 
         // Thiết lập sự kiện cho các nút trên bàn phím
@@ -92,11 +93,11 @@ public class ConfirmCode2Activity extends AppCompatActivity {
         // Bắt đầu đếm ngược thời gian
         startCountdown();
 
-        btnRe.setOnClickListener(new View.OnClickListener() {
+        btnResend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                btnRe.setEnabled(false); // Ngăn người dùng nhấn liên tục
-                btnRe.setAlpha(0.3f);
+                btnResend.setEnabled(false); // Ngăn người dùng nhấn liên tục
+                btnResend.setAlpha(0.3f);
                 String otpID = getOtpIdFromPreferences(); // Lấy OTP ID đã lưu
                 apiManager.resendConfirmCodeRequest(otpID, new ApiCallback() {
                     @Override
@@ -127,8 +128,8 @@ public class ConfirmCode2Activity extends AppCompatActivity {
                             public void run() {
                                 showCustomDialog("Lỗi: " + errorMessage);
                                 //Toast.makeText(ConfirmCode2Activity.this, "Lỗi: " + errorMessage, Toast.LENGTH_SHORT).show();
-                                btnRe.setEnabled(true);
-                                btnRe.setAlpha(1.0f); // Cho phép bấm lại nếu lỗi
+                                btnResend.setEnabled(true);
+                                btnResend.setAlpha(1.0f); // Cho phép bấm lại nếu lỗi
                             }
                         });
                     }
@@ -173,8 +174,9 @@ public class ConfirmCode2Activity extends AppCompatActivity {
                                 codeInputs[currentInputIndex].setTransformationMethod(new android.text.method.PasswordTransformationMethod());
                             }
                         }, 200);
+                        // **Đặt con trỏ vào ô tiếp theo**
+                        codeInputs[currentInputIndex + 1].requestFocus();
                     }
-
                     currentInputIndex++;
                 }
             });
@@ -197,9 +199,9 @@ public class ConfirmCode2Activity extends AppCompatActivity {
             @Override
             public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
                 if (charSequence.length() == 1) {
+                    if (isRequesting) return; // Nếu đang request thì không gọi lại
+                    isRequesting = true; // Đánh dấu là đang gọi API
                     new Handler().postDelayed(() -> {
-                        if (isRequesting) return; // Nếu đang request thì không gọi lại
-                        isRequesting = true; // Đánh dấu là đang gọi API
                         for (EditText input : codeInputs) {
                             input.setTransformationMethod(new android.text.method.PasswordTransformationMethod());
                         }
@@ -236,7 +238,7 @@ public class ConfirmCode2Activity extends AppCompatActivity {
                                         @Override
                                         public void run() {
                                             showCustomDialog("Lỗi: " + errorMessage);
-
+                                            isRequesting= false;
                                             //Toast.makeText(ConfirmCode2Activity.this, errorMessage, Toast.LENGTH_SHORT).show();
                                         }
                                     });
@@ -273,7 +275,7 @@ public class ConfirmCode2Activity extends AppCompatActivity {
                                         @Override
                                         public void run() {
                                             showCustomDialog("Lỗi: " + errorMessage);
-                                            isRequesting = false;
+                                            isRequesting= false;
                                             //Toast.makeText(ConfirmCode2Activity.this, errorMessage, Toast.LENGTH_SHORT).show();
                                         }
                                     });
@@ -312,6 +314,9 @@ public class ConfirmCode2Activity extends AppCompatActivity {
     }
 
     private void startCountdown() {
+        btnResendIn.setVisibility(View.VISIBLE);
+        btnResend.setVisibility(View.GONE);
+        tvCountdown.setVisibility(View.VISIBLE);
         countDownTimer = new CountDownTimer(COUNTDOWN_TIME, 1000) { // Cập nhật mỗi giây
             @Override
             public void onTick(long millisUntilFinished) {
@@ -326,8 +331,9 @@ public class ConfirmCode2Activity extends AppCompatActivity {
             public void onFinish() {
                 // Khi đếm ngược kết thúc
                 tvCountdown.setText("00:00");
-                btnRe.setEnabled(true);
-                btnRe.setAlpha(1.0f);
+                btnResend.setVisibility(View.VISIBLE);
+                btnResendIn.setVisibility(View.GONE);
+                tvCountdown.setVisibility(View.GONE);
                 onCountdownFinished();
             }
         }.start();

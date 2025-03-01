@@ -18,7 +18,7 @@
             android:layout_marginTop="@dimen/dp_16"
             android:textSize="25sp"
             android:layout_marginStart="@dimen/dp_16"
-            android:text="Discussion"
+            android:text="@string/txt_discussion"
             android:drawablePadding="@dimen/dp_16"
             android:textStyle="bold"
             android:drawableStart="@drawable/icon_back"
