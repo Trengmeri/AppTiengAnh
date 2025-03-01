@@ -10,8 +10,11 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.text.method.HideReturnsTransformationMethod;
+import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -52,6 +55,7 @@ public class SignUpActivity extends AppCompatActivity {
     boolean isvalid =true;
     //private boolean isPasswordVisible = false;
     private Dialog loadingDialog;
+    private boolean isPasswordVisible = false;
     @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,7 +64,7 @@ public class SignUpActivity extends AppCompatActivity {
         setContentView(R.layout.activity_sign_up);
 
         AnhXa();
-        //setupPasswordField();
+        setupPasswordField();
         // Khởi tạo Dialog loading
         loadingDialog = new Dialog(this);
         loadingDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -172,62 +176,36 @@ public class SignUpActivity extends AppCompatActivity {
         Log.d("ConfirmCode", "Otp ID đã được lưu: " + otpID);
     }
     @SuppressLint("ClickableViewAccessibility")
-//    private void setupPasswordField() {
-//        edtMKhau.setOnTouchListener((v, event) -> {
-//        edtMKhau.setOnTouchListener((v, event) -> {
-//            // Kiểm tra xem người dùng có nhấn vào drawableEnd không
-//            if (event.getAction() == MotionEvent.ACTION_UP) {
-//                if (event.getRawX() >= (edtMKhau.getRight() - edtMKhau.getCompoundDrawables()[2].getBounds().width())) {
-//                    // Thay đổi trạng thái hiển thị mật khẩu
-//                    if (isPasswordVisible) {
-//                        // Ẩn mật khẩu
-//                        edtMKhau.setTransformationMethod(PasswordTransformationMethod.getInstance());
-//                        edtMKhau.setCompoundDrawablesWithIntrinsicBounds(
-//                                R.drawable.icon_pass, 0, R.drawable.icon_visibility_off, 0);
-//                    } else {
-//                        // Hiện mật khẩu
-//                        edtMKhau.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
-//                        edtMKhau.setCompoundDrawablesWithIntrinsicBounds(
-//                                R.drawable.icon_pass, 0, R.drawable.icon_visibility, 0);
-//                    }
-//                    isPasswordVisible = !isPasswordVisible;
-//
-//                    // Đặt con trỏ ở cuối văn bản
-//                    edtMKhau.setSelection(edtMKhau.getText().length());
-//                    return true;
-//                }
-//            }
-//            return false;
-//        });
-//
-//        // Theo dõi thay đổi văn bản
-//        edtMKhau.addTextChangedListener(new TextWatcher() {
-//            @Override
-//            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-//                // Không cần xử lý
-//            }
-//
-//            @Override
-//            public void onTextChanged(CharSequence s, int start, int before, int count) {
-//                // Kiểm tra nếu mật khẩu đang hiển thị và người dùng nhập thêm ký tự
-//                if (isPasswordVisible) {
-//                    // Tự động chuyển về chế độ ẩn mật khẩu
-//                    edtMKhau.setTransformationMethod(PasswordTransformationMethod.getInstance());
-//                    edtMKhau.setCompoundDrawablesWithIntrinsicBounds(
-//                            R.drawable.icon_pass, 0, R.drawable.icon_visibility_off, 0);
-//                    isPasswordVisible = false;
-//
-//                    // Đặt con trỏ ở cuối văn bản
-//                    edtMKhau.setSelection(edtMKhau.getText().length());
-//                }
-//            }
-//
-//            @Override
-//            public void afterTextChanged(Editable s) {
-//                // Không cần xử lý
-//            }
-//        });
-//    }
+    private void setupPasswordField() {
+        // Mặc định ẩn mật khẩu
+        edtMKhau1.setTransformationMethod(PasswordTransformationMethod.getInstance());
+        edtMKhau1.setCompoundDrawablesWithIntrinsicBounds(
+                R.drawable.icon_pass, 0, R.drawable.icon_visibility_off, 0);
+
+        edtMKhau1.setOnTouchListener((v, event) -> {
+            if (event.getAction() == MotionEvent.ACTION_UP) {
+                if (event.getRawX() >= (edtMKhau1.getRight() - edtMKhau1.getCompoundDrawables()[2].getBounds().width())) {
+                    // Đổi trạng thái hiển thị mật khẩu
+                    if (isPasswordVisible) {
+                        edtMKhau1.setTransformationMethod(PasswordTransformationMethod.getInstance()); // Ẩn mật khẩu
+                        edtMKhau1.setCompoundDrawablesWithIntrinsicBounds(
+                                R.drawable.icon_pass, 0, R.drawable.icon_visibility_off, 0);
+                    } else {
+                        edtMKhau1.setTransformationMethod(HideReturnsTransformationMethod.getInstance()); // Hiện mật khẩu
+                        edtMKhau1.setCompoundDrawablesWithIntrinsicBounds(
+                                R.drawable.icon_pass, 0, R.drawable.icon_visibility, 0);
+                    }
+                    isPasswordVisible = !isPasswordVisible;
+
+                    // Giữ con trỏ ở cuối văn bản
+                    edtMKhau1.setSelection(edtMKhau1.getText().length());
+                    return true;
+                }
+            }
+            return false;
+        });
+    }
+
     @Override
     protected void onStart() {
         super.onStart();

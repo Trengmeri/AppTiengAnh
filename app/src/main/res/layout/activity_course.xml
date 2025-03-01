@@ -273,14 +273,16 @@
                                 app:layout_constraintTop_toTopOf="parent"/>
 
                         </androidx.constraintlayout.widget.ConstraintLayout>
+
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/recyclerViewDiscussion"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/dp_30"
-                    android:layout_marginEnd="@dimen/dp_30"
                     android:layout_marginTop="10dp"
-                    android:nestedScrollingEnabled="false"/>
+                    android:layout_marginEnd="@dimen/dp_30"
+                    android:nestedScrollingEnabled="false"
+                    app:layout_constraintBottom_toTopOf="@id/btn" />
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>
         <ImageView
@@ -291,6 +293,7 @@
             android:layout_marginTop="@dimen/dp_30"
             android:background="@drawable/icon_back"/>
         <FrameLayout
+            android:id="@+id/btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center|bottom"

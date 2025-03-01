@@ -77,18 +77,18 @@ public class SignInActivity extends AppCompatActivity {
         AnhXa();
         setupPasswordField();
 
-
         editor = sharedPreferences.edit();
         // Hiển thị thông tin đăng nhập nếu Remember Me được chọn trước đó
         if (sharedPreferences.getBoolean("rememberMe", false)) {
             edtEmail.setText(sharedPreferences.getString("email", ""));
             edtMKhau.setText(sharedPreferences.getString("password", ""));
             cbRemember.setChecked(true);
+            checkInputFields();
         }
 
         // Ban đầu vô hiệu hóa nút
-        btnIn.setEnabled(false);
-        btnIn.setAlpha(0.5f);
+//        btnIn.setEnabled(false);
+//        btnIn.setAlpha(0.5f);
 
         // Lắng nghe thay đổi trên EditText
         TextWatcher textWatcher = new TextWatcher() {
@@ -198,58 +198,32 @@ public class SignInActivity extends AppCompatActivity {
     }
     @SuppressLint("ClickableViewAccessibility")
     private void setupPasswordField() {
+        // Mặc định ẩn mật khẩu
+        edtMKhau.setTransformationMethod(PasswordTransformationMethod.getInstance());
+        edtMKhau.setCompoundDrawablesWithIntrinsicBounds(
+                R.drawable.icon_pass, 0, R.drawable.icon_visibility_off, 0);
+
         edtMKhau.setOnTouchListener((v, event) -> {
-            // Kiểm tra xem người dùng có nhấn vào drawableEnd không
             if (event.getAction() == MotionEvent.ACTION_UP) {
                 if (event.getRawX() >= (edtMKhau.getRight() - edtMKhau.getCompoundDrawables()[2].getBounds().width())) {
                     // Đổi trạng thái hiển thị mật khẩu
                     if (isPasswordVisible) {
-                        // Ẩn mật khẩu
-                        edtMKhau.setTransformationMethod(PasswordTransformationMethod.getInstance());
+                        edtMKhau.setTransformationMethod(PasswordTransformationMethod.getInstance()); // Ẩn mật khẩu
                         edtMKhau.setCompoundDrawablesWithIntrinsicBounds(
                                 R.drawable.icon_pass, 0, R.drawable.icon_visibility_off, 0);
                     } else {
-                        // Hiện mật khẩu
-                        edtMKhau.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
+                        edtMKhau.setTransformationMethod(HideReturnsTransformationMethod.getInstance()); // Hiện mật khẩu
                         edtMKhau.setCompoundDrawablesWithIntrinsicBounds(
                                 R.drawable.icon_pass, 0, R.drawable.icon_visibility, 0);
                     }
                     isPasswordVisible = !isPasswordVisible;
 
-                    // Đặt con trỏ ở cuối văn bản
+                    // Giữ con trỏ ở cuối văn bản
                     edtMKhau.setSelection(edtMKhau.getText().length());
                     return true;
                 }
             }
             return false;
-        });
-
-        edtMKhau.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                // Không cần xử lý trước khi văn bản thay đổi
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                // Khi văn bản thay đổi, tự động ẩn mật khẩu nếu đang hiển thị
-                if (isPasswordVisible) {
-                    // Chuyển về chế độ ẩn mật khẩu
-                    edtMKhau.setTransformationMethod(PasswordTransformationMethod.getInstance());
-                    edtMKhau.setCompoundDrawablesWithIntrinsicBounds(
-                            R.drawable.icon_pass, 0, R.drawable.icon_visibility_off, 0);
-                    isPasswordVisible = false;
-
-                    // Đặt con trỏ ở cuối văn bản
-                    edtMKhau.setSelection(edtMKhau.getText().length());
-                }
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                // Không cần xử lý sau khi văn bản thay đổi
-            }
         });
     }
 
