@@ -64,6 +64,7 @@
                              <!--Rate sao-->
                             </androidx.constraintlayout.widget.ConstraintLayout>
                             <TextView
+                                android:id="@+id/courseName"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Designing App Layouts"
@@ -84,6 +85,7 @@
                                     android:layout_height="wrap_content"
                                     android:background="@drawable/icon_lesson"/>
                                 <TextView
+                                    android:id="@+id/numLessons"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_marginStart="5dp"
@@ -148,6 +150,7 @@
                                     android:layout_marginTop="@dimen/dp_30">
 
                                     <TextView
+                                        android:id="@+id/txtContentAbout"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_marginStart="@dimen/dp_30"
@@ -273,14 +276,15 @@
                                 app:layout_constraintTop_toTopOf="parent"/>
 
                         </androidx.constraintlayout.widget.ConstraintLayout>
+
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/recyclerViewDiscussion"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/dp_30"
-                    android:layout_marginEnd="@dimen/dp_30"
                     android:layout_marginTop="10dp"
-                    android:nestedScrollingEnabled="false"/>
+                    android:layout_marginEnd="@dimen/dp_30"
+                    android:nestedScrollingEnabled="false" />
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>
         <ImageView
