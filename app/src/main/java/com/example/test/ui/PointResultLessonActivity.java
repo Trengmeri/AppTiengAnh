@@ -11,9 +11,6 @@ import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 import com.example.test.R;
 import com.example.test.api.ApiCallback;
@@ -21,7 +18,6 @@ import com.example.test.api.LessonManager;
 import com.example.test.api.QuestionManager;
 import com.example.test.api.ResultManager;
 import com.example.test.model.Answer;
-import com.example.test.model.Course;
 import com.example.test.model.Enrollment;
 import com.example.test.model.Lesson;
 import com.example.test.model.Question;
@@ -29,7 +25,6 @@ import com.example.test.model.QuestionChoice;
 import com.example.test.model.Result;
 import com.example.test.ui.home.HomeActivity;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -37,7 +32,7 @@ import java.util.stream.Collectors;
 
 public class PointResultLessonActivity extends AppCompatActivity {
 
-    Button btnDone;
+    Button btnDone,btnDiscuss;
     private int lessonID,courseID;
     QuestionManager quesManager = new QuestionManager(this);
     LessonManager lesManager = new LessonManager();
@@ -67,6 +62,11 @@ public class PointResultLessonActivity extends AppCompatActivity {
                 startActivity(intent);
                 finish();
         });
+        btnDiscuss.setOnClickListener(v -> {
+            Intent intent = new Intent(PointResultLessonActivity.this, DiscussionActivity.class);
+            startActivity(intent);
+            finish();
+        });
     }
 
     public void AnhXa(){
@@ -75,6 +75,7 @@ public class PointResultLessonActivity extends AppCompatActivity {
         star1 = findViewById(R.id.star1);
         star2 = findViewById(R.id.star2);
         star3 = findViewById(R.id.star3);
+        btnDiscuss=findViewById(R.id.btnDiscuss);
     }
 
     private void fetchCourseData(int courseId, int lessonId) {

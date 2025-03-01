@@ -18,7 +18,7 @@
         android:theme="@style/Theme.Test"
         tools:targetApi="31">
         <activity
-            android:name=".ui.DicussionActivity"
+            android:name=".ui.DiscussionActivity"
             android:exported="false" />
         <activity
             android:name=".ui.ReviewActivity"

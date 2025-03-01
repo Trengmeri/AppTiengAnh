@@ -1,6 +1,9 @@
 package com.example.test.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -10,8 +13,9 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.test.R;
 
-public class DicussionActivity extends AppCompatActivity {
+public class DiscussionActivity extends AppCompatActivity {
 
+    TextView back;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -21,6 +25,15 @@ public class DicussionActivity extends AppCompatActivity {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
+        });
+        back = findViewById(R.id.back);
+
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(DiscussionActivity.this, PointResultLessonActivity.class);
+                startActivity(intent);
+            }
         });
     }
 }
