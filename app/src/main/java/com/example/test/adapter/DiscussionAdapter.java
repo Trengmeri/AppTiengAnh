@@ -139,7 +139,6 @@ public class DiscussionAdapter extends RecyclerView.Adapter<DiscussionAdapter.Vi
                 }
             });
         });
-
     }
 
     @Override
