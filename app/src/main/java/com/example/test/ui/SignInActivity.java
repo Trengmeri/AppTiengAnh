@@ -64,16 +64,25 @@ public class SignInActivity extends AppCompatActivity {
         // Khởi tạo SharedPreferences
         sharedPreferences = getSharedPreferences("LoginPrefs", MODE_PRIVATE);
 
-        // Nếu Remember Me đã được bật, chuyển thẳng đến HomeActivity
-//        boolean isRemembered = sharedPreferences.getBoolean("rememberMe", false);
-//        if (isRemembered) {
-//            Intent intent = new Intent(SignInActivity.this, HomeActivity.class);
-//            startActivity(intent);
-//            finish(); // Đóng LoginActivity để không quay lại khi nhấn back
-//        }
+        //SharedPreferences sharedPreferences = getSharedPreferences("LoginPrefs", MODE_PRIVATE);
+        boolean isRemembered = sharedPreferences.getBoolean("rememberMe", false);
+        String savedEmail = sharedPreferences.getString("email", "");
+        String savedPassword = sharedPreferences.getString("password", "");
 
+// 🛑 In log để kiểm tra dữ liệu trong SharedPreferences
+        Log.d("SignInActivity", "Remember Me: " + isRemembered);
+        Log.d("SignInActivity", "Saved Email: " + savedEmail);
+        Log.d("SignInActivity", "Saved Password: " + savedPassword);
+
+        if (isRemembered && !savedEmail.isEmpty() && !savedPassword.isEmpty()) {
+            Log.d("SignInActivity", "User remembered, tự động vào Home");
+            Intent intent = new Intent(SignInActivity.this, HomeActivity.class);
+            startActivity(intent);
+            finish();
+        } else {
+            Log.d("SignInActivity", "Không có Remember Me, ở lại SignInActivity");
+        }
         setContentView(R.layout.activity_sign_in);
-
         AnhXa();
         setupPasswordField();
 
@@ -118,8 +127,8 @@ public class SignInActivity extends AppCompatActivity {
                 btnIn.setEnabled(false);
                 btnIn.setAlpha(0.5f);
 
-                String email = edtEmail.getText().toString();
-                String pass = edtMKhau.getText().toString();
+                String email = edtEmail.getText().toString().trim();
+                String pass = edtMKhau.getText().toString().trim();
 
                 if (isValid) {
                     if (!apiManager.isInternetAvailable(SignInActivity.this)) {
@@ -129,17 +138,19 @@ public class SignInActivity extends AppCompatActivity {
                             @Override
                             public void onSuccess() {
 
+                                // Lưu Remember Me nếu được chọn
                                 if (cbRemember.isChecked()) {
                                     editor.putBoolean("rememberMe", true);
                                     editor.putString("email", email);
                                     editor.putString("password", pass);
                                 } else {
-                                    editor.clear(); // Xóa thông tin nếu không chọn Remember Me
+                                    editor.clear(); // Xóa thông tin nếu bỏ tick
                                 }
                                 editor.apply();
 
                                 Intent intent = new Intent(SignInActivity.this, ChooseFieldsActivity.class);
-                                startActivity(intent); //
+                                startActivity(intent);
+                                finish();
                             }
                             @Override
                             public void onSuccess(Object result) {

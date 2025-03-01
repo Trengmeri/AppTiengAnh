@@ -1,13 +1,19 @@
 package com.example.test.ui.profile;
 
+import static android.content.Context.MODE_PRIVATE;
+
+import static androidx.core.app.ActivityCompat.finishAffinity;
+
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -54,6 +60,15 @@ public class ProfileFragment extends Fragment {
         networkReceiver = new NetworkChangeReceiver();
         apiManager = new AuthenticationManager(requireContext());
         btnLogout.setOnClickListener(v -> showLogoutDialog());
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("LoginPrefs", MODE_PRIVATE);
+        boolean isRemembered = sharedPreferences.getBoolean("rememberMe", false);
+        String savedEmail = sharedPreferences.getString("email", "");
+        String savedPassword = sharedPreferences.getString("password", "");
+
+        Log.d("ProfileFragment", "After Logout - Remember Me: " + isRemembered);
+        Log.d("ProfileFragment", "After Logout - Saved Email: " + savedEmail);
+        Log.d("ProfileFragment", "After Logout - Saved Password: " + savedPassword);
+
 
     }
     private void showLogoutDialog() {
@@ -63,27 +78,34 @@ public class ProfileFragment extends Fragment {
 
         builder.setPositiveButton("Có", (dialog, which) -> {
             // Gọi API logout
-            Intent intent= new Intent(getActivity(), SignInActivity.class);
-            startActivity(intent);
-//            apiManager.sendLogoutRequest(new ApiCallback() {
-//                @Override
-//                public void onSuccess() {
-//                    // Chuyển về màn hình đăng nhập
-//                    Intent intent = new Intent(getActivity(), SignInActivity.class);
-//                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-//                    startActivity(intent);
-//                }
-//
-//                @Override
-//                public void onSuccess(Object result) {
-//
-//                }
-//
-//                @Override
-//                public void onFailure(String errorMessage) {
-//                    Toast.makeText(getActivity(), errorMessage, Toast.LENGTH_SHORT).show();
-//                }
-//            });
+//            Intent intent= new Intent(getActivity(), SignInActivity.class);
+//            startActivity(intent);
+            apiManager.sendLogoutRequest(new ApiCallback() {
+                @Override
+                public void onSuccess() {
+                    // Chuyển về màn hình đăng nhập
+                    SharedPreferences sharedPreferences = getActivity().getSharedPreferences("LoginPrefs", MODE_PRIVATE);
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.clear();  // Xóa tất cả dữ liệu
+                    editor.commit(); // Lưu thay đổi ngay lập tức
+
+                    Log.d("Logout", "Đã xóa SharedPreferences");
+                    Intent intent = new Intent(getActivity(), SignInActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
+                    requireActivity().finishAffinity(); // Đóng toàn bộ activity
+                }
+
+                @Override
+                public void onSuccess(Object result) {
+
+                }
+
+                @Override
+                public void onFailure(String errorMessage) {
+                    Toast.makeText(getActivity(), errorMessage, Toast.LENGTH_SHORT).show();
+                }
+            });
         });
 
         builder.setNegativeButton("Không", (dialog, which) -> dialog.dismiss());

@@ -1,5 +1,7 @@
 package com.example.test;
 
+import static android.content.Context.MODE_PRIVATE;
+
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
@@ -14,6 +16,7 @@ public class SharedPreferencesManager {
 
     private static SharedPreferencesManager instance;
     private final SharedPreferences sharedPreferences;
+
 
     private SharedPreferencesManager(Context context) {
         sharedPreferences = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
@@ -68,9 +71,13 @@ public class SharedPreferencesManager {
         return token;
     }
 //    public void clearSession() {
+//        SharedPreferences sharedPreferences = context.getSharedPreferences("LoginPrefs", MODE_PRIVATE);
+//        //SharedPreferences.Editor editor = sharedPreferences.edit();
 //        SharedPreferences.Editor editor = sharedPreferences.edit();
 //        editor.clear(); // Xóa toàn bộ dữ liệu
-//        editor.apply();
+//        editor.commit(); // 🛑 Đảm bảo xóa ngay lập tức
+//
+//        Log.d("Logout", "Đã xóa SharedPreferences");
 //    }
 
     public String getAccessToken() {

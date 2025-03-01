@@ -95,8 +95,8 @@ public class NewPassActivity extends AppCompatActivity {
                     if (!apiManager.isInternetAvailable(NewPassActivity.this)) {
                         Toast.makeText(NewPassActivity.this, "Vui lòng kiểm tra kết nối Internet của bạn.", Toast.LENGTH_LONG).show();
                     } else {
-                        String pass = edtPass.getText().toString();
-                        String repass = edtRePass.getText().toString();
+                        String pass = edtPass.getText().toString().trim();
+                        String repass = edtRePass.getText().toString().trim();
                         String token = getTokenFromSharedPreferences();
 //                if (!pass.equals(repass)) {
 //                    Toast.makeText(NewPassActivity.this, "Mật khẩu nhập lại không khớp", Toast.LENGTH_SHORT).show();

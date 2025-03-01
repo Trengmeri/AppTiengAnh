@@ -1,6 +1,9 @@
 package com.example.test.api;
 
+import static android.content.Context.MODE_PRIVATE;
+
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
@@ -340,46 +343,51 @@ public class AuthenticationManager extends BaseApiManager {
             }
         });
     }
-//    public void sendLogoutRequest(ApiCallback callback) {
-//        // Lấy access token từ SharedPreferences
-//        String accessToken = SharedPreferencesManager.getInstance(context).getAccessToken();
-//
-//        if (accessToken == null || accessToken.isEmpty()) {
-//            callback.onFailure("Không tìm thấy Access Token! Vui lòng đăng nhập lại.");
-//            return;
-//        }
-//        RequestBody body = RequestBody.create("", MediaType.parse("application/json; charset=utf-8"));
-//
-//        // Tạo request
-//        Request request = new Request.Builder()
-//                .url(BASE_URL + "/api/v1/auth/logout")
-//                .header("Authorization", "Bearer " + accessToken) // Gửi token
-//                .post(body)
-//                .build();
-//
-//        client.newCall(request).enqueue(new Callback() {
-//            @Override
-//            public void onFailure(Call call, IOException e) {
-//                Log.e("AuthenticationManager", "Kết nối thất bại: " + e.getMessage());
-//                callback.onFailure("Kết nối thất bại! Không thể kết nối tới API.");
-//            }
-//
-//            @Override
-//            public void onResponse(Call call, Response response) throws IOException {
-//                String responseBody = response.body().string();
-//                Log.d("AuthenticationManager", "Phản hồi từ server: " + responseBody);
-//
-//                if (response.isSuccessful()) {
-//                    // Xóa dữ liệu người dùng sau khi đăng xuất thành công
-//                    SharedPreferencesManager.getInstance(context).clearSession();
-//                    callback.onSuccess();
-//                } else {
-//                    Log.e("AuthenticationManager", "Lỗi từ server: Mã lỗi " + response.code() + ", Nội dung: " + responseBody);
-//                    callback.onFailure("Đăng xuất thất bại! Vui lòng thử lại.");
-//                }
-//            }
-//        });
-//    }
+    public void sendLogoutRequest(ApiCallback callback) {
+        // Lấy access token từ SharedPreferences
+        String accessToken = SharedPreferencesManager.getInstance(context).getAccessToken();
+
+        if (accessToken == null || accessToken.isEmpty()) {
+            callback.onFailure("Không tìm thấy Access Token! Vui lòng đăng nhập lại.");
+            return;
+        }
+        RequestBody body = RequestBody.create("", MediaType.parse("application/json; charset=utf-8"));
+
+        // Tạo request
+        Request request = new Request.Builder()
+                .url(BASE_URL + "/api/v1/auth/logout")
+                .header("Authorization", "Bearer " + accessToken) // Gửi token
+                .post(body)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.e("AuthenticationManager", "Kết nối thất bại: " + e.getMessage());
+                callback.onFailure("Kết nối thất bại! Không thể kết nối tới API.");
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String responseBody = response.body().string();
+                Log.d("AuthenticationManager", "Phản hồi từ server: " + responseBody);
+
+                if (response.isSuccessful()) {
+                    // ✅ Xóa hoàn toàn SharedPreferences
+                    SharedPreferences sharedPreferences = context.getSharedPreferences("LoginPrefs", MODE_PRIVATE);
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.clear();  // Xóa tất cả dữ liệu Remember Me
+                    editor.commit(); // Lưu thay đổi ngay lập tức
+
+                    Log.d("AuthenticationManager", "Đã xóa SharedPreferences sau khi đăng xuất");
+                    callback.onSuccess();
+                } else {
+                    Log.e("AuthenticationManager", "Lỗi từ server: Mã lỗi " + response.code() + ", Nội dung: " + responseBody);
+                    callback.onFailure("Đăng xuất thất bại! Vui lòng thử lại.");
+                }
+            }
+        });
+    }
 
 
     private void handleNetworkError(IOException e, ApiCallback callback) {

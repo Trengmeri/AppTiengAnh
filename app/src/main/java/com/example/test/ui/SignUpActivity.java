@@ -100,9 +100,9 @@ public class SignUpActivity extends AppCompatActivity {
             btnUp.setEnabled(false);
             btnUp.setAlpha(0.5f);
 
-            String hoten = edtName.getText().toString();
-            String email = edtEmail.getText().toString();
-            String pass = edtMKhau1.getText().toString();
+            String hoten = edtName.getText().toString().trim();
+            String email = edtEmail.getText().toString().trim();
+            String pass = edtMKhau1.getText().toString().trim();
             if(isvalid) {
                 showLoading();
                 if (!apiManager.isInternetAvailable(SignUpActivity.this)) {
