@@ -4,6 +4,7 @@ import static android.content.Context.MODE_PRIVATE;
 
 import static androidx.core.app.ActivityCompat.finishAffinity;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -27,6 +28,7 @@ import com.example.test.SharedPreferencesManager;
 import com.example.test.api.ApiCallback;
 import com.example.test.api.AuthenticationManager;
 import com.example.test.model.User;
+import com.example.test.ui.EditProfileActivity;
 import com.example.test.ui.SignInActivity;
 
 public class ProfileFragment extends Fragment {
@@ -42,6 +44,7 @@ public class ProfileFragment extends Fragment {
         return view;
     }
 
+    @SuppressLint("WrongViewCast")
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -56,6 +59,8 @@ public class ProfileFragment extends Fragment {
         }
 
         btnLogout= view.findViewById(R.id.btnLogout);
+        btnedit= view.findViewById(R.id.btnEdit);
+
         term = view.findViewById(R.id.term);
         language = view.findViewById(R.id.language);
 
@@ -81,6 +86,13 @@ public class ProfileFragment extends Fragment {
         Log.d("ProfileFragment", "After Logout - Saved Email: " + savedEmail);
         Log.d("ProfileFragment", "After Logout - Saved Password: " + savedPassword);
 
+        btnedit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getActivity(), EditProfileActivity.class);
+                startActivity(intent);
+            }
+        });
 
     }
     private void showLogoutDialog() {

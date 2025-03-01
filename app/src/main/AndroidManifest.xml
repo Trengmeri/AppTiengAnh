@@ -25,13 +25,19 @@
             android:name=".ui.profile.TermActivity"
             android:exported="false" />
         <activity
+            android:name=".ui.EditProfileActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.DiscussionActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.DictionaryActivity"
+            android:name=".ui.ReviewActivity"
             android:exported="false" />
         <activity
             android:name=".ui.question_data.WrittingActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.DictionaryActivity"
             android:exported="false" />
         <activity
             android:name=".ui.entrance_test.WritingActivity"
@@ -107,8 +113,8 @@
             android:exported="false" />
         <activity
             android:name=".ui.home.HomeActivity"
-            android:exported="false"
-            android:launchMode="singleTask" />
+            android:launchMode="singleTask"
+            android:exported="false" />
         <activity
             android:name=".ui.LoadPassActivity"
             android:exported="false" />

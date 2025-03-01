@@ -38,7 +38,7 @@
                 android:textSize="15sp"/>
 
             <LinearLayout
-
+                android:id="@+id/btnEdit"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/dp_30"
