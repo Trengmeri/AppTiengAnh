@@ -60,12 +60,10 @@ public class PointResultLessonActivity extends AppCompatActivity {
         btnDone.setOnClickListener(v -> {
                 Intent intent = new Intent(PointResultLessonActivity.this, HomeActivity.class);
                 startActivity(intent);
-                finish();
         });
         btnDiscuss.setOnClickListener(v -> {
             Intent intent = new Intent(PointResultLessonActivity.this, DiscussionActivity.class);
             startActivity(intent);
-            finish();
         });
     }
 

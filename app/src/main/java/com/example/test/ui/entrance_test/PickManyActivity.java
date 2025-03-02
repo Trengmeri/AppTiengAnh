@@ -65,7 +65,7 @@ public class PickManyActivity extends AppCompatActivity {
         Button btnCheckAnswers = findViewById(R.id.btnCheckAnswers);
         progressBar = findViewById(R.id.progressBar);
 
-        int lessonId = 4;
+        int lessonId = 6;
         fetchLessonAndQuestions(lessonId);
 
         btnCheckAnswers.setOnClickListener(v -> {

@@ -65,7 +65,7 @@ public class ListeningActivity extends AppCompatActivity {
         btnListen = findViewById(R.id.btnListen);
         Button btnCheckResult = findViewById(R.id.btnCheckResult);
         etAnswer = findViewById(R.id.etAnswer);
-        int lessonId = 2;
+        int lessonId = 4;
         fetchLessonAndQuestions(lessonId);
 
         LinearLayout progressBar = findViewById(R.id.progressBar); // Ánh xạ ProgressBar

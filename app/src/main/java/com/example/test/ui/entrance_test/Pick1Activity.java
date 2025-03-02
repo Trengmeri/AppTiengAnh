@@ -75,7 +75,7 @@ public class Pick1Activity extends AppCompatActivity {
         networkReceiver = new NetworkChangeReceiver();
 
         // Lấy lessonId từ intent hoặc một nguồn khác
-        int lessonId = 1;
+        int lessonId = 3;
         fetchLessonAndQuestions(lessonId); // Gọi phương thức để lấy bài học và câu hỏi
 
         btnCheckAnswer.setOnClickListener(v -> {

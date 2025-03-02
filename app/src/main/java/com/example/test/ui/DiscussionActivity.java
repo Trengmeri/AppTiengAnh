@@ -28,12 +28,8 @@ public class DiscussionActivity extends AppCompatActivity {
         });
         back = findViewById(R.id.back);
 
-        back.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(DiscussionActivity.this, PointResultLessonActivity.class);
-                startActivity(intent);
-            }
+        back.setOnClickListener(v -> {
+            finish();
         });
     }
 }

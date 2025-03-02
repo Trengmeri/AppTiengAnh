@@ -67,7 +67,7 @@ public class SpeakingActivity extends AppCompatActivity implements SpeechRecogni
         btnPlayAudio = findViewById(R.id.btn_play);
         Button btnCheckResult = findViewById(R.id.btnCheckResult);
         seekBar = findViewById(R.id.seekBar);
-        int lessonId = 3;
+        int lessonId = 5;
         fetchLessonAndQuestions(lessonId);
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
