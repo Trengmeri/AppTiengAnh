@@ -31,7 +31,7 @@ import com.example.test.ui.SignInActivity;
 
 public class ProfileFragment extends Fragment {
     TextView userName, userEmail;
-    LinearLayout btnLogout;
+    LinearLayout btnLogout, term , language;
     NetworkChangeReceiver networkReceiver;
     AuthenticationManager apiManager;
 
@@ -56,6 +56,18 @@ public class ProfileFragment extends Fragment {
         }
 
         btnLogout= view.findViewById(R.id.btnLogout);
+        term = view.findViewById(R.id.term);
+        language = view.findViewById(R.id.language);
+
+        language.setOnClickListener(v -> {
+            Intent intent = new Intent(getActivity(),LanguageActivity.class);
+            startActivity(intent);
+        });
+
+        term.setOnClickListener(v -> {
+            Intent intent = new Intent(getActivity(),TermActivity.class);
+            startActivity(intent);
+        });
         // Tạo đối tượng NetworkChangeReceiver
         networkReceiver = new NetworkChangeReceiver();
         apiManager = new AuthenticationManager(requireContext());

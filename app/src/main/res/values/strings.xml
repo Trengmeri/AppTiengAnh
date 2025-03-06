@@ -1,9 +1,10 @@
 <resources>
-    <string name="app_name">Encybara</string>
-    <string name="title_activity_login">LoginActivity</string>
-    <string name="prompt_email">Email</string>
+    <string name="app_name" translatable="false">Encybara</string>
+    <string name="back">Back</string>
+    <string name="title_activity_login" translatable="false">LoginActivity</string>
+    <string name="prompt_email" translatable="false">Email</string>
     <string name="prompt_password">Password</string>
-    <string name="action_sign_in">Sign in or register</string>
+    <string name="action_sign_in" translatable="false">Sign in or register</string>
     <string name="action_sign_in_short">Sign in</string>
     <string name="welcome">"Welcome !"</string>
     <string name="invalid_username">Not a valid username</string>
@@ -23,17 +24,16 @@
     <string name="record">Voice Response</string>
     <string name="ans_record">Answer the question by recording</string>
     <string name="your_ans">Your answer :</string>
-    <string name="ques_record">How do you use IT ?</string>
-    <string name="txt_it">INFORMATION\n TECHNOLOGY</string>
+    <string name="txt_it">INFORMATION  TECHNOLOGY</string>
     <string name="txt_construction">CONSTRUCTION</string>
     <string name="txt_economic">ECONOMIC</string>
     <string name="txt_mechanic">MECHANIC</string>
     <string name="txt_other">OTHERS</string>
     <string name="btn_continute">Continue Studying</string>
     <string name="txtcontinute">Continue your journey!</string>
-    <string name="txtschedulebasic">Basic\n10 mins per day</string>
-    <string name="txtscheduleadvance">Advance\n20 mins per day</string>
-    <string name="txtlevelupschedule">Level-up!\n30 mins per day</string>
+    <string name="txtschedulebasic">Basic 10 mins per day</string>
+    <string name="txtscheduleadvance">Advance 20 mins per day</string>
+    <string name="txtlevelupschedule">Level-up! 30 mins per day</string>
     <string name="hintPassWord">* The password must be at least 8 characters long and include uppercase, lowercase letters, and numbers.</string>
     <string name="selectMajor">SELECT YOUR MAJOR</string>
     <string name="txt_confirmcode">Confirm Code</string>
@@ -45,6 +45,9 @@
     <string name="txt_rvCourse">Reviews</string>
     <string name="txt_dictionary">Dictionary</string>
     <string name="txt_discussion">Discussion</string>
+    <string name="Language">Select Language</string>
+    <string name="VN">Vietnamese</string>
+    <string name="Eng">English</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

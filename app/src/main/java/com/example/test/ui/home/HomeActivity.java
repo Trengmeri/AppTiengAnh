@@ -1,5 +1,8 @@
 package com.example.test.ui.home;
 
+import android.content.SharedPreferences;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.widget.Button;
@@ -18,6 +21,8 @@ import com.example.test.api.LessonManager;
 import com.example.test.api.QuestionManager;
 import com.example.test.api.ResultManager;
 
+import java.util.Locale;
+
 public class HomeActivity extends AppCompatActivity {
     ImageView btnstudy,btnexplore,btnprofile, icHome;
     ViewPager2 vpgMain;
@@ -25,6 +30,7 @@ public class HomeActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        loadLocale();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
@@ -67,5 +73,16 @@ public class HomeActivity extends AppCompatActivity {
         icHome.setColorFilter(position == 0 ? selectedColor : unselectedColor);
         btnexplore.setColorFilter(position == 1 ? selectedColor : unselectedColor);
         btnprofile.setColorFilter(position == 2 ? selectedColor : unselectedColor);
+    }
+    private void loadLocale() {
+        SharedPreferences prefs = getSharedPreferences("Settings", MODE_PRIVATE);
+        String language = prefs.getString("Language", "en");
+
+        Locale locale = new Locale(language);
+        Locale.setDefault(locale);
+        Resources resources = getResources();
+        Configuration config = resources.getConfiguration();
+        config.setLocale(locale);
+        resources.updateConfiguration(config, resources.getDisplayMetrics());
     }
 }

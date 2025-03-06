@@ -22,6 +22,7 @@ import com.example.test.SpeechRecognitionCallback;
 import com.example.test.SpeechRecognitionHelper;
 import com.example.test.api.ApiCallback;
 import com.example.test.api.LessonManager;
+import com.example.test.api.MediaManager;
 import com.example.test.api.QuestionManager;
 import com.example.test.api.ResultManager;
 import com.example.test.model.Answer;
@@ -55,6 +56,7 @@ public class SpeakingActivity extends AppCompatActivity implements SpeechRecogni
     QuestionManager quesManager = new QuestionManager(this);
     LessonManager lesManager = new LessonManager();
     ResultManager resultManager = new ResultManager(this);
+    MediaManager mediaManager = new MediaManager(this);
     private int answerIds;
 
     @Override
@@ -169,7 +171,7 @@ public class SpeakingActivity extends AppCompatActivity implements SpeechRecogni
     }
 
     private void fetchAudioUrl(int questionId) {
-        quesManager.fetchMediaByQuesId(questionId, new ApiCallback<MediaFile>() {
+        mediaManager.fetchMediaByQuesId(questionId, new ApiCallback<MediaFile>() {
             @Override
             public void onSuccess() {
 

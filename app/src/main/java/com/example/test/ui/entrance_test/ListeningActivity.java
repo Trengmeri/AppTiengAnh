@@ -22,6 +22,7 @@ import com.example.test.PopupHelper;
 import com.example.test.R;
 import com.example.test.api.ApiCallback;
 import com.example.test.api.LessonManager;
+import com.example.test.api.MediaManager;
 import com.example.test.api.QuestionManager;
 import com.example.test.api.ResultManager;
 import com.example.test.model.Answer;
@@ -55,7 +56,7 @@ public class ListeningActivity extends AppCompatActivity {
     QuestionManager quesManager = new QuestionManager(this);
     LessonManager lesManager = new LessonManager();
     ResultManager resultManager = new ResultManager(this);
-
+    MediaManager mediaManager = new MediaManager(this);
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -170,7 +171,7 @@ public class ListeningActivity extends AppCompatActivity {
     private void fetchAudioUrl(int questionId) {
 
         // Gọi phương thức fetchAudioUrl từ ApiManager
-        quesManager.fetchMediaByQuesId(questionId, new ApiCallback<MediaFile>() {
+        mediaManager.fetchMediaByQuesId(questionId, new ApiCallback<MediaFile>() {
 
             @Override
             public void onSuccess() {
