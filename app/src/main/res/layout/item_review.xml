@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="horizontal"
     android:background="@color/white"
     android:layout_marginStart="@dimen/dp_30"
@@ -17,14 +17,14 @@
         android:layout_height="40dp"
         android:background="@drawable/icon_numlesson"/>
 
-    <!-- Nội dung bình luận -->
+    <!-- Nội dung đánh giá -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:layout_marginStart="8dp">
 
-        <!-- Tên user + Đánh giá -->
+        <!-- Tên user + Số sao -->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
@@ -39,39 +39,61 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"/>
 
-            <FrameLayout
+            <!-- Hiển thị số sao (numStar) -->
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+                app:layout_constraintTop_toTopOf="parent"
+                android:orientation="horizontal">
 
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/rated_star"/>
+                    android:src="@drawable/rated_star"/>
 
                 <TextView
-                    android:id="@+id/txtRating"
+                    android:id="@+id/txtNumStar"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="4.5"
+                    android:text="5"
                     android:textStyle="bold"
-                    android:layout_gravity="end"
-                    android:layout_marginEnd="10dp"
-                    android:layout_marginTop="3dp"/>
-            </FrameLayout>
-
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginStart="5dp"
+                    android:textSize="14sp"/>
+            </LinearLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <!-- Nội dung bình luận -->
+        <!-- Chủ đề đánh giá (reSubject) -->
         <TextView
-            android:id="@+id/txtContent"
+            android:id="@+id/txtReSubject"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Discussion content here..."
+            android:text="Chủ đề đánh giá"
+            android:textStyle="bold"
+            android:textColor="#333333"
+            android:textSize="15sp"
+            android:layout_marginTop="5dp"/>
+
+        <!-- Nội dung đánh giá (reContent) -->
+        <TextView
+            android:id="@+id/txtReContent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Nội dung đánh giá here..."
             android:textColor="#545454"
             android:textSize="13sp"
             android:layout_marginEnd="@dimen/dp_16"
+            android:layout_marginTop="5dp"/>
+
+        <!-- Trạng thái (status) -->
+        <TextView
+            android:id="@+id/txtStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="CONTRIBUTING"
+            android:textColor="#888888"
+            android:textSize="12sp"
             android:layout_marginTop="5dp"/>
 
         <!-- Like + Thời gian -->
@@ -104,6 +126,5 @@
                 android:textSize="12sp"
                 android:text="2 weeks ago"/>
         </LinearLayout>
-
     </LinearLayout>
 </LinearLayout>

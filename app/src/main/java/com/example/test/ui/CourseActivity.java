@@ -1,13 +1,12 @@
 package com.example.test.ui;
 
-import android.annotation.SuppressLint;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -23,34 +22,26 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.test.R;
 import com.example.test.SharedPreferencesManager;
-import com.example.test.adapter.DiscussionAdapter;
+import com.example.test.adapter.ReviewAdapter;
 import com.example.test.api.ApiCallback;
-import com.example.test.api.DiscussionManager;
 import com.example.test.api.LessonManager;
-import com.example.test.model.Answer;
+import com.example.test.api.ReviewManager;
 import com.example.test.model.Course;
-import com.example.test.model.Discussion;
-import com.example.test.model.Lesson;
-import com.example.test.model.MediaFile;
-import com.example.test.model.Question;
-import com.example.test.model.Result;
+import com.example.test.model.Review;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-
-import okhttp3.Call;
 
 public class CourseActivity extends AppCompatActivity {
 
     AppCompatButton btnAbout, btnLesson;
-    ImageView btSendDiscussion;
+    ImageView btnSendReview;
     LinearLayout contentAbout, contentLes;
-    TextView txtcontentAbout, courseName, numLessons;
-//    ImageView btnLike,btnLike1;
+    TextView txtContentAbout, courseName, numLessons;
+    Course curCourse;
     private RecyclerView recyclerView;
-    private DiscussionAdapter  discussionAdapter;
-    private DiscussionManager discussionManager = new DiscussionManager(this);
+    private ReviewAdapter reviewAdapter;
+    private ReviewManager reviewManager = new ReviewManager(this);
     private LessonManager lessonManager = new LessonManager();
 
     @Override
@@ -63,24 +54,38 @@ public class CourseActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-        btnAbout= findViewById(R.id.btnAbout);
-        btnLesson= findViewById(R.id.btnLesson);
+
+        // Ánh xạ views
+        btnAbout = findViewById(R.id.btnAbout);
+        btnLesson = findViewById(R.id.btnLesson);
         contentAbout = findViewById(R.id.contentAbout);
         contentLes = findViewById(R.id.contentLes);
-        courseName=findViewById(R.id.courseName);
-        txtcontentAbout= findViewById(R.id.txtContentAbout);
+        courseName = findViewById(R.id.courseName);
+        txtContentAbout = findViewById(R.id.txtContentAbout);
+        recyclerView = findViewById(R.id.recyclerViewDiscussion);
+        btnSendReview = findViewById(R.id.btSendReview);
 
+        // Kiểm tra null cho các view quan trọng
+        if (courseName == null || txtContentAbout == null || recyclerView == null || btnSendReview == null) {
+            Log.e("CourseActivity", "One or more views are null. Check activity_course.xml");
+            return;
+        }
 
+        // Lấy thông tin khóa học
         getCourseInfo(1, new ApiCallback<Course>() {
             @Override
-            public void onSuccess() {}
+            public void onSuccess() {
+
+            }
 
             @Override
             public void onSuccess(Course course) {
                 runOnUiThread(() -> {
+                    curCourse = course;
                     courseName.setText(course.getName());
-                    txtcontentAbout.setText(course.getIntro()); // Hiển thị mô tả khóa học
+                    txtContentAbout.setText(course.getIntro());
                     Log.d("CourseInfo", "Name: " + course.getName() + ", Intro: " + course.getIntro());
+                    loadReviews(); // Tải reviews sau khi có curCourse
                 });
             }
 
@@ -90,8 +95,12 @@ public class CourseActivity extends AppCompatActivity {
             }
         });
 
-        loadDiscussions();
+        // Thiết lập RecyclerView
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        reviewAdapter = new ReviewAdapter(this, new ArrayList<>());
+        recyclerView.setAdapter(reviewAdapter);
 
+        // Sự kiện nút About và Lesson
         btnAbout.setOnClickListener(v -> {
             btnAbout.setBackground(ContextCompat.getDrawable(this, R.drawable.bg_about));
             btnLesson.setBackground(ContextCompat.getDrawable(this, R.drawable.bg_lesson));
@@ -106,127 +115,132 @@ public class CourseActivity extends AppCompatActivity {
             contentLes.setVisibility(View.VISIBLE);
         });
 
-        recyclerView = findViewById(R.id.recyclerViewDiscussion);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-
-        discussionAdapter = new DiscussionAdapter(this, new ArrayList<>());
-        recyclerView.setAdapter(discussionAdapter);
-        btSendDiscussion= findViewById(R.id.btSendDiscussion);
-        btSendDiscussion.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                sendDiscussion();
-            }
+        // Sự kiện gửi Review
+        btnSendReview.setOnClickListener(v -> {
+            sendReview();
         });
 
-//        btnLike = findViewById(R.id.btnLike);
-//        btnLike.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                v.setSelected(!v.isSelected()); // Đổi trạng thái selected
-//            }
-//        });
-//        btnLike1.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                v.setSelected(!v.isSelected()); // Đổi trạng thái selected
-//            }
-//        });
-
     }
+
     public void getCourseInfo(int courseId, ApiCallback<Course> callback) {
         lessonManager.fetchCourseById(courseId, new ApiCallback<Course>() {
             @Override
-            public void onSuccess() {}
+            public void onSuccess() {
+
+            }
 
             @Override
             public void onSuccess(Course course) {
-                runOnUiThread(() -> {
-                    callback.onSuccess(course);
-                });
+                runOnUiThread(() -> callback.onSuccess(course));
             }
 
             @Override
             public void onFailure(String errorMessage) {
-                runOnUiThread(() -> {
-                    callback.onFailure(errorMessage);
-                });
+                runOnUiThread(() -> callback.onFailure(errorMessage));
             }
         });
     }
 
-    private int getLessonId() {
-        SharedPreferences sharedPreferences = getSharedPreferences("LESSON_DATA", MODE_PRIVATE);
-        return sharedPreferences.getInt("LESSON_ID", -1);
-    }
+    private void sendReview() {
+        EditText edtReview = findViewById(R.id.edtReview); // Sửa từ edtReviewSubject thành edtReview
 
-    private void sendDiscussion() {
-        EditText edtDiscussion = findViewById(R.id.edtDiscussion);
-        String content = edtDiscussion.getText().toString().trim();
-
-        if (content.isEmpty()) {
-            Toast.makeText(this, "Vui lòng nhập nội dung!", Toast.LENGTH_SHORT).show();
+        if (edtReview == null) {
+            Log.e("CourseActivity", "edtReview is null. Check R.id.edtReview in activity_course.xml");
+            Toast.makeText(this, "Không tìm thấy trường nhập nội dung!", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        int lessonId = 1;
-        Integer parentId = null; // Nếu là trả lời thì truyền ID của bình luận cha
-        String id = SharedPreferencesManager.getInstance(this).getID();
-        int userID= Integer.parseInt(id);// Lấy userId từ session
 
-        discussionManager.createDiscussion(userID,lessonId, content, parentId, new ApiCallback() {
+        String reContent = edtReview.getText().toString().trim();
+        String reSubject = curCourse != null ? curCourse.getName() : "Khóa học mặc định";
+        if (reContent.isEmpty()) {
+            Toast.makeText(this, "Vui lòng nhập nội dung đánh giá!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        String id = SharedPreferencesManager.getInstance(this).getID();
+
+        if (id == null || id.isEmpty()) {
+            Toast.makeText(this, "Không tìm thấy user ID. Vui lòng đăng nhập!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        int userId;
+        try {
+            userId = Integer.parseInt(id);
+        }catch (NumberFormatException e){
+            Log.e("CourseActivity", "Lỗi chuyển đổi user ID: " + e.getMessage());
+            Toast.makeText(this, "Lỗi lấy ID người dùng!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        String status = "CONTRIBUTING";
+        int courseId = curCourse != null ? curCourse.getId() : 1;
+
+
+        if (reviewManager == null) {
+            Log.e("CourseActivity", "reviewManager chưa được khởi tạo.");
+            Toast.makeText(this, "Lỗi hệ thống, thử lại sau!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        reviewManager.createReview(userId, courseId, reContent, reSubject, 5, status, new ApiCallback<Review>() {
             @Override
             public void onSuccess() {
+
+            }
+
+            @Override
+            public void onSuccess(Review newReview) {
                 runOnUiThread(() -> {
-                    Toast.makeText(CourseActivity.this, "Bình luận đã gửi!", Toast.LENGTH_SHORT).show();
-                    edtDiscussion.setText(""); // Xóa nội dung sau khi gửi
-                    loadDiscussions(); // Cập nhật danh sách discussion
+                    Toast.makeText(CourseActivity.this, "Đánh giá đã gửi!", Toast.LENGTH_SHORT).show();
+                    edtReview.setText("");
+                    if(reviewAdapter != null){
+                        reviewAdapter.addReview(newReview);
+                    }else {
+                        Log.e("CourseActivity", "reviewAdapter is null");
+                    }
+
                 });
             }
-            @Override
-            public void onSuccess(Object result) {
-            }
+
             @Override
             public void onFailure(String errorMessage) {
-                runOnUiThread(() ->
-                        Toast.makeText(CourseActivity.this, "Lỗi: " + errorMessage, Toast.LENGTH_SHORT).show()
-                );
+                runOnUiThread(() -> {
+                    Log.w("ReviewError", "Lỗi gửi Review: " + errorMessage);
+                    if (errorMessage.contains("409") || errorMessage.contains("User has already reviewed this course")) {
+                        Toast.makeText(CourseActivity.this, "Bạn đã đánh giá khóa học này!", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(CourseActivity.this, "Lỗi: " + errorMessage, Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
         });
-
     }
-    private void loadDiscussions() {
-        int lessonId = 1; // Lấy lessonId
 
-        discussionManager.fetchDiscussionsByLesson(lessonId, new ApiCallback<List<Discussion>>() {
+    private void loadReviews() {
+        int courseId = curCourse != null ? curCourse.getId() : 1;
+        reviewManager.fetchReviewsByCourse(courseId, new ApiCallback<List<Review>>() {
             @Override
-            public void onSuccess(List<Discussion> discussion) {
+            public void onSuccess() {
 
+            }
+
+            @Override
+            public void onSuccess(List<Review> reviews) {
                 runOnUiThread(() -> {
-                    if (discussion.isEmpty()) {
-                        Toast.makeText(CourseActivity.this, "Không có bình luận nào!", Toast.LENGTH_SHORT).show();
+                    if (reviews.isEmpty()) {
+                        Toast.makeText(CourseActivity.this, "Chưa có đánh giá nào!", Toast.LENGTH_SHORT).show();
                         return;
                     }
-                    Log.d("DEBUG", "Số bình luận: " + discussion.size());
-
-                    // Cập nhật UI trên Main Thread
-                    discussionAdapter = new DiscussionAdapter(CourseActivity.this, discussion);
-                    recyclerView.setAdapter(discussionAdapter);
+                    Log.d("ReviewLoad", "Số đánh giá: " + reviews.size());
+                    reviewAdapter = new ReviewAdapter(CourseActivity.this, reviews);
+                    recyclerView.setAdapter(reviewAdapter);
                 });
             }
+
             @Override
             public void onFailure(String errorMessage) {
                 runOnUiThread(() ->
-                        Toast.makeText(CourseActivity.this, "Lỗi: " + errorMessage, Toast.LENGTH_SHORT).show()
-                );
-            }
-            @Override
-            public void onSuccess() {
-
+                        Toast.makeText(CourseActivity.this, "Lỗi tải đánh giá: " + errorMessage, Toast.LENGTH_SHORT).show());
             }
         });
-
     }
-
-
 }

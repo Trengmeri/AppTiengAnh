@@ -27,10 +27,24 @@ public class UserManager extends BaseApiManager{
     }
 
 
-    // API lấy thông tin User theo ID
+    private String getValidToken() {
+        String token = SharedPreferencesManager.getInstance(context).getAccessToken();
+        if (token == null || token.isEmpty()) {
+            return null;
+        }
+        return token;
+    }
+
     public void fetchUserById(int userId, ApiCallback<User> callback) {
+        String token = getValidToken();
+        if (token == null) {
+            callback.onFailure("Token không hợp lệ. Vui lòng đăng nhập lại.");
+            return;
+        }
         Request request = new Request.Builder()
                 .url(BASE_URL + "/api/v1/users/" + userId)
+                .addHeader("Authorization", "Bearer " + token)
+                .addHeader("Content-Type", "application/json")
                 .get()
                 .build();
 
@@ -39,25 +53,31 @@ public class UserManager extends BaseApiManager{
             public void onResponse(Call call, Response response) throws IOException {
                 if (response.isSuccessful()) {
                     String responseBody = response.body().string();
-                    Log.d("API_RESPONSE", "User nhận được: " + responseBody);
+                    Log.d("UserManager", "Response code: " + response.code() + ", Body: " + responseBody);
 
                     try {
                         // Parse trực tiếp JSON thành User
                         Gson gson = new Gson();
                         User user = gson.fromJson(responseBody, User.class);
 
-                        // Chuyển về luồng chính để cập nhật UI
-                        new Handler(Looper.getMainLooper()).post(() -> callback.onSuccess(user));
+                        if (user != null && user.getName() != null) { // Kiểm tra name không null
+                            new Handler(Looper.getMainLooper()).post(() -> callback.onSuccess(user));
+                        } else {
+                            new Handler(Looper.getMainLooper()).post(() -> callback.onFailure("Dữ liệu user không hợp lệ"));
+                        }
                     } catch (Exception e) {
                         new Handler(Looper.getMainLooper()).post(() -> callback.onFailure("Lỗi parse JSON: " + e.getMessage()));
                     }
                 } else {
-                    new Handler(Looper.getMainLooper()).post(() -> callback.onFailure("Lỗi từ server: " + response.code()));
+                    String errorBody = response.body().string();
+                    Log.e("UserManager", "Lỗi từ server: " + response.code() + " - " + errorBody);
+                    new Handler(Looper.getMainLooper()).post(() -> callback.onFailure("Lỗi từ server: " + response.code() + " - " + errorBody));
                 }
             }
 
             @Override
             public void onFailure(Call call, IOException e) {
+                Log.e("UserManager", "Lỗi kết nối: " + e.getMessage());
                 new Handler(Looper.getMainLooper()).post(() -> callback.onFailure("Lỗi kết nối: " + e.getMessage()));
             }
         });

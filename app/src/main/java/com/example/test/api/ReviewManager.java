@@ -82,17 +82,26 @@ public class ReviewManager extends BaseApiManager {
                     String responseBody = response.body().string();
                     Log.d("ReviewManager", "Tạo đánh giá thành công: " + responseBody);
                     Gson gson = new Gson();
-                    Review newReview = gson.fromJson(responseBody, Review.class);
-                    new Handler(Looper.getMainLooper()).post(() -> callback.onSuccess(newReview));
+                    try {
+                        JSONObject jsonResponse = new JSONObject(responseBody);
+                        JSONObject dataObject = jsonResponse.getJSONObject("data");
+                        Review newReview = gson.fromJson(dataObject.toString(), Review.class);
+                        new Handler(Looper.getMainLooper()).post(() -> callback.onSuccess(newReview));
+                    } catch (JSONException e) {
+                        callback.onFailure("Lỗi parse JSON: " + e.getMessage());
+                    }
+
                 } else {
                     String errorBody = response.body().string();
-                    callback.onFailure("Lỗi: " + response.code() + " - " + errorBody);
+                    Log.e("ReviewManager", "Lỗi từ server: " + response.code() + " - " + errorBody);
+                    callback.onFailure("Lỗi server (" + response.code() + "): " + errorBody);
+
                 }
             }
         });
     }
 
-    // API lấy danh sách Review theo courseId (Giữ nguyên)
+    // API lấy danh sách Review theo courseId
     public void fetchReviewsByCourse(int courseId, ApiCallback<List<Review>> callback) {
         String token = getValidToken();
         if (token == null) {
@@ -135,44 +144,6 @@ public class ReviewManager extends BaseApiManager {
                     }
                 } else {
                     String errorBody = response.body().string();
-                    callback.onFailure("Lỗi từ server: " + response.code() + " - " + errorBody);
-                }
-            }
-
-            @Override
-            public void onFailure(Call call, IOException e) {
-                callback.onFailure("Lỗi kết nối: " + e.getMessage());
-            }
-        });
-    }
-
-    // API kiểm tra trạng thái Like theo reviewId và userId (Giữ nguyên)
-    public void fetchLikeStatus(int userId, int reviewId, ApiCallback<LikeStatus> callback) {
-        String token = getValidToken();
-        if (token == null) {
-            callback.onFailure("Token không hợp lệ. Vui lòng đăng nhập lại.");
-            return;
-        }
-
-        String url = BASE_URL + "/api/v1/likes/review?userId=" + userId + "&reviewId=" + reviewId;
-        Request request = new Request.Builder()
-                .url(url)
-                .addHeader("Authorization", "Bearer " + token)
-                .addHeader("Content-Type", "application/json")
-                .get()
-                .build();
-
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                if (response.isSuccessful()) {
-                    String responseBody = response.body().string();
-                    Log.d("API_RESPONSE", "Like status: " + responseBody);
-                    Gson gson = new Gson();
-                    LikeStatus likeStatus = gson.fromJson(responseBody, LikeStatus.class);
-                    new Handler(Looper.getMainLooper()).post(() -> callback.onSuccess(likeStatus));
-                } else {
-                    String errorBody = response.body().string();
                     new Handler(Looper.getMainLooper()).post(() ->
                             callback.onFailure("Lỗi từ server: " + response.code() + " - " + errorBody));
                 }
@@ -180,35 +151,24 @@ public class ReviewManager extends BaseApiManager {
 
             @Override
             public void onFailure(Call call, IOException e) {
-                new Handler(Looper.getMainLooper()).post(() ->
-                        callback.onFailure("Lỗi kết nối: " + e.getMessage()));
+                callback.onFailure("Lỗi kết nối: " + e.getMessage());
             }
         });
     }
 
-    // API cập nhật trạng thái Like (Giữ nguyên)
-    public void updateLike(int reviewId, boolean isLiked, ApiCallback<Void> callback) {
+
+    // Like review
+    public void likeReview(int userId, int reviewId, ApiCallback<Boolean> callback) {
         String token = getValidToken();
         if (token == null) {
             callback.onFailure("Token không hợp lệ. Vui lòng đăng nhập lại.");
             return;
         }
 
-        JSONObject jsonObject = new JSONObject();
-        try {
-            jsonObject.put("reviewId", reviewId);
-            jsonObject.put("isLiked", isLiked);
-        } catch (JSONException e) {
-            callback.onFailure("Lỗi tạo JSON: " + e.getMessage());
-            return;
-        }
-
-        RequestBody body = RequestBody.create(jsonObject.toString(), MediaType.get("application/json; charset=utf-8"));
         Request request = new Request.Builder()
-                .url(BASE_URL + "/api/v1/likes/review")
+                .url(BASE_URL + "/api/v1/likes/review?userId=" + userId + "&reviewId=" + reviewId)
                 .addHeader("Authorization", "Bearer " + token)
-                .addHeader("Content-Type", "application/json")
-                .post(body)
+                .post(RequestBody.create("", MediaType.get("application/json; charset=utf-8"))) // Body rỗng
                 .build();
 
         client.newCall(request).enqueue(new Callback() {
@@ -219,30 +179,87 @@ public class ReviewManager extends BaseApiManager {
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
+                String responseBody = response.body().string();
                 if (response.isSuccessful()) {
-                    Log.d("ReviewManager", "Cập nhật Like thành công");
-                    new Handler(Looper.getMainLooper()).post(() -> callback.onSuccess(null));
+                    new Handler(Looper.getMainLooper()).post(() -> callback.onSuccess(true));
+                } else if (response.code() == 409) {
+                    new Handler(Looper.getMainLooper()).post(() -> callback.onFailure("Bạn đã like review này trước đó."));
                 } else {
-                    String errorBody = response.body().string();
-                    callback.onFailure("Lỗi từ server: " + response.code() + " - " + errorBody);
+                    new Handler(Looper.getMainLooper()).post(() -> callback.onFailure("Lỗi từ server: " + response.code() + " - " + responseBody));
                 }
             }
         });
     }
 
-    // Class để parse dữ liệu LikeStatus từ API (Giữ nguyên)
-    public static class LikeStatus {
-        private int numLike;
-        private boolean isLiked;
-
-        public LikeStatus() {}
-
-        public LikeStatus(int numLike, boolean isLiked) {
-            this.numLike = numLike;
-            this.isLiked = isLiked;
+    public void unlikeReview(int userId, int reviewId, ApiCallback<Boolean> callback) {
+        String token = getValidToken();
+        if (token == null) {
+            callback.onFailure("Token không hợp lệ. Vui lòng đăng nhập lại.");
+            return;
         }
 
-        public int getNumLike() { return numLike; }
-        public boolean isLiked() { return isLiked; }
+        Request request = new Request.Builder()
+                .url(BASE_URL + "/api/v1/likes/review?userId=" + userId + "&reviewId=" + reviewId)
+                .addHeader("Authorization", "Bearer " + token)
+                .delete()
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                callback.onFailure("Lỗi kết nối: " + e.getMessage());
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String responseBody = response.body().string();
+                if (response.isSuccessful()) {
+                    new Handler(Looper.getMainLooper()).post(() -> callback.onSuccess(false));
+                } else if (response.code() == 409) {
+                    new Handler(Looper.getMainLooper()).post(() -> callback.onFailure("Bạn chưa like review này."));
+                } else {
+                    new Handler(Looper.getMainLooper()).post(() -> callback.onFailure("Lỗi từ server: " + response.code() + " - " + responseBody));
+                }
+            }
+
+        });
     }
+
+
+    //Checklike
+    public void isReviewLiked(int userId, int reviewId, ApiCallback<Boolean> callback) {
+        String token = getValidToken();
+        if (token == null) {
+            callback.onFailure("Token không hợp lệ. Vui lòng đăng nhập lại.");
+            return;
+        }
+
+        Request request = new Request.Builder()
+                .url(BASE_URL + "/api/v1/likes/review?userId=" + userId + "&reviewId=" + reviewId)
+                .addHeader("Authorization", "Bearer " + token)
+                .get()
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String responseBody = response.body().string();
+                if (response.isSuccessful()) {
+                    boolean isLiked = Boolean.parseBoolean(responseBody);
+                    new Handler(Looper.getMainLooper()).post(() -> callback.onSuccess(isLiked));
+                } else {
+                    new Handler(Looper.getMainLooper()).post(() -> callback.onFailure("Lỗi server: " + response.code()));
+                }
+            }
+
+
+            @Override
+            public void onFailure(Call call, IOException e) {
+                new Handler(Looper.getMainLooper()).post(() -> callback.onFailure("Lỗi kết nối: " + e.getMessage()));
+            }
+        });
+    }
+
+
+
 }
