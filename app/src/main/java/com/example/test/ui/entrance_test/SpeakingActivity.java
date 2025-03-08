@@ -1,17 +1,16 @@
 package com.example.test.ui.entrance_test;
 
 import android.Manifest;
-import android.animation.ObjectAnimator;
 import android.content.pm.PackageManager;
 import android.content.Intent;
-import android.graphics.Color;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.widget.*;
+import android.os.Handler;
+import android.media.AudioAttributes;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -25,20 +24,15 @@ import com.example.test.api.LessonManager;
 import com.example.test.api.MediaManager;
 import com.example.test.api.QuestionManager;
 import com.example.test.api.ResultManager;
-import com.example.test.model.Answer;
 import com.example.test.model.Lesson;
 import com.example.test.model.MediaFile;
 import com.example.test.model.Question;
 import com.example.test.model.QuestionChoice;
-import com.example.test.ui.PointResultCourseActivity;
+import com.example.test.ui.question_data.PointResultCourseActivity;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.Response;
 
 public class SpeakingActivity extends AppCompatActivity implements SpeechRecognitionCallback {
 
@@ -58,6 +52,10 @@ public class SpeakingActivity extends AppCompatActivity implements SpeechRecogni
     ResultManager resultManager = new ResultManager(this);
     MediaManager mediaManager = new MediaManager(this);
     private int answerIds;
+    private Handler handler = new Handler();
+    private Runnable updateSeekBar;
+    private boolean isPlaying = false;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,6 +79,7 @@ public class SpeakingActivity extends AppCompatActivity implements SpeechRecogni
         LinearLayout progressBar = findViewById(R.id.progressBar);
 
         btnCheckResult.setOnClickListener(v -> {
+            mediaPlayer.pause();
             String userAnswer = tvTranscription.getText().toString().trim();
             userAnswers.clear();
             userAnswers.add(userAnswer);
@@ -169,7 +168,6 @@ public class SpeakingActivity extends AppCompatActivity implements SpeechRecogni
             public void onFailure(String errorMessage) {}
         });
     }
-
     private void fetchAudioUrl(int questionId) {
         mediaManager.fetchMediaByQuesId(questionId, new ApiCallback<MediaFile>() {
             @Override
@@ -180,33 +178,120 @@ public class SpeakingActivity extends AppCompatActivity implements SpeechRecogni
             @Override
             public void onSuccess(MediaFile mediaFile) {
                 runOnUiThread(() -> {
-                    if (mediaFile != null) {
-                        btnPlayAudio.setOnClickListener(v -> playAudio(mediaFile.getMaterLink()));
+                    if (mediaFile != null && mediaFile.getMaterLink() != null) {
+                        setupAudioPlayer(mediaFile.getMaterLink());
+                    } else {
+                        Log.e("MediaPlayerError", "Media file is null or has no link");
                     }
                 });
             }
+
             @Override
             public void onFailure(String errorMessage) {
-                Log.e("media", errorMessage);
+                Log.e("MediaPlayerError", "Error fetching audio: " + errorMessage);
+            }
+        });
+    }
+
+
+    private void setupAudioPlayer(String audioUrl) {
+        btnPlayAudio.setOnClickListener(v -> {
+            if (mediaPlayer == null) playAudio(audioUrl);
+
+            if (isPlaying) {
+                mediaPlayer.pause();
+                btnPlayAudio.setImageResource(R.drawable.btn_play); // Đổi icon play
+            } else {
+                mediaPlayer.start();
+                btnPlayAudio.setImageResource(R.drawable.ic_pause); // Đổi icon pause
+                updateSeekBar();
+            }
+            isPlaying = !isPlaying;
+        });
+
+
+        // Xử lý khi kéo SeekBar
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if (fromUser && mediaPlayer != null) {
+                    mediaPlayer.seekTo(progress);
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                handler.removeCallbacks(updateSeekBar);
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                if (mediaPlayer != null) {
+                    mediaPlayer.seekTo(seekBar.getProgress());
+                    updateSeekBar();
+                }
             }
         });
     }
 
     private void playAudio(String audioUrl) {
+        if (audioUrl == null || audioUrl.isEmpty()) {
+            Log.e("MediaPlayerError", "Audio URL is null or empty");
+            return;
+        }
+
         try {
             if (mediaPlayer != null) {
                 mediaPlayer.release();
-                mediaPlayer = null;
             }
+
             mediaPlayer = new MediaPlayer();
-            mediaPlayer.setDataSource(audioUrl);
+            mediaPlayer.setAudioAttributes(new AudioAttributes.Builder()
+                    .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                    .setUsage(AudioAttributes.USAGE_MEDIA)
+                    .build());
+
+            mediaPlayer.setDataSource("http://14.225.198.3:8080/uploadfile/questions/testNew/1741441919386-uaifein.mp3");
+            mediaPlayer.setOnPreparedListener(mp -> {
+                seekBar.setMax(mediaPlayer.getDuration());
+                mediaPlayer.start();
+                isPlaying = true;
+                btnPlayAudio.setImageResource(R.drawable.ic_pause);
+                updateSeekBar();
+            });
+
+            // Khi nhạc phát xong, reset lại nút Play
+            mediaPlayer.setOnCompletionListener(mp -> {
+                btnPlayAudio.setImageResource(R.drawable.btn_play);
+                isPlaying = false;
+                seekBar.setProgress(0);
+            });
+
+            mediaPlayer.setOnErrorListener((mp, what, extra) -> {
+                Log.e("MediaPlayerError", "Error: what=" + what + ", extra=" + extra);
+                return true;
+            });
+
             mediaPlayer.prepareAsync();
-            mediaPlayer.setOnPreparedListener(MediaPlayer::start);
-            mediaPlayer.setOnCompletionListener(mp -> seekBar.setProgress(0));
-        } catch (Exception e) {
-            Log.e("MediaPlayerError", "Error: " + e.getMessage());
+        } catch (IOException e) {
+            Log.e("MediaPlayerError", "IOException: " + e.getMessage());
         }
     }
+
+    // Cập nhật SeekBar theo thời gian
+    private void updateSeekBar() {
+        updateSeekBar = new Runnable() {
+            @Override
+            public void run() {
+                if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+                    seekBar.setProgress(mediaPlayer.getCurrentPosition());
+                    handler.postDelayed(this, 500);
+                }
+            }
+        };
+        handler.postDelayed(updateSeekBar, 500);
+    }
+
 
     @Override
     public void onReadyForSpeech() {

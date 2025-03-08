@@ -6,7 +6,7 @@
     android:background="#F0F0F0"
     android:padding="10dp"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".ui.PointResultLessonActivity">
+    tools:context=".ui.question_data.PointResultLessonActivity">
 
     <LinearLayout
         android:id="@+id/layoutPoint"

@@ -31,7 +31,7 @@
             android:name=".ui.DictionaryActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.WrittingActivity"
+            android:name=".ui.question_data.WrittingActivity"
             android:exported="false" />
         <activity
             android:name=".ui.entrance_test.Pick1Activity"
@@ -46,10 +46,10 @@
             android:name=".ui.entrance_test.SpeakingActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.PointResultLessonActivity"
+            android:name=".ui.question_data.PointResultLessonActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.ReviewAnswerActivity"
+            android:name=".ui.question_data.ReviewAnswerActivity"
             android:exported="false" />
         <activity
             android:name=".ui.CourseActivity"
@@ -76,10 +76,10 @@
             android:name=".ui.NotificationActivity"
             android:exported="true" />
         <activity
-            android:name=".ui.PointResultCourseActivity"
+            android:name=".ui.question_data.PointResultCourseActivity"
             android:exported="true" />
         <activity
-            android:name=".ui.RecordQuestionActivity"
+            android:name=".ui.question_data.RecordQuestionActivity"
             android:exported="true" />
         <activity
             android:name=".ui.LoadingTestActivity"
@@ -88,13 +88,13 @@
             android:name=".ui.ChooseFieldsActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.GrammarPickManyActivity"
+            android:name=".ui.question_data.GrammarPickManyActivity"
             android:exported="true" />
         <activity
-            android:name=".ui.ListeningQuestionActivity"
+            android:name=".ui.question_data.ListeningQuestionActivity"
             android:exported="true" />
         <activity
-            android:name=".ui.GrammarPick1QuestionActivity"
+            android:name=".ui.question_data.GrammarPick1QuestionActivity"
             android:exported="true" />
         <activity
             android:name=".ui.SetUpAccountActivity"

@@ -1,4 +1,4 @@
-package com.example.test.ui;
+package com.example.test.ui.question_data;
 
 import android.content.Intent;
 import android.os.Bundle;

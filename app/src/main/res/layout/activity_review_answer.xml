@@ -5,7 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.ReviewAnswerActivity">
+    tools:context=".ui.question_data.ReviewAnswerActivity">
 
     <FrameLayout
         android:layout_width="match_parent"

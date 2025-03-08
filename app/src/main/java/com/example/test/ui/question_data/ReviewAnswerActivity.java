@@ -1,4 +1,4 @@
-package com.example.test.ui;
+package com.example.test.ui.question_data;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -6,7 +6,6 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -21,17 +20,11 @@ import com.example.test.api.QuestionManager;
 import com.example.test.api.ResultManager;
 import com.example.test.model.Answer;
 import com.example.test.model.Course;
-import com.example.test.model.Enrollment;
 import com.example.test.model.Lesson;
-import com.example.test.model.MediaFile;
 import com.example.test.model.Question;
 import com.example.test.model.QuestionChoice;
-import com.example.test.model.Result;
 
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
 import java.util.stream.Collectors;
 
 public class ReviewAnswerActivity extends AppCompatActivity {

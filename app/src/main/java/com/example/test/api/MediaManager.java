@@ -31,16 +31,18 @@ public class MediaManager extends BaseApiManager {
     }
 
     public void fetchMediaByQuesId(int questionId, ApiCallback callback) {
+        String token = SharedPreferencesManager.getInstance(context).getAccessToken();
         Request request = new Request.Builder()
                 .url(BASE_URL + "/api/v1/material/questions/" + questionId)
+                .addHeader("Authorization", "Bearer " + token)
                 .build();
 
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 if (response.isSuccessful()) {
-                    String responseBody = response.body()!= null? response.body().string(): null;
-                    if (responseBody!= null &&!responseBody.isEmpty()) {
+                    String responseBody = response.body() != null ? response.body().string() : null;
+                    if (responseBody != null && !responseBody.isEmpty()) {
                         Log.d("QuestionManager", "JSON trả về: " + responseBody);
                         try {
                             Gson gson = new Gson();
@@ -53,7 +55,7 @@ public class MediaManager extends BaseApiManager {
 
                             if (!mediaFiles.isEmpty()) {
                                 MediaFile media = mediaFiles.get(0);
-                                Log.d("QuestionManager","Link media: "+media.getMaterLink());
+                                Log.d("QuestionManager", "Link media: " + media.getMaterLink());
                                 callback.onSuccess(media);
                             } else {
                                 Log.e("QuestionManager", "Dữ liệu không hợp lệ từ server.");
@@ -77,53 +79,6 @@ public class MediaManager extends BaseApiManager {
             public void onFailure(Call call, IOException e) {
                 Log.e("QuestionManager", "Lỗi kết nối: " + e.getMessage());
                 callback.onFailure("Không thể kết nối tới API.");
-            }
-        });
-    }
-
-    public void uploadMp3File(String filePath) {
-        String token = SharedPreferencesManager.getInstance(context).getAccessToken();
-
-        // Tạo file từ đường dẫn
-        File mp3File = new File(filePath);
-        if (!mp3File.exists()) {
-            Log.e("UploadError", "File không tồn tại: " + filePath);
-            return;
-        }
-
-        // Tạo RequestBody cho file
-        RequestBody fileBody = RequestBody.create(mp3File, MediaType.parse("audio/mpeg"));
-
-        // Tạo MultipartBody để gửi dưới dạng form-data
-        MultipartBody requestBody = new MultipartBody.Builder()
-                .setType(MultipartBody.FORM)
-                .addFormDataPart("file", mp3File.getName(), fileBody)
-                .build();
-
-        // Tạo Request
-        Request request = new Request.Builder()
-                .url("http://localhost:8080/api/v1/speech/convert")
-                .addHeader("Authorization", "Bearer " + token)
-                .post(requestBody)
-                .build();
-
-        // Tạo OkHttpClient để thực hiện yêu cầu
-        OkHttpClient client = new OkHttpClient();
-
-        // Thực hiện gọi API
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                Log.e("UploadError", "Lỗi khi gọi API: " + e.getMessage());
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                if (response.isSuccessful()) {
-                    Log.d("UploadSuccess", "Tải lên thành công: " + response.body().string());
-                } else {
-                    Log.e("UploadError", "Lỗi từ server: " + response.code());
-                }
             }
         });
     }

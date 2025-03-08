@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".ui.RecordQuestionActivity">
+    tools:context=".ui.question_data.RecordQuestionActivity">
 
     <TextView
         android:id="@+id/tvTitle"

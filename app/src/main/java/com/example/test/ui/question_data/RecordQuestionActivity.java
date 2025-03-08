@@ -1,15 +1,14 @@
-package com.example.test.ui;
+package com.example.test.ui.question_data;
 
 import android.Manifest;
 import android.animation.ObjectAnimator;
-import android.content.Context;
 import android.content.pm.PackageManager;
 import android.content.Intent;
 import android.graphics.Color;
+import android.media.AudioAttributes;
 import android.media.MediaPlayer;
-import android.media.MediaRecorder;
 import android.os.Bundle;
-import android.os.Environment;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.*;
@@ -26,12 +25,7 @@ import com.example.test.SpeechRecognitionHelper;
 import com.example.test.api.*;
 import com.example.test.model.*;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,8 +36,6 @@ import okhttp3.Response;
 public class RecordQuestionActivity extends AppCompatActivity implements SpeechRecognitionCallback {
 
     private MediaPlayer mediaPlayer;
-    private MediaRecorder mediaRecorder;
-    private String audioFilePath;
     private SeekBar seekBar;
     private ImageView imgVoice, btnPlayAudio;
     private TextView tvTranscription;
@@ -61,6 +53,9 @@ public class RecordQuestionActivity extends AppCompatActivity implements SpeechR
     ResultManager resultManager = new ResultManager(this);
     MediaManager mediaManager = new MediaManager(this);
     private int answerIds;
+    private Handler handler = new Handler();
+    private Runnable updateSeekBar;
+    private boolean isPlaying = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,7 +68,6 @@ public class RecordQuestionActivity extends AppCompatActivity implements SpeechR
         Button btnCheckResult = findViewById(R.id.btnCheckResult);
         seekBar = findViewById(R.id.seekBar);
 
-        audioFilePath = getExternalCacheDir().getAbsolutePath() + "/audio_record.3gp";
 
         currentQuestionIndex = getIntent().getIntExtra("currentQuestionIndex", 0);
         questions = (List<Question>) getIntent().getSerializableExtra("questions");
@@ -86,126 +80,223 @@ public class RecordQuestionActivity extends AppCompatActivity implements SpeechR
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO}, 1);
         } else {
-            imgVoice.setOnClickListener(v -> startRecording());
+            imgVoice.setOnClickListener(v -> initializeSpeechRecognition());
         }
 
         LinearLayout progressBar = findViewById(R.id.progressBar);
 
         btnCheckResult.setOnClickListener(v -> {
-            stopRecording();
+            mediaPlayer.pause();
             String userAnswer = tvTranscription.getText().toString().trim();
             userAnswers.clear();
             userAnswers.add(userAnswer);
-            handleUserAnswer();
+            if (userAnswers.isEmpty()) {
+                Toast.makeText(this, "Vui lòng trả lời câu hỏi!", Toast.LENGTH_SHORT).show();
+            } else {
+                quesManager.saveUserAnswer(questions.get(currentStep).getId(), userAnswers.get(0), new ApiCallback() {
+                    @Override
+                    public void onSuccess() {
+                        Log.d("RecordQuestionActivity", "Câu trả lời đã được lưu: " + userAnswers.toString());
+                        runOnUiThread(() -> {
+                            PopupHelper.showResultPopup(RecordQuestionActivity.this, userAnswers, correctAnswers, () -> {
+                                currentStep++;
+                                currentQuestionIndex++;
+                                if (currentQuestionIndex < questions.size()) {
+                                    updateProgressBar(findViewById(R.id.progressBar), currentStep);
+                                    fetchAudioUrl(questions.get(currentQuestionIndex).getId());
+                                    loadQuestion(currentQuestionIndex);
+                                } else {
+                                    finishLesson();
+                                }
+                            });
+                        });
+                        gradeAnswer();
+                    }
+
+                    @Override
+                    public void onSuccess(Object result) {}
+
+                    @Override
+                    public void onFailure(String errorMessage) {
+                        Log.e("RecordQuestionActivity", errorMessage);
+                    }
+                });
+            }
         });
     }
 
     private void fetchAudioUrl(int questionId) {
         mediaManager.fetchMediaByQuesId(questionId, new ApiCallback<MediaFile>() {
             @Override
+            public void onSuccess() {
+
+            }
+
+            @Override
             public void onSuccess(MediaFile mediaFile) {
                 runOnUiThread(() -> {
-                    if (mediaFile != null) {
-                        btnPlayAudio.setOnClickListener(v -> {
-                            playAudio(mediaFile.getMaterLink());
-                        });
+                    if (mediaFile != null && mediaFile.getMaterLink() != null) {
+                        setupAudioPlayer(mediaFile.getMaterLink());
+                    } else {
+                        Log.e("MediaPlayerError", "Media file is null or has no link");
                     }
                 });
             }
 
             @Override
-            public void onSuccess() {
+            public void onFailure(String errorMessage) {
+                Log.e("MediaPlayerError", "Error fetching audio: " + errorMessage);
+            }
+        });
+    }
+
+    private void setupAudioPlayer(String audioUrl) {
+        btnPlayAudio.setOnClickListener(v -> {
+            if (mediaPlayer == null) playAudio(audioUrl);
+
+            if (isPlaying) {
+                mediaPlayer.pause();
+                btnPlayAudio.setImageResource(R.drawable.btn_play); // Đổi icon play
+            } else {
+                mediaPlayer.start();
+                btnPlayAudio.setImageResource(R.drawable.ic_pause); // Đổi icon pause
+                updateSeekBar();
+            }
+            isPlaying = !isPlaying;
+        });
+
+
+        // Xử lý khi kéo SeekBar
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if (fromUser && mediaPlayer != null) {
+                    mediaPlayer.seekTo(progress);
+                }
             }
 
             @Override
-            public void onFailure(String errorMessage) {
-                Log.e("media", errorMessage);
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                handler.removeCallbacks(updateSeekBar);
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                if (mediaPlayer != null) {
+                    mediaPlayer.seekTo(seekBar.getProgress());
+                    updateSeekBar();
+                }
             }
         });
     }
 
     private void playAudio(String audioUrl) {
+        if (audioUrl == null || audioUrl.isEmpty()) {
+            Log.e("MediaPlayerError", "Audio URL is null or empty");
+            return;
+        }
+
         try {
             if (mediaPlayer != null) {
                 mediaPlayer.release();
-                mediaPlayer = null;
             }
+
             mediaPlayer = new MediaPlayer();
-            mediaPlayer.setDataSource(audioUrl);
-            mediaPlayer.prepareAsync();
-            mediaPlayer.setOnPreparedListener(MediaPlayer::start);
-            mediaPlayer.setOnCompletionListener(mp -> seekBar.setProgress(0));
-        } catch (Exception e) {
-            Log.e("MediaPlayerError", "Error: " + e.getMessage());
-        }
-    }
+            mediaPlayer.setAudioAttributes(new AudioAttributes.Builder()
+                    .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                    .setUsage(AudioAttributes.USAGE_MEDIA)
+                    .build());
 
-    private void initializeMediaRecorder() {
-        mediaRecorder = new MediaRecorder();
-        mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-        mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-        mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
-        mediaRecorder.setOutputFile(audioFilePath);
-    }
-
-    private void startRecording() {
-        try {
-            initializeMediaRecorder();
-            mediaRecorder.prepare();
-            mediaRecorder.start();
-            Toast.makeText(this, "Recording started", Toast.LENGTH_SHORT).show();
-        } catch (IOException e) {
-            Log.e("MediaRecorder", "prepare() failed");
-        }
-    }
-
-    private void stopRecording() {
-        if (mediaRecorder != null) {
-            try {
-                mediaRecorder.stop();
-                mediaRecorder.release();
-                mediaRecorder = null;
-                Toast.makeText(this, "Recording stopped", Toast.LENGTH_SHORT).show();
-                mediaManager.uploadMp3File(audioFilePath);
-            } catch (RuntimeException e) {
-                Log.e("MediaRecorder", "stop() failed: " + e.getMessage());
-            }
-        }
-    }
-
-    private void handleUserAnswer() {
-        if (userAnswers.isEmpty()) {
-            Toast.makeText(this, "Vui lòng trả lời câu hỏi!", Toast.LENGTH_SHORT).show();
-        } else {
-            quesManager.saveUserAnswer(questions.get(currentStep).getId(), userAnswers.get(0), new ApiCallback() {
-                @Override
-                public void onSuccess() {
-                    Log.d("RecordQuestionActivity", "Câu trả lời đã được lưu: " + userAnswers.toString());
-                    runOnUiThread(() -> {
-                        PopupHelper.showResultPopup(RecordQuestionActivity.this, userAnswers, correctAnswers, () -> {
-                            currentStep++;
-                            currentQuestionIndex++;
-                            if (currentQuestionIndex < questions.size()) {
-                                updateProgressBar(findViewById(R.id.progressBar), currentStep);
-                                fetchAudioUrl(questions.get(currentQuestionIndex).getId());
-                                loadQuestion(currentQuestionIndex);
-                            } else {
-                                finishLesson();
-                            }
-                        });
-                    });
-                    gradeAnswer();
-                }
-
-                @Override
-                public void onSuccess(Object result) {}
-
-                @Override
-                public void onFailure(String errorMessage) {
-                    Log.e("RecordQuestionActivity", errorMessage);
-                }
+            mediaPlayer.setDataSource("http://14.225.198.3:8080/uploadfile/questions/testNew/1741441919386-uaifein.mp3");
+            mediaPlayer.setOnPreparedListener(mp -> {
+                seekBar.setMax(mediaPlayer.getDuration());
+                mediaPlayer.start();
+                isPlaying = true;
+                btnPlayAudio.setImageResource(R.drawable.ic_pause);
+                updateSeekBar();
             });
+
+            // Khi nhạc phát xong, reset lại nút Play
+            mediaPlayer.setOnCompletionListener(mp -> {
+                btnPlayAudio.setImageResource(R.drawable.btn_play);
+                isPlaying = false;
+                seekBar.setProgress(0);
+            });
+
+            mediaPlayer.setOnErrorListener((mp, what, extra) -> {
+                Log.e("MediaPlayerError", "Error: what=" + what + ", extra=" + extra);
+                return true;
+            });
+
+            mediaPlayer.prepareAsync();
+        } catch (IOException e) {
+            Log.e("MediaPlayerError", "IOException: " + e.getMessage());
         }
+    }
+
+    // Cập nhật SeekBar theo thời gian
+    private void updateSeekBar() {
+        updateSeekBar = new Runnable() {
+            @Override
+            public void run() {
+                if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+                    seekBar.setProgress(mediaPlayer.getCurrentPosition());
+                    handler.postDelayed(this, 500);
+                }
+            }
+        };
+        handler.postDelayed(updateSeekBar, 500);
+    }
+
+
+    private void initializeSpeechRecognition() {
+        speechRecognitionHelper = new SpeechRecognitionHelper(this, this);
+        speechRecognitionHelper.startListening();
+    }
+
+    @Override
+    public void onReadyForSpeech() {
+        Toast.makeText(this, "Listening...", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onBeginningOfSpeech() {
+    }
+
+    @Override
+    public void onRmsChanged(float rmsdB) {
+    }
+
+    @Override
+    public void onBufferReceived(byte[] buffer) {
+    }
+
+    @Override
+    public void onEndOfSpeech() {
+        Toast.makeText(this, "Processing...", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onError(int error) {
+        Log.e("SpeechRecognizerError", "Error code: " + error);
+        Toast.makeText(this, "Error: " + error, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onResults(ArrayList<String> matches) {
+        if (matches != null && !matches.isEmpty()) {
+            tvTranscription.setText(matches.get(0));
+            userAnswers.clear();
+            userAnswers.add(matches.get(0));
+        }
+    }
+
+    @Override
+    public void onPartialResults(Bundle partialResults) {
+    }
+
+    @Override
+    public void onEvent(int eventType, Bundle params) {
     }
 
     private void loadQuestion(int index) {
@@ -300,74 +391,4 @@ public class RecordQuestionActivity extends AppCompatActivity implements SpeechR
     }
 
 
-    @Override
-    protected void onDestroy() {
-        if (mediaPlayer != null) {
-            mediaPlayer.release();
-            mediaPlayer = null;
-        }
-        if (mediaRecorder != null) {
-            mediaRecorder.release();
-            mediaRecorder = null;
-        }
-        if (speechRecognitionHelper != null) {
-            speechRecognitionHelper.destroy();
-        }
-        super.onDestroy();
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == 1 && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            imgVoice.setOnClickListener(v -> startRecording());
-        } else {
-            Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    @Override
-    public void onReadyForSpeech() {
-
-    }
-
-    @Override
-    public void onBeginningOfSpeech() {
-
-    }
-
-    @Override
-    public void onRmsChanged(float rmsdB) {
-
-    }
-
-    @Override
-    public void onBufferReceived(byte[] buffer) {
-
-    }
-
-    @Override
-    public void onEndOfSpeech() {
-
-    }
-
-    @Override
-    public void onError(int error) {
-
-    }
-
-    @Override
-    public void onResults(ArrayList<String> matches) {
-
-    }
-
-    @Override
-    public void onPartialResults(Bundle partialResults) {
-
-    }
-
-    @Override
-    public void onEvent(int eventType, Bundle params) {
-
-    }
 }

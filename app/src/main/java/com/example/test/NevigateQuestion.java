@@ -9,10 +9,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.test.api.ApiCallback;
 import com.example.test.api.QuestionManager;
 import com.example.test.model.Question;
-import com.example.test.ui.GrammarPick1QuestionActivity;
-import com.example.test.ui.GrammarPickManyActivity;
-import com.example.test.ui.ListeningQuestionActivity;
-import com.example.test.ui.RecordQuestionActivity;
+import com.example.test.ui.question_data.GrammarPick1QuestionActivity;
+import com.example.test.ui.question_data.GrammarPickManyActivity;
+import com.example.test.ui.question_data.ListeningQuestionActivity;
+import com.example.test.ui.question_data.RecordQuestionActivity;
 
 import java.io.Serializable;
 import java.util.ArrayList;

@@ -1,4 +1,4 @@
-package com.example.test.ui;
+package com.example.test.ui.question_data;
 
 import android.animation.ObjectAnimator;
 import android.content.Intent;
@@ -24,19 +24,13 @@ import com.example.test.api.LessonManager;
 import com.example.test.api.QuestionManager;
 import com.example.test.api.ResultManager;
 import com.example.test.model.Answer;
-import com.example.test.model.Course;
-import com.example.test.model.Discussion;
-import com.example.test.model.Lesson;
-import com.example.test.model.MediaFile;
 import com.example.test.model.Question;
 import com.example.test.model.QuestionChoice;
-import com.example.test.model.Result;
 
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import okhttp3.Call;
 import okhttp3.Callback;

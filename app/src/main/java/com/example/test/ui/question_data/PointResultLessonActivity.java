@@ -1,4 +1,4 @@
-package com.example.test.ui;
+package com.example.test.ui.question_data;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -23,6 +23,7 @@ import com.example.test.model.Lesson;
 import com.example.test.model.Question;
 import com.example.test.model.QuestionChoice;
 import com.example.test.model.Result;
+import com.example.test.ui.DiscussionActivity;
 import com.example.test.ui.home.HomeActivity;
 
 import java.util.HashSet;

@@ -3,6 +3,7 @@ package com.example.test.ui.entrance_test;
 import android.animation.ObjectAnimator;
 import android.content.Intent;
 import android.graphics.Color;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.util.Log;
@@ -194,24 +195,35 @@ public class ListeningActivity extends AppCompatActivity {
             }
         });
     }
-    private void playAudio (String audioUrl){
+    private void playAudio(String audioUrl) {
+        if (audioUrl == null || audioUrl.isEmpty()) {
+            Log.e("MediaPlayerError", "Audio URL is null or empty");
+            return;
+        }
+
         try {
+            if (mediaPlayer != null) {
+                mediaPlayer.release(); // Giải phóng MediaPlayer cũ nếu có
+            }
+
             mediaPlayer = new MediaPlayer();
-            mediaPlayer = MediaPlayer.create(this, R.raw.uaifein);
-            mediaPlayer.start();
-            /*mediaPlayer.setDataSource(BaseApiManager.BASE_URL + "/" + audioUrl); // Sử dụng đường dẫn đầy đủ
-            mediaPlayer.prepare();
-            mediaPlayer.start();*/
-        } catch (IllegalArgumentException e) {
-            Log.e("MediaPlayerError", "IllegalArgumentException: " + e.getMessage()); // In ra lỗi chi tiết
-        } /*catch (SecurityException e) {
-            Log.e("MediaPlayerError", "SecurityException: " + e.getMessage()); // In ra lỗi chi tiết
-        } catch (IllegalStateException e) {
-            Log.e("MediaPlayerError", "IllegalStateException: " + e.getMessage()); // In ra lỗi chi tiết
+            mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+            mediaPlayer.setDataSource("http://14.225.198.3:8080/uploadfile/questions/testNew/1741441919386-uaifein.mp3");
+
+            mediaPlayer.setOnPreparedListener(mp -> mediaPlayer.start()); // Chạy khi đã sẵn sàng
+            mediaPlayer.setOnErrorListener((mp, what, extra) -> {
+                Log.e("MediaPlayerError", "Error occurred: what=" + what + ", extra=" + extra);
+                return true;
+            });
+
+            mediaPlayer.prepareAsync(); // Dùng prepareAsync() để tránh chặn UI
         } catch (IOException e) {
-            Log.e("MediaPlayerError", "IOException: " + e.getMessage()); // In ra lỗi chi tiết
-        }*/
+            Log.e("MediaPlayerError", "IOException: " + e.getMessage());
+        } catch (IllegalArgumentException e) {
+            Log.e("MediaPlayerError", "IllegalArgumentException: " + e.getMessage());
+        }
     }
+
 
     private void fetchLessonAndQuestions(int lessonId) {
         lesManager.fetchLessonById(lessonId, new ApiCallback<Lesson>() {
