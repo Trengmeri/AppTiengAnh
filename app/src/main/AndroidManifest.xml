@@ -34,6 +34,9 @@
             android:name=".ui.question_data.WrittingActivity"
             android:exported="false" />
         <activity
+            android:name=".ui.entrance_test.WritingActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.entrance_test.Pick1Activity"
             android:exported="false" />
         <activity
@@ -49,7 +52,7 @@
             android:name=".ui.question_data.PointResultLessonActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.question_data.ReviewAnswerActivity"
+            android:name=".ui.entrance_test.ReviewAnswerActivity"
             android:exported="false" />
         <activity
             android:name=".ui.CourseActivity"

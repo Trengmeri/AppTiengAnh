@@ -13,6 +13,7 @@ import com.example.test.ui.question_data.GrammarPick1QuestionActivity;
 import com.example.test.ui.question_data.GrammarPickManyActivity;
 import com.example.test.ui.question_data.ListeningQuestionActivity;
 import com.example.test.ui.question_data.RecordQuestionActivity;
+import com.example.test.ui.question_data.WrittingActivity;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -91,6 +92,8 @@ public class NevigateQuestion extends AppCompatActivity {
             intent = new Intent(this, ListeningQuestionActivity.class);
         } else if ("SPEAKING".equals(skill)) {
             intent = new Intent(this, RecordQuestionActivity.class);
+        }else if ("WRITING".equals(skill)) {
+            intent = new Intent(this, WrittingActivity.class);
         }
 
         if (intent != null) {

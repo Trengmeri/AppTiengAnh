@@ -20,10 +20,12 @@ import com.example.test.R;
 import com.example.test.SpeechRecognitionCallback;
 import com.example.test.SpeechRecognitionHelper;
 import com.example.test.api.ApiCallback;
+import com.example.test.api.ApiService;
 import com.example.test.api.LessonManager;
 import com.example.test.api.MediaManager;
 import com.example.test.api.QuestionManager;
 import com.example.test.api.ResultManager;
+import com.example.test.model.EvaluationResult;
 import com.example.test.model.Lesson;
 import com.example.test.model.MediaFile;
 import com.example.test.model.Question;
@@ -53,8 +55,10 @@ public class SpeakingActivity extends AppCompatActivity implements SpeechRecogni
     MediaManager mediaManager = new MediaManager(this);
     private int answerIds;
     private Handler handler = new Handler();
+    private  String questype;
     private Runnable updateSeekBar;
     private boolean isPlaying = false;
+    TextView tvQuestion;
 
 
     @Override
@@ -66,8 +70,9 @@ public class SpeakingActivity extends AppCompatActivity implements SpeechRecogni
         tvTranscription = findViewById(R.id.tvTranscription);
         btnPlayAudio = findViewById(R.id.btn_play);
         Button btnCheckResult = findViewById(R.id.btnCheckResult);
+        tvQuestion = findViewById(R.id.tvQuestion);
         seekBar = findViewById(R.id.seekBar);
-        int lessonId = 5;
+        int lessonId = 4;
         fetchLessonAndQuestions(lessonId);
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
@@ -87,17 +92,37 @@ public class SpeakingActivity extends AppCompatActivity implements SpeechRecogni
             if (userAnswers.isEmpty()) {
                 Toast.makeText(SpeakingActivity.this, "Vui lòng trả lời câu hỏi!", Toast.LENGTH_SHORT).show();
             } else {
-                quesManager.saveUserAnswer(questionIds.get(currentStep), userAnswer, new ApiCallback() {
+                checkAnswer(userAnswer);
+            }
+        });
+    }
+
+    private void checkAnswer(String userAnswer) {
+        String questionContent = tvQuestion.getText().toString().trim();
+        ApiService apiService = new ApiService(this);
+
+        apiService.sendAnswerToApi(questionContent, userAnswer, new ApiCallback<EvaluationResult>() {
+            @Override
+            public void onSuccess() {
+
+            }
+
+            @Override
+            public void onSuccess(EvaluationResult result) {
+
+
+                // Lưu kết quả vào hệ thống
+                quesManager.saveUserAnswer(questionIds.get(currentStep), userAnswer, result.getPoint(), result.getimprovements(), new ApiCallback() {
                     @Override
                     public void onSuccess() {
-                        Log.e("SpeakingActivity", "Câu trả lời đã được lưu: " + userAnswers.toString());
+                        Log.d("SpeakingActivity.this", "Lưu thành công!");
                         runOnUiThread(() -> {
-                            PopupHelper.showResultPopup(SpeakingActivity.this, userAnswers, correctAnswers, () -> {
+                            PopupHelper.showResultPopup(SpeakingActivity.this, questype, null, null, result.getPoint(), result.getimprovements(), result.getevaluation(), () -> {
                                 currentStep++;
                                 if (currentStep < totalSteps) {
                                     fetchQuestion(questionIds.get(currentStep));
                                 } else {
-                                    Intent intent = new Intent(SpeakingActivity.this, PointResultCourseActivity.class);
+                                    Intent intent = new Intent(SpeakingActivity.this, WritingActivity.class);
                                     startActivity(intent);
                                     finish();
                                 }
@@ -112,9 +137,14 @@ public class SpeakingActivity extends AppCompatActivity implements SpeechRecogni
 
                     @Override
                     public void onFailure(String errorMessage) {
-                        Log.e("SpeakingActivity", errorMessage);
+                        Log.e("SpeakingActivity.this", "Lỗi lưu câu trả lời: " + errorMessage);
                     }
                 });
+            }
+
+            @Override
+            public void onFailure(String errorMessage) {
+                Log.e("SpeakingActivity", "Lỗi API: " + errorMessage);
             }
         });
     }
@@ -151,16 +181,10 @@ public class SpeakingActivity extends AppCompatActivity implements SpeechRecogni
             @Override
             public void onSuccess(Question question) {
                 if (question != null) {
+                    questype = question.getQuesType();
                     runOnUiThread(() -> {
-                        TextView tvQuestion = findViewById(R.id.tvQuestion);
                         tvQuestion.setText(question.getQuesContent());
                         fetchAudioUrl(questionId);
-                        correctAnswers.clear();
-                        for (QuestionChoice choice : question.getQuestionChoices()) {
-                            if (choice.isChoiceKey()) {
-                                correctAnswers.add(choice.getChoiceContent());
-                            }
-                        }
                     });
                 }
             }
@@ -179,7 +203,8 @@ public class SpeakingActivity extends AppCompatActivity implements SpeechRecogni
             public void onSuccess(MediaFile mediaFile) {
                 runOnUiThread(() -> {
                     if (mediaFile != null && mediaFile.getMaterLink() != null) {
-                        setupAudioPlayer(mediaFile.getMaterLink());
+                        String modifiedLink = mediaFile.getMaterLink().replace("0.0.0.0", "14.225.198.3");
+                        setupAudioPlayer(modifiedLink);
                     } else {
                         Log.e("MediaPlayerError", "Media file is null or has no link");
                     }
@@ -251,7 +276,7 @@ public class SpeakingActivity extends AppCompatActivity implements SpeechRecogni
                     .setUsage(AudioAttributes.USAGE_MEDIA)
                     .build());
 
-            mediaPlayer.setDataSource("http://14.225.198.3:8080/uploadfile/questions/testNew/1741441919386-uaifein.mp3");
+            mediaPlayer.setDataSource(audioUrl);
             mediaPlayer.setOnPreparedListener(mp -> {
                 seekBar.setMax(mediaPlayer.getDuration());
                 mediaPlayer.start();

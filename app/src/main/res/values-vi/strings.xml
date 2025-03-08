@@ -26,6 +26,8 @@
     <string name="txt_economic">KINH TẾ</string>
     <string name="txt_mechanic">CƠ KHÍ</string>
     <string name="txt_other">KHÁC</string>
+    <string name="point">Điểm: </string>
+    <string name="comp">Hoàn thành: </string>
     <string name="btn_continute">Tiếp tục bài học</string>
     <string name="txtcontinute">Tiếp tục hành trình của bạn !</string>
     <string name="txtschedulebasic">Cơ bản 10 phút mỗi ngày</string>
@@ -46,4 +48,9 @@
     <string name="VN">Tiếng Việt</string>
     <string name="Eng">Tiếng Anh</string>
     <string name="hello_blank_fragment">Xin chào mảnh trống</string>
+    <string name="correct">Chính xác!</string>
+    <string name="ANS">Đáp án: </string>
+    <string name="improvements">Cải thiện: </string>
+    <string name="oops">Ui… Đó không phải câu trả lời chính xác.</string>
+    <string name="COANS">Đáp án đúng:</string>
 </resources>

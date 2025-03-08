@@ -11,6 +11,7 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.test.R;
 import com.example.test.model.Enrollment;
+import com.example.test.ui.entrance_test.ReviewAnswerActivity;
 import com.example.test.ui.home.HomeActivity;
 import com.example.test.api.ApiCallback;
 import com.example.test.api.LessonManager;
@@ -263,13 +264,13 @@ public class PointResultCourseActivity extends AppCompatActivity {
                 }
             }
 
-            correctRead.setText("Point: " + totalPointR);
+            correctRead.setText(getString(R.string.point) + totalPointR);
             compRead.setText("Complete: " + String.format("%.1f",comR/r));
-            correctLis.setText("Point: " + totalPointL);
+            correctLis.setText(getString(R.string.point) + totalPointL);
             compLis.setText("Complete: " + String.format("%.1f",comL/l));
-            correctSpeak.setText("Point: " + totalPointS);
+            correctSpeak.setText(getString(R.string.point) + totalPointS);
             compSpeak.setText("Complete: " + String.format("%.1f",comS/s));
-            correctWrite.setText("Point: " + totalPointW);
+            correctWrite.setText(getString(R.string.point) + totalPointW);
             compWrite.setText("Complete: " + String.format("%.1f",comW/w));
             pointTextView.setText(String.valueOf(totalPointR+totalPointL+totalPointS+totalPointW));
         });

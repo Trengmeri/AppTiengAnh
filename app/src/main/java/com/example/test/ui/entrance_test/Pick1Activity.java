@@ -45,6 +45,7 @@ public class Pick1Activity extends AppCompatActivity {
     List<String> correctAnswers = new ArrayList<>();
     private List<String> userAnswers = new ArrayList<>();
     private int currentStep = 0; // Bước hiện tại (bắt đầu từ 0)
+    private  String questype;
     private int totalSteps; // Tổng số bước trong thanh tiến trình
     private AppCompatButton selectedAnswer = null;
     private AppCompatButton btnAnswer1, btnAnswer2, btnAnswer3, btnAnswer4;
@@ -75,7 +76,7 @@ public class Pick1Activity extends AppCompatActivity {
         networkReceiver = new NetworkChangeReceiver();
 
         // Lấy lessonId từ intent hoặc một nguồn khác
-        int lessonId = 3;
+        int lessonId = 1;
         fetchLessonAndQuestions(lessonId); // Gọi phương thức để lấy bài học và câu hỏi
 
         btnCheckAnswer.setOnClickListener(v -> {
@@ -92,14 +93,14 @@ public class Pick1Activity extends AppCompatActivity {
                 }
                 String answerContent = sb.toString();
                 // Lưu câu trả lời của người dùng
-                quesManager.saveUserAnswer(questionIds.get(currentStep), answerContent, new ApiCallback() {
+                quesManager.saveUserAnswer(questionIds.get(currentStep), answerContent, 0,null, new ApiCallback() {
 
                     @Override
                     public void onSuccess() {
                         Log.e("Pick1Activity", "Câu trả lời đã được lưu: " + answerContent);
                         // Hiển thị popup
                         runOnUiThread(() -> {
-                            PopupHelper.showResultPopup(Pick1Activity.this, userAnswers, correctAnswers, () -> {
+                            PopupHelper.showResultPopup(Pick1Activity.this, questype, userAnswers, correctAnswers, null, null, null, () -> {
                                 // Callback khi nhấn Next Question trên popup
                                 resetAnswerColors();
                                 currentStep++; // Tăng currentStep
@@ -207,6 +208,7 @@ public class Pick1Activity extends AppCompatActivity {
             public void onSuccess(Question question) {
                 if (question != null) {
                     // Lấy nội dung câu hỏi
+                    questype = question.getQuesType();
                     String questionContent = question.getQuesContent();
                     Log.d("Pick1Activity", "Câu hỏi: " + questionContent);
 

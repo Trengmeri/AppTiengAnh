@@ -47,6 +47,7 @@ public class RecordQuestionActivity extends AppCompatActivity implements SpeechR
     private int currentQuestionIndex;
     private int currentStep = 0;
     private int lessonID, courseID;
+    private  String questype;
     private int totalSteps;
     QuestionManager quesManager = new QuestionManager(this);
     LessonManager lesManager = new LessonManager();
@@ -56,6 +57,7 @@ public class RecordQuestionActivity extends AppCompatActivity implements SpeechR
     private Handler handler = new Handler();
     private Runnable updateSeekBar;
     private boolean isPlaying = false;
+    TextView tvQuestion;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +69,7 @@ public class RecordQuestionActivity extends AppCompatActivity implements SpeechR
         btnPlayAudio = findViewById(R.id.btn_play);
         Button btnCheckResult = findViewById(R.id.btnCheckResult);
         seekBar = findViewById(R.id.seekBar);
+        tvQuestion = findViewById(R.id.tvQuestion);
 
 
         currentQuestionIndex = getIntent().getIntExtra("currentQuestionIndex", 0);
@@ -93,13 +96,33 @@ public class RecordQuestionActivity extends AppCompatActivity implements SpeechR
             if (userAnswers.isEmpty()) {
                 Toast.makeText(this, "Vui lòng trả lời câu hỏi!", Toast.LENGTH_SHORT).show();
             } else {
-                quesManager.saveUserAnswer(questions.get(currentStep).getId(), userAnswers.get(0), new ApiCallback() {
+                checkAnswer(userAnswer);
+            }
+        });
+    }
+
+    private void checkAnswer(String userAnswer) {
+        String questionContent = tvQuestion.getText().toString().trim();
+        ApiService apiService = new ApiService(this);
+
+        apiService.sendAnswerToApi(questionContent, userAnswer, new ApiCallback<EvaluationResult>() {
+            @Override
+            public void onSuccess() {
+
+            }
+
+            @Override
+            public void onSuccess(EvaluationResult result) {
+
+
+                // Lưu kết quả vào hệ thống
+                quesManager.saveUserAnswer(questions.get(currentStep).getId(), userAnswer, result.getPoint(), result.getimprovements(), new ApiCallback() {
                     @Override
                     public void onSuccess() {
-                        Log.d("RecordQuestionActivity", "Câu trả lời đã được lưu: " + userAnswers.toString());
+                        Log.d("RecordQuestionActivity.this", "Lưu thành công!");
                         runOnUiThread(() -> {
-                            PopupHelper.showResultPopup(RecordQuestionActivity.this, userAnswers, correctAnswers, () -> {
-                                currentStep++;
+                            PopupHelper.showResultPopup(RecordQuestionActivity.this, questype, null, null, result.getPoint(), result.getimprovements(), result.getevaluation(), () -> {
+                                currentStep++; // Tăng currentStep
                                 currentQuestionIndex++;
                                 if (currentQuestionIndex < questions.size()) {
                                     updateProgressBar(findViewById(R.id.progressBar), currentStep);
@@ -110,17 +133,23 @@ public class RecordQuestionActivity extends AppCompatActivity implements SpeechR
                                 }
                             });
                         });
-                        gradeAnswer();
                     }
 
                     @Override
-                    public void onSuccess(Object result) {}
+                    public void onSuccess(Object result) {
+
+                    }
 
                     @Override
                     public void onFailure(String errorMessage) {
-                        Log.e("RecordQuestionActivity", errorMessage);
+                        Log.e("RecordQuestionActivity.this", "Lỗi lưu câu trả lời: " + errorMessage);
                     }
                 });
+            }
+
+            @Override
+            public void onFailure(String errorMessage) {
+                Log.e("RecordQuestionActivity", "Lỗi API: " + errorMessage);
             }
         });
     }
@@ -136,7 +165,8 @@ public class RecordQuestionActivity extends AppCompatActivity implements SpeechR
             public void onSuccess(MediaFile mediaFile) {
                 runOnUiThread(() -> {
                     if (mediaFile != null && mediaFile.getMaterLink() != null) {
-                        setupAudioPlayer(mediaFile.getMaterLink());
+                        String modifiedLink = mediaFile.getMaterLink().replace("0.0.0.0", "14.225.198.3");
+                        setupAudioPlayer(modifiedLink);
                     } else {
                         Log.e("MediaPlayerError", "Media file is null or has no link");
                     }
@@ -207,7 +237,7 @@ public class RecordQuestionActivity extends AppCompatActivity implements SpeechR
                     .setUsage(AudioAttributes.USAGE_MEDIA)
                     .build());
 
-            mediaPlayer.setDataSource("http://14.225.198.3:8080/uploadfile/questions/testNew/1741441919386-uaifein.mp3");
+            mediaPlayer.setDataSource(audioUrl);
             mediaPlayer.setOnPreparedListener(mp -> {
                 seekBar.setMax(mediaPlayer.getDuration());
                 mediaPlayer.start();
@@ -306,6 +336,7 @@ public class RecordQuestionActivity extends AppCompatActivity implements SpeechR
                 @Override
                 public void onSuccess(Question question) {
                     if (question != null) {
+                        questype = question.getQuesType();
                         runOnUiThread(() -> {
                             TextView tvQuestion = findViewById(R.id.tvQuestion);
                             tvQuestion.setText(question.getQuesContent());
@@ -359,36 +390,4 @@ public class RecordQuestionActivity extends AppCompatActivity implements SpeechR
             colorAnimator.start();
         }
     }
-
-    private void gradeAnswer() {
-        resultManager.fetchAnswerPointsByQuesId(questions.get(currentStep).getId(), new ApiCallback<Answer>() {
-            @Override
-            public void onSuccess(Answer answer) {
-                if (answer != null) {
-                    answerIds = answer.getId();
-                    if (answerIds != 0) {
-                        QuestionManager.gradeAnswer(answerIds, new Callback() {
-                            @Override
-                            public void onFailure(@NonNull Call call, @NonNull IOException e) {}
-
-                            @Override
-                            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {}
-                        });
-                    } else {
-                        Log.e("RecordQuestionActivity", "Bài học không có câu trả lời.");
-                    }
-                } else {
-                    Log.e("RecordQuestionActivity", "Không nhận được câu trả lời từ API.");
-                }
-            }
-
-            @Override
-            public void onSuccess() {}
-
-            @Override
-            public void onFailure(String errorMessage) {}
-        });
-    }
-
-
 }

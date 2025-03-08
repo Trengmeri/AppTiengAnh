@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name" translatable="false">Encybara</string>
     <string name="back">Back</string>
     <string name="title_activity_login" translatable="false">LoginActivity</string>
@@ -6,7 +6,7 @@
     <string name="prompt_password">Password</string>
     <string name="action_sign_in" translatable="false">Sign in or register</string>
     <string name="action_sign_in_short">Sign in</string>
-    <string name="welcome">"Welcome !"</string>
+    <string name="welcome">Welcome !</string>
     <string name="invalid_username">Not a valid username</string>
     <string name="invalid_password">Password must be >5 characters</string>
     <string name="login_failed">"Login failed"</string>
@@ -16,7 +16,7 @@
     <string name="check">Check Result</string>
     <string name="review">Review Answer</string>
     <string name="grammar">Grammar</string>
-    <string name="writting">Writting</string>
+    <string name="writting">Writing</string>
     <string name="lis">Listening</string>
     <string name="speak">Speaking</string>
     <string name="write">Writing</string>
@@ -48,6 +48,13 @@
     <string name="Language">Select Language</string>
     <string name="VN">Vietnamese</string>
     <string name="Eng">English</string>
+    <string name="improvements">Improvement: </string>
+    <string name="point">Point</string>
+    <string name="comp">Complete: </string>
+    <string name="correct">That\'s right!</string>
+    <string name="ANS">Answer: </string>
+    <string name="oops">Oops… That\'s not the answer.</string>
+    <string name="COANS">Correct answer:</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

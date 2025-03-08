@@ -1,4 +1,4 @@
-package com.example.test.ui.question_data;
+package com.example.test.ui.entrance_test;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -169,7 +169,9 @@ public class ReviewAnswerActivity extends AppCompatActivity {
                                     yourAnswer.setTextColor(getResources().getColor(android.R.color.holo_green_dark));
                                 }
 
-                                correctAnswer.setText("Correct answer: " + correctAnswerString);
+                                if (question.getQuesType().equals("CHOICE")|| question.getQuesType().equals("MULTIPLE")) {
+                                    correctAnswer.setText("Correct answer: " + correctAnswerString);
+                                }
 
                                 yourAnswer.setText("Your answer: " + answer.getAnswerContent());
                                 point.setText("Point: " + answer.getPointAchieved());

@@ -50,6 +50,7 @@ public class GrammarPick1QuestionActivity extends AppCompatActivity {
     private int lessonID,courseID;
     NetworkChangeReceiver networkReceiver;
     private int answerIds;
+    private  String questype;
     private List<Question> questions; // Danh sách câu hỏi
     private int currentQuestionIndex; // Vị trí câu hỏi hiện tại
 
@@ -99,14 +100,14 @@ public class GrammarPick1QuestionActivity extends AppCompatActivity {
                 }
                 String answerContent = sb.toString();
                 // Lưu câu trả lời của người dùng
-                quesManager.saveUserAnswer(questions.get(currentQuestionIndex).getId(), answerContent, new ApiCallback() {
+                quesManager.saveUserAnswer(questions.get(currentQuestionIndex).getId(), answerContent,0,null, new ApiCallback() {
 
                     @Override
                     public void onSuccess() {
                         Log.e("GrammarPick1QuestionActivity", "Câu trả lời đã được lưu: " + answerContent);
                         // Hiển thị popup
                         runOnUiThread(() -> {
-                            PopupHelper.showResultPopup(GrammarPick1QuestionActivity.this, userAnswers, correctAnswers, () -> {
+                            PopupHelper.showResultPopup(GrammarPick1QuestionActivity.this,questype, userAnswers, correctAnswers, null, null, null, () -> {
                                 // Callback khi nhấn Next Question trên popup
                                 resetAnswerColors();
                                 currentQuestionIndex++;
@@ -185,6 +186,7 @@ public class GrammarPick1QuestionActivity extends AppCompatActivity {
     private void loadQuestion(int index) {
         if (index < questions.size()) {
             Question question = questions.get(index);
+            questype = question.getQuesType();
             quesManager.fetchQuestionContentFromApi(question.getId(), new ApiCallback<Question>() {
                 @Override
                 public void onSuccess(Question question) {

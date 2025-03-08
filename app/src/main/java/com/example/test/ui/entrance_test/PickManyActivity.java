@@ -48,6 +48,7 @@ public class PickManyActivity extends AppCompatActivity {
     private List<Integer> questionIds;
     private int answerIds;// Danh sách questionIds
     private TextView tvContent;
+    private  String questype;
     private RecyclerView recyclerViewChoices;
     private LinearLayout progressBar;
     QuestionManager quesManager = new QuestionManager(this);
@@ -65,7 +66,7 @@ public class PickManyActivity extends AppCompatActivity {
         Button btnCheckAnswers = findViewById(R.id.btnCheckAnswers);
         progressBar = findViewById(R.id.progressBar);
 
-        int lessonId = 6;
+        int lessonId = 2;
         fetchLessonAndQuestions(lessonId);
 
         btnCheckAnswers.setOnClickListener(v -> {
@@ -82,14 +83,14 @@ public class PickManyActivity extends AppCompatActivity {
                 }
                 String answerContent = sb.toString();
                 // Lưu câu trả lời của người dùng
-                quesManager.saveUserAnswer(questionIds.get(currentStep), answerContent, new ApiCallback() {
+                quesManager.saveUserAnswer(questionIds.get(currentStep), answerContent,0,null, new ApiCallback() {
 
                     @Override
                     public void onSuccess() {
                         Log.e("PickManyActivity", "Câu trả lời đã được lưu: " + answerContent);
                         // Hiển thị popup
                         runOnUiThread(() -> {
-                            PopupHelper.showResultPopup(PickManyActivity.this, userAnswers, correctAnswers, () -> {
+                            PopupHelper.showResultPopup(PickManyActivity.this, questype, userAnswers, correctAnswers, null, null, null, () -> {
                                 // Callback khi nhấn Next Question trên popup
                                 currentStep++; // Tăng currentStep
 
@@ -193,6 +194,7 @@ public class PickManyActivity extends AppCompatActivity {
             @Override
             public void onSuccess(Question question) {
                 if (question != null) {
+                    questype = question.getQuesType();
                     String questionContent = question.getQuesContent();
                     Log.d("PickManyActivity", "Câu hỏi: " + questionContent);
 

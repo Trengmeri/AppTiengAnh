@@ -22,7 +22,7 @@
     android:id="@+id/tvResultDetail"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:textSize="16sp"
+    android:textSize="18sp"
     android:textColor="@android:color/black"
     android:gravity="left"
     android:layout_marginBottom="20dp" />

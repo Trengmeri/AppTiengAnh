@@ -7,175 +7,72 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.AppCompatButton;
 
-import com.example.test.NetworkChangeReceiver;
 import com.example.test.PopupHelper;
 import com.example.test.R;
 import com.example.test.api.ApiCallback;
+import com.example.test.api.ApiService;
 import com.example.test.api.LessonManager;
 import com.example.test.api.QuestionManager;
-import com.example.test.api.ResultManager;
-import com.example.test.model.Answer;
+import com.example.test.model.EvaluationResult;
+import com.example.test.model.Lesson;
 import com.example.test.model.Question;
-import com.example.test.model.QuestionChoice;
 
-import java.io.IOException;
-import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
-
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.Response;
 
 public class WrittingActivity extends AppCompatActivity {
-    List<String> correctAnswers = new ArrayList<>();
-    private List<String> userAnswers = new ArrayList<>();
-    private int totalSteps; // Tổng số bước trong thanh tiến trình
-    private AppCompatButton selectedAnswer = null;
-    private Button btnCheckAnswer;
-    QuestionManager quesManager = new QuestionManager(this);
-    LessonManager lesManager = new LessonManager();
-    ResultManager resultManager = new ResultManager(this);
-    TextView tvContent;
-    private int lessonID,courseID;
-    NetworkChangeReceiver networkReceiver;
-    private int answerIds;
+
+    private TextView tvContent;
+    private EditText etAnswer;
+    private Button btnCheckAnswers;
+    private QuestionManager quesManager;
+    private LessonManager lessonManager = new LessonManager();
+    private  String questype;
+    int lessonId = 5;
+    private List<Integer> questionIds;
+    private int currentStep = 0;
+    private int totalSteps;
+    private ApiService apiService = new ApiService(this);
     private List<Question> questions; // Danh sách câu hỏi
-    private int currentQuestionIndex; // Vị trí câu hỏi hiện tại
+    private int currentQuestionIndex;
+    private int lessonID,courseID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_writting);
 
-        btnCheckAnswer = findViewById(R.id.btnCheckAnswers);
         tvContent = findViewById(R.id.tvContent);
-        LinearLayout progressBar = findViewById(R.id.progressBar); // Ánh xạ ProgressBar
-        setupAnswerClickListeners();
-        updateProgressBar(progressBar, currentQuestionIndex);
-        networkReceiver = new NetworkChangeReceiver();
+        etAnswer = findViewById(R.id.etAnswer);
+        btnCheckAnswers = findViewById(R.id.btnCheckAnswers);
+        quesManager = new QuestionManager(this);
 
-        // Nhận dữ liệu từ Intent
         currentQuestionIndex = getIntent().getIntExtra("currentQuestionIndex", 0);
         questions = (List<Question>) getIntent().getSerializableExtra("questions");
         courseID = getIntent().getIntExtra("courseID",1);
         lessonID = getIntent().getIntExtra("lessonID",1);
-        Log.e("pick1","Lesson ID: "+ lessonID + "courseID: "+ courseID);
 
 
         // Hiển thị câu hỏi hiện tại
         loadQuestion(currentQuestionIndex);
 
-//        // Lấy lessonId từ intent hoặc một nguồn khác
-//        int lessonId = 1;
-//        fetchLessonAndQuestions(lessonId); // Gọi phương thức để lấy bài học và câu hỏi
+        btnCheckAnswers.setOnClickListener(view -> {
+            String userAnswer = etAnswer.getText().toString().trim();
 
-        btnCheckAnswer.setOnClickListener(v -> {
-            if (userAnswers.isEmpty()) {
-                Toast.makeText(WrittingActivity.this, "Vui lòng trả lời câu hỏi!", Toast.LENGTH_SHORT)
-                        .show();
+            if (userAnswer.isEmpty()) {
+                Toast.makeText(this, "Please enter an answer!", Toast.LENGTH_SHORT).show();
             } else {
-                StringBuilder sb = new StringBuilder();
-                for (int i = 0; i < userAnswers.size(); i++) {
-                    sb.append(userAnswers.get(i));
-                    if (i < userAnswers.size() - 1) {
-                        sb.append(", "); // Hoặc ký tự phân cách khác
-                    }
-                }
-                String answerContent = sb.toString();
-                // Lưu câu trả lời của người dùng
-                quesManager.saveUserAnswer(questions.get(currentQuestionIndex).getId(), answerContent, new ApiCallback() {
-
-                    @Override
-                    public void onSuccess() {
-                        Log.e("GrammarPick1QuestionActivity", "Câu trả lời đã được lưu: " + answerContent);
-                        // Hiển thị popup
-                        runOnUiThread(() -> {
-                            PopupHelper.showResultPopup(WrittingActivity.this, userAnswers, correctAnswers, () -> {
-                                // Callback khi nhấn Next Question trên popup
-                                resetAnswerColors();
-                                currentQuestionIndex++;
-                                if (currentQuestionIndex < questions.size()) {
-                                    Question nextQuestion = questions.get(currentQuestionIndex);
-                                    updateProgressBar(progressBar, currentQuestionIndex);
-                                    if (nextQuestion.getQuesType().equals("MULTIPLE")) {
-                                        Intent intent = new Intent(WrittingActivity.this, GrammarPickManyActivity.class);
-                                        intent.putExtra("currentQuestionIndex", currentQuestionIndex);
-                                        Log.e("pick1","currentQuestionIndex");
-                                        intent.putExtra("questions", (Serializable) questions);
-                                        intent.putExtra("courseID",courseID);
-                                        intent.putExtra("lessonID",lessonID);
-                                        startActivity(intent);
-                                        finish(); // Đóng Activity hiện tại
-                                    } else {
-                                        loadQuestion(currentQuestionIndex);
-                                    }
-                                } else {
-                                    finishLesson();
-                                }
-                            });
-                        });
-                        resultManager.fetchAnswerPointsByQuesId(questions.get(currentQuestionIndex).getId(), new ApiCallback<Answer>() {
-                            @Override
-                            public void onSuccess() {
-                            }
-
-                            @Override
-                            public void onSuccess(Answer answer) {
-                                if (answer != null) {
-                                    answerIds = answer.getId();
-                                    Log.e("GrammarPick1QuestionActivity", "Answer ID từ API: " + answer.getId());
-                                    if (answerIds != 0) {
-                                        QuestionManager.gradeAnswer(answerIds, new Callback() {
-                                            @Override
-                                            public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                                                Log.e("GrammarPick1QuestionActivity", "Lỗi khi chấm điểm: " + e.getMessage());
-                                            }
-
-                                            @Override
-                                            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                                                if (response.isSuccessful()) {
-                                                    Log.e("GrammarPick1QuestionActivity", "Chấm điểm thành công cho Answer ID: " + answerIds +"Diem: "+ answer.getPointAchieved());
-                                                } else {
-                                                    Log.e("GrammarPick1QuestionActivity", "Lỗi từ server: " + response.code());
-                                                }
-                                            }
-                                        });
-                                    } else {
-                                        Log.e("GrammarPick1QuestionActivity", "Bài học không có câu trl.");
-                                    }
-                                } else {
-                                    Log.e("GrammarPick1QuestionActivity", "Không nhận được câu trả lời từ API.");
-                                }
-                            }
-
-                            @Override
-                            public void onFailure(String errorMessage) {
-
-                            }
-                        });
-                    }
-
-                    @Override
-                    public void onSuccess(Object result) {}
-                    @Override
-                    public void onFailure(String errorMessage) {
-                        Log.e("GrammarPick1QuestionActivity", errorMessage);
-                    }
-                });
-
+                checkAnswer(userAnswer);
             }
         });
     }
+
     private void loadQuestion(int index) {
         if (index < questions.size()) {
             Question question = questions.get(index);
@@ -183,27 +80,12 @@ public class WrittingActivity extends AppCompatActivity {
                 @Override
                 public void onSuccess(Question question) {
                     if (question != null) {
-                        // Lấy nội dung câu hỏi
-                        String questionContent = question.getQuesContent();
-                        Log.d("GrammarPick1QuestionActivity", "Câu hỏi: " + questionContent);
-
-                        // Lấy danh sách lựa chọn
-                        List<QuestionChoice> choices = question.getQuestionChoices();
-                        if (choices != null && !choices.isEmpty()) {
-                            for (QuestionChoice choice : choices) {
-                                Log.d("GrammarPick1QuestionActivity", "Lựa chọn: " + choice.getChoiceContent() +
-                                        " (Đáp án đúng: " + choice.isChoiceKey() + ")");
-                            }
-
-                            // Cập nhật giao diện người dùng
-                            runOnUiThread(() -> {
-                                tvContent.setText(questionContent);
-                            });
-                        } else {
-                            Log.e("GrammarPick1QuestionActivity", "Câu hỏi không có lựa chọn.");
-                        }
+                        questype = question.getQuesType();
+                        runOnUiThread(() -> {
+                            tvContent.setText(question.getQuesContent());
+                        });
                     } else {
-                        Log.e("GrammarPick1QuestionActivity", "Câu hỏi trả về là null.");
+                        Log.e("ListeningQuestionActivity", "Câu hỏi trả về là null.");
                     }
                 }
 
@@ -228,6 +110,58 @@ public class WrittingActivity extends AppCompatActivity {
         finish();
     }
 
+    private void checkAnswer(String userAnswer) {
+        String questionContent = tvContent.getText().toString().trim();
+        ApiService apiService = new ApiService(this);
+
+        apiService.sendAnswerToApi(questionContent, userAnswer, new ApiCallback<EvaluationResult>() {
+            @Override
+            public void onSuccess() {
+
+            }
+
+            @Override
+            public void onSuccess(EvaluationResult result) {
+
+
+                // Lưu kết quả vào hệ thống
+                quesManager.saveUserAnswer(questions.get(currentStep).getId(), userAnswer, result.getPoint(), result.getimprovements(), new ApiCallback() {
+                    @Override
+                    public void onSuccess() {
+                        Log.d("WrittingActivity.this", "Lưu thành công!");
+                        runOnUiThread(() -> {
+                            PopupHelper.showResultPopup(WrittingActivity.this, questype, null, null, result.getPoint(), result.getimprovements(), result.getevaluation(), () -> {
+                                currentStep++; // Tăng currentStep
+                                currentQuestionIndex++;
+                                if (currentQuestionIndex < questions.size()) {
+                                    updateProgressBar(findViewById(R.id.progressBar), currentStep);
+                                    loadQuestion(currentQuestionIndex);
+                                } else {
+                                    finishLesson();
+                                }
+                            });
+                        });
+                    }
+
+                    @Override
+                    public void onSuccess(Object result) {
+
+                    }
+
+                    @Override
+                    public void onFailure(String errorMessage) {
+                        Log.e("WrittingActivity.this", "Lỗi lưu câu trả lời: " + errorMessage);
+                    }
+                });
+            }
+
+            @Override
+            public void onFailure(String errorMessage) {
+                Log.e("WrittingActivity", "Lỗi API: " + errorMessage);
+            }
+        });
+    }
+
     private void updateProgressBar(LinearLayout progressBarSteps, int step) {
         if (step < progressBarSteps.getChildCount()) {
             final View currentStepView = progressBarSteps.getChildAt(step);
@@ -236,53 +170,11 @@ public class WrittingActivity extends AppCompatActivity {
             ObjectAnimator colorAnimator = ObjectAnimator.ofArgb(
                     currentStepView,
                     "backgroundColor",
-                    Color.parseColor("#E0E0E0"), // Màu ban đầu
-                    Color.parseColor("#C4865E") // Màu đã hoàn thành
+                    Color.parseColor("#E0E0E0"),  // Màu ban đầu
+                    Color.parseColor("#C4865E")   // Màu đã hoàn thành
             );
-            colorAnimator.setDuration(300); // Thời gian chuyển đổi màu
+            colorAnimator.setDuration(200); // Thời gian chuyển đổi màu
             colorAnimator.start();
         }
-    }
-
-    private void setupAnswerClickListeners() {
-        View.OnClickListener answerClickListener = new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                AppCompatButton clickedButton = (AppCompatButton) view;
-
-                // Kiểm tra nếu đáp án đã được chọn trước đó
-                if (selectedAnswer != null && selectedAnswer == clickedButton) {
-                    // Nếu đáp án đang được chọn lại, gỡ bỏ chọn
-                    clickedButton.setBackgroundResource(R.drawable.bg_answer); // Màu nền mặc định
-                    selectedAnswer = null;
-
-                    // Xóa đáp án khỏi danh sách
-                    userAnswers.remove(clickedButton.getText().toString());
-                } else {
-                    // Nếu có đáp án được chọn trước đó, gỡ màu của đáp án cũ
-                    if (selectedAnswer != null) {
-                        selectedAnswer.setBackgroundResource(R.drawable.bg_answer);
-                    }
-
-                    // Đặt màu cho đáp án mới được chọn
-                    clickedButton.setBackgroundResource(R.drawable.bg_answer_pressed);
-
-                    // Cập nhật đáp án được chọn
-                    selectedAnswer = clickedButton;
-
-                    // Thêm đáp án mới vào danh sách
-                    String answerText = clickedButton.getText().toString();
-                    if (!userAnswers.contains(answerText)) {
-                        userAnswers.add(answerText);
-                    }
-                }
-            }
-        };
-
-    }
-
-    private void resetAnswerColors() {
-        // Đặt lại màu nền cho tất cả các đáp án về màu mặc định
-        userAnswers.clear();
     }
 }

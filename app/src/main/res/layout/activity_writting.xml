@@ -110,6 +110,7 @@
                     android:textSize="18sp"
                     android:textStyle="bold"/>
                 <EditText
+                    android:id="@+id/etAnswer"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="Write your answer"/>

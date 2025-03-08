@@ -42,6 +42,7 @@ public class GrammarPickManyActivity extends AppCompatActivity {
     private int totalSteps;
     private int answerIds;// Danh sách questionIds
     private TextView tvContent;
+    private  String questype;
     private RecyclerView recyclerViewChoices;
     private LinearLayout progressBar;
     QuestionManager quesManager = new QuestionManager(this);
@@ -90,14 +91,14 @@ public class GrammarPickManyActivity extends AppCompatActivity {
                 }
                 String answerContent = sb.toString();
                 // Lưu câu trả lời của người dùng
-                quesManager.saveUserAnswer(questions.get(currentQuestionIndex).getId(), answerContent, new ApiCallback() {
+                quesManager.saveUserAnswer(questions.get(currentQuestionIndex).getId(), answerContent,0,null, new ApiCallback() {
 
                     @Override
                     public void onSuccess() {
                         Log.e("GrammarPick1QuestionActivity", "Câu trả lời đã được lưu: " + answerContent);
                         // Hiển thị popup
                         runOnUiThread(() -> {
-                            PopupHelper.showResultPopup(GrammarPickManyActivity.this, userAnswers, correctAnswers, () -> {
+                            PopupHelper.showResultPopup(GrammarPickManyActivity.this, questype, userAnswers, correctAnswers, null, null, null, () -> {
                                 // Callback khi nhấn Next Question trên popup
 //                                resetAnswerColors();
                                 currentQuestionIndex++;
@@ -182,6 +183,7 @@ public class GrammarPickManyActivity extends AppCompatActivity {
                 @Override
                 public void onSuccess(Question question) {
                     if (question != null) {
+                        questype = question.getQuesType();
                         String questionContent = question.getQuesContent();
                         Log.d("GrammarPickManyActivity", "Câu hỏi: " + questionContent);
 
