@@ -111,8 +111,11 @@
                     android:textStyle="bold"/>
                 <EditText
                     android:id="@+id/etAnswer"
+                    android:height="150dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:gravity="top"
+                    android:background="@android:color/transparent"
                     android:hint="Write your answer"/>
 
                 <!-- Nút kiểm tra -->
