@@ -89,7 +89,9 @@ public class RecordQuestionActivity extends AppCompatActivity implements SpeechR
         LinearLayout progressBar = findViewById(R.id.progressBar);
 
         btnCheckResult.setOnClickListener(v -> {
-            mediaPlayer.pause();
+            if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+                mediaPlayer.pause();
+            }
             String userAnswer = tvTranscription.getText().toString().trim();
             userAnswers.clear();
             userAnswers.add(userAnswer);
