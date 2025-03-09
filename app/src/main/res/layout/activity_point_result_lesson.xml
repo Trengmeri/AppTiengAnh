@@ -137,22 +137,52 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <LinearLayout
+<!--        <LinearLayout-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:orientation="vertical"-->
+<!--            android:background="@drawable/course_discuss">-->
+
+<!--            <LinearLayout-->
+<!--                android:id="@+id/questionsContainer"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginStart="@dimen/dp_30"-->
+<!--                android:layout_marginTop="30dp"-->
+<!--                android:layout_marginEnd="@dimen/dp_30"-->
+<!--                android:orientation="vertical" />-->
+
+<!--        </LinearLayout>-->
+        <TableLayout
+            android:id="@+id/tableResult"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:background="@drawable/course_discuss">
+            android:stretchColumns="*"
+            android:background="@drawable/course_discuss"
+            android:padding="16dp">
 
-            <LinearLayout
-                android:id="@+id/questionsContainer"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/dp_30"
-                android:layout_marginTop="30dp"
-                android:layout_marginEnd="@dimen/dp_30"
-                android:orientation="vertical" />
+            <!-- Hàng tiêu đề -->
+            <TableRow android:background="@color/white">
+                <TextView
+                    android:text="Question"
+                    android:textStyle="bold"
+                    android:layout_weight="1"
+                    android:padding="10dp"/>
+                <TextView
+                    android:text="Your answer"
+                    android:layout_weight="1"
+                    android:textStyle="bold"
+                    android:padding="10dp" />
+                <TextView
+                    android:text="Point"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:textStyle="bold"
+                    android:padding="10dp"/>
+            </TableRow>
 
-        </LinearLayout>
+        </TableLayout>
+
     </androidx.core.widget.NestedScrollView>
 
     <!-- Nút Done cố định dưới màn hình -->

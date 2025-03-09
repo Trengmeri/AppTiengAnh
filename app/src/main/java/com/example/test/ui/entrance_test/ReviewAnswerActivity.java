@@ -49,7 +49,6 @@ public class ReviewAnswerActivity extends AppCompatActivity {
         btnBackto = findViewById(R.id.btnBackto);
         lessonsContainer = findViewById(R.id.lessonsContainer);
 
-
         btnBackto.setOnClickListener(v -> {
             finish();
         });
