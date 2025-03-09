@@ -64,6 +64,7 @@
                              <!--Rate sao-->
                             </androidx.constraintlayout.widget.ConstraintLayout>
                             <TextView
+                                android:id="@+id/courseName"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Designing App Layouts"
@@ -84,29 +85,26 @@
                                     android:layout_height="wrap_content"
                                     android:background="@drawable/icon_lesson"/>
                                 <TextView
+                                    android:id="@+id/numLessons"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_marginStart="5dp"
                                     android:text="20 lessons "
                                     android:textStyle="bold"
                                     android:textSize="14sp"/>
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text=" | "/>
 
-                                <ImageView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:background="@drawable/icon_clock"/>
+<!--                                <ImageView-->
+<!--                                    android:layout_width="wrap_content"-->
+<!--                                    android:layout_height="wrap_content"-->
+<!--                                    android:background="@drawable/icon_clock"/>-->
 
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginStart="5dp"
-                                    android:text=" 42 hours"
-                                    android:textStyle="bold"
-                                    android:textSize="14sp"/>
+<!--                                <TextView-->
+<!--                                    android:layout_width="wrap_content"-->
+<!--                                    android:layout_height="wrap_content"-->
+<!--                                    android:layout_marginStart="5dp"-->
+<!--                                    android:text=" 42 hours"-->
+<!--                                    android:textStyle="bold"-->
+<!--                                    android:textSize="14sp"/>-->
 
                             </LinearLayout>
 
@@ -126,7 +124,7 @@
                                     android:layout_weight="1"
                                     android:background="@drawable/bg_about"
                                     android:textSize="16sp"
-                                    android:text="@string/txt_about"/>
+                                    android:text="About"/>
                                 <androidx.appcompat.widget.AppCompatButton
                                     android:id="@+id/btnLesson"
                                     android:layout_width="wrap_content"
@@ -134,7 +132,7 @@
                                     style="@style/Text_Button_All"
                                     android:layout_weight="1"
                                     android:textSize="16sp"
-                                    android:text="@string/txt_lesson"
+                                    android:text="Lessons"
                                     android:background="@drawable/bg_lesson"/>
                             </LinearLayout>
 
@@ -148,6 +146,7 @@
                                     android:layout_marginTop="@dimen/dp_30">
 
                                     <TextView
+                                        android:id="@+id/txtContentAbout"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_marginStart="@dimen/dp_30"
@@ -155,61 +154,13 @@
                                         android:textColor="#A0A4AB"
                                         android:text="Design now a popular profession graphic design by off your carrer about tantas regiones barbarorum pedibus obiit"/>
                                 </LinearLayout>
-                                <LinearLayout
-                                    android:id="@+id/contentLes"
+                                <androidx.recyclerview.widget.RecyclerView
+                                    android:id="@+id/recyclerViewLessons"
                                     android:layout_width="match_parent"
-                                    android:layout_height="match_parent"
-                                    android:layout_marginTop="@dimen/dp_30"
-                                    android:orientation="vertical"
-                                    android:visibility="invisible">
-                                        <LinearLayout
-                                            android:layout_width="match_parent"
-                                            android:layout_height="wrap_content"
-                                            android:orientation="horizontal"
-                                            android:layout_marginStart="8dp"
-                                            android:layout_marginEnd="8dp"
-                                            android:background="@drawable/border_bg"
-                                            android:padding="8dp">
-                                            <TextView
-                                                android:layout_width="wrap_content"
-                                                android:layout_height="wrap_content"
-                                                android:layout_marginStart="@dimen/dp_30"
-                                                android:background="@drawable/icon_numlesson"
-                                                android:gravity="center"
-                                                android:textStyle="bold"
-                                                android:text="01"/>
-                                            <TextView
-                                                android:layout_width="match_parent"
-                                                android:layout_height="wrap_content"
-                                                android:layout_marginStart="@dimen/dp_16"
-                                                android:layout_gravity="center"
-                                                android:text="Why using IT ?"/>
-                                    </LinearLayout>
-                                    <LinearLayout
-                                        android:layout_width="match_parent"
-                                        android:layout_height="wrap_content"
-                                        android:orientation="horizontal"
-                                        android:layout_marginStart="8dp"
-                                        android:layout_marginEnd="8dp"
-                                        android:layout_marginTop="5dp"
-                                        android:background="@drawable/border_bg"
-                                        android:padding="8dp">
-                                        <TextView
-                                            android:layout_width="wrap_content"
-                                            android:layout_height="wrap_content"
-                                            android:layout_marginStart="@dimen/dp_30"
-                                            android:background="@drawable/icon_numlesson"
-                                            android:gravity="center"
-                                            android:textStyle="bold"
-                                            android:text="01"/>
-                                        <TextView
-                                            android:layout_width="match_parent"
-                                            android:layout_height="wrap_content"
-                                            android:layout_marginStart="@dimen/dp_16"
-                                            android:layout_gravity="center"
-                                            android:text="Why using IT ?"/>
-                                    </LinearLayout>
-                                </LinearLayout>
+                                    android:layout_height="wrap_content"
+                                    android:padding="16dp"
+                                    android:scrollbars="vertical"/>
+
                             </FrameLayout>
 
 
@@ -233,14 +184,14 @@
                             />
 
                         <EditText
-                            android:id="@+id/edtDiscussion"
+                            android:id="@+id/edtReview"
                             android:layout_width="250dp"
                             android:layout_height="match_parent"
                             android:layout_marginStart="8dp"
                             android:hint="Write a review" />
 
                         <ImageView
-                            android:id="@+id/btSendDiscussion"
+                            android:id="@+id/btSendReview"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
@@ -255,22 +206,22 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="@string/txt_rvCourse"
+                                android:text="Reviews"
                                 android:textStyle="bold"
                                 android:textSize="18sp"
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toTopOf="parent"/>
 
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="SEE ALL"
-                                android:textColor="#0961F5"
-                                android:textSize="14sp"
-                                android:textStyle="bold"
-                                android:layout_marginEnd="@dimen/dp_30"
-                                app:layout_constraintEnd_toEndOf="parent"
-                                app:layout_constraintTop_toTopOf="parent"/>
+<!--                            <TextView-->
+<!--                                android:layout_width="wrap_content"-->
+<!--                                android:layout_height="wrap_content"-->
+<!--                                android:text="SEE ALL"-->
+<!--                                android:textColor="#0961F5"-->
+<!--                                android:textSize="14sp"-->
+<!--                                android:textStyle="bold"-->
+<!--                                android:layout_marginEnd="@dimen/dp_30"-->
+<!--                                app:layout_constraintEnd_toEndOf="parent"-->
+<!--                                app:layout_constraintTop_toTopOf="parent"/>-->
 
                         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -282,7 +233,7 @@
                     android:layout_marginTop="10dp"
                     android:layout_marginEnd="@dimen/dp_30"
                     android:nestedScrollingEnabled="false"
-                    app:layout_constraintBottom_toTopOf="@id/btn" />
+                    android:paddingBottom="80dp" />
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>
         <ImageView
@@ -293,7 +244,6 @@
             android:layout_marginTop="@dimen/dp_30"
             android:background="@drawable/icon_back"/>
         <FrameLayout
-            android:id="@+id/btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center|bottom"
@@ -309,7 +259,7 @@
                 android:text="Join Course"
                 android:textColor="@color/white"
                 android:textStyle="bold"
-                android:textSize="20sp"
+                android:textSize="20dp"
                 android:layout_gravity="center"/>
 
         </FrameLayout>

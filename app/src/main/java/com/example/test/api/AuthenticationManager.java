@@ -57,7 +57,6 @@ public class AuthenticationManager extends BaseApiManager {
                 Log.e("AuthenticationManager", "Kết nối thất bại: " + e.getMessage());
                 callback.onFailure("Kết nối thất bại! Không thể kết nối tới API.");
             }
-
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 String responseBody = response.body().string();
