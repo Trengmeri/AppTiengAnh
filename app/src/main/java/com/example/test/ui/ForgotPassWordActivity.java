@@ -172,4 +172,17 @@ public class ForgotPassWordActivity extends AppCompatActivity {
         }
         return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches();
 }
+    @Override
+    protected void onStop() {
+        super.onStop();
+        SharedPreferences sharedPreferences = getSharedPreferences("LoginPrefs", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+
+        // Kiểm tra nếu chưa chọn trong SelectActivity thì mới lưu
+        boolean hasSelectedOption = sharedPreferences.getBoolean("hasSelectedOption", false);
+        if (!hasSelectedOption) {
+            editor.putString("lastActivity", this.getClass().getName());
+            editor.apply();
+        }
+    }
 }

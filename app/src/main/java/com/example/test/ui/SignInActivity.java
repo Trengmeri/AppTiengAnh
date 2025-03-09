@@ -68,11 +68,15 @@ public class SignInActivity extends AppCompatActivity {
         boolean isRemembered = sharedPreferences.getBoolean("rememberMe", false);
         String savedEmail = sharedPreferences.getString("email", "");
         String savedPassword = sharedPreferences.getString("password", "");
+        boolean hasSelectedOption = sharedPreferences.getBoolean("hasSelectedOption", false);
+        String lastActivity = sharedPreferences.getString("lastActivity", "");
 
 // 🛑 In log để kiểm tra dữ liệu trong SharedPreferences
         Log.d("SignInActivity", "Remember Me: " + isRemembered);
         Log.d("SignInActivity", "Saved Email: " + savedEmail);
         Log.d("SignInActivity", "Saved Password: " + savedPassword);
+        Log.d("DEBUG", "Last activity from SharedPreferences: " + lastActivity);
+
 
         setContentView(R.layout.activity_sign_in);
         AnhXa();
@@ -130,8 +134,8 @@ public class SignInActivity extends AppCompatActivity {
                             @Override
                             public void onSuccess() {
 
-//                                SharedPreferences sharedPreferences = getSharedPreferences("LoginPrefs", MODE_PRIVATE);
-//                                SharedPreferences.Editor editor = sharedPreferences.edit();
+                                SharedPreferences sharedPreferences = getSharedPreferences("LoginPrefs", MODE_PRIVATE);
+                                SharedPreferences.Editor editor = sharedPreferences.edit();
 
                                 // Lưu Remember Me
                                 if (cbRemember.isChecked()) {
@@ -142,22 +146,25 @@ public class SignInActivity extends AppCompatActivity {
                                     editor.putBoolean("rememberMe", false);
                                     editor.remove("email");
                                     editor.remove("password");
+                                    editor.remove("lastActivity");
                                 }
                                 editor.apply();
+                                Log.d("LastActivity", lastActivity);
 
-                                // Lấy activity cuối cùng
-                                String lastActivity = sharedPreferences.getString("lastActivity", "");
                                 Intent intent;
-
-                                if (lastActivity.isEmpty()) {
-                                    intent = new Intent(SignInActivity.this, ChooseFieldsActivity.class);
+                                if (hasSelectedOption) {
+                                     intent = new Intent(SignInActivity.this, HomeActivity.class);
                                 } else {
-                                    try {
-                                        Class<?> lastActivityClass = Class.forName(lastActivity);
-                                        intent = new Intent(SignInActivity.this, lastActivityClass);
-                                    } catch (ClassNotFoundException e) {
-                                        e.printStackTrace();
-                                        intent = new Intent(SignInActivity.this, HomeActivity.class);
+                                    if (lastActivity.isEmpty()) {
+                                        intent = new Intent(SignInActivity.this, SelectActivity.class);
+                                    } else {
+                                        try {
+                                            Class<?> lastActivityClass = Class.forName(lastActivity);
+                                            intent = new Intent(SignInActivity.this, lastActivityClass);
+                                        } catch (ClassNotFoundException e) {
+                                            e.printStackTrace();
+                                            intent = new Intent(SignInActivity.this, SelectActivity.class); // Mặc định về SelectActivity
+                                        }
                                     }
                                 }
 
