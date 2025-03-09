@@ -156,14 +156,14 @@ public class SignInActivity extends AppCompatActivity {
                                      intent = new Intent(SignInActivity.this, HomeActivity.class);
                                 } else {
                                     if (lastActivity.isEmpty()) {
-                                        intent = new Intent(SignInActivity.this, SelectActivity.class);
+                                        intent = new Intent(SignInActivity.this, ChooseFieldsActivity.class);
                                     } else {
                                         try {
                                             Class<?> lastActivityClass = Class.forName(lastActivity);
                                             intent = new Intent(SignInActivity.this, lastActivityClass);
                                         } catch (ClassNotFoundException e) {
                                             e.printStackTrace();
-                                            intent = new Intent(SignInActivity.this, SelectActivity.class); // Mặc định về SelectActivity
+                                            intent = new Intent(SignInActivity.this, ChooseFieldsActivity.class); // Mặc định về SelectActivity
                                         }
                                     }
                                 }

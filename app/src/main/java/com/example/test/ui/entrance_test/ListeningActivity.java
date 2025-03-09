@@ -58,7 +58,7 @@ public class ListeningActivity extends AppCompatActivity {
     private int answerIds;
     ImageView btnListen;
     TextView tvQuestion;
-
+    LinearLayout progressBar;
 
     QuestionManager quesManager = new QuestionManager(this);
     LessonManager lesManager = new LessonManager();
@@ -77,7 +77,7 @@ public class ListeningActivity extends AppCompatActivity {
         int lessonId = 3;
         fetchLessonAndQuestions(lessonId);
 
-        LinearLayout progressBar = findViewById(R.id.progressBar); // Ánh xạ ProgressBar
+        progressBar = findViewById(R.id.progressBar); // Ánh xạ ProgressBar
 
 
 
@@ -118,6 +118,7 @@ public class ListeningActivity extends AppCompatActivity {
                                 currentStep++;
                                 if (currentStep < totalSteps) {
                                     fetchQuestion(questionIds.get(currentStep));
+                                    updateProgressBar(progressBar, currentStep);
                                 } else {
                                     Intent intent = new Intent(ListeningActivity.this, WritingActivity.class);
                                     startActivity(intent);

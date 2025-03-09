@@ -293,9 +293,9 @@ public class PointResultLessonActivity extends AppCompatActivity {
                                     : new ArrayList<>();
 
                             String correctAnswerString = correctAnswers.isEmpty() ? "N/A" : String.join(", ", correctAnswers);
-                            if (question.getQuesType().equals("CHOICE")|| question.getQuesType().equals("MULTIPLE")) {
-                                correctAnswer.setText("Correct answer: " + correctAnswerString);
-                            }
+//                            if (question.getQuesType().equals("CHOICE")|| question.getQuesType().equals("MULTIPLE")) {
+//                                correctAnswer.setText("Correct answer: " + correctAnswerString);
+//                            }
 
                             // Định dạng đáp án đúng với màu xanh
                             int answerStart = spannable.length();

@@ -67,7 +67,7 @@ public class GrammarPickManyActivity extends AppCompatActivity {
         questions = (List<Question>) getIntent().getSerializableExtra("questions");
         courseID = getIntent().getIntExtra("courseID",1);
         lessonID = getIntent().getIntExtra("lessonID",1);
-        Log.e("pickmany","Lesson ID: "+ lessonID + "courseID: "+ courseID);
+        Log.d("pickmany","Lesson ID: "+ lessonID + "courseID: "+ courseID);
 
 
         // Hiển thị câu hỏi hiện tại

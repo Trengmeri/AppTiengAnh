@@ -22,19 +22,15 @@
             android:layout_height="wrap_content"
             android:padding="20dp">
 
-            <ImageView
-                android:id="@+id/iconback"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:background="@drawable/icon_back" />
 
             <TextView
-                android:id="@+id/textView7"
+                android:id="@+id/btnBack"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
                 android:text="Back"
+                android:drawablePadding="8dp"
+                android:drawableStart="@drawable/icon_back"
                 android:textColor="@color/black"
                 android:textSize="24sp"
                 android:textStyle="bold" />

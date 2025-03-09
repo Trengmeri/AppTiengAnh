@@ -33,7 +33,7 @@ import com.example.test.ui.SignInActivity;
 
 public class ProfileFragment extends Fragment {
     TextView userName, userEmail;
-    LinearLayout btnLogout, term , language;
+    LinearLayout btnLogout,btnedit, term , language;
     NetworkChangeReceiver networkReceiver;
     AuthenticationManager apiManager;
 
