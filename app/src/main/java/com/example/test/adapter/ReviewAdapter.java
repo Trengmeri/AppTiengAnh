@@ -59,7 +59,7 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ViewHolder
 
         // Hiển thị nội dung đánh giá
         holder.txtReContent.setText(review.getReContent());
-        holder.txtReSubject.setText(review.getReSubject());
+//        holder.txtReSubject.setText(review.getReSubject());
         holder.txtUser.setText("Đang tải...");
         holder.txtLikeCount.setText(String.valueOf(review.getNumLike()));
         holder.btnLike.setSelected(review.isLiked());
@@ -194,7 +194,7 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ViewHolder
             super(itemView);
             txtUser = itemView.findViewById(R.id.txtUser);
             txtReContent= itemView.findViewById(R.id.txtReContent);
-            txtReSubject = itemView.findViewById(R.id.txtReSubject);
+//            txtReSubject = itemView.findViewById(R.id.txtReSubject);
             txtLikeCount = itemView.findViewById(R.id.txtLikeCount);
             btnLike = itemView.findViewById(R.id.btnLike);
         }

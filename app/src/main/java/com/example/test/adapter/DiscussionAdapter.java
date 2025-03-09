@@ -59,7 +59,8 @@ public class DiscussionAdapter extends RecyclerView.Adapter<DiscussionAdapter.Vi
         holder.itemView.setTag(discussion.getUserID());
         Log.d("DEBUG", "UserID: " + discussion.getUserID());
 
-        userManager.fetchUserById(discussion.getUserID(), new ApiCallback<User>() {
+        userManager.
+                fetchUserById(discussion.getUserID(), new ApiCallback<User>() {
             @Override
             public void onSuccess() {
 

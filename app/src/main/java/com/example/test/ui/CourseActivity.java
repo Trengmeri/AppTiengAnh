@@ -22,11 +22,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.test.R;
 import com.example.test.SharedPreferencesManager;
+import com.example.test.adapter.LessonAdapter;
 import com.example.test.adapter.ReviewAdapter;
 import com.example.test.api.ApiCallback;
 import com.example.test.api.LessonManager;
 import com.example.test.api.ReviewManager;
 import com.example.test.model.Course;
+import com.example.test.model.Lesson;
 import com.example.test.model.Review;
 
 import java.util.ArrayList;
@@ -39,8 +41,9 @@ public class CourseActivity extends AppCompatActivity {
     LinearLayout contentAbout, contentLes;
     TextView txtContentAbout, courseName, numLessons;
     Course curCourse;
-    private RecyclerView recyclerView;
+    private RecyclerView recyclerView, recyclerViewLesson;
     private ReviewAdapter reviewAdapter;
+    private LessonAdapter lessonAdapter;
     private ReviewManager reviewManager = new ReviewManager(this);
     private LessonManager lessonManager = new LessonManager();
 
@@ -57,13 +60,16 @@ public class CourseActivity extends AppCompatActivity {
 
         // Ánh xạ views
         btnAbout = findViewById(R.id.btnAbout);
+        numLessons = findViewById(R.id.numLessons);
         btnLesson = findViewById(R.id.btnLesson);
         contentAbout = findViewById(R.id.contentAbout);
-        contentLes = findViewById(R.id.contentLes);
+        recyclerViewLesson = findViewById(R.id.recyclerViewLessons);
         courseName = findViewById(R.id.courseName);
         txtContentAbout = findViewById(R.id.txtContentAbout);
         recyclerView = findViewById(R.id.recyclerViewDiscussion);
         btnSendReview = findViewById(R.id.btSendReview);
+
+        contentAbout.setVisibility(View.VISIBLE);
 
         // Kiểm tra null cho các view quan trọng
         if (courseName == null || txtContentAbout == null || recyclerView == null || btnSendReview == null) {
@@ -84,7 +90,12 @@ public class CourseActivity extends AppCompatActivity {
                     curCourse = course;
                     courseName.setText(course.getName());
                     txtContentAbout.setText(course.getIntro());
+                    numLessons.setText(course.getLessonIds().size() + " lessons ");
                     Log.d("CourseInfo", "Name: " + course.getName() + ", Intro: " + course.getIntro());
+
+                    // Gọi hàm lấy danh sách bài học
+                    loadLessons(course.getLessonIds());
+
                     loadReviews(); // Tải reviews sau khi có curCourse
                 });
             }
@@ -95,24 +106,30 @@ public class CourseActivity extends AppCompatActivity {
             }
         });
 
+
         // Thiết lập RecyclerView
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         reviewAdapter = new ReviewAdapter(this, new ArrayList<>());
         recyclerView.setAdapter(reviewAdapter);
+
+        lessonAdapter = new LessonAdapter(this);
+        recyclerViewLesson.setLayoutManager(new LinearLayoutManager(this));
+        recyclerViewLesson.setAdapter(lessonAdapter);
+
 
         // Sự kiện nút About và Lesson
         btnAbout.setOnClickListener(v -> {
             btnAbout.setBackground(ContextCompat.getDrawable(this, R.drawable.bg_about));
             btnLesson.setBackground(ContextCompat.getDrawable(this, R.drawable.bg_lesson));
             contentAbout.setVisibility(View.VISIBLE);
-            contentLes.setVisibility(View.GONE);
+            recyclerViewLesson.setVisibility(View.GONE);
         });
 
         btnLesson.setOnClickListener(v -> {
             btnLesson.setBackground(ContextCompat.getDrawable(this, R.drawable.bg_about));
             btnAbout.setBackground(ContextCompat.getDrawable(this, R.drawable.bg_lesson));
             contentAbout.setVisibility(View.GONE);
-            contentLes.setVisibility(View.VISIBLE);
+            recyclerViewLesson.setVisibility(View.VISIBLE);
         });
 
         // Sự kiện gửi Review
@@ -132,6 +149,7 @@ public class CourseActivity extends AppCompatActivity {
             @Override
             public void onSuccess(Course course) {
                 runOnUiThread(() -> callback.onSuccess(course));
+
             }
 
             @Override
@@ -139,6 +157,39 @@ public class CourseActivity extends AppCompatActivity {
                 runOnUiThread(() -> callback.onFailure(errorMessage));
             }
         });
+    }
+
+    private void loadLessons(List<Integer> lessonIds) {
+        List<Lesson> lessons = new ArrayList<>();
+
+        if (lessonIds == null || lessonIds.isEmpty()) {
+            Log.w("CourseActivity", "Không có bài học nào trong khóa học.");
+            return;
+        }
+
+        for (int lessonId : lessonIds) {
+            lessonManager.fetchLessonById(lessonId, new ApiCallback<Lesson>() {
+                @Override
+                public void onSuccess() {}
+
+                @Override
+                public void onSuccess(Lesson lesson) {
+                    runOnUiThread(() -> {
+                        lessons.add(lesson);
+
+                        // Khi đã tải xong tất cả bài học, cập nhật adapter
+                        if (lessons.size() == lessonIds.size()) {
+                            lessonAdapter.setLessons(lessons);
+                        }
+                    });
+                }
+
+                @Override
+                public void onFailure(String errorMessage) {
+                    Log.e("LessonLoad", "Lỗi tải bài học: " + errorMessage);
+                }
+            });
+        }
     }
 
     private void sendReview() {
@@ -215,6 +266,8 @@ public class CourseActivity extends AppCompatActivity {
         });
     }
 
+
+
     private void loadReviews() {
         int courseId = curCourse != null ? curCourse.getId() : 1;
         reviewManager.fetchReviewsByCourse(courseId, new ApiCallback<List<Review>>() {
@@ -231,8 +284,12 @@ public class CourseActivity extends AppCompatActivity {
                         return;
                     }
                     Log.d("ReviewLoad", "Số đánh giá: " + reviews.size());
+
+
                     reviewAdapter = new ReviewAdapter(CourseActivity.this, reviews);
                     recyclerView.setAdapter(reviewAdapter);
+
+
                 });
             }
 

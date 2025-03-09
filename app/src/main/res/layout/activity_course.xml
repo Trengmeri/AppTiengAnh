@@ -92,23 +92,19 @@
                                     android:text="20 lessons "
                                     android:textStyle="bold"
                                     android:textSize="14sp"/>
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text=" | "/>
 
-                                <ImageView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:background="@drawable/icon_clock"/>
+<!--                                <ImageView-->
+<!--                                    android:layout_width="wrap_content"-->
+<!--                                    android:layout_height="wrap_content"-->
+<!--                                    android:background="@drawable/icon_clock"/>-->
 
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginStart="5dp"
-                                    android:text=" 42 hours"
-                                    android:textStyle="bold"
-                                    android:textSize="14sp"/>
+<!--                                <TextView-->
+<!--                                    android:layout_width="wrap_content"-->
+<!--                                    android:layout_height="wrap_content"-->
+<!--                                    android:layout_marginStart="5dp"-->
+<!--                                    android:text=" 42 hours"-->
+<!--                                    android:textStyle="bold"-->
+<!--                                    android:textSize="14sp"/>-->
 
                             </LinearLayout>
 
@@ -158,61 +154,13 @@
                                         android:textColor="#A0A4AB"
                                         android:text="Design now a popular profession graphic design by off your carrer about tantas regiones barbarorum pedibus obiit"/>
                                 </LinearLayout>
-                                <LinearLayout
-                                    android:id="@+id/contentLes"
+                                <androidx.recyclerview.widget.RecyclerView
+                                    android:id="@+id/recyclerViewLessons"
                                     android:layout_width="match_parent"
-                                    android:layout_height="match_parent"
-                                    android:layout_marginTop="@dimen/dp_30"
-                                    android:orientation="vertical"
-                                    android:visibility="invisible">
-                                        <LinearLayout
-                                            android:layout_width="match_parent"
-                                            android:layout_height="wrap_content"
-                                            android:orientation="horizontal"
-                                            android:layout_marginStart="8dp"
-                                            android:layout_marginEnd="8dp"
-                                            android:background="@drawable/border_bg"
-                                            android:padding="8dp">
-                                            <TextView
-                                                android:layout_width="wrap_content"
-                                                android:layout_height="wrap_content"
-                                                android:layout_marginStart="@dimen/dp_30"
-                                                android:background="@drawable/icon_numlesson"
-                                                android:gravity="center"
-                                                android:textStyle="bold"
-                                                android:text="01"/>
-                                            <TextView
-                                                android:layout_width="match_parent"
-                                                android:layout_height="wrap_content"
-                                                android:layout_marginStart="@dimen/dp_16"
-                                                android:layout_gravity="center"
-                                                android:text="Why using IT ?"/>
-                                    </LinearLayout>
-                                    <LinearLayout
-                                        android:layout_width="match_parent"
-                                        android:layout_height="wrap_content"
-                                        android:orientation="horizontal"
-                                        android:layout_marginStart="8dp"
-                                        android:layout_marginEnd="8dp"
-                                        android:layout_marginTop="5dp"
-                                        android:background="@drawable/border_bg"
-                                        android:padding="8dp">
-                                        <TextView
-                                            android:layout_width="wrap_content"
-                                            android:layout_height="wrap_content"
-                                            android:layout_marginStart="@dimen/dp_30"
-                                            android:background="@drawable/icon_numlesson"
-                                            android:gravity="center"
-                                            android:textStyle="bold"
-                                            android:text="01"/>
-                                        <TextView
-                                            android:layout_width="match_parent"
-                                            android:layout_height="wrap_content"
-                                            android:layout_marginStart="@dimen/dp_16"
-                                            android:layout_gravity="center"
-                                            android:text="Why using IT ?"/>
-                                    </LinearLayout>
-                                </LinearLayout>
+                                    android:layout_height="wrap_content"
+                                    android:padding="16dp"
+                                    android:scrollbars="vertical"/>
+
                             </FrameLayout>
 
 
@@ -264,16 +212,16 @@
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toTopOf="parent"/>
 
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="SEE ALL"
-                                android:textColor="#0961F5"
-                                android:textSize="14sp"
-                                android:textStyle="bold"
-                                android:layout_marginEnd="@dimen/dp_30"
-                                app:layout_constraintEnd_toEndOf="parent"
-                                app:layout_constraintTop_toTopOf="parent"/>
+<!--                            <TextView-->
+<!--                                android:layout_width="wrap_content"-->
+<!--                                android:layout_height="wrap_content"-->
+<!--                                android:text="SEE ALL"-->
+<!--                                android:textColor="#0961F5"-->
+<!--                                android:textSize="14sp"-->
+<!--                                android:textStyle="bold"-->
+<!--                                android:layout_marginEnd="@dimen/dp_30"-->
+<!--                                app:layout_constraintEnd_toEndOf="parent"-->
+<!--                                app:layout_constraintTop_toTopOf="parent"/>-->
 
                         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -284,7 +232,8 @@
                     android:layout_marginStart="@dimen/dp_30"
                     android:layout_marginTop="10dp"
                     android:layout_marginEnd="@dimen/dp_30"
-                    android:nestedScrollingEnabled="false" />
+                    android:nestedScrollingEnabled="false"
+                    android:paddingBottom="80dp" />
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>
         <ImageView

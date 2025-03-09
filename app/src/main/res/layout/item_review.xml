@@ -39,41 +39,41 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"/>
 
-            <!-- Hiển thị số sao (numStar) -->
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                android:orientation="horizontal">
+<!--            &lt;!&ndash; Hiển thị số sao (numStar) &ndash;&gt;-->
+<!--            <LinearLayout-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                app:layout_constraintEnd_toEndOf="parent"-->
+<!--                app:layout_constraintTop_toTopOf="parent"-->
+<!--                android:orientation="horizontal">-->
 
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/rated_star"/>
+<!--                <ImageView-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:src="@drawable/rated_star"/>-->
 
-                <TextView
-                    android:id="@+id/txtNumStar"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="5"
-                    android:textStyle="bold"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginStart="5dp"
-                    android:textSize="14sp"/>
-            </LinearLayout>
+<!--                <TextView-->
+<!--                    android:id="@+id/txtNumStar"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:text="5"-->
+<!--                    android:textStyle="bold"-->
+<!--                    android:layout_gravity="center_vertical"-->
+<!--                    android:layout_marginStart="5dp"-->
+<!--                    android:textSize="14sp"/>-->
+<!--            </LinearLayout>-->
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <!-- Chủ đề đánh giá (reSubject) -->
-        <TextView
-            android:id="@+id/txtReSubject"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Chủ đề đánh giá"
-            android:textStyle="bold"
-            android:textColor="#333333"
-            android:textSize="15sp"
-            android:layout_marginTop="5dp"/>
+<!--        <TextView-->
+<!--            android:id="@+id/txtReSubject"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="Chủ đề đánh giá"-->
+<!--            android:textStyle="bold"-->
+<!--            android:textColor="#333333"-->
+<!--            android:textSize="15sp"-->
+<!--            android:layout_marginTop="5dp"/>-->
 
         <!-- Nội dung đánh giá (reContent) -->
         <TextView
@@ -87,14 +87,14 @@
             android:layout_marginTop="5dp"/>
 
         <!-- Trạng thái (status) -->
-        <TextView
-            android:id="@+id/txtStatus"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="CONTRIBUTING"
-            android:textColor="#888888"
-            android:textSize="12sp"
-            android:layout_marginTop="5dp"/>
+<!--        <TextView-->
+<!--            android:id="@+id/txtStatus"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="CONTRIBUTING"-->
+<!--            android:textColor="#888888"-->
+<!--            android:textSize="12sp"-->
+<!--            android:layout_marginTop="5dp"/>-->
 
         <!-- Like + Thời gian -->
         <LinearLayout
@@ -117,14 +117,14 @@
                 android:text="123"
                 android:textSize="12sp"/>
 
-            <TextView
-                android:id="@+id/txtCreatedAt"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/dp_16"
-                android:textStyle="bold"
-                android:textSize="12sp"
-                android:text="2 weeks ago"/>
+<!--            <TextView-->
+<!--                android:id="@+id/txtCreatedAt"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginStart="@dimen/dp_16"-->
+<!--                android:textStyle="bold"-->
+<!--                android:textSize="12sp"-->
+<!--                android:text="2 weeks ago"/>-->
         </LinearLayout>
     </LinearLayout>
 </LinearLayout>
