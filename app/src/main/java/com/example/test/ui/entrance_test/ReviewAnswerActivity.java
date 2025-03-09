@@ -1,14 +1,25 @@
 package com.example.test.ui.entrance_test;
 
+import android.annotation.SuppressLint;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -24,6 +35,9 @@ import com.example.test.model.Lesson;
 import com.example.test.model.Question;
 import com.example.test.model.QuestionChoice;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -35,6 +49,8 @@ public class ReviewAnswerActivity extends AppCompatActivity {
     QuestionManager quesManager = new QuestionManager(this);
     ResultManager resultManager = new ResultManager(this);
     int lessonId;
+    TableLayout tableTestResult;
+    @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,6 +64,7 @@ public class ReviewAnswerActivity extends AppCompatActivity {
         courseTitle = findViewById(R.id.courseTitle);
         btnBackto = findViewById(R.id.btnBackto);
         lessonsContainer = findViewById(R.id.lessonsContainer);
+        tableTestResult= findViewById(R.id.tableTestResult);
 
         btnBackto.setOnClickListener(v -> {
             finish();
@@ -144,41 +161,76 @@ public class ReviewAnswerActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(Answer answer) {
                         runOnUiThread(() -> {
-                            if (question!= null && answer!= null) {
-                                View answerView = getLayoutInflater().inflate(R.layout.item_answer, null);
+                            // Tạo một hàng mới cho bảng
+                            TableRow row = new TableRow(tableTestResult.getContext());
 
-                                TextView questionContent = answerView.findViewById(R.id.question);
-                                TextView correctAnswer = answerView.findViewById(R.id.correct_answer);
-                                TextView yourAnswer = answerView.findViewById(R.id.youranswer);
-                                TextView point = answerView.findViewById(R.id.point);
+                            // TextView cho câu hỏi + đáp án đúng
+                            TextView questionTextView = new TextView(tableTestResult.getContext());
+                            // Tạo SpannableStringBuilder để thay đổi màu chữ trong cùng một TextView
+                            SpannableStringBuilder spannable = new SpannableStringBuilder();
 
-                                questionContent.setText("Question: " +question.getQuesContent());
-                                // Lấy correctAnswer từ question
-                                List<QuestionChoice> choices = question.getQuestionChoices();
-                                List<String> correctAnswers = question.getQuestionChoices().stream()
-                                        .filter(QuestionChoice::isChoiceKey)
-                                        .map(QuestionChoice::getChoiceContent)
-                                        .collect(Collectors.toList());
+                            // Thêm nội dung câu hỏi với định dạng in đậm
+                            spannable.append("Q: ").append(question.getQuesContent()).append("\n");
 
-                                String correctAnswerString = String.join(", ", correctAnswers);
+                            // Định dạng "Correct:" với màu xanh
+                            int correctStart = spannable.length();
+                            spannable.append("Correct: ");
+                            int correctEnd = spannable.length();
+                            spannable.setSpan(new ForegroundColorSpan(Color.parseColor("#4CAF50")), correctStart, correctEnd, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
-                                if(answer.getPointAchieved() == 0){
-                                    yourAnswer.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
-                                } else {
-                                    yourAnswer.setTextColor(getResources().getColor(android.R.color.holo_green_dark));
-                                }
+                            // Lấy danh sách đáp án đúng
+                            List<QuestionChoice> choices = question.getQuestionChoices();
+                            List<String> correctAnswers = (choices != null) ?
+                                    choices.stream()
+                                            .filter(QuestionChoice::isChoiceKey)
+                                            .map(QuestionChoice::getChoiceContent)
+                                            .collect(Collectors.toList())
+                                    : new ArrayList<>();
 
-                                if (question.getQuesType().equals("CHOICE")|| question.getQuesType().equals("MULTIPLE")) {
-                                    correctAnswer.setText("Correct answer: " + correctAnswerString);
-                                }
-
-                                yourAnswer.setText("Your answer: " + answer.getAnswerContent());
-                                point.setText("Point: " + answer.getPointAchieved());
-
-                                questionsContainer.addView(answerView);
-                            } else {
-                                Log.e("ReviewAnswerActivity", "Câu hỏi hoặc câu trả lời không hợp lệ.");
+                            String correctAnswerString = correctAnswers.isEmpty() ? "N/A" : String.join(", ", correctAnswers);
+                            if (question.getQuesType().equals("CHOICE")|| question.getQuesType().equals("MULTIPLE")) {
+                                correctAnswer.setText("Correct answer: " + correctAnswerString);
                             }
+                            // Định dạng đáp án đúng với màu xanh
+                            int answerStart = spannable.length();
+                            spannable.append(correctAnswerString);
+                            int answerEnd = spannable.length();
+                            spannable.setSpan(new ForegroundColorSpan(Color.parseColor("#4CAF50")), answerStart, answerEnd, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+                            questionTextView.setText(spannable);
+                            questionTextView.setPadding(10, 10, 10, 10);
+                            questionTextView.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 1));
+                            questionTextView.setTypeface(null, Typeface.BOLD);
+
+                            // TextView cho câu trả lời của người dùng
+                            TextView userAnswerTextView = new TextView(tableTestResult.getContext());
+                            userAnswerTextView.setText(answer.getAnswerContent());
+                            userAnswerTextView.setPadding(10, 10, 10, 10);
+                            userAnswerTextView.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 1));
+                            userAnswerTextView.setTypeface(null, Typeface.BOLD);
+
+                            // TextView cho điểm số
+                            TextView pointTextView = new TextView(tableTestResult.getContext());
+                            pointTextView.setText(String.valueOf(answer.getPointAchieved()));
+                            pointTextView.setPadding(10, 10, 10, 10);
+                            pointTextView.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 1));
+                            pointTextView.setGravity(Gravity.CENTER);
+                            pointTextView.setTypeface(null, Typeface.BOLD);
+                            // Đổi màu chữ tùy theo đúng/sai
+                            if (answer.getPointAchieved() == 0) {
+                                userAnswerTextView.setTextColor(ContextCompat.getColor(tableTestResult.getContext(), android.R.color.holo_red_dark));
+                                pointTextView.setTextColor(ContextCompat.getColor(tableTestResult.getContext(), android.R.color.holo_red_dark));
+                            } else {
+                                userAnswerTextView.setTextColor(ContextCompat.getColor(tableTestResult.getContext(), android.R.color.holo_green_dark));
+                                pointTextView.setTextColor(ContextCompat.getColor(tableTestResult.getContext(), android.R.color.holo_green_dark));
+                            }
+                            // Thêm các TextView vào hàng
+                            row.addView(questionTextView);
+                            row.addView(userAnswerTextView);
+                            row.addView(pointTextView);
+
+                            // Thêm hàng vào bảng
+                            tableTestResult.addView(row);
                         });
                     }
 

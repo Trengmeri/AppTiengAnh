@@ -60,15 +60,38 @@
                         <androidx.core.widget.NestedScrollView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="@dimen/dp_30"
-                            android:layout_marginEnd="@dimen/dp_30">
+                            android:layout_marginStart="@dimen/dp_16"
+                            android:layout_marginEnd="@dimen/dp_16">
 
 
-                            <LinearLayout
-                                android:id="@+id/lessonsContainer"
+                            <TableLayout
+                                android:id="@+id/tableTestResult"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:orientation="vertical" />
+                                android:stretchColumns="*"
+                                android:background="@drawable/course_discuss">
+
+                                <!-- Hàng tiêu đề -->
+                                <TableRow android:background="@color/white">
+                                    <TextView
+                                        android:text="Question"
+                                        android:textStyle="bold"
+                                        android:layout_weight="1"
+                                        android:padding="10dp"/>
+                                    <TextView
+                                        android:text="Your answer"
+                                        android:layout_weight="1"
+                                        android:textStyle="bold"
+                                        android:padding="10dp" />
+                                    <TextView
+                                        android:text="Point"
+                                        android:layout_weight="1"
+                                        android:gravity="center"
+                                        android:textStyle="bold"
+                                        android:padding="10dp"/>
+                                </TableRow>
+
+                            </TableLayout>
 
                         </androidx.core.widget.NestedScrollView>
 
