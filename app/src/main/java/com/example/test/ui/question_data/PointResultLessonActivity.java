@@ -1,5 +1,6 @@
 package com.example.test.ui.question_data;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -178,6 +179,7 @@ public class PointResultLessonActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess() {}
 
+                    @SuppressLint("UseCompatLoadingForColorStateLists")
                     @Override
                     public void onSuccess(Result result) {
                         if (result!= null) {

@@ -100,7 +100,7 @@ public class PickManyActivity extends AppCompatActivity {
                                     fetchQuestion(questionIds.get(currentStep)); // Lấy câu hỏi tiếp theo
                                     updateProgressBar(progressBar, currentStep); // Cập nhật thanh tiến trình
                                 } else {
-                                    Intent intent = new Intent(PickManyActivity.this, ListeningActivity.class);
+                                    Intent intent = new Intent(PickManyActivity.this,ListeningActivity.class);
                                     startActivity(intent);
                                     finish();
                                 }

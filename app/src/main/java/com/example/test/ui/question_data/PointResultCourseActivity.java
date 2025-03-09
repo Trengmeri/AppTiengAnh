@@ -1,10 +1,12 @@
 package com.example.test.ui.question_data;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -38,6 +40,7 @@ public class PointResultCourseActivity extends AppCompatActivity {
     private double compCourse;
     private int coursePoint;
     private double comR, comL, comS, comW;
+    ImageView star1,star2,star3;
     QuestionManager quesManager = new QuestionManager(this);
     LessonManager lesManager = new LessonManager();
     ResultManager resultManager = new ResultManager(this);
@@ -82,6 +85,9 @@ public class PointResultCourseActivity extends AppCompatActivity {
         listeningSkillLayout.setVisibility(View.GONE);
         speakingSkillLayout.setVisibility(View.GONE);
         writingSkillLayout.setVisibility(View.GONE);
+        star1 = findViewById(R.id.star1);
+        star2 = findViewById(R.id.star2);
+        star3 = findViewById(R.id.star3);
     }
 
     private void fetchCourseData(int courseId) {
@@ -200,10 +206,22 @@ public class PointResultCourseActivity extends AppCompatActivity {
                     public void onSuccess() {}
 
                     @Override
+                    @SuppressLint("UseCompatLoadingForColorStateLists")
                     public void onSuccess(Result result) {
                         if (result!= null) {
                             Log.d("PointResultActivity", "fetchResultByLesson: Lấy Result thành công");
-                            runOnUiThread(() -> updateUI(skillType, result.getComLevel(), result.getTotalPoints(), result.getId(), coursePoint, compCourse));
+                            runOnUiThread(() -> {
+                                updateUI(skillType, result.getComLevel(), result.getTotalPoints(), result.getId(), coursePoint, compCourse);
+                                if (result.getComLevel() > 90) {
+                                    star3.setBackgroundTintList(getResources().getColorStateList(R.color.yellow));
+                                }
+                                if (result.getComLevel() > 60) {
+                                    star2.setBackgroundTintList(getResources().getColorStateList(R.color.yellow));
+                                }
+                                if (result.getComLevel() > 30) {
+                                    star1.setBackgroundTintList(getResources().getColorStateList(R.color.yellow));
+                                }
+                            });
                         } else {
                             Log.e("PointResultActivity", "fetchResultByLesson: Kết quả không hợp lệ.");
                         }
