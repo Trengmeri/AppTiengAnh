@@ -18,8 +18,7 @@ import com.example.test.SharedPreferencesManager;
 import com.example.test.model.User;
 import com.example.test.ui.DictionaryActivity;
 import com.example.test.ui.GroupFlashcardActivity;
-import com.example.test.ui.ScheduleActivity;
-import com.example.test.ui.home.HomeActivity;
+import com.example.test.ui.schedule.ScheduleActivity;
 
 public class ExploreFragment extends Fragment {
     private ImageView btnstudy,btnhome,btnprofile;

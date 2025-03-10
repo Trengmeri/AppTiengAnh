@@ -1,26 +1,31 @@
-package com.example.test.ui;
+package com.example.test.ui.schedule;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.AlarmManager;
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.PowerManager;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.example.test.R;
 import com.example.test.SharedPreferencesManager;
 import com.example.test.api.ApiCallback;
 import com.example.test.api.ScheduleManager;
-import com.example.test.model.Answer;
-import com.example.test.model.Course;
-import com.example.test.model.Enrollment;
-import com.example.test.model.Lesson;
-import com.example.test.model.MediaFile;
-import com.example.test.model.Question;
-import com.example.test.model.Result;
 import com.example.test.model.Schedule;
 
 import java.time.DayOfWeek;
@@ -35,6 +40,7 @@ public class ScheduleActivity extends AppCompatActivity {
     private ImageView up, down;
     ImageView Mon, Tue, Wed, Thu, Fri, Sat, Sun, check_icon2, check_icon3, check_icon4, check_icon5, check_icon6, check_icon7, check_icon0;
     ImageView Basic, Advance, LevelUp, check_basic, check_advance, check_levelup;
+    private static final int PERMISSION_REQUEST_CODE = 101;
 
     private int currentHour = 0;
     private int currentMinute = 0;
@@ -45,6 +51,9 @@ public class ScheduleActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_schedule);
+        requestNotificationPermission();
+        requestIgnoreBatteryOptimizations();
+
 
         textViewReminderTimeHour = findViewById(R.id.textViewReminderTimeHour);
         textViewReminderTimeMins = findViewById(R.id.textViewReminderTimeMins);
@@ -328,6 +337,54 @@ public class ScheduleActivity extends AppCompatActivity {
         List<Schedule> schedules = gatherScheduleData();
         Done.setEnabled(!schedules.isEmpty());
         Done.setTextColor((getResources().getColor(R.color.btncolor)));
+    }
+
+    private void requestIgnoreBatteryOptimizations() {
+        Log.d("MainActivity", "👉 Đang kiểm tra quyền thông báo...");
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) { // Android 12 trở lên
+            AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+            if (!alarmManager.canScheduleExactAlarms()) {
+                Intent intent = new Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM);
+                startActivity(intent);
+            }
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            PowerManager pm = (PowerManager) getSystemService(POWER_SERVICE);
+            if (!pm.isIgnoringBatteryOptimizations(getPackageName())) {
+                Intent intent = new Intent();
+                intent.setAction(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
+                intent.setData(Uri.parse("package:" + getPackageName()));
+                startActivity(intent);
+            }
+        }
+    }
+
+    public void requestNotificationPermission() {
+        Log.d("MainActivity", "👉 Đang kiểm tra quyền thông báo...");
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) { // Android 13 trở lên
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
+                    != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.POST_NOTIFICATIONS}, 101);
+            }
+        }
+    }
+
+    // Nhận kết quả khi người dùng chọn cấp quyền hoặc từ chối
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (requestCode == PERMISSION_REQUEST_CODE) {
+            for (int i = 0; i < permissions.length; i++) {
+                if (grantResults[i] == PackageManager.PERMISSION_GRANTED) {
+                    Log.d("MainActivity", "Quyền được cấp: " + permissions[i]);
+                } else {
+                    Log.e("MainActivity", "Quyền bị từ chối: " + permissions[i]);
+                }
+            }
+        }
     }
 
 

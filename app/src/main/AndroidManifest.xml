@@ -4,8 +4,16 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="com.android.alarm.permission.SET_ALARM"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
+
+
 
     <application
         android:allowBackup="true"
@@ -18,6 +26,16 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Test"
         tools:targetApi="31">
+        <receiver
+            android:name=".ui.schedule.BootReceiver"
+            android:exported="true"
+            android:enabled="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+            </intent-filter>
+        </receiver>
+        <receiver android:name=".ui.schedule.AlarmReceiver"
+            android:exported="false" />
         <activity
             android:name=".ui.profile.LanguageActivity"
             android:exported="false" />
@@ -29,9 +47,6 @@
             android:exported="false" />
         <activity
             android:name=".ui.DiscussionActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ui.ReviewActivity"
             android:exported="false" />
         <activity
             android:name=".ui.question_data.WrittingActivity"
@@ -79,8 +94,9 @@
             android:name=".ui.explore.ExploreActivity"
             android:exported="true" />
         <activity
-            android:name=".ui.ScheduleActivity"
+            android:name=".ui.schedule.ScheduleActivity"
             android:exported="true" />
+
         <activity
             android:name=".ui.NotificationActivity"
             android:exported="true" />

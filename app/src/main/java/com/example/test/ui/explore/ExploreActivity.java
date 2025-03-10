@@ -1,9 +1,7 @@
 package com.example.test.ui.explore;
 
 import android.annotation.SuppressLint;
-import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
@@ -11,9 +9,6 @@ import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.test.R;
-import com.example.test.ui.GroupFlashcardActivity;
-import com.example.test.ui.ScheduleActivity;
-import com.example.test.ui.home.HomeActivity;
 
 public class ExploreActivity extends AppCompatActivity {
 

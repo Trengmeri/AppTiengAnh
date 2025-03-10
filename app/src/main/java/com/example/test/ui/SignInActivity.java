@@ -151,6 +151,7 @@ public class SignInActivity extends AppCompatActivity {
                                 editor.apply();
                                 Log.d("LastActivity", lastActivity);
 
+
                                 Intent intent;
                                 if (hasSelectedOption) {
                                      intent = new Intent(SignInActivity.this, HomeActivity.class);

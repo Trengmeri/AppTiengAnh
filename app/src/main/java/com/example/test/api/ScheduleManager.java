@@ -7,6 +7,9 @@ import com.example.test.NotificationManager;
 import com.example.test.NotificationStorage;
 import com.example.test.SharedPreferencesManager;
 import com.example.test.model.Schedule;
+import com.example.test.response.ApiResponSchedule;
+import com.example.test.ui.schedule.AlarmScheduler;
+import com.google.gson.Gson;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -14,6 +17,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 import okhttp3.Call;
@@ -62,7 +66,8 @@ public class ScheduleManager extends BaseApiManager {
                     if (response.isSuccessful()) {
                         Log.d("Schedule:","Tao lich hoc thanh cong");
                         String responseBody = response.body().string();
-                        callback.onSuccess(); // Hoặc có thể truyền thêm dữ liệu từ response
+                        callback.onSuccess();
+                        AlarmScheduler.scheduleAlarm(context, schedule.getScheduleTime());
                         try {
                             JSONObject responseJson = new JSONObject(responseBody);
                             String message = responseJson.optString("message", "Your schedule has been created.");
@@ -88,4 +93,49 @@ public class ScheduleManager extends BaseApiManager {
             callback.onFailure("Lỗi JSON: " + e.getMessage());
         }
     }
+
+    public void fetchSchedulesByUserId(int userId, ApiCallback callback) {
+        String url = BASE_URL + "/api/v1/schedules?userId=" + userId;
+
+        Request request = new Request.Builder()
+                .url(url)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    String responseBody = response.body().string();
+                    Log.d("ScheduleManager", "Phản hồi từ server: " + responseBody);
+
+                    Gson gson = new Gson();
+                    ApiResponSchedule apiResponse = gson.fromJson(responseBody, ApiResponSchedule.class);
+
+                    if (apiResponse.getStatusCode() == 200) {
+                        List<Schedule> schedules = apiResponse.getData().getContent();
+                        String jsonSchedules = gson.toJson(schedules);
+                        Log.d("ScheduleManager", "Dữ liệu JSON: " + jsonSchedules);
+
+                        if (!schedules.isEmpty()) {
+                            callback.onSuccess(schedules);
+                        } else {
+                            callback.onFailure("Không có lịch học nào.");
+                        }
+                    } else {
+                        callback.onFailure("Lỗi từ server: " + apiResponse.getMessage());
+                    }
+                } else {
+                    Log.e("ScheduleManager", "Lỗi từ server: Mã lỗi " + response.code());
+                    callback.onFailure("Lỗi từ server: Mã lỗi " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.e("ScheduleManager", "Lỗi kết nối: " + e.getMessage());
+                callback.onFailure("Không thể kết nối tới API.");
+            }
+        });
+    }
+
 }

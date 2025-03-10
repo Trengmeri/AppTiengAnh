@@ -10,7 +10,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="16dp"
-    tools:context=".ui.ScheduleActivity">
+    tools:context=".ui.schedule.ScheduleActivity">
 
 
     <LinearLayout
