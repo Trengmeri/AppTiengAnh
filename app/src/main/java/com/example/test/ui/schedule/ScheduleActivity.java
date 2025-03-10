@@ -30,6 +30,7 @@ import com.example.test.model.Schedule;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -387,18 +388,33 @@ public class ScheduleActivity extends AppCompatActivity {
         }
     }
 
-
     private String convertDayOfWeekToDate(DayOfWeek dayOfWeek) {
-        // Get today's date
+        // Lấy ngày hiện tại
         LocalDate currentDate = LocalDate.now();
 
-        // Calculate the number of days to add to reach the selected day
-        int daysToAdd = (dayOfWeek.getValue() - currentDate.getDayOfWeek().getValue() + 7) % 7;
+        // Lấy ngày & giờ hiện tại
+        LocalDateTime now = LocalDateTime.now();
+        int currentHour = now.getHour();
+        int currentMinute = now.getMinute();
 
-        // Add the days to the current date to get the date of the selected day
+
+        // Tính số ngày cần cộng để đến ngày được chọn
+        int daysToAdd = (dayOfWeek.getValue() - currentDate.getDayOfWeek().getValue() + 7) % 7;
         LocalDate selectedDate = currentDate.plusDays(daysToAdd);
 
-        // Format the date according to ISO 8601 (yyyy-MM-dd)
+        // Nếu ngày được chọn là hôm nay nhưng thời gian đã qua, dời sang tuần sau
+        if (daysToAdd == 0) { // Người dùng đặt lịch vào hôm nay
+            int selectedHour = Integer.parseInt(textViewReminderTimeHour.getText().toString());
+            int selectedMinute = Integer.parseInt(textViewReminderTimeMins.getText().toString());
+
+            if (selectedHour < currentHour || (selectedHour == currentHour && selectedMinute <= currentMinute)) {
+                // Nếu giờ đã qua, cộng thêm 7 ngày
+                selectedDate = selectedDate.plusDays(7);
+            }
+        }
+
+        // Trả về ngày đã được định dạng đúng
         return selectedDate.format(DateTimeFormatter.ISO_LOCAL_DATE);
     }
+
 }

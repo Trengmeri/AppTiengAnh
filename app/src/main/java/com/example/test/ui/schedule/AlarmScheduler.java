@@ -14,12 +14,11 @@ import java.util.Locale;
 
 public class AlarmScheduler {
 
-    public static void scheduleAlarm(Context context, String scheduleTime) {
-        Log.d("AlarmScheduler", "👉 Đặt báo thức cho: " + scheduleTime);
+    public static void scheduleAlarm(Context context, String scheduleTime, int requestCode) {
+        Log.d("AlarmScheduler", "👉 Đặt báo thức cho: " + scheduleTime + " với requestCode: " + requestCode);
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.getDefault());
         Calendar calendar = Calendar.getInstance();
-
 
         try {
             calendar.setTime(sdf.parse(scheduleTime));
@@ -32,10 +31,11 @@ public class AlarmScheduler {
         Log.d("AlarmScheduler", "⏰ Thời gian báo thức (millis): " + triggerTime);
 
         Intent intent = new Intent(context, AlarmReceiver.class);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(
-                context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
-        );
 
+        // 🔥 Quan trọng: Sử dụng requestCode để tạo PendingIntent duy nhất cho từng báo thức
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(
+                context, requestCode, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
+        );
 
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         if (alarmManager != null) {
@@ -49,6 +49,6 @@ public class AlarmScheduler {
         } else {
             Log.e("AlarmScheduler", "❌ AlarmManager không hoạt động!");
         }
-
     }
+
 }

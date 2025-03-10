@@ -67,7 +67,10 @@ public class ScheduleManager extends BaseApiManager {
                         Log.d("Schedule:","Tao lich hoc thanh cong");
                         String responseBody = response.body().string();
                         callback.onSuccess();
-                        AlarmScheduler.scheduleAlarm(context, schedule.getScheduleTime());
+                        int requestCode = schedule.getId(); // Hoặc dùng một ID duy nhất khác
+
+                        AlarmScheduler.scheduleAlarm(context, schedule.getScheduleTime(), requestCode);
+
                         try {
                             JSONObject responseJson = new JSONObject(responseBody);
                             String message = responseJson.optString("message", "Your schedule has been created.");
@@ -94,7 +97,8 @@ public class ScheduleManager extends BaseApiManager {
         }
     }
 
-    public void fetchSchedulesByUserId(int userId, ApiCallback callback) {
+    public void fetchSchedulesByUserId( ApiCallback callback) {
+        String userId = SharedPreferencesManager.getInstance(context).getID();
         String url = BASE_URL + "/api/v1/schedules?userId=" + userId;
 
         Request request = new Request.Builder()
