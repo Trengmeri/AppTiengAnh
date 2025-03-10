@@ -84,10 +84,20 @@
                 android:textSize="24sp"
                 android:textStyle="bold" />
 
+            <TextView
+                android:id="@+id/tvQuestion"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawableLeft="@drawable/fe_question"
+                android:layout_marginTop="30dp"
+                android:textSize="24sp"
+                android:textStyle="bold" />
+
             <ImageView
                 android:id="@+id/imgVoice"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_width="259dp"
+                android:layout_height="219dp"
+                android:layout_gravity="center"
                 android:layout_marginTop="25dp"
                 app:srcCompat="@drawable/ic_record" />
 
@@ -117,36 +127,8 @@
                     android:textAlignment="center" />
             </LinearLayout>
 
-            <TextView
-                android:id="@+id/tvQuestion"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:drawableLeft="@drawable/fe_question"
-                android:textSize="24sp"
-                android:textStyle="bold" />
 
-            <LinearLayout
-                android:id="@+id/linearLayout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:background="@drawable/rounded_corner"
-                android:backgroundTint="#FFDDD0"
-                android:orientation="horizontal"
-                android:padding="16dp">
 
-                <ImageView
-                    android:id="@+id/btn_play"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:srcCompat="@drawable/btn_play" />
-
-                <SeekBar
-                    android:id="@+id/seekBar"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp" />
-            </LinearLayout>
 
             <Button
                 android:id="@+id/btnCheckResult"

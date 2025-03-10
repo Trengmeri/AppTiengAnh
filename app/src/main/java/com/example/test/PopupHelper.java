@@ -40,10 +40,12 @@ public class PopupHelper {
 
         TextView tvMessage = popupView.findViewById(R.id.tvResultMessage);
         TextView tvDetail = popupView.findViewById(R.id.tvResultDetail);
+        TextView tvMessage2 = popupView.findViewById(R.id.tvResultMessage2);
+        TextView tvDetail2 = popupView.findViewById(R.id.tvResultDetail2);
         Button btnNext = popupView.findViewById(R.id.btnNextQuestion);
 
-        if ("MULTIPLE".equals(questType) || "CHOICE".equals(questType)) {
-            if (userAnswers.equals(correctAnswers)) {
+        if ("MULTIPLE".equals(questType) || "CHOICE".equals(questType) || "LISTENING".equals(questType)) {
+            if (userAnswers.get(0).toLowerCase().trim().equals(correctAnswers.get(0).toLowerCase().trim())) {
                 tvMessage.setText(String.format("%s\n%s", activity.getString(R.string.correct), activity.getString(R.string.ANS)));
                 tvMessage.setTextColor(activity.getResources().getColor(android.R.color.holo_green_dark));
                 tvDetail.setText(String.join(", ", correctAnswers));
@@ -60,20 +62,25 @@ public class PopupHelper {
             try {
                 // Hiển thị nội dung đánh giá
                 tvMessage.setText(String.format("%s%.1f",activity.getString(R.string.point), score));
-                tvDetail.setText(evaluation + "\n\n" + activity.getString(R.string.improvements) + "  " + improvements);
+                tvDetail.setText(evaluation);
+                tvMessage2.setText(activity.getString(R.string.improvements));
+                tvDetail2.setText(improvements);
 
                 // Đặt màu nền theo điểm
                 if (score < 33) {
                     popupView.setBackgroundResource(R.drawable.popup_background_incorrect);
                     tvMessage.setTextColor(activity.getResources().getColor(android.R.color.holo_red_dark));
+                    tvMessage2.setTextColor(activity.getResources().getColor(android.R.color.holo_red_dark));
                     btnNext.setBackgroundColor(activity.getResources().getColor(android.R.color.holo_red_dark));
                 } else if (score < 66) {
                     popupView.setBackgroundResource(R.drawable.popup_yellow);
                     tvMessage.setTextColor(activity.getResources().getColor(android.R.color.holo_orange_dark));
+                    tvMessage2.setTextColor(activity.getResources().getColor(android.R.color.holo_orange_dark));
                     btnNext.setBackgroundColor(activity.getResources().getColor(android.R.color.holo_orange_dark));
                 } else {
                     popupView.setBackgroundResource(R.drawable.popup_background_correct);
                     tvMessage.setTextColor(activity.getResources().getColor(android.R.color.holo_green_dark));
+                    tvMessage2.setTextColor(activity.getResources().getColor(android.R.color.holo_green_dark));
                     btnNext.setBackgroundColor(activity.getResources().getColor(android.R.color.holo_green_dark));
                 }
             } catch (Exception e) {
@@ -81,7 +88,6 @@ public class PopupHelper {
                 tvDetail.setText(e.getMessage());
             }
         }
-
         btnNext.setOnClickListener(v -> {
             dialog.dismiss();
             onNextQuestion.run();

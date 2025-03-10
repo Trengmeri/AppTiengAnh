@@ -47,6 +47,7 @@
     <string name="Language">Chọn ngôn ngữ</string>
     <string name="VN">Tiếng Việt</string>
     <string name="Eng">Tiếng Anh</string>
+    <string name="load">Đang xử lý...</string>
     <string name="hello_blank_fragment">Xin chào mảnh trống</string>
     <string name="correct">Chính xác!</string>
     <string name="ANS">Đáp án: </string>

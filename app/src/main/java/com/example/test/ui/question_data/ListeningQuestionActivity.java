@@ -27,6 +27,7 @@ import com.example.test.api.LessonManager;
 import com.example.test.api.MediaManager;
 import com.example.test.api.QuestionManager;
 import com.example.test.api.ResultManager;
+import com.example.test.model.Answer;
 import com.example.test.model.EvaluationResult;
 import com.example.test.model.MediaFile;
 import com.example.test.model.Question;
@@ -54,6 +55,7 @@ public class ListeningQuestionActivity extends AppCompatActivity {
     private  String questype;
     ImageView btnListen;
     TextView tvQuestion;
+    Button btnCheckResult;
 
     QuestionManager quesManager = new QuestionManager(this);
     LessonManager lesManager = new LessonManager();
@@ -68,7 +70,7 @@ public class ListeningQuestionActivity extends AppCompatActivity {
 
         btnListen = findViewById(R.id.btnListen);
         tvQuestion = findViewById(R.id.tvQuestion);
-        Button btnCheckResult = findViewById(R.id.btnCheckResult);
+        btnCheckResult = findViewById(R.id.btnCheckResult);
         etAnswer = findViewById(R.id.etAnswer);
         // Nhận dữ liệu từ Intent
         currentQuestionIndex = getIntent().getIntExtra("currentQuestionIndex", 0);
@@ -86,6 +88,11 @@ public class ListeningQuestionActivity extends AppCompatActivity {
 
 
         btnCheckResult.setOnClickListener(v -> {
+            if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+                mediaPlayer.stop();  // Dừng âm thanh nếu đang phát
+                mediaPlayer.release();
+                mediaPlayer = null;
+            }
             String userAnswer = etAnswer.getText().toString().trim();
             userAnswers.clear(); // Xóa các câu trả lời trước đó
             userAnswers.add(userAnswer); // Thêm câu trả lời mới vào danh sách
@@ -93,42 +100,74 @@ public class ListeningQuestionActivity extends AppCompatActivity {
             if (userAnswers.isEmpty()) {
                 Toast.makeText(ListeningQuestionActivity.this, "Vui lòng trả lời câu hỏi!", Toast.LENGTH_SHORT).show();
             } else {
-                checkAnswer(userAnswer);
-            }
-        });
-    }
-
-    private void checkAnswer(String userAnswer) {
-        String questionContent = tvQuestion.getText().toString().trim();
-        ApiService apiService = new ApiService(this);
-
-        apiService.sendAnswerToApi(questionContent, userAnswer, new ApiCallback<EvaluationResult>() {
-            @Override
-            public void onSuccess() {
-
-            }
-
-            @Override
-            public void onSuccess(EvaluationResult result) {
-
-
-                // Lưu kết quả vào hệ thống
-                quesManager.saveUserAnswer(questions.get(currentStep).getId(), userAnswer, result.getPoint(), result.getimprovements(), new ApiCallback() {
+                StringBuilder sb = new StringBuilder();
+                for (int i = 0; i < userAnswers.size(); i++) {
+                    sb.append(userAnswers.get(i));
+                    if (i < userAnswers.size() - 1) {
+                        sb.append(", "); // Hoặc ký tự phân cách khác
+                    }
+                }
+                String answerContent = sb.toString();
+                // Lưu câu trả lời của người dùng
+                quesManager.saveUserAnswer(questions.get(currentStep).getId(), answerContent,0,null, new ApiCallback() {
                     @Override
                     public void onSuccess() {
-                        Log.d("ListeningQuestionActivity.this", "Lưu thành công!");
+                        Log.e("ListeningQuestionActivity", "Câu trả lời đã được lưu: " + answerContent);
+                        // Hiển thị popup
                         runOnUiThread(() -> {
-                            PopupHelper.showResultPopup(ListeningQuestionActivity.this, questype, null, null, result.getPoint(), result.getimprovements(), result.getevaluation(), () -> {
-                                currentStep++; // Tăng currentStep
-                                currentQuestionIndex++;
+                            PopupHelper.showResultPopup(ListeningQuestionActivity.this, questype, userAnswers, correctAnswers, null, null, null, () -> {
+                                currentQuestionIndex++; // Tăng currentStep
+
+                                // Kiểm tra nếu hoàn thành
                                 if (currentQuestionIndex < questions.size()) {
-                                    updateProgressBar(findViewById(R.id.progressBar), currentStep);
+                                    updateProgressBar(progressBar, currentQuestionIndex);
                                     fetchAudioUrl(questions.get(currentQuestionIndex).getId());
                                     loadQuestion(currentQuestionIndex);
                                 } else {
                                     finishLesson();
                                 }
                             });
+                        });
+
+                        resultManager.fetchAnswerPointsByQuesId(questions.get(currentQuestionIndex).getId(), new ApiCallback<Answer>() {
+                            @Override
+                            public void onSuccess() {
+                            }
+
+
+                            @Override
+                            public void onSuccess(Answer answer) {
+                                if (answer != null) {
+                                    answerIds = answer.getId();
+                                    Log.e("ListeningQuestionActivity", "Answer ID từ API: " + answer.getId());
+                                    if (answerIds != 0) {
+                                        QuestionManager.gradeAnswer(answerIds, new Callback() {
+                                            @Override
+                                            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                                                Log.e("ListeningQuestionActivity", "Lỗi khi chấm điểm: " + e.getMessage());
+                                            }
+
+                                            @Override
+                                            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                                                if (response.isSuccessful()) {
+                                                    Log.e("ListeningQuestionActivity", "Chấm điểm thành công cho Answer ID: " + answerIds);
+                                                } else {
+                                                    Log.e("ListeningQuestionActivity", "Lỗi từ server: " + response.code());
+                                                }
+                                            }
+                                        });
+                                    } else {
+                                        Log.e("ListeningQuestionActivity", "Bài học không có câu trl.");
+                                    }
+                                } else {
+                                    Log.e("ListeningQuestionActivity", "Không nhận được câu trả lời từ API.");
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(String errorMessage) {
+
+                            }
                         });
                     }
 
@@ -139,17 +178,13 @@ public class ListeningQuestionActivity extends AppCompatActivity {
 
                     @Override
                     public void onFailure(String errorMessage) {
-                        Log.e("ListeningQuestionActivity.this", "Lỗi lưu câu trả lời: " + errorMessage);
+
                     }
                 });
             }
-
-            @Override
-            public void onFailure(String errorMessage) {
-                Log.e("ListeningQuestionActivity", "Lỗi API: " + errorMessage);
-            }
         });
     }
+
 
     private void fetchAudioUrl(int questionId) {
 
@@ -187,25 +222,29 @@ public class ListeningQuestionActivity extends AppCompatActivity {
         }
 
         try {
-            if (mediaPlayer != null) {
-                mediaPlayer.release(); // Giải phóng MediaPlayer cũ nếu có
+            if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+                mediaPlayer.stop();  // Dừng âm thanh nếu đang phát
+                mediaPlayer.release();
+                mediaPlayer = null;
             }
 
             mediaPlayer = new MediaPlayer();
             mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             mediaPlayer.setDataSource(audioUrl);
 
-            mediaPlayer.setOnPreparedListener(mp -> mediaPlayer.start()); // Chạy khi đã sẵn sàng
+            mediaPlayer.setOnPreparedListener(mp -> {
+                mediaPlayer.start();
+                btnCheckResult.setEnabled(true);  // Kích hoạt lại nút CheckResult
+            });
+
             mediaPlayer.setOnErrorListener((mp, what, extra) -> {
                 Log.e("MediaPlayerError", "Error occurred: what=" + what + ", extra=" + extra);
                 return true;
             });
 
-            mediaPlayer.prepareAsync(); // Dùng prepareAsync() để tránh chặn UI
-        } catch (IOException e) {
-            Log.e("MediaPlayerError", "IOException: " + e.getMessage());
-        } catch (IllegalArgumentException e) {
-            Log.e("MediaPlayerError", "IllegalArgumentException: " + e.getMessage());
+            mediaPlayer.prepareAsync();
+        } catch (IOException | IllegalArgumentException e) {
+            Log.e("MediaPlayerError", e.getMessage());
         }
     }
 
@@ -218,8 +257,14 @@ public class ListeningQuestionActivity extends AppCompatActivity {
                     if (question != null) {
                         questype = question.getQuesType();
                         runOnUiThread(() -> {
-
                             tvQuestion.setText(question.getQuesContent());
+                            List<QuestionChoice> choices = question.getQuestionChoices();
+                            correctAnswers.clear();
+                            for (QuestionChoice choice : choices) {
+                                if (choice.isChoiceKey()) {
+                                    correctAnswers.add(choice.getChoiceContent());
+                                }
+                            }
                         });
                     } else {
                         Log.e("ListeningQuestionActivity", "Câu hỏi trả về là null.");

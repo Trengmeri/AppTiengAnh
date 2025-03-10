@@ -2,6 +2,7 @@ package com.example.test.ui.question_data;
 
 import android.Manifest;
 import android.animation.ObjectAnimator;
+import android.app.ProgressDialog;
 import android.content.pm.PackageManager;
 import android.content.Intent;
 import android.graphics.Color;
@@ -36,8 +37,7 @@ import okhttp3.Response;
 public class RecordQuestionActivity extends AppCompatActivity implements SpeechRecognitionCallback {
 
     private MediaPlayer mediaPlayer;
-    private SeekBar seekBar;
-    private ImageView imgVoice, btnPlayAudio;
+    private ImageView imgVoice;
     private TextView tvTranscription;
     private SpeechRecognitionHelper speechRecognitionHelper;
 
@@ -58,17 +58,16 @@ public class RecordQuestionActivity extends AppCompatActivity implements SpeechR
     private Runnable updateSeekBar;
     private boolean isPlaying = false;
     TextView tvQuestion;
+    private ProgressDialog progressDialog;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_record_question);
-
         imgVoice = findViewById(R.id.imgVoice);
         tvTranscription = findViewById(R.id.tvTranscription);
-        btnPlayAudio = findViewById(R.id.btn_play);
         Button btnCheckResult = findViewById(R.id.btnCheckResult);
-        seekBar = findViewById(R.id.seekBar);
         tvQuestion = findViewById(R.id.tvQuestion);
 
 
@@ -78,7 +77,6 @@ public class RecordQuestionActivity extends AppCompatActivity implements SpeechR
         lessonID = getIntent().getIntExtra("lessonID", 1);
 
         loadQuestion(currentQuestionIndex);
-        fetchAudioUrl(questions.get(currentQuestionIndex).getId());
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO}, 1);
@@ -86,12 +84,7 @@ public class RecordQuestionActivity extends AppCompatActivity implements SpeechR
             imgVoice.setOnClickListener(v -> initializeSpeechRecognition());
         }
 
-        LinearLayout progressBar = findViewById(R.id.progressBar);
-
         btnCheckResult.setOnClickListener(v -> {
-            if (mediaPlayer != null && mediaPlayer.isPlaying()) {
-                mediaPlayer.pause();
-            }
             String userAnswer = tvTranscription.getText().toString().trim();
             userAnswers.clear();
             userAnswers.add(userAnswer);
@@ -106,6 +99,12 @@ public class RecordQuestionActivity extends AppCompatActivity implements SpeechR
     private void checkAnswer(String userAnswer) {
         String questionContent = tvQuestion.getText().toString().trim();
         ApiService apiService = new ApiService(this);
+
+        // Hiển thị ProgressDialog
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Đang xử lý...");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
 
         apiService.sendAnswerToApi(questionContent, userAnswer, new ApiCallback<EvaluationResult>() {
             @Override
@@ -122,13 +121,13 @@ public class RecordQuestionActivity extends AppCompatActivity implements SpeechR
                     @Override
                     public void onSuccess() {
                         Log.d("RecordQuestionActivity.this", "Lưu thành công!");
+                        progressDialog.dismiss();
                         runOnUiThread(() -> {
                             PopupHelper.showResultPopup(RecordQuestionActivity.this, questype, null, null, result.getPoint(), result.getimprovements(), result.getevaluation(), () -> {
                                 currentStep++; // Tăng currentStep
                                 currentQuestionIndex++;
                                 if (currentQuestionIndex < questions.size()) {
                                     updateProgressBar(findViewById(R.id.progressBar), currentStep);
-                                    fetchAudioUrl(questions.get(currentQuestionIndex).getId());
                                     loadQuestion(currentQuestionIndex);
                                 } else {
                                     finishLesson();
@@ -154,130 +153,6 @@ public class RecordQuestionActivity extends AppCompatActivity implements SpeechR
                 Log.e("RecordQuestionActivity", "Lỗi API: " + errorMessage);
             }
         });
-    }
-
-    private void fetchAudioUrl(int questionId) {
-        mediaManager.fetchMediaByQuesId(questionId, new ApiCallback<MediaFile>() {
-            @Override
-            public void onSuccess() {
-
-            }
-
-            @Override
-            public void onSuccess(MediaFile mediaFile) {
-                runOnUiThread(() -> {
-                    if (mediaFile != null && mediaFile.getMaterLink() != null) {
-                        String modifiedLink = mediaFile.getMaterLink().replace("0.0.0.0", "14.225.198.3");
-                        setupAudioPlayer(modifiedLink);
-                    } else {
-                        Log.e("MediaPlayerError", "Media file is null or has no link");
-                    }
-                });
-            }
-
-            @Override
-            public void onFailure(String errorMessage) {
-                Log.e("MediaPlayerError", "Error fetching audio: " + errorMessage);
-            }
-        });
-    }
-
-    private void setupAudioPlayer(String audioUrl) {
-        btnPlayAudio.setOnClickListener(v -> {
-            if (mediaPlayer == null) playAudio(audioUrl);
-
-            if (isPlaying) {
-                mediaPlayer.pause();
-                btnPlayAudio.setImageResource(R.drawable.btn_play); // Đổi icon play
-            } else {
-                mediaPlayer.start();
-                btnPlayAudio.setImageResource(R.drawable.ic_pause); // Đổi icon pause
-                updateSeekBar();
-            }
-            isPlaying = !isPlaying;
-        });
-
-
-        // Xử lý khi kéo SeekBar
-        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                if (fromUser && mediaPlayer != null) {
-                    mediaPlayer.seekTo(progress);
-                }
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-                handler.removeCallbacks(updateSeekBar);
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-                if (mediaPlayer != null) {
-                    mediaPlayer.seekTo(seekBar.getProgress());
-                    updateSeekBar();
-                }
-            }
-        });
-    }
-
-    private void playAudio(String audioUrl) {
-        if (audioUrl == null || audioUrl.isEmpty()) {
-            Log.e("MediaPlayerError", "Audio URL is null or empty");
-            return;
-        }
-
-        try {
-            if (mediaPlayer != null) {
-                mediaPlayer.release();
-            }
-
-            mediaPlayer = new MediaPlayer();
-            mediaPlayer.setAudioAttributes(new AudioAttributes.Builder()
-                    .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                    .setUsage(AudioAttributes.USAGE_MEDIA)
-                    .build());
-
-            mediaPlayer.setDataSource(audioUrl);
-            mediaPlayer.setOnPreparedListener(mp -> {
-                seekBar.setMax(mediaPlayer.getDuration());
-                mediaPlayer.start();
-                isPlaying = true;
-                btnPlayAudio.setImageResource(R.drawable.ic_pause);
-                updateSeekBar();
-            });
-
-            // Khi nhạc phát xong, reset lại nút Play
-            mediaPlayer.setOnCompletionListener(mp -> {
-                btnPlayAudio.setImageResource(R.drawable.btn_play);
-                isPlaying = false;
-                seekBar.setProgress(0);
-            });
-
-            mediaPlayer.setOnErrorListener((mp, what, extra) -> {
-                Log.e("MediaPlayerError", "Error: what=" + what + ", extra=" + extra);
-                return true;
-            });
-
-            mediaPlayer.prepareAsync();
-        } catch (IOException e) {
-            Log.e("MediaPlayerError", "IOException: " + e.getMessage());
-        }
-    }
-
-    // Cập nhật SeekBar theo thời gian
-    private void updateSeekBar() {
-        updateSeekBar = new Runnable() {
-            @Override
-            public void run() {
-                if (mediaPlayer != null && mediaPlayer.isPlaying()) {
-                    seekBar.setProgress(mediaPlayer.getCurrentPosition());
-                    handler.postDelayed(this, 500);
-                }
-            }
-        };
-        handler.postDelayed(updateSeekBar, 500);
     }
 
 
