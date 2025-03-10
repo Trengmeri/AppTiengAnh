@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -63,6 +64,8 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ViewHolder
         holder.txtUser.setText("Đang tải...");
         holder.txtLikeCount.setText(String.valueOf(review.getNumLike()));
         holder.btnLike.setSelected(review.isLiked());
+        holder.txtNumStar.setText(String.valueOf(review.getNumStar()));
+        holder.ratingBar.setRating(review.getNumStar());
 
         // Cache tên người dùng
         int userId = review.getUserId();
@@ -187,8 +190,10 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ViewHolder
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView txtUser, txtLikeCount , txtReContent, txtReSubject;
+        TextView txtUser, txtLikeCount , txtReContent, txtNumStar;
         ImageView btnLike;
+        RatingBar ratingBar;
+
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -197,6 +202,8 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ViewHolder
 //            txtReSubject = itemView.findViewById(R.id.txtReSubject);
             txtLikeCount = itemView.findViewById(R.id.txtLikeCount);
             btnLike = itemView.findViewById(R.id.btnLike);
+            ratingBar = itemView.findViewById(R.id.ratingBarReview);
+            txtNumStar = itemView.findViewById(R.id.txtNumStar);
         }
     }
 }

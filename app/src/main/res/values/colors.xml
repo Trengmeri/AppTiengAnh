@@ -14,6 +14,8 @@
     <color name="color_selected">#CE9566</color>  <!-- Màu khi được chọn -->
     <color name="color_unselected">#FF000000</color>  <!-- Màu mặc định -->
     <color name="yellow">#FFC31F</color>
+    <color name="gold">#FFD700</color>
+    <color name="light_gray">#D3D3D3</color>
 
 
 </resources>

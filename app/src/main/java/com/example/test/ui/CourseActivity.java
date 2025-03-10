@@ -70,6 +70,7 @@ public class CourseActivity extends AppCompatActivity {
         btnSendReview = findViewById(R.id.btSendReview);
 
         contentAbout.setVisibility(View.VISIBLE);
+        recyclerViewLesson.setVisibility(View.GONE);
 
         // Kiểm tra null cho các view quan trọng
         if (courseName == null || txtContentAbout == null || recyclerView == null || btnSendReview == null) {
