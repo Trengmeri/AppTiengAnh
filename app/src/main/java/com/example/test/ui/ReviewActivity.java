@@ -6,7 +6,6 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,7 +33,7 @@ import com.example.test.model.Review;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CourseActivity extends AppCompatActivity {
+public class ReviewActivity extends AppCompatActivity {
 
     AppCompatButton btnAbout, btnLesson;
     ImageView btnSendReview;
@@ -242,7 +241,7 @@ public class CourseActivity extends AppCompatActivity {
             @Override
             public void onSuccess(Review newReview) {
                 runOnUiThread(() -> {
-                    Toast.makeText(CourseActivity.this, "Đánh giá đã gửi!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ReviewActivity.this, "Đánh giá đã gửi!", Toast.LENGTH_SHORT).show();
                     edtReview.setText("");
                     if(reviewAdapter != null){
                         reviewAdapter.addReview(newReview);
@@ -258,9 +257,9 @@ public class CourseActivity extends AppCompatActivity {
                 runOnUiThread(() -> {
                     Log.w("ReviewError", "Lỗi gửi Review: " + errorMessage);
                     if (errorMessage.contains("409") || errorMessage.contains("User has already reviewed this course")) {
-                        Toast.makeText(CourseActivity.this, "Bạn đã đánh giá khóa học này!", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(ReviewActivity.this, "Bạn đã đánh giá khóa học này!", Toast.LENGTH_SHORT).show();
                     } else {
-                        Toast.makeText(CourseActivity.this, "Lỗi: " + errorMessage, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(ReviewActivity.this, "Lỗi: " + errorMessage, Toast.LENGTH_SHORT).show();
                     }
                 });
             }
@@ -281,13 +280,13 @@ public class CourseActivity extends AppCompatActivity {
             public void onSuccess(List<Review> reviews) {
                 runOnUiThread(() -> {
                     if (reviews.isEmpty()) {
-                        Toast.makeText(CourseActivity.this, "Chưa có đánh giá nào!", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(ReviewActivity.this, "Chưa có đánh giá nào!", Toast.LENGTH_SHORT).show();
                         return;
                     }
                     Log.d("ReviewLoad", "Số đánh giá: " + reviews.size());
 
 
-                    reviewAdapter = new ReviewAdapter(CourseActivity.this, reviews);
+                    reviewAdapter = new ReviewAdapter(ReviewActivity.this, reviews);
                     recyclerView.setAdapter(reviewAdapter);
 
 
@@ -297,7 +296,7 @@ public class CourseActivity extends AppCompatActivity {
             @Override
             public void onFailure(String errorMessage) {
                 runOnUiThread(() ->
-                        Toast.makeText(CourseActivity.this, "Lỗi tải đánh giá: " + errorMessage, Toast.LENGTH_SHORT).show());
+                        Toast.makeText(ReviewActivity.this, "Lỗi tải đánh giá: " + errorMessage, Toast.LENGTH_SHORT).show());
             }
         });
     }

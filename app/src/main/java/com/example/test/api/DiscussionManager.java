@@ -80,10 +80,18 @@ public class DiscussionManager extends BaseApiManager {
             }
         });
     }
+
+    /*
+
+
+
+     */
+
     public void fetchDiscussionsByLesson(int lessonId, ApiCallback<List<Discussion>> callback) {
         String token = SharedPreferencesManager.getInstance(context).getAccessToken();
+
         Request request = new Request.Builder()
-                .url(BASE_URL + "/api/v1/discussions/lesson/" + lessonId)
+                .url(BASE_URL + "/api/v1/discussions/lesson/" + lessonId + "?page=1&size=4")
                 .addHeader("Authorization", "Bearer " + token)  //  Truyền token đúng
                 .addHeader("Content-Type", "application/json")
                 .get()
@@ -97,33 +105,84 @@ public class DiscussionManager extends BaseApiManager {
                     Log.d("API_RESPONSE", "Dữ liệu nhận được: " + responseBody);
 
                     try {
-                        JSONObject jsonResponse= new JSONObject(responseBody);
+                        JSONObject jsonResponse = new JSONObject(responseBody);
                         JSONObject dataObject = jsonResponse.getJSONObject("data");
-                        JSONArray contentArray= dataObject.getJSONArray("content");
+                        JSONArray contentArray = dataObject.getJSONArray("content");
 
                         Gson gson = new Gson();
-                        List<Discussion> discussions= gson.fromJson(contentArray.toString(), new TypeToken<List<Discussion>>(){}.getType());
-                        new  Handler(Looper.getMainLooper()).post(()->{
-                            if (discussions != null && !discussions.isEmpty()){
+                        Type discussionListType = new TypeToken<List<Discussion>>() {}.getType();
+                        List<Discussion> discussions = gson.fromJson(contentArray.toString(), discussionListType);
+
+                        new Handler(Looper.getMainLooper()).post(() -> {
+                            if (discussions != null && !discussions.isEmpty()) {
                                 callback.onSuccess(discussions);
-                            }else {
-                                callback.onFailure("Discussion empty");
+                            } else {
+                                callback.onFailure("Không có thảo luận nào");
                             }
                         });
-                    }catch (JSONException e){
-                        new Handler(Looper.getMainLooper()).post(() -> callback.onFailure("Error parse Json: "+ e.getMessage()));
+                    } catch (JSONException e) {
+                        new Handler(Looper.getMainLooper()).post(() ->
+                                callback.onFailure("Lỗi phân tích JSON: " + e.getMessage()));
                     }
                 } else {
-                    callback.onFailure("Lỗi từ server: " + response.code());
+                    String errorBody = response.body().string();
+                    new Handler(Looper.getMainLooper()).post(() ->
+                            callback.onFailure("Lỗi từ server: " + response.code() + " - " + errorBody));
                 }
             }
 
             @Override
             public void onFailure(Call call, IOException e) {
-                callback.onFailure("Lỗi kết nối: " + e.getMessage());
+                new Handler(Looper.getMainLooper()).post(() ->
+                        callback.onFailure("Lỗi kết nối: " + e.getMessage()));
             }
         });
     }
+
+//    public void fetchDiscussionsByLesson(int lessonId, ApiCallback<List<Discussion>> callback) {
+//        String token = SharedPreferencesManager.getInstance(context).getAccessToken();
+//        Request request = new Request.Builder()
+//                .url(BASE_URL + "/api/v1/discussions/lesson/" + lessonId)
+//                .addHeader("Authorization", "Bearer " + token)  //  Truyền token đúng
+//                .addHeader("Content-Type", "application/json")
+//                .get()
+//                .build();
+//
+//        client.newCall(request).enqueue(new Callback() {
+//            @Override
+//            public void onResponse(Call call, Response response) throws IOException {
+//                if (response.isSuccessful()) {
+//                    String responseBody = response.body().string();
+//                    Log.d("API_RESPONSE", "Dữ liệu nhận được: " + responseBody);
+//
+//                    try {
+//                        JSONObject jsonResponse= new JSONObject(responseBody);
+//                        JSONObject dataObject = jsonResponse.getJSONObject("data");
+//                        JSONArray contentArray= dataObject.getJSONArray("content");
+//
+//                        Gson gson = new Gson();
+//                        List<Discussion> discussions= gson.fromJson(contentArray.toString(), new TypeToken<List<Discussion>>(){}.getType());
+//                        new  Handler(Looper.getMainLooper()).post(()->{
+//                            if (discussions != null && !discussions.isEmpty()){
+//                                callback.onSuccess(discussions);
+//                            }else {
+//                                callback.onFailure("Discussion empty");
+//                            }
+//                        });
+//                    }catch (JSONException e){
+//                        new Handler(Looper.getMainLooper()).post(() -> callback.onFailure("Error parse Json: "+ e.getMessage()));
+//                    }
+//                } else {
+//                    callback.onFailure("Lỗi từ server: " + response.code());
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(Call call, IOException e) {
+//                callback.onFailure("Lỗi kết nối: " + e.getMessage());
+//            }
+//        });
+//    }
 
     // API kiểm tra trạng thái Like theo discussionId và userId
     public void fetchLikeStatus(int userId, int discussionId, ApiCallback<LikeStatus> callback) {
@@ -172,44 +231,6 @@ public class DiscussionManager extends BaseApiManager {
         public boolean isLiked() { return isLiked; }
     }
 
-    // API cập nhật trạng thái Like (giữ nguyên từ trước)
-    public void updateLike(int discussionId, boolean isLiked, ApiCallback<Void> callback) {
-        String token = SharedPreferencesManager.getInstance(context).getAccessToken();
-        // Giả định API để cập nhật Like là POST /api/v1/likes/discussion
-        JSONObject jsonObject = new JSONObject();
-        try {
-            jsonObject.put("discussionId", discussionId);
-            jsonObject.put("isLiked", isLiked);
-        } catch (JSONException e) {
-            callback.onFailure("Lỗi tạo JSON: " + e.getMessage());
-            return;
-        }
-
-        RequestBody body = RequestBody.create(jsonObject.toString(), MediaType.get("application/json; charset=utf-8"));
-        Request request = new Request.Builder()
-                .url(BASE_URL + "/api/v1/likes/discussion")
-                .addHeader("Authorization", "Bearer " + token)
-                .addHeader("Content-Type", "application/json")
-                .post(body)
-                .build();
-
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                callback.onFailure("Lỗi kết nối: " + e.getMessage());
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                if (response.isSuccessful()) {
-                    Log.d("DiscussionManager", "Cập nhật Like thành công");
-                    callback.onSuccess(null);
-                } else {
-                    callback.onFailure("Lỗi từ server: " + response.code());
-                }
-            }
-        });
-    }
 
 
 }

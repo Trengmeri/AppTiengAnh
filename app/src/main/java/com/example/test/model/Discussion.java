@@ -20,6 +20,9 @@ public class Discussion {
     @SerializedName("numLike")
     private int numLike;
 
+    @SerializedName("replies")
+    private List<Discussion> replies; // Danh sách các phản hồi (reply)
+
     private boolean isLiked;
 
     // Getters và Setters
@@ -64,4 +67,12 @@ public class Discussion {
     }
     public boolean isLiked() { return isLiked; }
     public void setLiked(boolean isLiked) { this.isLiked = isLiked; }
+
+    public List<Discussion> getReplies() {
+        return replies;
+    }
+
+    public void setReplies(List<Discussion> replies) {
+        this.replies = replies;
+    }
 }
