@@ -10,6 +10,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -52,6 +53,17 @@ public class DiscussionActivity extends AppCompatActivity {
             return insets;
         });
         khaiBao();
+        rv_discussions.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+                if (layoutManager != null && layoutManager.findLastVisibleItemPosition() == discussionAdapter.getItemCount() - 1) {
+                    fetchDiscussions(); // Gọi API tải trang tiếp theo
+                }
+            }
+        });
+
 
         btSendDisussion.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -77,7 +89,10 @@ public class DiscussionActivity extends AppCompatActivity {
         rv_discussions = findViewById(R.id.rv_discussions);
     }
     private void fetchDiscussions() {
-        discussionManager.fetchDiscussionsByLesson(lessonID, new ApiCallback<List<Discussion>>() {
+        if (isLoading || !hasMoreData) return; // Nếu đang tải hoặc hết dữ liệu thì không tải nữa
+        isLoading = true;
+
+        discussionManager.fetchDiscussionsByLesson(lessonID, currentPage, new ApiCallback<List<Discussion>>() {
             @Override
             public void onSuccess() {
 
@@ -87,34 +102,33 @@ public class DiscussionActivity extends AppCompatActivity {
             public void onSuccess(List<Discussion> discussions) {
                 runOnUiThread(() -> {
                     if (discussions == null || discussions.isEmpty()) {
-                        Toast.makeText(DiscussionActivity.this, "Không có thảo luận nào.", Toast.LENGTH_SHORT).show();
+                        hasMoreData = false; // Nếu không có dữ liệu, đánh dấu là hết
                         return;
                     }
 
-                    // Log để kiểm tra dữ liệu
-                    for (Discussion discussion : discussions) {
-                        Log.d("DiscussionActivity", "Discussion: " + discussion.getContent());
-                    }
-
-                    // Gán LayoutManager nếu chưa có
-                    if (rv_discussions.getLayoutManager() == null) {
+                    if (discussionAdapter == null) {
+                        discussionAdapter = new DiscussionAdapter(DiscussionActivity.this, discussions);
                         rv_discussions.setLayoutManager(new LinearLayoutManager(DiscussionActivity.this));
+                        rv_discussions.setAdapter(discussionAdapter);
+                    } else {
+                        discussionAdapter.addMoreDiscussions(discussions); // Tải thêm dữ liệu
                     }
 
-                    // Gán Adapter
-                    discussionAdapter = new DiscussionAdapter(DiscussionActivity.this, discussions);
-                    rv_discussions.setAdapter(discussionAdapter);
-
-                    Toast.makeText(DiscussionActivity.this, "Tải dữ liệu thành công!", Toast.LENGTH_SHORT).show();
+                    currentPage++; // Tăng số trang sau khi tải xong
+                    isLoading = false;
                 });
             }
 
             @Override
             public void onFailure(String errorMessage) {
-                runOnUiThread(() -> Toast.makeText(DiscussionActivity.this, "Lỗi: " + errorMessage, Toast.LENGTH_SHORT).show());
+                runOnUiThread(() -> {
+                    isLoading = false;
+                    Toast.makeText(DiscussionActivity.this, "Lỗi: " + errorMessage, Toast.LENGTH_SHORT).show();
+                });
             }
         });
     }
+
 
 
     private void sendDiscussion() {

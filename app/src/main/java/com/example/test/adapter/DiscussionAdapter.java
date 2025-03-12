@@ -98,6 +98,15 @@ public class DiscussionAdapter extends RecyclerView.Adapter<DiscussionAdapter.Vi
         }
     }
 
+    public void addMoreDiscussions(List<Discussion> newDiscussions) {
+        if (newDiscussions != null && !newDiscussions.isEmpty()) {
+            int startPosition = discussions.size();
+            discussions.addAll(newDiscussions);
+            notifyItemRangeInserted(startPosition, newDiscussions.size());
+        }
+    }
+
+
     public static class ViewHolder extends RecyclerView.ViewHolder {
         TextView txtUser, txtContent, txtLikeCount, txtCreatedAt, txtReply;
         RecyclerView recyclerReply;
