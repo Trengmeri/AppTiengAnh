@@ -25,6 +25,10 @@ public class Discussion {
 
     private boolean isLiked;
 
+    public Discussion(){}
+
+
+
     // Getters và Setters
     public int getId() {
         return id;

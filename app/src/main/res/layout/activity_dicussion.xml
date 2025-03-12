@@ -24,116 +24,10 @@
             android:drawableStart="@drawable/icon_back"
             android:textColor="@color/black"/>
 
-        <androidx.core.widget.NestedScrollView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-<!--        <LinearLayout-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:orientation="vertical">-->
-<!--        <LinearLayout-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_marginStart="@dimen/dp_30"-->
-<!--            android:background="@color/white"-->
-<!--            android:layout_marginTop="@dimen/dp_30"-->
-<!--            android:layout_marginEnd="@dimen/dp_16"-->
-<!--            android:paddingBottom="@dimen/dp_16">-->
-<!--            &lt;!&ndash; Avatar &ndash;&gt;-->
-<!--            <ImageView-->
-<!--                android:id="@+id/imgAvatar"-->
-<!--                android:layout_width="40dp"-->
-<!--                android:layout_height="40dp"-->
-<!--                android:background="@drawable/icon_numlesson"/>-->
-
-<!--            &lt;!&ndash; Nội dung bình luận &ndash;&gt;-->
-<!--            <LinearLayout-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:orientation="vertical"-->
-<!--                android:layout_marginStart="8dp">-->
-
-<!--                &lt;!&ndash; Tên user + Đánh giá &ndash;&gt;-->
-<!--                <androidx.constraintlayout.widget.ConstraintLayout-->
-<!--                    android:layout_width="match_parent"-->
-<!--                    android:layout_height="wrap_content">-->
-
-<!--                    <TextView-->
-<!--                        android:id="@+id/txtUser"-->
-<!--                        android:layout_width="wrap_content"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                        android:text="User Name"-->
-<!--                        android:textStyle="bold"-->
-<!--                        android:textSize="17sp"-->
-<!--                        app:layout_constraintStart_toStartOf="parent"-->
-<!--                        app:layout_constraintTop_toTopOf="parent"/>-->
-
-
-<!--                </androidx.constraintlayout.widget.ConstraintLayout>-->
-
-<!--                &lt;!&ndash; Nội dung bình luận &ndash;&gt;-->
-<!--                <TextView-->
-<!--                    android:id="@+id/txtContent"-->
-<!--                    android:layout_width="match_parent"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:text="Discussion content here..."-->
-<!--                    android:textColor="#545454"-->
-<!--                    android:textSize="13sp"-->
-<!--                    android:layout_marginEnd="@dimen/dp_16"-->
-<!--                    android:layout_marginTop="5dp"/>-->
-
-<!--                &lt;!&ndash; Like + Thời gian &ndash;&gt;-->
-<!--                <LinearLayout-->
-<!--                    android:layout_width="match_parent"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:layout_marginTop="8dp">-->
-
-<!--                    <ImageView-->
-<!--                        android:id="@+id/btnLike"-->
-<!--                        android:layout_width="wrap_content"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                        android:src="@drawable/like_selector"/>-->
-
-<!--                    <TextView-->
-<!--                        android:id="@+id/txtLikeCount"-->
-<!--                        android:layout_width="wrap_content"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                        android:layout_marginStart="5dp"-->
-<!--                        android:textStyle="bold"-->
-<!--                        android:text="123"-->
-<!--                        android:textSize="12sp"/>-->
-
-<!--                    <TextView-->
-<!--                        android:layout_width="wrap_content"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                        android:layout_marginStart="@dimen/dp40"-->
-<!--                        android:textStyle="bold"-->
-<!--                        android:text="2 replies"-->
-<!--                        android:textSize="12sp"-->
-<!--                        />-->
-
-<!--                    <TextView-->
-<!--                        android:id="@+id/txtCreatedAt"-->
-<!--                        android:layout_width="wrap_content"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                        android:layout_marginStart="@dimen/dp40"-->
-<!--                        android:gravity="end"-->
-<!--                        android:textStyle="bold"-->
-<!--                        android:textSize="12sp"-->
-<!--                        android:text="2 weeks ago"/>-->
-<!--                </LinearLayout>-->
-
-<!--            </LinearLayout>-->
-
-<!--        </LinearLayout>-->
-
-<!--        </LinearLayout>-->
-        </androidx.core.widget.NestedScrollView>
-
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_discussions"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            android:layout_height="540dp" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -154,14 +48,14 @@
                     />
 
                 <EditText
-                    android:id="@+id/edtReviewSubject"
+                    android:id="@+id/editDiscussion"
                     android:layout_width="250dp"
                     android:layout_height="match_parent"
                     android:layout_marginStart="8dp"
                     android:hint="Write a discussion" />
 
                 <ImageView
-                    android:id="@+id/btSendReview"
+                    android:id="@+id/btSendDiscussion"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"

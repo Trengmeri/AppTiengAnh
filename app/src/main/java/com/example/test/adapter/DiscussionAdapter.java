@@ -89,6 +89,14 @@ public class DiscussionAdapter extends RecyclerView.Adapter<DiscussionAdapter.Vi
     public int getItemCount() {
         return discussions.size();
     }
+    public void addDiscussion(Discussion discussion) {
+        if (discussions != null) {
+            discussions.add(0, discussion); // Thêm vào đầu danh sách (hoặc `.add(discussion)` để thêm cuối)
+            notifyItemInserted(0); // Cập nhật RecyclerView
+        } else {
+            Log.e("DiscussionAdapter", "discussionList is null");
+        }
+    }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         TextView txtUser, txtContent, txtLikeCount, txtCreatedAt, txtReply;

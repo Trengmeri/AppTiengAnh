@@ -67,14 +67,25 @@ public class DiscussionManager extends BaseApiManager {
             public void onFailure(Call call, IOException e) {
                 callback.onFailure("Không thể tạo bình luận: " + e.getMessage());
             }
-
             @Override
             public void onResponse(Call call, Response response) throws IOException {
+                String responseBody = response.body().string();
+                Log.d("DiscussionManager", "API Response: " + responseBody);
+
                 if (response.isSuccessful()) {
-                    Log.d("DiscussionManager", "Tạo bình luận thành công");
-                    callback.onSuccess();
+                    Gson gson = new Gson();
+                    try {
+                        JSONObject jsonResponse = new JSONObject(responseBody);
+                        JSONObject dataObject = jsonResponse.getJSONObject("data");  // Lấy phần "data"
+                        Discussion newDiscussion = gson.fromJson(dataObject.toString(), Discussion.class);
+
+                        // Gọi callback trên UI thread
+                        new Handler(Looper.getMainLooper()).post(() -> callback.onSuccess(newDiscussion));
+
+                    } catch (JSONException e) {
+                        callback.onFailure("Lỗi parse JSON: " + e.getMessage());
+                    }
                 } else {
-                    Log.e("DiscussionManager", "Lỗi " + response.code());
                     callback.onFailure("Lỗi: " + response.code());
                 }
             }
