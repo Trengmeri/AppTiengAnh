@@ -1,6 +1,7 @@
 package com.example.test.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
@@ -32,11 +33,16 @@ public class DiscussionAdapter extends RecyclerView.Adapter<DiscussionAdapter.Vi
     private ReplyAdapter replyAdapter;
 
     private UserManager userManager;
+    private DiscussionManager discussionManager;
+    private OnReplyClickListener replyClickListener;
 
-    public DiscussionAdapter(Context context, List<Discussion> discussions) {
+
+    public DiscussionAdapter(Context context, List<Discussion> discussions,  OnReplyClickListener replyClickListener) {
         this.context = context;
         this.discussions = discussions;
         this.userManager = new UserManager(context);
+        this.discussionManager= new DiscussionManager(context);
+        this.replyClickListener = replyClickListener; // Lưu lại listener
     }
 
     @NonNull
@@ -71,7 +77,88 @@ public class DiscussionAdapter extends RecyclerView.Adapter<DiscussionAdapter.Vi
             }
         });
         holder.txtContent.setText(discussion.getContent());
+
+        // Kiểm tra trạng thái like
+        discussionManager.isDiscussionLiked(userId, discussion.getId(), new ApiCallback<Boolean>() {
+            @Override
+            public void onSuccess() {
+
+            }
+
+            @Override
+            public void onSuccess(Boolean isLiked) {
+                discussion.setLiked(isLiked);
+                new Handler(Looper.getMainLooper()).post(() -> {
+                    holder.btnLike.setSelected(isLiked);
+                });
+            }
+
+            @Override
+            public void onFailure(String errorMessage) {
+                Log.e("DiscussionAdapter", "Lỗi kiểm tra like: " + errorMessage);
+            }
+        });
         holder.txtLikeCount.setText(String.valueOf(discussion.getNumLike()));
+
+
+        // Xử lý sự kiện bấm nút Like
+        holder.btnLike.setOnClickListener(v -> {
+            boolean isLiked = discussion.isLiked();
+            int newLikeCount = isLiked ? discussion.getNumLike() - 1 : discussion.getNumLike() + 1;
+
+            // Cập nhật UI ngay lập tức
+            discussion.setNumLike(newLikeCount);
+            discussion.setLiked(!isLiked);
+            holder.txtLikeCount.setText(String.valueOf(newLikeCount));
+            holder.btnLike.setSelected(!isLiked);
+
+            // Gửi API like/unlike
+            if (!isLiked) {
+                discussionManager.likeDiscussion(userId, discussion.getId(), new ApiCallback<Void>() {
+                    @Override
+                    public void onSuccess() {
+
+                    }
+
+                    @Override
+                    public void onSuccess(Void response) {
+                        Log.d("DiscussionAdapter", "Like thành công");
+                    }
+
+                    @Override
+                    public void onFailure(String errorMessage) {
+                        rollbackLike(holder, discussion, isLiked);
+                    }
+                });
+            } else {
+                discussionManager.unlikeDiscussion(userId, discussion.getId(), new ApiCallback<Void>() {
+                    @Override
+                    public void onSuccess() {
+
+                    }
+
+                    @Override
+                    public void onSuccess(Void response) {
+                        Log.d("DiscussionAdapter", "Unlike thành công");
+                    }
+
+                    @Override
+                    public void onFailure(String errorMessage) {
+                        rollbackLike(holder, discussion, isLiked);
+                    }
+                });
+            }
+        });
+
+
+        // Xu ly khi bam reply
+        holder.txtReply.setOnClickListener(v -> {
+            if (replyClickListener != null) {
+                replyClickListener.onReplyClicked(discussion.getId());
+            }
+        });
+
+
 
 
         // Hiển thị danh sách reply
@@ -81,6 +168,9 @@ public class DiscussionAdapter extends RecyclerView.Adapter<DiscussionAdapter.Vi
         replyAdapter = new ReplyAdapter(context, discussion.getReplies());
         holder.recyclerReply.setAdapter(replyAdapter);
         replyAdapter.notifyDataSetChanged();
+
+
+
 
 
     }
@@ -107,12 +197,41 @@ public class DiscussionAdapter extends RecyclerView.Adapter<DiscussionAdapter.Vi
     }
 
 
+    private void rollbackLike(ViewHolder holder, Discussion discussion, boolean previousState) {
+        discussion.setNumLike(previousState ? discussion.getNumLike() + 1 : discussion.getNumLike() - 1);
+        discussion.setLiked(previousState);
+
+        // Đảm bảo chạy trên UI Thread
+        new Handler(Looper.getMainLooper()).post(() -> {
+            holder.txtLikeCount.setText(String.valueOf(discussion.getNumLike()));
+            holder.btnLike.setSelected(previousState);
+
+            // Chạy Toast trên UI Thread
+            if (context != null) {
+                Toast.makeText(context, "Lỗi khi like/unlike", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    public interface OnReplyClickListener {
+        void onReplyClicked(int discussionId);
+    }
+    public List<Discussion> getDiscussions() {
+        return discussions;
+    }
+
+
+
+
+
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView txtUser, txtContent, txtLikeCount, txtCreatedAt, txtReply;
+        TextView txtUser, txtContent, txtLikeCount, txtReply;
         RecyclerView recyclerReply;
+        ImageView btnLike;
 
         public ViewHolder(View itemView) {
             super(itemView);
+            btnLike = itemView.findViewById(R.id.btnLike);
             txtUser = itemView.findViewById(R.id.txtUser);
             txtContent = itemView.findViewById(R.id.txtContent);
             txtLikeCount = itemView.findViewById(R.id.txtLikeCount);

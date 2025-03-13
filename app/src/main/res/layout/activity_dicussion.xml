@@ -27,12 +27,14 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_discussions"
             android:layout_width="match_parent"
-            android:layout_height="540dp" />
+            android:layout_height="596dp" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="bottom">
+
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -40,6 +42,8 @@
                 android:layout_marginEnd="@dimen/dp_30"
                 android:layout_marginBottom="@dimen/dp_30"
                 android:background="@drawable/border_bg">
+
+
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

@@ -142,51 +142,94 @@ public class DiscussionManager extends BaseApiManager {
 
 
     // API kiểm tra trạng thái Like theo discussionId và userId
-    public void fetchLikeStatus(int userId, int discussionId, ApiCallback<LikeStatus> callback) {
+
+    public void isDiscussionLiked(int userId, int discussionId, ApiCallback<Boolean> callback) {
+        String token = SharedPreferencesManager.getInstance(context).getAccessToken();
+
+        String url = BASE_URL + "/api/v1/likes/discussion-is-liked?userId=" + userId + "&discussionId=" + discussionId;
+
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("Authorization", "Bearer " + token)
+                .get()
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                callback.onFailure("Lỗi kết nối: " + e.getMessage());
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    String responseBody = response.body().string();
+                    callback.onSuccess(Boolean.parseBoolean(responseBody));
+                } else {
+                    callback.onFailure("Lỗi: " + response.code());
+                }
+            }
+        });
+    }
+
+    public void likeDiscussion(int userId, int discussionId, ApiCallback<Void> callback) {
         String token = SharedPreferencesManager.getInstance(context).getAccessToken();
         String url = BASE_URL + "/api/v1/likes/discussion?userId=" + userId + "&discussionId=" + discussionId;
 
         Request request = new Request.Builder()
                 .url(url)
                 .addHeader("Authorization", "Bearer " + token)
-                .addHeader("Content-Type", "application/json")
-                .get()
+                .post(RequestBody.create("", null))
                 .build();
 
         client.newCall(request).enqueue(new Callback() {
             @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                if (response.isSuccessful()) {
-                    String responseBody = response.body().string();
-                    Log.d("API_RESPONSE", "Like status: " + responseBody);
-
-                    try {
-                        Gson gson = new Gson();
-                        LikeStatus likeStatus = gson.fromJson(responseBody, LikeStatus.class);
-                        new Handler(Looper.getMainLooper()).post(() -> callback.onSuccess(likeStatus));
-                    } catch (Exception e) {
-                        new Handler(Looper.getMainLooper()).post(() -> callback.onFailure("Error parsing Like status: " + e.getMessage()));
-                    }
-                } else {
-                    new Handler(Looper.getMainLooper()).post(() -> callback.onFailure("Lỗi từ server: " + response.code()));
-                }
+            public void onFailure(Call call, IOException e) {
+                callback.onFailure("Lỗi kết nối: " + e.getMessage());
             }
 
             @Override
-            public void onFailure(Call call, IOException e) {
-                new Handler(Looper.getMainLooper()).post(() -> callback.onFailure("Lỗi kết nối: " + e.getMessage()));
+            public void onResponse(Call call, Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    callback.onSuccess(null);
+                } else {
+                    callback.onFailure("Lỗi: " + response.code());
+                }
             }
         });
     }
 
-    // Class để parse dữ liệu LikeStatus từ API
-    public static class LikeStatus {
-        private int numLike;
-        private boolean isLiked;
+    public void unlikeDiscussion(int userId, int discussionId, ApiCallback<Void> callback) {
+        String token = SharedPreferencesManager.getInstance(context).getAccessToken();
+        String url = BASE_URL + "/api/v1/likes/discussion?userId=" + userId + "&discussionId=" + discussionId;
 
-        public int getNumLike() { return numLike; }
-        public boolean isLiked() { return isLiked; }
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("Authorization", "Bearer " + token)
+                .delete()
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                callback.onFailure("Lỗi kết nối: " + e.getMessage());
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    callback.onSuccess(null);
+                } else {
+                    callback.onFailure("Lỗi: " + response.code());
+                }
+            }
+        });
     }
+
+
+
+
+
 
 
 

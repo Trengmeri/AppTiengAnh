@@ -1,9 +1,11 @@
 package com.example.test.ui;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -28,7 +30,7 @@ import com.example.test.model.Discussion;
 
 import java.util.List;
 
-public class DiscussionActivity extends AppCompatActivity {
+public class DiscussionActivity extends AppCompatActivity implements DiscussionAdapter.OnReplyClickListener  {
 
     private int currentPage = 1; // Bắt đầu từ trang 1
     private boolean isLoading = false; // Để tránh tải dữ liệu nhiều lần
@@ -37,6 +39,7 @@ public class DiscussionActivity extends AppCompatActivity {
     private int lessonID;
     private DiscussionManager discussionManager= new DiscussionManager(this);;
     private DiscussionAdapter discussionAdapter ;
+    private int currentParentId = -1;
 
     RecyclerView rv_discussions;
     EditText editDiscussion;
@@ -53,6 +56,14 @@ public class DiscussionActivity extends AppCompatActivity {
             return insets;
         });
         khaiBao();
+
+        int parentDiscussionId = getIntent().getIntExtra("discussionId", -1);
+
+//        if (parentDiscussionId != -1) {
+//            editDiscussion.requestFocus(); // Focus vào EditText
+//            editDiscussion.setHint("Trả lời bình luận...");
+//            showKeyboard(); // Mở bàn phím
+//        }
         rv_discussions.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
@@ -102,22 +113,24 @@ public class DiscussionActivity extends AppCompatActivity {
             public void onSuccess(List<Discussion> discussions) {
                 runOnUiThread(() -> {
                     if (discussions == null || discussions.isEmpty()) {
-                        hasMoreData = false; // Nếu không có dữ liệu, đánh dấu là hết
+                        hasMoreData = false;
                         return;
                     }
 
                     if (discussionAdapter == null) {
-                        discussionAdapter = new DiscussionAdapter(DiscussionActivity.this, discussions);
+                        discussionAdapter = new DiscussionAdapter(DiscussionActivity.this, discussions, DiscussionActivity.this);
+
                         rv_discussions.setLayoutManager(new LinearLayoutManager(DiscussionActivity.this));
                         rv_discussions.setAdapter(discussionAdapter);
                     } else {
-                        discussionAdapter.addMoreDiscussions(discussions); // Tải thêm dữ liệu
+                        discussionAdapter.addMoreDiscussions(discussions);
                     }
 
-                    currentPage++; // Tăng số trang sau khi tải xong
+                    currentPage++;
                     isLoading = false;
                 });
             }
+
 
             @Override
             public void onFailure(String errorMessage) {
@@ -129,64 +142,155 @@ public class DiscussionActivity extends AppCompatActivity {
         });
     }
 
+    public void focusOnReply(int discussionId, String userName) {
+        currentParentId = discussionId; // Lưu discussionId làm parentId cho bình luận
+        editDiscussion.requestFocus(); // Focus vào EditText
+        editDiscussion.setHint("Write a reply for "+ userName);
+        showKeyboard(); // Mở bàn phím
+    }
+
+
+
+//    private void sendDiscussion() {
+//        String id = SharedPreferencesManager.getInstance(this).getID();
+//
+//        if (id == null || id.isEmpty()) {
+//            Toast.makeText(this, "Không tìm thấy user ID. Vui lòng đăng nhập!", Toast.LENGTH_SHORT).show();
+//            return;
+//        }
+//
+//        int userId;
+//        try {
+//            userId = Integer.parseInt(id);
+//        } catch (NumberFormatException e) {
+//            Log.e("DiscussionActivity", "Lỗi chuyển đổi user ID: " + e.getMessage(), e);
+//            Toast.makeText(this, "Lỗi lấy ID người dùng!", Toast.LENGTH_SHORT).show();
+//            return;
+//        }
+//
+//        String discussionText = editDiscussion.getText().toString().trim();
+//        if (discussionText.isEmpty()) {
+//            Toast.makeText(this, "Vui lòng nhập nội dung!", Toast.LENGTH_SHORT).show();
+//            return;
+//        }
+//
+//        discussionManager.createDiscussion(userId, lessonID, discussionText, null, new ApiCallback<Discussion>() {
+//            @Override
+//            public void onSuccess() {
+//
+//            }
+//
+//            @Override
+//            public void onSuccess(Discussion result) {
+//                runOnUiThread(() -> {
+//                    Toast.makeText(DiscussionActivity.this, "Bình luận đã gửi!", Toast.LENGTH_SHORT).show();
+//                    editDiscussion.setText("");
+//
+//                    if (discussionAdapter != null) {
+//                        discussionAdapter.addDiscussion(result);
+//                        discussionAdapter.notifyDataSetChanged();
+//                    } else {
+//                        Log.e("DiscussionActivity", "discussionAdapter is null");
+//                    }
+//                });
+//            }
+//
+//            @Override
+//            public void onFailure(String errorMessage) {
+//                runOnUiThread(() -> {
+//                    Log.e("DiscussionActivity", "Lỗi gửi bình luận: " + errorMessage);
+//                    Toast.makeText(DiscussionActivity.this, "Gửi bình luận thất bại. Vui lòng thử lại!", Toast.LENGTH_SHORT).show();
+//                });
+//            }
+//        });
+//    }
 
 
     private void sendDiscussion() {
         String id = SharedPreferencesManager.getInstance(this).getID();
-
         if (id == null || id.isEmpty()) {
-            Toast.makeText(this, "Không tìm thấy user ID. Vui lòng đăng nhập!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Vui lòng đăng nhập!", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        int userId;
-        try {
-            userId = Integer.parseInt(id);
-        } catch (NumberFormatException e) {
-            Log.e("DiscussionActivity", "Lỗi chuyển đổi user ID: " + e.getMessage(), e);
-            Toast.makeText(this, "Lỗi lấy ID người dùng!", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
+        int userId = Integer.parseInt(id);
         String discussionText = editDiscussion.getText().toString().trim();
         if (discussionText.isEmpty()) {
             Toast.makeText(this, "Vui lòng nhập nội dung!", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        discussionManager.createDiscussion(userId, lessonID, discussionText, null, new ApiCallback<Discussion>() {
-            @Override
-            public void onSuccess() {
+        discussionManager.createDiscussion(userId, lessonID, discussionText,
+                currentParentId == -1 ? null : currentParentId, new ApiCallback<Discussion>() {
 
-            }
+                    @Override
+                    public void onSuccess() {}
 
-            @Override
-            public void onSuccess(Discussion result) {
-                runOnUiThread(() -> {
-                    Toast.makeText(DiscussionActivity.this, "Bình luận đã gửi!", Toast.LENGTH_SHORT).show();
-                    editDiscussion.setText("");
+                    @Override
+                    public void onSuccess(Discussion result) {
+                        runOnUiThread(() -> {
+                            Toast.makeText(DiscussionActivity.this, "Bình luận đã gửi!", Toast.LENGTH_SHORT).show();
+                            editDiscussion.setText("");
 
-                    if (discussionAdapter != null) {
-                        discussionAdapter.addDiscussion(result);
-                        discussionAdapter.notifyDataSetChanged();
-                    } else {
-                        Log.e("DiscussionActivity", "discussionAdapter is null");
+
+                            boolean isReplyAdded = false;
+
+                            // Duyệt danh sách discussion để tìm bài viết cha
+                            for (Discussion discussion : discussionAdapter.getDiscussions()) {
+                                if (discussion.getReplies() != null) {
+                                    for (Discussion reply : discussion.getReplies()) {
+                                        if (reply.getId() == currentParentId) {
+                                            reply.getReplies().add(result); // Thêm reply vào danh sách con
+                                            discussionAdapter.notifyDataSetChanged();
+                                            isReplyAdded = true;
+                                            break;
+                                        }
+                                    }
+                                }
+                                if (discussion.getId() == currentParentId) {
+                                    discussion.getReplies().add(result); // Thêm reply vào danh sách replies của bài viết cha
+                                    discussionAdapter.notifyDataSetChanged();
+                                    isReplyAdded = true;
+                                    break;
+                                }
+                            }
+
+                            // Nếu không tìm thấy bài viết cha, thêm vào danh sách chính
+                            if (!isReplyAdded) {
+                                discussionAdapter.addDiscussion(result);
+                                discussionAdapter.notifyDataSetChanged();
+                            }
+                            currentParentId = -1;// Reset parentId sau khi gửi bình luận
+                            editDiscussion.setHint("Write a discussion");
+
+                        });
+                    }
+
+
+
+                    @Override
+                    public void onFailure(String errorMessage) {
+                        runOnUiThread(() -> {
+                            Toast.makeText(DiscussionActivity.this, "Gửi bình luận thất bại!", Toast.LENGTH_SHORT).show();
+                        });
                     }
                 });
-            }
+    }
 
-            @Override
-            public void onFailure(String errorMessage) {
-                runOnUiThread(() -> {
-                    Log.e("DiscussionActivity", "Lỗi gửi bình luận: " + errorMessage);
-                    Toast.makeText(DiscussionActivity.this, "Gửi bình luận thất bại. Vui lòng thử lại!", Toast.LENGTH_SHORT).show();
-                });
+    private void showKeyboard() {
+        editDiscussion.post(() -> {
+            editDiscussion.requestFocus();
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            if (imm != null) {
+                imm.showSoftInput(editDiscussion, InputMethodManager.SHOW_IMPLICIT);
             }
         });
     }
 
 
-
-
-
+    @Override
+    public void onReplyClicked(int discussionId) {
+        String userName = SharedPreferencesManager.getInstance(this).getUser().getName();
+        focusOnReply(discussionId,userName);
+    }
 }
