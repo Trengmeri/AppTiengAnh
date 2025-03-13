@@ -4,13 +4,16 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.util.Log;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.HashSet;
 import java.util.Locale;
+import java.util.Set;
 
 public class AlarmScheduler {
 
@@ -46,9 +49,37 @@ public class AlarmScheduler {
 
             alarmManager.setExact(AlarmManager.RTC_WAKEUP, triggerTime, pendingIntent);
             Log.d("AlarmScheduler", "✅ Báo thức đã được đặt vào: " + calendar.getTime());
+            saveAlarmToSharedPreferences(context, requestCode, scheduleTime);
+//            context.sendBroadcast(intent);
         } else {
             Log.e("AlarmScheduler", "❌ AlarmManager không hoạt động!");
         }
     }
+    private static void saveAlarmToSharedPreferences(Context context, int requestCode, String scheduleTime) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences("AlarmPrefs", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
 
+        // Lưu lịch báo thức vào SharedPreferences dưới dạng JSON
+        String alarmData = "ID: " + requestCode + ", Time: " + scheduleTime;
+        Set<String> alarms = sharedPreferences.getStringSet("alarms", new HashSet<>());
+        alarms.add(alarmData);
+
+        editor.putStringSet("alarms", alarms);
+        editor.apply();
+
+        Log.d("AlarmScheduler", "💾 Lịch báo thức đã lưu: " + alarmData);
+    }
+    public static void logAllAlarms(Context context) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences("AlarmPrefs", Context.MODE_PRIVATE);
+        Set<String> alarms = sharedPreferences.getStringSet("alarms", new HashSet<>());
+
+        if (alarms.isEmpty()) {
+            Log.d("AlarmScheduler", "📭 Không có lịch báo thức nào!");
+        } else {
+            Log.d("AlarmScheduler", "📋 Danh sách báo thức đã đặt:");
+            for (String alarm : alarms) {
+                Log.d("AlarmScheduler", "⏰ " + alarm);
+            }
+        }
+    }
 }

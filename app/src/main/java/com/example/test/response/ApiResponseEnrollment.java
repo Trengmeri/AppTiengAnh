@@ -17,7 +17,7 @@ public class ApiResponseEnrollment {
     private String message;
 
     @SerializedName("data")
-    private ApiResponseEnrollment.Data data; // Sử dụng lớp Data để chứa danh sách Answer
+    private Enrollment data; // Sử dụng lớp Data để chứa danh sách Answer
 
     // Thêm thông tin phân trang
     @SerializedName("page")
@@ -51,25 +51,11 @@ public class ApiResponseEnrollment {
         this.message = message;
     }
 
-    public ApiResponseEnrollment.Data getData() {
+    public Enrollment getData() {
         return data;
     }
 
-    public void setData(ApiResponseEnrollment.Data data) {
+    public void setData(Enrollment data) {
         this.data = data;
-    }
-
-    // Lớp Data để chứa danh sách Answer
-    public static class Data {
-        @SerializedName("content")
-        private List<Enrollment> content; // Danh sách các Answer
-
-        public List<Enrollment> getContent() {
-            return content;
-        }
-
-        public void setContent(List<Enrollment> content) {
-            this.content = content;
-        }
     }
 }

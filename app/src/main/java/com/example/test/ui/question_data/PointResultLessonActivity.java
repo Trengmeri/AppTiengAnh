@@ -95,7 +95,7 @@ public class PointResultLessonActivity extends AppCompatActivity {
         resultManager.createEnrollment(courseId, new ApiCallback() {
             @Override
             public void onSuccess() {
-                resultManager.getEnrollments(courseId, new ApiCallback<Enrollment>() {
+                resultManager.getEnrollment(courseId, new ApiCallback<Enrollment>() {
                     @Override
                     public void onSuccess() {
 

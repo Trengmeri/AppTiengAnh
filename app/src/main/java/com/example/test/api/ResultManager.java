@@ -176,65 +176,60 @@ public class ResultManager extends BaseApiManager {
         });
     }
 
-    public void getEnrollments(int courseId, ApiCallback callback) {
+    public void getEnrollment(int courseId, ApiCallback callback) {
         String userId = SharedPreferencesManager.getInstance(context).getID();
         String token = SharedPreferencesManager.getInstance(context).getAccessToken();
 
         Request request = new Request.Builder()
-                .url(BASE_URL + "/api/v1/enrollments/user/" + userId +"?proStatus=false") // Thay đổi URL endpoint cho phù hợp
+                .url(BASE_URL + "/api/v1/enrollments/latest?courseId=" + courseId + "&userId=" + userId)
                 .addHeader("Authorization", "Bearer " + token)
                 .build();
 
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                callback.onFailure("Không thể lấy danh sách enrollments: " + e.getMessage());
+                callback.onFailure("Không thể lấy enrollment: " + e.getMessage());
             }
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 if (response.isSuccessful()) {
                     String responseBody = response.body().string();
-                    Log.d("ResultManager", "Phản hồi từ server: " + responseBody);
+                    Log.d("EnrollmentManager", "Phản hồi từ server: " + responseBody);
 
                     Gson gson = new Gson();
+
+                    // ⚠️ Phải ánh xạ vào ApiResponseEnrollment, không phải Enrollment
                     ApiResponseEnrollment apiResponse = gson.fromJson(responseBody, ApiResponseEnrollment.class);
 
                     if (apiResponse.getStatusCode() == 200) {
-                        List<Enrollment> enrollments = apiResponse.getData().getContent();
-                        Enrollment lastEnrollment = null;
+                        Enrollment enrollment = apiResponse.getData(); // Lấy đối tượng `data` từ JSON
 
-                        // Duyệt danh sách từ cuối lên đầu
-                        for (int i = enrollments.size() - 1; i >= 0; i--) {
-                            Enrollment enrollment = enrollments.get(i);
-                            if (enrollment.getCourseId() == courseId) {
-                                lastEnrollment = enrollment;
-                                break; // Thoát khỏi vòng lặp khi tìm thấy
-                            } else {
-                                Log.e("Enrollment","CourseId khong tim duoc" + courseId);
-                            }
-                        }
-
-                        if (lastEnrollment!= null) {
-                            callback.onSuccess(lastEnrollment);
-                        }else {
-                            callback.onFailure("Không tìm thấy enrollment nào với courseId: " + courseId);
+                        if (enrollment != null && enrollment.getCourseId() == courseId) {
+                            callback.onSuccess(enrollment);
+                        } else {
+                            callback.onFailure("Không tìm thấy enrollment với courseId: " + courseId);
                         }
                     } else {
                         callback.onFailure("Lỗi từ server: " + apiResponse.getMessage());
                     }
                 } else {
-                    Log.e("ResultManager", "Lỗi từ server: Mã lỗi " + response.code());
+                    Log.e("EnrollmentManager", "Lỗi từ server: Mã lỗi " + response.code());
                     callback.onFailure("Lỗi từ server: Mã lỗi " + response.code());
                 }
             }
         });
     }
+
     public void calculateEnrollment(int enrollmentId, ApiCallback callback) {
         String token = SharedPreferencesManager.getInstance(context).getAccessToken();
+        String json = "{ \"enrollmentId\":" + enrollmentId + "}";
+
+        RequestBody body = RequestBody.create(json, MediaType.get("application/json; charset=utf-8"));
         Request request = new Request.Builder()
                 .url(BASE_URL + "/api/v1/enrollments/calculate-result")
                 .addHeader("Authorization", "Bearer " + token)
+                .post(body)
                 .build();
 
         client.newCall(request).enqueue(new Callback() {
@@ -245,13 +240,22 @@ public class ResultManager extends BaseApiManager {
                     Log.d("ResultManager", "Phản hồi từ server: " + responseBody);
 
                     Gson gson = new Gson();
-                    Enrollment enrollment = gson.fromJson(responseBody, Enrollment.class); // Thay đổi ở đây
 
-                    if (enrollment != null) {
-                        Log.d("ResultManager", "Enrollment ID: " + enrollment.getId() + "Point: "+ enrollment.getTotalPoints() +", Comp: " + enrollment.getComLevel());
-                        callback.onSuccess(enrollment); // Thay đổi ở đây
+                    ApiResponseEnrollment apiResponse = gson.fromJson(responseBody, ApiResponseEnrollment.class);
+
+                    if (apiResponse.getStatusCode() == 200) {
+                        Enrollment enrollment = apiResponse.getData(); // Lấy `data` trong JSON
+
+                        if (enrollment != null) {
+                            Log.d("ResultManager", "Enrollment ID: " + enrollment.getId() +
+                                    ", Point: " + enrollment.getTotalPoints() +
+                                    ", Comp: " + enrollment.getComLevel());
+                            callback.onSuccess(enrollment);
+                        } else {
+                            callback.onFailure("Không có dữ liệu Enrollment.");
+                        }
                     } else {
-                        callback.onFailure("Không có câu trả lời nào.");
+                        callback.onFailure("Lỗi từ server: " + apiResponse.getMessage());
                     }
                 } else {
                     Log.e("ResultManager", "Lỗi từ server: Mã lỗi " + response.code());
@@ -266,4 +270,5 @@ public class ResultManager extends BaseApiManager {
             }
         });
     }
+
 }

@@ -45,6 +45,7 @@ public class PointResultCourseActivity extends AppCompatActivity {
     LessonManager lesManager = new LessonManager();
     ResultManager resultManager = new ResultManager(this);
     private Set<Integer> addedResultIds = new HashSet<>();
+    private int enrollmentId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -130,7 +131,7 @@ public class PointResultCourseActivity extends AppCompatActivity {
     }
 
     private void fetchLessonAndCreateResult(int lessonId, int courseId) {
-        resultManager.getEnrollments(courseId, new ApiCallback<Enrollment>() {
+        resultManager.getEnrollment(courseId, new ApiCallback<Enrollment>() {
             @Override
             public void onSuccess() {
 
@@ -139,7 +140,7 @@ public class PointResultCourseActivity extends AppCompatActivity {
             @Override
             public void onSuccess(Enrollment enrollment) {
                 if(enrollment != null){
-                    int enrollmentId = enrollment.getId();
+                    enrollmentId = enrollment.getId();
                     Log.e("ErollmentId: ", String.valueOf(enrollment.getId()));
                     lesManager.fetchLessonById(lessonId, new ApiCallback<Lesson>() {
                         @Override
@@ -211,16 +212,7 @@ public class PointResultCourseActivity extends AppCompatActivity {
                         if (result!= null) {
                             Log.d("PointResultActivity", "fetchResultByLesson: Lấy Result thành công");
                             runOnUiThread(() -> {
-                                updateUI(skillType, result.getComLevel(), result.getTotalPoints(), result.getId(), coursePoint, compCourse);
-                                if (result.getComLevel() > 90) {
-                                    star3.setBackgroundTintList(getResources().getColorStateList(R.color.yellow));
-                                }
-                                if (result.getComLevel() > 60) {
-                                    star2.setBackgroundTintList(getResources().getColorStateList(R.color.yellow));
-                                }
-                                if (result.getComLevel() > 30) {
-                                    star1.setBackgroundTintList(getResources().getColorStateList(R.color.yellow));
-                                }
+                                updateUI(skillType, result.getComLevel(), result.getTotalPoints(), result.getId(), enrollmentId);
                             });
                         } else {
                             Log.e("PointResultActivity", "fetchResultByLesson: Kết quả không hợp lệ.");
@@ -247,7 +239,35 @@ public class PointResultCourseActivity extends AppCompatActivity {
         });
     }
 
-    private void updateUI(String skillType, double complete, int totalPoints, int resultId, int coursePoint, double compCourse) {
+    private void updateUI(String skillType, double complete, int totalPoints, int resultId, int enrollmentId) {
+        resultManager.calculateEnrollment(enrollmentId, new ApiCallback<Enrollment>(){
+
+            @Override
+            public void onSuccess() {}
+
+            @Override
+            public void onSuccess(Enrollment enrollment) {
+                compCourse = enrollment.getComLevel();
+                coursePoint = enrollment.getTotalPoints();
+                runOnUiThread(() -> {
+                    if (compCourse > 90) {
+                        star3.setBackgroundTintList(getResources().getColorStateList(R.color.yellow));
+                    }
+                    if (compCourse > 60) {
+                        star2.setBackgroundTintList(getResources().getColorStateList(R.color.yellow));
+                    }
+                    if (compCourse > 30) {
+                        star1.setBackgroundTintList(getResources().getColorStateList(R.color.yellow));
+                    }
+                    pointTextView.setText(String.valueOf(coursePoint));
+                });
+            }
+
+            @Override
+            public void onFailure(String errorMessage) {
+
+            }
+        });
         runOnUiThread(() -> {
             if (!addedResultIds.contains(resultId)) { // Kiểm tra resultId
                 addedResultIds.add(resultId); // Thêm resultId vào tập hợp
@@ -290,7 +310,6 @@ public class PointResultCourseActivity extends AppCompatActivity {
             compSpeak.setText("Complete: " + String.format("%.1f",comS/s));
             correctWrite.setText(getString(R.string.point) + totalPointW);
             compWrite.setText("Complete: " + String.format("%.1f",comW/w));
-            pointTextView.setText(String.valueOf(totalPointR+totalPointL+totalPointS+totalPointW));
         });
     }
 

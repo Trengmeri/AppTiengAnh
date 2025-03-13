@@ -1,6 +1,7 @@
 package com.example.test.ui.question_data;
 
 import android.animation.ObjectAnimator;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -12,6 +13,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.test.PopupHelper;
@@ -42,6 +44,7 @@ public class WrittingActivity extends AppCompatActivity {
     private List<Question> questions; // Danh sách câu hỏi
     private int currentQuestionIndex;
     private int lessonID,courseID;
+    private ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -114,6 +117,12 @@ public class WrittingActivity extends AppCompatActivity {
         String questionContent = tvContent.getText().toString().trim();
         ApiService apiService = new ApiService(this);
 
+        // Hiển thị ProgressDialog
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage(getString(R.string.load));
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+
         apiService.sendAnswerToApi(questionContent, userAnswer, new ApiCallback<EvaluationResult>() {
             @Override
             public void onSuccess() {
@@ -129,6 +138,7 @@ public class WrittingActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess() {
                         Log.d("WrittingActivity.this", "Lưu thành công!");
+                        progressDialog.dismiss();
                         runOnUiThread(() -> {
                             PopupHelper.showResultPopup(WrittingActivity.this, questype, null, null, result.getPoint(), result.getimprovements(), result.getevaluation(), () -> {
                                 currentStep++; // Tăng currentStep
@@ -150,15 +160,28 @@ public class WrittingActivity extends AppCompatActivity {
 
                     @Override
                     public void onFailure(String errorMessage) {
-                        Log.e("WrittingActivity.this", "Lỗi lưu câu trả lời: " + errorMessage);
+                        progressDialog.dismiss();
+                        Log.e("WritingActivity", "Lỗi lưu câu trả lời: " + errorMessage);
+                        showErrorDialog("Lỗi khi lưu câu trả lời. Vui lòng thử lại.");
                     }
                 });
             }
 
             @Override
             public void onFailure(String errorMessage) {
-                Log.e("WrittingActivity", "Lỗi API: " + errorMessage);
+                progressDialog.dismiss();
+                Log.e("WritingActivity", "Lỗi lưu câu trả lời: " + errorMessage);
+                showErrorDialog("Lỗi khi lưu câu trả lời. Vui lòng thử lại.");
             }
+        });
+    }
+    private void showErrorDialog(String message) {
+        runOnUiThread(() -> {
+            new AlertDialog.Builder(WrittingActivity.this)
+                    .setTitle("Lỗi")
+                    .setMessage(message)
+                    .setPositiveButton("OK", (dialog, which) -> dialog.dismiss())
+                    .show();
         });
     }
 

@@ -12,6 +12,7 @@ import android.widget.*;
 import android.os.Handler;
 import android.media.AudioAttributes;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -142,15 +143,28 @@ public class SpeakingActivity extends AppCompatActivity implements SpeechRecogni
 
                     @Override
                     public void onFailure(String errorMessage) {
-                        Log.e("SpeakingActivity.this", "Lỗi lưu câu trả lời: " + errorMessage);
+                        progressDialog.dismiss();
+                        Log.e("WritingActivity", "Lỗi lưu câu trả lời: " + errorMessage);
+                        showErrorDialog("Lỗi khi lưu câu trả lời. Vui lòng thử lại.");
                     }
                 });
             }
 
             @Override
             public void onFailure(String errorMessage) {
-                Log.e("SpeakingActivity", "Lỗi API: " + errorMessage);
+                progressDialog.dismiss();
+                Log.e("WritingActivity", "Lỗi lưu câu trả lời: " + errorMessage);
+                showErrorDialog("Lỗi khi lưu câu trả lời. Vui lòng thử lại.");
             }
+        });
+    }
+    private void showErrorDialog(String message) {
+        runOnUiThread(() -> {
+            new AlertDialog.Builder(SpeakingActivity.this)
+                    .setTitle("Lỗi")
+                    .setMessage(message)
+                    .setPositiveButton("OK", (dialog, which) -> dialog.dismiss())
+                    .show();
         });
     }
 

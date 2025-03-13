@@ -54,6 +54,7 @@ public class ScheduleActivity extends AppCompatActivity {
         setContentView(R.layout.activity_schedule);
         requestNotificationPermission();
         requestIgnoreBatteryOptimizations();
+        AlarmScheduler.logAllAlarms(this);
 
 
         textViewReminderTimeHour = findViewById(R.id.textViewReminderTimeHour);

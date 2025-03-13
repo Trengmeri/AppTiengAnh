@@ -1,5 +1,6 @@
 package com.example.test.ui.entrance_test;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -9,6 +10,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.test.PopupHelper;
@@ -37,6 +39,7 @@ public class WritingActivity extends AppCompatActivity {
     private int currentStep = 0;
     private int totalSteps;
     private ApiService apiService = new ApiService(this);
+    private ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -111,6 +114,12 @@ public class WritingActivity extends AppCompatActivity {
         String questionContent = tvContent.getText().toString().trim();
         ApiService apiService = new ApiService(this);
 
+        // Hiển thị ProgressDialog
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage(getString(R.string.load));
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+
         apiService.sendAnswerToApi(questionContent, userAnswer, new ApiCallback<EvaluationResult>() {
             @Override
             public void onSuccess() {
@@ -126,6 +135,7 @@ public class WritingActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess() {
                         Log.d("WritingActivity.this", "Lưu thành công!");
+                        progressDialog.dismiss();
                         runOnUiThread(() -> {
                             PopupHelper.showResultPopup(WritingActivity.this, questype, null, null, result.getPoint(), result.getimprovements(), result.getevaluation(), () -> {
                                 currentStep++;
@@ -147,15 +157,28 @@ public class WritingActivity extends AppCompatActivity {
 
                     @Override
                     public void onFailure(String errorMessage) {
-                        Log.e("WritingActivity.this", "Lỗi lưu câu trả lời: " + errorMessage);
+                        progressDialog.dismiss();
+                        Log.e("WritingActivity", "Lỗi lưu câu trả lời: " + errorMessage);
+                        showErrorDialog("Lỗi khi lưu câu trả lời. Vui lòng thử lại.");
                     }
                 });
             }
 
             @Override
             public void onFailure(String errorMessage) {
-                Log.e("WritingActivity", "Lỗi API: " + errorMessage);
+                progressDialog.dismiss();
+                Log.e("WritingActivity", "Lỗi lưu câu trả lời: " + errorMessage);
+                showErrorDialog("Lỗi khi lưu câu trả lời. Vui lòng thử lại.");
             }
+        });
+    }
+    private void showErrorDialog(String message) {
+        runOnUiThread(() -> {
+            new AlertDialog.Builder(WritingActivity.this)
+                    .setTitle("Lỗi")
+                    .setMessage(message)
+                    .setPositiveButton("OK", (dialog, which) -> dialog.dismiss())
+                    .show();
         });
     }
 

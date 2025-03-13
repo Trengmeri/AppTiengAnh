@@ -60,7 +60,8 @@ public class PopupHelper {
             }
         } else {
             try {
-                // Hiển thị nội dung đánh giá
+                tvMessage2.setVisibility(View.VISIBLE);
+                tvDetail2.setVisibility(View.VISIBLE);
                 tvMessage.setText(String.format("%s%.1f",activity.getString(R.string.point), score));
                 tvDetail.setText(evaluation);
                 tvMessage2.setText(activity.getString(R.string.improvements));

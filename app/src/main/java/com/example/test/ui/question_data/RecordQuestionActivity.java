@@ -15,6 +15,7 @@ import android.view.View;
 import android.widget.*;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -143,15 +144,28 @@ public class RecordQuestionActivity extends AppCompatActivity implements SpeechR
 
                     @Override
                     public void onFailure(String errorMessage) {
-                        Log.e("RecordQuestionActivity.this", "Lỗi lưu câu trả lời: " + errorMessage);
+                        progressDialog.dismiss();
+                        Log.e("WritingActivity", "Lỗi lưu câu trả lời: " + errorMessage);
+                        showErrorDialog("Lỗi khi lưu câu trả lời. Vui lòng thử lại.");
                     }
                 });
             }
 
             @Override
             public void onFailure(String errorMessage) {
-                Log.e("RecordQuestionActivity", "Lỗi API: " + errorMessage);
+                progressDialog.dismiss();
+                Log.e("WritingActivity", "Lỗi lưu câu trả lời: " + errorMessage);
+                showErrorDialog("Lỗi khi lưu câu trả lời. Vui lòng thử lại.");
             }
+        });
+    }
+    private void showErrorDialog(String message) {
+        runOnUiThread(() -> {
+            new AlertDialog.Builder(RecordQuestionActivity.this)
+                    .setTitle("Lỗi")
+                    .setMessage(message)
+                    .setPositiveButton("OK", (dialog, which) -> dialog.dismiss())
+                    .show();
         });
     }
 
