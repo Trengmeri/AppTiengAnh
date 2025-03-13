@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -41,10 +42,11 @@ public class DiscussionActivity extends AppCompatActivity implements DiscussionA
     private DiscussionAdapter discussionAdapter ;
     private int currentParentId = -1;
 
+    LinearLayout replyContainer;
     RecyclerView rv_discussions;
     EditText editDiscussion;
     ImageView btSendDisussion;
-    TextView back;
+    TextView back, txtCancelReply, txtReplyUser;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -83,7 +85,7 @@ public class DiscussionActivity extends AppCompatActivity implements DiscussionA
             }
         });
 
-
+        txtCancelReply.setOnClickListener(v -> cancelReply());
         lessonID = getIntent().getIntExtra("lessonId",1);
         fetchDiscussions();
 
@@ -98,6 +100,9 @@ public class DiscussionActivity extends AppCompatActivity implements DiscussionA
         editDiscussion = findViewById(R.id.editDiscussion);
         back = findViewById(R.id.back);
         rv_discussions = findViewById(R.id.rv_discussions);
+        replyContainer = findViewById(R.id.replyContainer); // Ánh xạ replyContainer
+        txtReplyUser = findViewById(R.id.txtReplyUser); // Tên người dùng được trả lời
+        txtCancelReply = findViewById(R.id.txtCancelReply); // Nút hủy reply
     }
     private void fetchDiscussions() {
         if (isLoading || !hasMoreData) return; // Nếu đang tải hoặc hết dữ liệu thì không tải nữa
@@ -143,11 +148,19 @@ public class DiscussionActivity extends AppCompatActivity implements DiscussionA
     }
 
     public void focusOnReply(int discussionId, String userName) {
-        currentParentId = discussionId; // Lưu discussionId làm parentId cho bình luận
-        editDiscussion.requestFocus(); // Focus vào EditText
-        editDiscussion.setHint("Write a reply for "+ userName);
-        showKeyboard(); // Mở bàn phím
+        currentParentId = discussionId; // Lưu ID bài viết cha
+        replyContainer.setVisibility(View.VISIBLE); // Hiển thị giao diện reply
+        txtReplyUser.setText(userName); // Hiển thị tên người dùng đang trả lời
+        editDiscussion.setHint("Write a reply for " + userName);
+        editDiscussion.requestFocus();
+        showKeyboard(); // Hiển thị bàn phím
     }
+    private void cancelReply() {
+        currentParentId = -1; // Xóa trạng thái reply
+        replyContainer.setVisibility(View.GONE); // Ẩn giao diện reply
+        editDiscussion.setHint("Write a discussion"); // Đổi lại hint mặc định
+    }
+
 
 
 
@@ -240,7 +253,7 @@ public class DiscussionActivity extends AppCompatActivity implements DiscussionA
                                 if (discussion.getReplies() != null) {
                                     for (Discussion reply : discussion.getReplies()) {
                                         if (reply.getId() == currentParentId) {
-                                            reply.getReplies().add(result); // Thêm reply vào danh sách con
+                                            reply.getReplies().add(result);
                                             discussionAdapter.notifyDataSetChanged();
                                             isReplyAdded = true;
                                             break;
@@ -248,7 +261,7 @@ public class DiscussionActivity extends AppCompatActivity implements DiscussionA
                                     }
                                 }
                                 if (discussion.getId() == currentParentId) {
-                                    discussion.getReplies().add(result); // Thêm reply vào danh sách replies của bài viết cha
+                                    discussion.getReplies().add(result);
                                     discussionAdapter.notifyDataSetChanged();
                                     isReplyAdded = true;
                                     break;
@@ -260,11 +273,11 @@ public class DiscussionActivity extends AppCompatActivity implements DiscussionA
                                 discussionAdapter.addDiscussion(result);
                                 discussionAdapter.notifyDataSetChanged();
                             }
-                            currentParentId = -1;// Reset parentId sau khi gửi bình luận
-                            editDiscussion.setHint("Write a discussion");
 
+                            cancelReply(); // Hủy chế độ reply sau khi gửi bình luận
                         });
                     }
+
 
 
 
