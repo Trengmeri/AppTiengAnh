@@ -16,6 +16,7 @@
             android:layout_gravity="end"
             android:layout_marginTop="@dimen/dp_16"
             android:layout_marginEnd="@dimen/dp_30"
+            android:backgroundTint="@android:color/transparent"
             android:text="Done"
             android:textColor="#E65D33"
             android:textSize="18sp"
