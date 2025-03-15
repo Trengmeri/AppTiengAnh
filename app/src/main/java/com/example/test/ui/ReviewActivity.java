@@ -40,6 +40,10 @@ public class ReviewActivity extends AppCompatActivity {
     LinearLayout contentAbout, contentLes;
     TextView txtContentAbout, courseName, numLessons;
     Course curCourse;
+    private int currentPage = 1; // Bắt đầu từ trang 1
+    private boolean isLoading = false; // Để tránh tải dữ liệu nhiều lần
+    private boolean hasMoreData = true; // Để biết còn dữ liệu để tải không
+
     private RecyclerView recyclerView, recyclerViewLesson;
     private ReviewAdapter reviewAdapter;
     private LessonAdapter lessonAdapter;
@@ -270,7 +274,7 @@ public class ReviewActivity extends AppCompatActivity {
 
     private void loadReviews() {
         int courseId = curCourse != null ? curCourse.getId() : 1;
-        reviewManager.fetchReviewsByCourse(courseId, new ApiCallback<List<Review>>() {
+        reviewManager.fetchReviewsByCourse(courseId, currentPage, new ApiCallback<List<Review>>() {
             @Override
             public void onSuccess() {
 
@@ -279,17 +283,18 @@ public class ReviewActivity extends AppCompatActivity {
             @Override
             public void onSuccess(List<Review> reviews) {
                 runOnUiThread(() -> {
-                    if (reviews.isEmpty()) {
-                        Toast.makeText(ReviewActivity.this, "Chưa có đánh giá nào!", Toast.LENGTH_SHORT).show();
+                    if (reviews == null || reviews.isEmpty()) {
+                        hasMoreData = false;
                         return;
                     }
-                    Log.d("ReviewLoad", "Số đánh giá: " + reviews.size());
+                    if ( reviewAdapter == null){
+                        reviewAdapter = new ReviewAdapter(ReviewActivity.this, reviews);
+                    }else {
+                        reviewAdapter.addMoreReviews(reviews);
+                    }
 
-
-                    reviewAdapter = new ReviewAdapter(ReviewActivity.this, reviews);
-                    recyclerView.setAdapter(reviewAdapter);
-
-
+                    currentPage++;
+                    isLoading = false;
                 });
             }
 

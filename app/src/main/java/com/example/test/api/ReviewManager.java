@@ -102,15 +102,17 @@ public class ReviewManager extends BaseApiManager {
     }
 
     // API lấy danh sách Review theo courseId
-    public void fetchReviewsByCourse(int courseId, ApiCallback<List<Review>> callback) {
+    public void fetchReviewsByCourse(int courseId, int page, ApiCallback<List<Review>> callback) {
         String token = getValidToken();
         if (token == null) {
             callback.onFailure("Token không hợp lệ. Vui lòng đăng nhập lại.");
             return;
         }
 
+        String url = BASE_URL + "/api/v1/reviews/course/" + courseId + "?page=" + page + "&size=10";  // tăng kich thuoc trang
+
         Request request = new Request.Builder()
-                .url(BASE_URL + "/api/v1/reviews/course/" + courseId)
+                .url(url)
                 .addHeader("Authorization", "Bearer " + token)
                 .addHeader("Content-Type", "application/json")
                 .get()
@@ -131,21 +133,13 @@ public class ReviewManager extends BaseApiManager {
                         Gson gson = new Gson();
                         Type reviewListType = new TypeToken<List<Review>>() {}.getType();
                         List<Review> reviews = gson.fromJson(contentArray.toString(), reviewListType);
-                        new Handler(Looper.getMainLooper()).post(() -> {
-                            if (reviews != null && !reviews.isEmpty()) {
-                                callback.onSuccess(reviews);
-                            } else {
-                                callback.onFailure("Không có đánh giá nào");
-                            }
-                        });
+
+                        new Handler(Looper.getMainLooper()).post(() -> callback.onSuccess(reviews));
                     } catch (JSONException e) {
-                        new Handler(Looper.getMainLooper()).post(() ->
-                                callback.onFailure("Lỗi phân tích JSON: " + e.getMessage()));
+                        new Handler(Looper.getMainLooper()).post(() -> callback.onFailure("Lỗi parse JSON: " + e.getMessage()));
                     }
                 } else {
-                    String errorBody = response.body().string();
-                    new Handler(Looper.getMainLooper()).post(() ->
-                            callback.onFailure("Lỗi từ server: " + response.code() + " - " + errorBody));
+                    callback.onFailure("Lỗi từ server: " + response.code());
                 }
             }
 
@@ -155,6 +149,7 @@ public class ReviewManager extends BaseApiManager {
             }
         });
     }
+
 
 
     // Like review

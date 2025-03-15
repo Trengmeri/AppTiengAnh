@@ -177,6 +177,15 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ViewHolder
         reviews.add(0, review); // Thêm vào đầu danh sách
         notifyItemInserted(0); // Thông báo adapter thêm item mới
     }
+
+    public void addMoreReviews(List<Review> newReviews) {
+        if (newReviews != null && !newReviews.isEmpty()) {
+            int startPosition = reviews.size();
+            reviews.addAll(newReviews);
+            notifyItemRangeInserted(startPosition, newReviews.size());
+        }
+    }
+
     private void rollbackLike(ReviewAdapter.ViewHolder holder, Review review, boolean previousState) {
         review.setNumLike(previousState ? review.getNumLike() + 1 : review.getNumLike() - 1);
         review.setLiked(previousState);
