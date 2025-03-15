@@ -21,176 +21,150 @@ import androidx.viewpager2.widget.ViewPager2;
 import com.example.test.R;
 import com.example.test.api.ApiCallback;
 import com.example.test.api.LessonManager;
-import com.example.test.api.QuestionManager;
 import com.example.test.api.ResultManager;
-import com.example.test.model.Course;
 import com.example.test.model.Lesson;
+import com.example.test.model.Result;
 import com.example.test.ui.NotificationActivity;
-import com.example.test.NevigateQuestion;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class HomeFragment extends Fragment {
-    Button continueButton;
-    LinearLayout lessonsContainer; // LinearLayout để chứa các bài học
-    TextView courseTitle,lessonTitle1,lessonNumber,courseId, tv404; // TextView để hiển thị tên khóa học
-    ImageView btnNoti,btnstudy,btnexplore,btnprofile, icHome, icExplore,btnmins, btnplus;
-    ViewPager2 vpgMain;
-    GridLayout bottomBar;
-    QuestionManager quesManager = new QuestionManager(getContext());
-    LessonManager lesManager = new LessonManager();
-    ResultManager resultManager = new ResultManager(getContext());
-    int newCourseId=1;
+    private Button continueButton;
+    private TextView courseTitle, lessonTitle1, lessonNumber;
+    private TextView totalPoints, readingPoints, listeningPoints, speakingPoints, writingpoint;
+    private ImageView btnNoti, btnStudy, btnExplore, btnProfile;
+    private ResultManager resultManager;
+    private LessonManager lessonManager;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        super.onCreateView(inflater, container, savedInstanceState);
-        View view = inflater.inflate(R.layout.fragment_home, container, false);
-        return view;
+        return inflater.inflate(R.layout.fragment_home, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        // Khởi tạo biến sau khi view đã tạo
+        resultManager = new ResultManager(requireContext());
+        lessonManager = new LessonManager();
+
         continueButton = view.findViewById(R.id.btn_continue);
-        lessonsContainer = view.findViewById(R.id.lessonsContainer); // ID của LinearLayout chứa bài học
-        courseTitle = view.findViewById(R.id.courseTitle); // ID của TextView hiển thị tên khóa học
+        courseTitle = view.findViewById(R.id.courseTitle);
         lessonTitle1 = view.findViewById(R.id.lessonTitle);
         lessonNumber = view.findViewById(R.id.lessonNumber);
-        btnNoti= view.findViewById(R.id.img_notification);
-        btnstudy = view.findViewById(R.id.ic_study);
-        btnexplore = view.findViewById(R.id.ic_explore);
-        btnprofile = view.findViewById(R.id.ic_profile);
-        btnplus = view.findViewById(R.id.plus);
-        btnmins = view.findViewById(R.id.mins);
-        courseId = view.findViewById(R.id.courseId);
-        tv404 = view.findViewById(R.id.tv404);
+        btnNoti = view.findViewById(R.id.img_notification);
+        btnStudy = view.findViewById(R.id.ic_study);
+        btnExplore = view.findViewById(R.id.ic_explore);
+        btnProfile = view.findViewById(R.id.ic_profile);
+        totalPoints = view.findViewById(R.id.totalPoints);
+        readingPoints = view.findViewById(R.id.readingpoint);
+        listeningPoints = view.findViewById(R.id.listeningpoint);
+        speakingPoints = view.findViewById(R.id.speakingpoint);
+        writingpoint = view.findViewById(R.id.writingpoint);
 
-        fetchCourseData(newCourseId);
 
-        btnplus.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                int currentCourseId = Integer.parseInt(courseId.getText().toString());
-                newCourseId = currentCourseId + 1;
-                courseId.setText(String.valueOf(newCourseId));
-                fetchCourseData(newCourseId);
-            }
+        continueButton.setOnClickListener(v -> Toast.makeText(getActivity(), "Continue studying clicked!", Toast.LENGTH_SHORT).show());
+
+        btnNoti.setOnClickListener(v -> {
+            Intent intent = new Intent(getActivity(), NotificationActivity.class);
+            startActivity(intent);
         });
 
-        btnmins.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                int currentCourseId = Integer.parseInt(courseId.getText().toString());
-                if (currentCourseId > 1) {
-                    newCourseId = currentCourseId - 1;
-                    courseId.setText(String.valueOf(newCourseId));
-                    fetchCourseData(newCourseId);
-                }
-            }
-        });
-
-        continueButton.setOnClickListener(v -> {
-            Toast.makeText(getActivity(), "Continue studying clicked!", Toast.LENGTH_SHORT).show();
-        });
-
-        btnNoti.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getActivity(), NotificationActivity.class);
-                startActivity(intent);
-            }
-        });
+        // Chạy tính điểm sau khi UI đã sẵn sàng
+        view.post(() -> calculateTotalPoints());
     }
 
-    private void fetchCourseData(int id){
-        lessonsContainer.removeAllViews();
-        tv404.setVisibility(View.GONE);
-        lesManager.fetchCourseById( newCourseId , new ApiCallback<Course>() {
+    private void calculateTotalPoints() {
+        if (totalPoints == null) {
+            Log.e("HomeFragment", "❌ Không thể cập nhật điểm: `totalPoints` là null!");
+            return;
+        }
+
+        lessonManager.fetchAllLessonIds(new ApiCallback<List<Integer>>() { // Lấy danh sách ID bài học
             @Override
-            public void onSuccess(Course course) {
-                getActivity().runOnUiThread(() -> {
-                    if (course != null) {
-                        // Hiển thị tên khóa học
-                        courseTitle.setText(course.getName());
-                        lessonTitle1.setText(course.getName());
-                        lessonNumber.setText("Lesson " + course.getId());
+            public void onSuccess() {}
+            @Override
+            public void onSuccess(List<Integer> lessonIds) {
+                Log.d("LessonManager", "📌 Tổng số bài học: " + lessonIds.size());
 
-                        // Hiển thị danh sách bài học
-                        List<Integer> lessonIds = course.getLessonIds();
-                        if (lessonIds != null) {
-                            for (Integer lessonId : lessonIds) {
-                                // Gọi API để lấy thông tin bài học
-                                lesManager.fetchLessonById(lessonId, new ApiCallback<Lesson>() {
-                                    @Override
-                                    public void onSuccess(Lesson lesson) {
-                                        getActivity().runOnUiThread(() -> {
-                                            if (lesson != null) {
-                                                // Hiển thị thông tin bài học trong LinearLayout
-                                                View lessonView = getLayoutInflater().inflate(R.layout.item_lesson, null);
-                                                TextView lessonTitle = lessonView.findViewById(R.id.lessonTitle);
-                                                lessonTitle.setText(lesson.getName());
-                                                lessonsContainer.addView(lessonView);
+                AtomicInteger total = new AtomicInteger(0);
+                AtomicInteger reading = new AtomicInteger(0);
+                AtomicInteger listening = new AtomicInteger(0);
+                AtomicInteger speaking = new AtomicInteger(0);
+                AtomicInteger writing = new AtomicInteger(0);
 
-                                                lessonTitle.setOnClickListener(v -> {
-                                                    int lessonId = lesson.getId();
-                                                    lesManager.fetchLessonById(lessonId, new ApiCallback<Lesson>() {
-                                                        @Override
-                                                        public void onSuccess() {
-                                                        }
+                AtomicInteger completedRequests = new AtomicInteger(0);
+                int totalLessons = lessonIds.size();
 
-                                                        @Override
-                                                        public void onFailure(String errorMessage) {
-                                                            Log.e(getActivity().toString(), errorMessage);
-                                                        }
+                for (int lessonId : lessonIds) {
+                    lessonManager.fetchLessonById(lessonId, new ApiCallback<Lesson>() { // Lấy chi tiết từng bài học
+                        @Override
+                        public void onSuccess() {}
+                        @Override
+                        public void onSuccess(Lesson lesson) {
+                            String skillType = lesson.getSkillType(); // Lấy skill từ lesson
 
-                                                        @Override
-                                                        public void onSuccess(Lesson lesson) {
-                                                            if (lesson != null) {
-                                                                Intent intent = new Intent(getActivity(), NevigateQuestion.class);
-                                                                intent.putExtra("skill", lesson.getSkillType());
-                                                                intent.putExtra("courseId", newCourseId);
-                                                                intent.putExtra("lessonId", lesson.getId());
-                                                                intent.putExtra("questionIds", new ArrayList<>(lesson.getQuestionIds())); // Truyền danh sách câu hỏi
-                                                                startActivity(intent);
-                                                            }
-                                                        }
-                                                    });
-                                                });
-                                            }
-                                        });
+                            resultManager.fetchResultByLesson(lessonId, new ApiCallback<Result>() { // Lấy điểm
+                                @Override
+                                public void onSuccess() {}
+
+                                @Override
+                                public void onSuccess(Result result) {
+                                    int points = result.getTotalPoints();
+                                    total.addAndGet(points);
+
+                                    // Cộng điểm vào skill tương ứng
+                                    switch (skillType) {
+                                        case "READING": reading.addAndGet(points); break;
+                                        case "LISTENING": listening.addAndGet(points); break;
+                                        case "SPEAKING": speaking.addAndGet(points); break;
+                                        case "WRITING": writing.addAndGet(points); break;
                                     }
 
-                                    @Override
-                                    public void onFailure(String errorMessage) {
-                                        getActivity().runOnUiThread(() -> {
-                                            Log.e(getActivity().toString(), errorMessage);
-                                        });
+                                    // Tăng completedRequests và kiểm tra nếu đủ request thì cập nhật UI
+                                    if (completedRequests.incrementAndGet() == totalLessons) {
+                                        updateUI(total.get(), reading.get(), listening.get(), speaking.get(), writing.get());
                                     }
+                                }
 
-                                    @Override
-                                    public void onSuccess() {
+                                @Override
+                                public void onFailure(String errorMessage) {
+                                    Log.e("ResultManager", "⚠️ Lỗi lấy điểm từ lesson " + lessonId + ": " + errorMessage);
+                                    if (completedRequests.incrementAndGet() == totalLessons) {
+                                        updateUI(total.get(), reading.get(), listening.get(), speaking.get(), writing.get());
                                     }
-                                });
-                            }
+                                }
+
+                            });
                         }
-                    } else {
-                        tv404.setVisibility(View.VISIBLE);
-                    }
-                });
+
+                        @Override
+                        public void onFailure(String errorMessage) {
+                            Log.e("LessonManager", "⚠️ Không thể lấy chi tiết bài học " + lessonId + ": " + errorMessage);
+                            completedRequests.incrementAndGet();
+                            Log.d("Home", String.valueOf(completedRequests));
+                        }
+                    });
+                }
             }
 
             @Override
             public void onFailure(String errorMessage) {
-                getActivity().runOnUiThread(() -> {
-                    tv404.setVisibility(View.VISIBLE);
-                });
+                Log.e("LessonManager", "❌ Lỗi khi lấy danh sách lessonId: " + errorMessage);
             }
-
-            @Override
-            public void onSuccess() {}
         });
     }
+    private void updateUI(int total, int reading, int listening, int speaking, int writing) {
+        requireActivity().runOnUiThread(() -> {
+            totalPoints.setText(total + "đ");
+            readingPoints.setText(reading + "đ");
+            listeningPoints.setText(listening + "đ");
+            speakingPoints.setText(speaking + "đ");
+            writingpoint.setText(writing + "đ");
+        });
+    }
+
 }

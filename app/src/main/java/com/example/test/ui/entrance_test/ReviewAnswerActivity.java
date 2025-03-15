@@ -65,7 +65,7 @@ public class ReviewAnswerActivity extends AppCompatActivity {
         });
         courseTitle = findViewById(R.id.courseTitle);
         btnBackto = findViewById(R.id.btnBackto);
-        lessonsContainer = findViewById(R.id.lessonsContainer);
+//        lessonsContainer = findViewById(R.id.lessonsContainer);
         tableTestResult= findViewById(R.id.tableTestResult);
 
         btnBackto.setOnClickListener(v -> {

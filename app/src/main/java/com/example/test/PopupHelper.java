@@ -45,7 +45,7 @@ public class PopupHelper {
         Button btnNext = popupView.findViewById(R.id.btnNextQuestion);
 
         if ("MULTIPLE".equals(questType) || "CHOICE".equals(questType) || "LISTENING".equals(questType)) {
-            if (userAnswers.get(0).toLowerCase().trim().equals(correctAnswers.get(0).toLowerCase().trim())) {
+            if (userAnswers.equals(correctAnswers)) {
                 tvMessage.setText(String.format("%s\n%s", activity.getString(R.string.correct), activity.getString(R.string.ANS)));
                 tvMessage.setTextColor(activity.getResources().getColor(android.R.color.holo_green_dark));
                 tvDetail.setText(String.join(", ", correctAnswers));
