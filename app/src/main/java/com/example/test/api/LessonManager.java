@@ -96,42 +96,7 @@ public class LessonManager extends BaseApiManager {
             }
         });
     }
-    public void fetchCourses(int page, int size, final ApiCallback<ApiResponseAllCourse> callback) {
-        String url = BASE_URL + "/api/v1/courses?page=" + page + "&size=" + size; // Thay bằng URL máy chủ của bạn
 
-        Request request = new Request.Builder()
-                .url(url)
-                .build();
-
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                if (response.isSuccessful()) {
-                    String responseBody = response.body().string();
-                    Log.d("LessonManager", "Phản hồi từ server: " + responseBody);
-
-                    Gson gson = new Gson();
-                    Type courseListType = new TypeToken<ApiResponseCourse>() {}.getType();
-                    ApiResponseAllCourse apiResponse = gson.fromJson(responseBody, courseListType);
-
-                    if (apiResponse.getStatusCode() == 200) {
-                        callback.onSuccess(apiResponse);
-                    } else {
-                        callback.onFailure("Lỗi từ server: " + apiResponse.getMessage());
-                    }
-                } else {
-                    Log.e("LessonManager", "Lỗi từ server: Mã lỗi " + response.code());
-                    callback.onFailure("Lỗi từ server: Mã lỗi " + response.code());
-                }
-            }
-
-            @Override
-            public void onFailure(Call call, IOException e) {
-                Log.e("LessonManager", "Lỗi kết nối: " + e.getMessage());
-                callback.onFailure("Không thể kết nối tới API.");
-            }
-        });
-    }
     public void fetchAllLessonIds(ApiCallback<List<Integer>> callback) {
         List<Integer> allLessonIds = new ArrayList<>();
         fetchLessonsByPage(0, allLessonIds, callback);
@@ -183,4 +148,56 @@ public class LessonManager extends BaseApiManager {
             }
         });
     }
+    public void fetchAllCourseIds(ApiCallback<List<Integer>> callback) {
+        List<Integer> allCourseIds = new ArrayList<>();
+        fetchCoursesByPage(0, allCourseIds, callback);
+    }
+
+    private void fetchCoursesByPage(int page, List<Integer> allCourseIds, ApiCallback<List<Integer>> callback) {
+        String url = BASE_URL + "/api/v1/courses?page=" + page;
+
+        Request request = new Request.Builder()
+                .url(url)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                callback.onFailure("Lỗi kết nối: " + e.getMessage());
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (!response.isSuccessful()) {
+                    callback.onFailure("Lỗi từ server: Mã lỗi " + response.code());
+                    return;
+                }
+
+                String responseBody = response.body().string();
+                Log.d("CourseManager", "📌 Phản hồi từ server: " + responseBody);
+                Gson gson = new Gson();
+
+                try {
+                    JsonObject jsonResponse = gson.fromJson(responseBody, JsonObject.class);
+                    int totalPages = jsonResponse.getAsJsonObject("data").get("totalPages").getAsInt();
+                    Type listType = new TypeToken<List<Course>>() {}.getType();
+                    List<Course> courses = gson.fromJson(jsonResponse.getAsJsonObject("data").get("content"), listType);
+
+                    for (Course course : courses) {
+                        allCourseIds.add(course.getId());
+                    }
+
+                    if (page + 1 < totalPages) {
+                        fetchCoursesByPage(page + 1, allCourseIds, callback);
+                    } else {
+                        callback.onSuccess(allCourseIds);
+                    }
+
+                } catch (Exception e) {
+                    callback.onFailure("Lỗi khi xử lý JSON: " + e.getMessage());
+                }
+            }
+        });
+    }
+
 }

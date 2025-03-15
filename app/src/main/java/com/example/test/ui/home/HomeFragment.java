@@ -56,9 +56,6 @@ public class HomeFragment extends Fragment {
         lessonTitle1 = view.findViewById(R.id.lessonTitle);
         lessonNumber = view.findViewById(R.id.lessonNumber);
         btnNoti = view.findViewById(R.id.img_notification);
-        btnStudy = view.findViewById(R.id.ic_study);
-        btnExplore = view.findViewById(R.id.ic_explore);
-        btnProfile = view.findViewById(R.id.ic_profile);
         totalPoints = view.findViewById(R.id.totalPoints);
         readingPoints = view.findViewById(R.id.readingpoint);
         listeningPoints = view.findViewById(R.id.listeningpoint);

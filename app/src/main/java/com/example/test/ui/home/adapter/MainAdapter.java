@@ -10,6 +10,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 import com.example.test.ui.home.HomeFragment;
 import com.example.test.ui.explore.ExploreFragment;
 import com.example.test.ui.profile.ProfileFragment;
+import com.example.test.ui.study.StudyFragment;
 
 public class MainAdapter extends FragmentStateAdapter {
     ImageView btnstudy,btnexplore,btnprofile,btnHome;
@@ -25,14 +26,16 @@ public class MainAdapter extends FragmentStateAdapter {
             return new HomeFragment();
         } else if (position ==1) {
             return new ExploreFragment();
-        } else {
+        } else if( position == 2) {
             return new ProfileFragment();
+        } else {
+            return new StudyFragment();
         }
     }
 
     @Override
     public int getItemCount() {
-        return 3; // Có 3 Fragment
+        return 4; // Có 3 Fragment
     }
 }
 
