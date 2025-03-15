@@ -158,7 +158,7 @@ public class ReviewManager extends BaseApiManager {
 
 
     // Like review
-    public void likeReview(int userId, int reviewId, ApiCallback<Boolean> callback) {
+    public void likeReview(int userId, int reviewId, ApiCallback<Void> callback) {
         String token = getValidToken();
         if (token == null) {
             callback.onFailure("Token không hợp lệ. Vui lòng đăng nhập lại.");
@@ -179,19 +179,17 @@ public class ReviewManager extends BaseApiManager {
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                String responseBody = response.body().string();
                 if (response.isSuccessful()) {
-                    new Handler(Looper.getMainLooper()).post(() -> callback.onSuccess(true));
-                } else if (response.code() == 409) {
-                    new Handler(Looper.getMainLooper()).post(() -> callback.onFailure("Bạn đã like review này trước đó."));
-                } else {
-                    new Handler(Looper.getMainLooper()).post(() -> callback.onFailure("Lỗi từ server: " + response.code() + " - " + responseBody));
+                    callback.onSuccess(null);
+                }
+                else {
+                    callback.onFailure("Lỗi: " + response.code());
                 }
             }
         });
     }
 
-    public void unlikeReview(int userId, int reviewId, ApiCallback<Boolean> callback) {
+    public void unlikeReview(int userId, int reviewId, ApiCallback<Void> callback) {
         String token = getValidToken();
         if (token == null) {
             callback.onFailure("Token không hợp lệ. Vui lòng đăng nhập lại.");
@@ -212,13 +210,10 @@ public class ReviewManager extends BaseApiManager {
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                String responseBody = response.body().string();
                 if (response.isSuccessful()) {
-                    new Handler(Looper.getMainLooper()).post(() -> callback.onSuccess(false));
-                } else if (response.code() == 409) {
-                    new Handler(Looper.getMainLooper()).post(() -> callback.onFailure("Bạn chưa like review này."));
+                    callback.onSuccess(null);
                 } else {
-                    new Handler(Looper.getMainLooper()).post(() -> callback.onFailure("Lỗi từ server: " + response.code() + " - " + responseBody));
+                    callback.onFailure("Lỗi: " + response.code());
                 }
             }
 
@@ -235,7 +230,7 @@ public class ReviewManager extends BaseApiManager {
         }
 
         Request request = new Request.Builder()
-                .url(BASE_URL + "/api/v1/likes/review?userId=" + userId + "&reviewId=" + reviewId)
+                .url(BASE_URL + "/api/v1/likes/review-is-liked?userId=" + userId + "&reviewId=" + reviewId)
                 .addHeader("Authorization", "Bearer " + token)
                 .get()
                 .build();
@@ -243,19 +238,19 @@ public class ReviewManager extends BaseApiManager {
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                String responseBody = response.body().string();
+
                 if (response.isSuccessful()) {
-                    boolean isLiked = Boolean.parseBoolean(responseBody);
-                    new Handler(Looper.getMainLooper()).post(() -> callback.onSuccess(isLiked));
+                    String responseBody = response.body().string();
+                    callback.onSuccess(Boolean.parseBoolean(responseBody));
                 } else {
-                    new Handler(Looper.getMainLooper()).post(() -> callback.onFailure("Lỗi server: " + response.code()));
+                    callback.onFailure("Lỗi: " + response.code());
                 }
             }
 
 
             @Override
             public void onFailure(Call call, IOException e) {
-                new Handler(Looper.getMainLooper()).post(() -> callback.onFailure("Lỗi kết nối: " + e.getMessage()));
+                callback.onFailure("Lỗi kết nối: " + e.getMessage());
             }
         });
     }

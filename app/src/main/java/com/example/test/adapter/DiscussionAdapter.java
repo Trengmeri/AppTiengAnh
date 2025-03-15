@@ -43,7 +43,10 @@ public class DiscussionAdapter extends RecyclerView.Adapter<DiscussionAdapter.Vi
         this.discussions = discussions;
         this.userManager = new UserManager(context);
         this.discussionManager= new DiscussionManager(context);
-        this.replyClickListener = replyClickListener; // Lưu lại listener
+        this.replyClickListener = replyClickListener;
+        if (currentUserID == -1) {
+            Log.e("ReviewAdapter", "User chưa đăng nhập, userId không hợp lệ");
+        }// Lưu lại listener
     }
 
     @NonNull
@@ -104,6 +107,10 @@ public class DiscussionAdapter extends RecyclerView.Adapter<DiscussionAdapter.Vi
 
         // Xử lý sự kiện bấm nút Like
         holder.btnLike.setOnClickListener(v -> {
+            if (currentUserID == -1) {
+                Toast.makeText(context, "Vui lòng đăng nhập để thích đánh giá!", Toast.LENGTH_SHORT).show();
+                return;
+            }
             boolean isLiked = discussion.isLiked();
             int newLikeCount = isLiked ? discussion.getNumLike() - 1 : discussion.getNumLike() + 1;
 

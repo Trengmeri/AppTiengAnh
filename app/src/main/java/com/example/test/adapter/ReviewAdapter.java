@@ -20,6 +20,7 @@ import com.example.test.SharedPreferencesManager;
 import com.example.test.api.ApiCallback;
 import com.example.test.api.ReviewManager;
 import com.example.test.api.UserManager;
+import com.example.test.model.Discussion;
 import com.example.test.model.Review;
 import com.example.test.model.User;
 
@@ -32,8 +33,7 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ViewHolder
     private List<Review> reviews;
     private UserManager userManager;
     private ReviewManager reviewManager;
-    private int currentUserId;
-    private Map<Integer, String> userNameCache = new HashMap<>();
+    private final int currentUserId = SharedPreferencesManager.getInstance(context).getUser().getId();
 
 
     public ReviewAdapter(Context context, List<Review> reviews) {
@@ -41,7 +41,6 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ViewHolder
         this.reviews = reviews;
         this.userManager = new UserManager(context);
         this.reviewManager = new ReviewManager(context);
-        this.currentUserId = Integer.parseInt(SharedPreferencesManager.getInstance(context).getID());
         if (currentUserId == -1) {
             Log.e("ReviewAdapter", "User chưa đăng nhập, userId không hợp lệ");
         }
@@ -69,31 +68,26 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ViewHolder
 
         // Cache tên người dùng
         int userId = review.getUserId();
-        if (userNameCache.containsKey(userId)) {
-            holder.txtUser.setText(userNameCache.get(userId));
-        } else {
-            userManager.fetchUserById(userId, new ApiCallback<User>() {
-                @Override
-                public void onSuccess() {
+        userManager.fetchUserById(userId, new ApiCallback<User>() {
+            @Override
+            public void onSuccess() {
 
-                }
+            }
 
-                @Override
-                public void onSuccess(User user) {
-                    userNameCache.put(userId, user.getName());
-                    new Handler(Looper.getMainLooper()).post(() -> holder.txtUser.setText(user.getName()));
-                }
+            @Override
+            public void onSuccess(User user) {
+                new Handler(Looper.getMainLooper()).post(() -> holder.txtUser.setText(user.getName()));
+            }
 
-                @Override
-                public void onFailure(String errorMessage) {
-                    new Handler(Looper.getMainLooper()).post(() -> {
-                        holder.txtUser.setText("Không tải được tên");
-                        Toast.makeText(context, "Lỗi tải tên người dùng: " + errorMessage, Toast.LENGTH_SHORT).show();
-                    });
-                }
-            });
-        }
-
+            @Override
+            public void onFailure(String errorMessage) {
+                new Handler(Looper.getMainLooper()).post(() -> {
+                    holder.txtUser.setText("Không tải được tên");
+                    Toast.makeText(context, "Lỗi tải tên người dùng: " + errorMessage, Toast.LENGTH_SHORT).show();
+                });
+            }
+        });
+        holder.txtReContent.setText(review.getReContent());
         // Kiểm tra trạng thái like ban đầu
         reviewManager.isReviewLiked(currentUserId, review.getId(), new ApiCallback<Boolean>() {
             @Override
@@ -103,8 +97,8 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ViewHolder
 
             @Override
             public void onSuccess(Boolean isLiked) {
+                review.setLiked(isLiked);
                 new Handler(Looper.getMainLooper()).post(() -> {
-                    review.setLiked(isLiked);
                     holder.btnLike.setSelected(isLiked);
                 });
             }
@@ -124,58 +118,53 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ViewHolder
                 return;
             }
 
-            boolean isCurrentlyLiked = review.isLiked();
-            holder.btnLike.setEnabled(false);
+            boolean isLiked = review.isLiked();
+            int newCount = isLiked ? review.getNumLike() - 1 : review.getNumLike() + 1;
 
-            if (isCurrentlyLiked) {
-                reviewManager.unlikeReview(currentUserId, review.getId(), new ApiCallback<Boolean>() {
+            // Cập nhật UI ngay lập tức
+            review.setNumLike(newCount);
+            review.setLiked(!isLiked);
+            holder.txtLikeCount.setText(String.valueOf(newCount));
+            holder.btnLike.setSelected(!isLiked);
+
+            // Gửi PI like/unlike
+            if (!isLiked) {
+                reviewManager.likeReview(currentUserId, review.getId(), new ApiCallback<Void>() {
                     @Override
                     public void onSuccess() {
 
                     }
 
                     @Override
-                    public void onSuccess(Boolean result) {
-                        new Handler(Looper.getMainLooper()).post(() -> {
-                            review.setLiked(false);
-                            review.setNumLike(review.getNumLike() - 1);
-                            holder.btnLike.setSelected(false);
-                            holder.txtLikeCount.setText(String.valueOf(review.getNumLike()));
-                            holder.btnLike.setEnabled(true);
-                        });
+                    public void onSuccess(Void response) {
+                        Log.d("DiscussionAdapter", "Like thành công");
                     }
 
                     @Override
                     public void onFailure(String errorMessage) {
-                        Log.e("ReviewAdapter", "Lỗi bỏ like: " + errorMessage);
-                        holder.btnLike.setEnabled(true);
-                    }
-                });
-            } else {
-                reviewManager.likeReview(currentUserId, review.getId(), new ApiCallback<Boolean>() {
-                    @Override
-                    public void onSuccess() {
-
-                    }
-
-                    @Override
-                    public void onSuccess(Boolean result) {
-                        new Handler(Looper.getMainLooper()).post(() -> {
-                            review.setLiked(true);
-                            review.setNumLike(review.getNumLike() + 1);
-                            holder.btnLike.setSelected(true);
-                            holder.txtLikeCount.setText(String.valueOf(review.getNumLike()));
-                            holder.btnLike.setEnabled(true);
-                        });
-                    }
-
-                    @Override
-                    public void onFailure(String errorMessage) {
-                        Log.e("ReviewAdapter", "Lỗi like: " + errorMessage);
-                        holder.btnLike.setEnabled(true);
+                        rollbackLike(holder, review, isLiked);
                     }
                 });
             }
+            else {
+                reviewManager.unlikeReview(currentUserId, review.getId(), new ApiCallback<Void>() {
+                    @Override
+                    public void onSuccess() {
+
+                    }
+
+                    @Override
+                    public void onSuccess(Void response) {
+                        Log.d("DiscussionAdapter", "Unlike thành công");
+                    }
+
+                    @Override
+                    public void onFailure(String errorMessage) {
+                        rollbackLike(holder, review, isLiked);
+                    }
+                });
+            }
+
         });
     }
     @Override
@@ -187,6 +176,21 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ViewHolder
     public void addReview(Review review) {
         reviews.add(0, review); // Thêm vào đầu danh sách
         notifyItemInserted(0); // Thông báo adapter thêm item mới
+    }
+    private void rollbackLike(ReviewAdapter.ViewHolder holder, Review review, boolean previousState) {
+        review.setNumLike(previousState ? review.getNumLike() + 1 : review.getNumLike() - 1);
+        review.setLiked(previousState);
+
+        // Đảm bảo chạy trên UI Thread
+        new Handler(Looper.getMainLooper()).post(() -> {
+            holder.txtLikeCount.setText(String.valueOf(review.getNumLike()));
+            holder.btnLike.setSelected(previousState);
+
+            // Chạy Toast trên UI Thread
+            if (context != null) {
+                Toast.makeText(context, "Lỗi khi like/unlike", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
