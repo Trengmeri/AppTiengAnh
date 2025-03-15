@@ -15,6 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.test.R;
+import com.example.test.SharedPreferencesManager;
 import com.example.test.api.ApiCallback;
 import com.example.test.api.DiscussionManager;
 import com.example.test.api.UserManager;
@@ -28,12 +29,15 @@ public class ReplyAdapter extends RecyclerView.Adapter<ReplyAdapter.ViewHolder> 
     private Context context;
     private UserManager userManager;
     private DiscussionManager discussionManager;
+    private  int currentUserID;
+//    private final int currentUserID = SharedPreferencesManager.getInstance(context).getUser().getId();
 
-    public ReplyAdapter(Context context, List<Discussion> replies) {
+    public ReplyAdapter(Context context, List<Discussion> replies, int currentUserID) {
         this.context = context;
         this.replies = replies;
         this.userManager= new UserManager(context);
         this.discussionManager= new DiscussionManager(context);
+        this.currentUserID = currentUserID;
     }
 
     @NonNull
@@ -71,7 +75,7 @@ public class ReplyAdapter extends RecyclerView.Adapter<ReplyAdapter.ViewHolder> 
         holder.txtContent.setText(reply.getContent());
 
         // Kiểm tra trạng thái like
-        discussionManager.isDiscussionLiked(userId, reply.getId(), new ApiCallback<Boolean>() {
+        discussionManager.isDiscussionLiked(currentUserID, reply.getId(), new ApiCallback<Boolean>() {
             @Override
             public void onSuccess() {
 
@@ -106,7 +110,7 @@ public class ReplyAdapter extends RecyclerView.Adapter<ReplyAdapter.ViewHolder> 
 
             // Gửi API like/unlike
             if (!isLiked) {
-                discussionManager.likeDiscussion(userId, reply.getId(), new ApiCallback<Void>() {
+                discussionManager.likeDiscussion(currentUserID, reply.getId(), new ApiCallback<Void>() {
                     @Override
                     public void onSuccess() {
 
@@ -123,7 +127,7 @@ public class ReplyAdapter extends RecyclerView.Adapter<ReplyAdapter.ViewHolder> 
                     }
                 });
             } else {
-                discussionManager.unlikeDiscussion(userId, reply.getId(), new ApiCallback<Void>() {
+                discussionManager.unlikeDiscussion(currentUserID, reply.getId(), new ApiCallback<Void>() {
                     @Override
                     public void onSuccess() {
 
