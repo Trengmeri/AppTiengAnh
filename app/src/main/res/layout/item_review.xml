@@ -60,15 +60,17 @@
                         android:numStars="5"
                         android:stepSize="1"
                         android:isIndicator="true"
-                        android:rating="3"
+                        android:rating="5"
+                        android:theme="@style/CustomRatingBar"
                         style="?android:attr/ratingBarStyleSmall" />
+
 
                     <TextView
                         android:id="@+id/txtNumStar"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
-                        android:text="3"
+                        android:text="5"
                         android:textSize="14sp"
                         android:textStyle="bold"/>
                 </LinearLayout>

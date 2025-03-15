@@ -59,13 +59,7 @@ public class DiscussionActivity extends AppCompatActivity implements DiscussionA
         });
         khaiBao();
 
-        int parentDiscussionId = getIntent().getIntExtra("discussionId", -1);
 
-//        if (parentDiscussionId != -1) {
-//            editDiscussion.requestFocus(); // Focus vào EditText
-//            editDiscussion.setHint("Trả lời bình luận...");
-//            showKeyboard(); // Mở bàn phím
-//        }
         rv_discussions.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
@@ -86,8 +80,10 @@ public class DiscussionActivity extends AppCompatActivity implements DiscussionA
         });
 
         txtCancelReply.setOnClickListener(v -> cancelReply());
-        lessonID = getIntent().getIntExtra("lessonId",1);
+
+
         fetchDiscussions();
+
 
 
         back.setOnClickListener(v -> {
@@ -96,6 +92,7 @@ public class DiscussionActivity extends AppCompatActivity implements DiscussionA
         
     }
     private void khaiBao(){
+        lessonID = getIntent().getIntExtra("lessonId",1);
         btSendDisussion = findViewById(R.id.btSendDiscussion);
         editDiscussion = findViewById(R.id.editDiscussion);
         back = findViewById(R.id.back);

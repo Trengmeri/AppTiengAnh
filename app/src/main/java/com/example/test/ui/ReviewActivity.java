@@ -6,6 +6,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -36,10 +37,12 @@ import java.util.List;
 public class ReviewActivity extends AppCompatActivity {
 
     AppCompatButton btnAbout, btnLesson;
-    ImageView btnSendReview;
+    ImageView btnSendReview, btnBackto;
     LinearLayout contentAbout, contentLes;
     TextView txtContentAbout, courseName, numLessons;
     Course curCourse;
+    RatingBar ratingBar;
+    private int courseID;
     private int currentPage = 1; // Bắt đầu từ trang 1
     private boolean isLoading = false; // Để tránh tải dữ liệu nhiều lần
     private boolean hasMoreData = true; // Để biết còn dữ liệu để tải không
@@ -61,19 +64,7 @@ public class ReviewActivity extends AppCompatActivity {
             return insets;
         });
 
-        // Ánh xạ views
-        btnAbout = findViewById(R.id.btnAbout);
-        numLessons = findViewById(R.id.numLessons);
-        btnLesson = findViewById(R.id.btnLesson);
-        contentAbout = findViewById(R.id.contentAbout);
-        recyclerViewLesson = findViewById(R.id.recyclerViewLessons);
-        courseName = findViewById(R.id.courseName);
-        txtContentAbout = findViewById(R.id.txtContentAbout);
-        recyclerView = findViewById(R.id.recyclerViewDiscussion);
-        btnSendReview = findViewById(R.id.btSendReview);
-
-        contentAbout.setVisibility(View.VISIBLE);
-        recyclerViewLesson.setVisibility(View.GONE);
+        khaiBao();
 
         // Kiểm tra null cho các view quan trọng
         if (courseName == null || txtContentAbout == null || recyclerView == null || btnSendReview == null) {
@@ -82,7 +73,7 @@ public class ReviewActivity extends AppCompatActivity {
         }
 
         // Lấy thông tin khóa học
-        getCourseInfo(1, new ApiCallback<Course>() {
+        getCourseInfo(courseID, new ApiCallback<Course>() {
             @Override
             public void onSuccess() {
 
@@ -141,6 +132,28 @@ public class ReviewActivity extends AppCompatActivity {
             sendReview();
         });
 
+        btnBackto.setOnClickListener(v -> {
+            finish();
+        });
+
+    }
+
+    private void khaiBao() {
+        courseID = getIntent().getIntExtra("courseId",1);
+        // Ánh xạ views
+        btnAbout = findViewById(R.id.btnAbout);
+        btnBackto= findViewById(R.id.btnBackto);
+        numLessons = findViewById(R.id.numLessons);
+        btnLesson = findViewById(R.id.btnLesson);
+        contentAbout = findViewById(R.id.contentAbout);
+        recyclerViewLesson = findViewById(R.id.recyclerViewLessons);
+        courseName = findViewById(R.id.courseName);
+        txtContentAbout = findViewById(R.id.txtContentAbout);
+        recyclerView = findViewById(R.id.recyclerViewDiscussion);
+        btnSendReview = findViewById(R.id.btSendReview);
+        ratingBar= findViewById(R.id.ratingBar);
+        contentAbout.setVisibility(View.VISIBLE);
+        recyclerViewLesson.setVisibility(View.GONE);
     }
 
     public void getCourseInfo(int courseId, ApiCallback<Course> callback) {
@@ -227,7 +240,6 @@ public class ReviewActivity extends AppCompatActivity {
             return;
         }
         String status = "CONTRIBUTING";
-        int courseId = curCourse != null ? curCourse.getId() : 1;
 
 
         if (reviewManager == null) {
@@ -235,8 +247,9 @@ public class ReviewActivity extends AppCompatActivity {
             Toast.makeText(this, "Lỗi hệ thống, thử lại sau!", Toast.LENGTH_SHORT).show();
             return;
         }
+        int numStar = ratingBar.getNumStars();
 
-        reviewManager.createReview(userId, courseId, reContent, reSubject, 5, status, new ApiCallback<Review>() {
+        reviewManager.createReview(userId, courseID, reContent, reSubject, numStar, status, new ApiCallback<Review>() {
             @Override
             public void onSuccess() {
 
@@ -273,8 +286,7 @@ public class ReviewActivity extends AppCompatActivity {
 
 
     private void loadReviews() {
-        int courseId = curCourse != null ? curCourse.getId() : 1;
-        reviewManager.fetchReviewsByCourse(courseId, currentPage, new ApiCallback<List<Review>>() {
+        reviewManager.fetchReviewsByCourse(courseID, currentPage, new ApiCallback<List<Review>>() {
             @Override
             public void onSuccess() {
 
