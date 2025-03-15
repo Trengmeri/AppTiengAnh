@@ -57,6 +57,7 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseView
         courseList.sort(Comparator.comparingInt(Course::getId));
         Course course = courseList.get(position);
         holder.tvCourseTitle.setText(course.getName());
+        holder.tvCourseDescription.setText(course.getIntro());
 
         // Xóa tất cả lesson trước khi thêm mới
         holder.lessonContainer.removeAllViews(); // Sắp xếp lesson theo thứ tự tăng dần
@@ -141,6 +142,7 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseView
         public CourseViewHolder(@NonNull View itemView) {
             super(itemView);
             tvCourseTitle = itemView.findViewById(R.id.tvCourseTitle);
+            tvCourseDescription = itemView.findViewById(R.id.tvCourseDescription);
             lessonContainer = itemView.findViewById(R.id.lessonContainer);
         }
     }
