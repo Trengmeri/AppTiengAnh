@@ -78,9 +78,9 @@
         <activity
             android:name=".ui.entrance_test.ReviewAnswerActivity"
             android:exported="false" />
-<!--        <activity-->
-<!--            android:name=".ui.ReviewActivity"-->
-<!--            android:exported="true" />-->
+        <activity
+            android:name=".ui.ReviewActivity"
+            android:exported="true" />
         <activity
             android:name=".ui.GroupFlashcardActivity"
             android:exported="true" />
