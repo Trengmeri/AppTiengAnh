@@ -6,7 +6,6 @@ import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -15,7 +14,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.core.content.ContextCompat;
@@ -31,6 +29,7 @@ import com.example.test.model.Meaning;
 import com.example.test.model.Phonetic;
 import com.example.test.model.WordData;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -77,6 +76,11 @@ public class DictionaryActivity extends AppCompatActivity {
     private void showDefinitionDialog(String word) {
         flashcardManager.fetchWordDefinition(word, new AddFlashCardApiCallback<WordData>() {
             @Override
+            public void onSuccess() {
+
+            }
+
+            @Override
             public void onSuccess(WordData wordData) {
                 runOnUiThread(() -> {
                     wordContainer.removeAllViews(); // Xóa dữ liệu cũ
@@ -100,7 +104,7 @@ public class DictionaryActivity extends AppCompatActivity {
                             btn.setLayoutParams(new LinearLayout.LayoutParams(
                                     LinearLayout.LayoutParams.WRAP_CONTENT,
                                     LinearLayout.LayoutParams.WRAP_CONTENT));
-                            btn.setBackgroundResource(R.drawable.item_phonetic);
+                            btn.setBackgroundResource(R.drawable.btn_item_def_click);
                             btn.setTextColor(ContextCompat.getColor(DictionaryActivity.this, R.color.black));
                             btn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
                             btn.setPadding(40, 10, 20, 10);
@@ -109,7 +113,7 @@ public class DictionaryActivity extends AppCompatActivity {
 
                             btn.setOnClickListener(v -> {
                                 for (AppCompatButton otherBtn : phoneticButtons) {
-                                    otherBtn.setBackgroundResource(R.drawable.item_phonetic);
+                                    otherBtn.setBackgroundResource(R.drawable.btn_item_def_click);
                                     otherBtn.setTag(false);
                                 }
                                 btn.setBackgroundResource(R.drawable.item_phonetic_selected);
@@ -203,28 +207,37 @@ public class DictionaryActivity extends AppCompatActivity {
 
                 btn.setOnClickListener(v -> {
                     // Gọi API để dịch nghĩa
-                    flashcardManager.translateDefinition(definition.getDefinition(),
-                            new AddFlashCardApiCallback<String>() {
-                                @Override
-                                public void onSuccess(String vietnameseMeaning) {
-                                    // Cập nhật UI trong luồng chính
-                                    runOnUiThread(() -> {
-                                        // Hiển thị nghĩa tiếng Việt
-                                        TextView vietnameseMeaningTextView = dialogView
-                                                .findViewById(R.id.vietnameseMeaningTextView);
-                                        vietnameseMeaningTextView.setText(vietnameseMeaning);
-                                    });
-                                }
+                    try {
+                        flashcardManager.translateDefinition(definition.getDefinition(),
+                                new AddFlashCardApiCallback<String>() {
+                                    @Override
+                                    public void onSuccess() {
 
-                                @Override
-                                public void onFailure(String errorMessage) {
-                                    runOnUiThread(() -> {
-                                        Toast.makeText(DictionaryActivity.this, "Error: " + errorMessage,
-                                                        Toast.LENGTH_SHORT)
-                                                .show();
-                                    });
-                                }
-                            });
+                                    }
+
+                                    @Override
+                                    public void onSuccess(String vietnameseMeaning) {
+                                        // Cập nhật UI trong luồng chính
+                                        runOnUiThread(() -> {
+                                            // Hiển thị nghĩa tiếng Việt
+                                            TextView vietnameseMeaningTextView = dialogView
+                                                    .findViewById(R.id.vietnameseMeaningTextView);
+                                            vietnameseMeaningTextView.setText(vietnameseMeaning);
+                                        });
+                                    }
+
+                                    @Override
+                                    public void onFailure(String errorMessage) {
+                                        runOnUiThread(() -> {
+                                            Toast.makeText(DictionaryActivity.this, "Error: " + errorMessage,
+                                                            Toast.LENGTH_SHORT)
+                                                    .show();
+                                        });
+                                    }
+                                });
+                    } catch (UnsupportedEncodingException e) {
+                        throw new RuntimeException(e);
+                    }
 
                     for (AppCompatButton otherBtn : definitionButtons) {
                         otherBtn.setBackgroundResource(R.drawable.item_definition);

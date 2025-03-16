@@ -15,6 +15,10 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 import com.google.gson.Gson;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonArray;
@@ -246,24 +250,85 @@ public class FlashcardManager extends BaseApiManager {
     }
 
     // Phương thức để dịch nghĩa
-    public void translateDefinition(String definition, AddFlashCardApiCallback<String> callback) {
-        String url = BASE_URL + "/api/v1/dictionary/translate?text=" + definition;
+    public void translateDefinition(String definition, AddFlashCardApiCallback<String> callback) throws UnsupportedEncodingException {
+        try {
+        String sanitizedDefinition = definition.replace(";", " ");
+        String encodedText = URLEncoder.encode(sanitizedDefinition, StandardCharsets.UTF_8.toString());
+        String url = BASE_URL + "/api/v1/dictionary/translate/vi/" + encodedText;
+
+            Request request = new Request.Builder()
+                    .url(url)
+                    .build();
+
+            client.newCall(request).enqueue(new Callback() {
+                @Override
+                public void onResponse(Call call, Response response) {
+                    try {
+                        if (response.isSuccessful() && response.body() != null) {
+                            String responseBody = response.body().string();
+                            Log.d("API_RESPONSE", "Response JSON: " + responseBody);
+                            String vietnameseMeaning = parseJson(responseBody)
+                                    .replaceAll("\\+\\+", ",") // Thay "++" bằng ","
+                                    .replaceAll("\\+\\s*", " ") // Thay "+" còn lại bằng khoảng trắng
+                                    .trim();
+                            callback.onSuccess(vietnameseMeaning);
+                        } else {
+                            callback.onFailure("Error: " + response.code() + " - " + response.message());
+                        }
+                    } catch (IOException e) {
+                        callback.onFailure("Response parsing error: " + e.getMessage());
+                    } finally {
+                        response.close(); // Đóng Response để tránh rò rỉ bộ nhớ
+                    }
+                }
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    callback.onFailure("Network error: " + e.getMessage());
+                    e.printStackTrace(); // In lỗi ra console để debug
+                }
+            });
+        } catch (Exception e) {
+            callback.onFailure("Encoding error: " + e.getMessage());
+        }
+    }
+    public void addFlashcardToGroup(String word, List<Integer> definitionIndices, int partOfSpeechIndex, String userId, AddFlashCardApiCallback<String> callback) {
+        String url = BASE_URL + "/api/v1/flashcards";
+        MediaType JSON = MediaType.get("application/json; charset=utf-8");
+
+        // Chuyển đổi danh sách definitionIndices thành chuỗi JSON
+        Gson gson = new Gson();
+        String definitionIndicesJson = gson.toJson(definitionIndices);
+
+        // Tạo JSON body
+        String jsonBody = "{"
+                + "\"word\":\"" + word + "\","
+                + "\"definitionIndices\":" + definitionIndicesJson + ","
+                + "\"partOfSpeechIndex\":" + partOfSpeechIndex + ","
+                + "\"userId\":\"" + userId + "\""
+                + "}";
+
+        RequestBody body = RequestBody.create(jsonBody, JSON);
 
         Request request = new Request.Builder()
                 .url(url)
+                .post(body)
                 .build();
 
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
+                String responseBody = response.body().string();
+                Log.d("DEBUG", "Response Code: " + response.code());
+                Log.d("DEBUG", "Response Body: " + responseBody);
+
                 if (response.isSuccessful()) {
-                    String responseBody = response.body().string();
-                    String vietnameseMeaning = parseJson(responseBody);
-                    callback.onSuccess(vietnameseMeaning);
+                    ApiResponseFlashcard apiResponse = gson.fromJson(responseBody, ApiResponseFlashcard.class);
+                    callback.onSuccess();
                 } else {
-                    callback.onFailure("Error: " + response.code());
+                    callback.onFailure("Error: " + response.code() + " - " + responseBody);
                 }
             }
+
 
             @Override
             public void onFailure(Call call, IOException e) {

@@ -21,15 +21,12 @@ import com.google.android.material.bottomsheet.BottomSheetDialog;
 import java.util.List;
 
 public class FlashcardAdapter extends RecyclerView.Adapter<FlashcardAdapter.FlashcardViewHolder> {
-
     private Context context;
     private List<Flashcard> flashcards;
-
     public FlashcardAdapter(Context context, List<Flashcard> flashcards) {
         this.context = context;
         this.flashcards = flashcards;
     }
-
     @NonNull
     @Override
     public FlashcardViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -42,7 +39,6 @@ public class FlashcardAdapter extends RecyclerView.Adapter<FlashcardAdapter.Flas
         Flashcard flashcard = flashcards.get(position);
         holder.wordTextView.setText(flashcard.getWord());
         holder.meaningTextView.setText(flashcard.getVietNameseMeaning());
-
         // Thêm sự kiện click cho item flashcard
         holder.itemView.setOnClickListener(v -> {
             Intent intent = new Intent(context, FlashcardInformationActivity.class);
@@ -51,7 +47,6 @@ public class FlashcardAdapter extends RecyclerView.Adapter<FlashcardAdapter.Flas
         });
         // Sự kiện click vào iconRemove để hiển thị dialog xác nhận
         holder.iconRemove.setOnClickListener(v -> showRemoveDialog(position));
-
     }
 
     @Override
@@ -74,12 +69,9 @@ public class FlashcardAdapter extends RecyclerView.Adapter<FlashcardAdapter.Flas
     private void showRemoveDialog(int position) {
         BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(context);
         bottomSheetDialog.setContentView(R.layout.dialog_remove_flash); // Tạo file XML cho dialog
-
         Button btnCancel = bottomSheetDialog.findViewById(R.id.btnCancel);
         Button btnRemove = bottomSheetDialog.findViewById(R.id.btnRemove);
-
         btnCancel.setOnClickListener(v -> bottomSheetDialog.dismiss());
-
         btnRemove.setOnClickListener(v -> {
             // Xóa flashcard khỏi màn hình
 //            LinearLayout layoutFlashcards = findViewById(R.id.flashContainer);
@@ -89,7 +81,6 @@ public class FlashcardAdapter extends RecyclerView.Adapter<FlashcardAdapter.Flas
             notifyItemRemoved(position); // Cập nhật RecyclerView
             bottomSheetDialog.dismiss(); // Đóng dialog
         });
-
         bottomSheetDialog.show();
     }
 }

@@ -1,5 +1,7 @@
 package com.example.test.model;
 
+import java.util.List;
+
 public class Flashcard {
     private int id;
     private String word;
@@ -12,6 +14,18 @@ public class Flashcard {
     private String examples;
     private boolean learnedStatus;
     private String vietNameseMeaning;
+
+    public Flashcard(String word, List<Integer> definitionIndices, int partOfSpeechIndex) {
+        this.word = word;
+        this.definitions = definitionIndices.toString(); // Chuyển danh sách sang chuỗi
+        this.partOfSpeech = convertPartOfSpeech(partOfSpeechIndex); // Đổi chỉ mục thành loại từ
+    }
+
+    // Hàm chuyển đổi chỉ mục thành loại từ
+    private String convertPartOfSpeech(int index) {
+        String[] partsOfSpeech = {"Noun", "Verb", "Adjective", "Adverb"}; // Cập nhật danh sách theo app của bạn
+        return (index >= 0 && index < partsOfSpeech.length) ? partsOfSpeech[index] : "Unknown";
+    }
 
     // Getters and Setters
     public int getId() {
