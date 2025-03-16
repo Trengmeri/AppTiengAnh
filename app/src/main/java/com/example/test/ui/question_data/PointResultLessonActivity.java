@@ -1,13 +1,19 @@
 package com.example.test.ui.question_data;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
+import android.text.TextPaint;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
 import android.text.style.ForegroundColorSpan;
+import android.text.style.RelativeSizeSpan;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -20,6 +26,7 @@ import android.widget.TableRow;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
@@ -38,6 +45,7 @@ import com.example.test.ui.DiscussionActivity;
 import com.example.test.ui.home.HomeActivity;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -268,6 +276,7 @@ public class PointResultLessonActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(Answer answer) {
                         runOnUiThread(() -> {
+
                             // Tạo một hàng mới cho bảng
                             TableRow row = new TableRow(tableResult.getContext());
 
@@ -284,35 +293,63 @@ public class PointResultLessonActivity extends AppCompatActivity {
                             spannable.append("Correct: ");
                             int correctEnd = spannable.length();
                             spannable.setSpan(new ForegroundColorSpan(Color.parseColor("#4CAF50")), correctStart, correctEnd, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-
-                            // Lấy danh sách đáp án đúng
-                            List<QuestionChoice> choices = question.getQuestionChoices();
-                            List<String> correctAnswers = (choices != null) ?
-                                    choices.stream()
-                                            .filter(QuestionChoice::isChoiceKey)
-                                            .map(QuestionChoice::getChoiceContent)
-                                            .collect(Collectors.toList())
-                                    : new ArrayList<>();
-
-                            String correctAnswerString = correctAnswers.isEmpty() ? "N/A" : String.join(", ", correctAnswers);
-//                            if (question.getQuesType().equals("CHOICE")|| question.getQuesType().equals("MULTIPLE")) {
-//                                correctAnswer.setText("Correct answer: " + correctAnswerString);
-//                            }
-
+                            spannable.setSpan(new RelativeSizeSpan(0.8f), correctStart, correctEnd, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE); // Cỡ chữ nhỏ hơn
+                            // Lấy danh sách đáp án đúng và sắp xếp lại
+                            List<String> correctAnswers = question.getQuestionChoices()
+                                    .stream()
+                                    .filter(QuestionChoice::isChoiceKey)
+                                    .map(QuestionChoice::getChoiceContent)
+                                    .sorted() // Sắp xếp theo bảng chữ cái
+                                    .collect(Collectors.toList());
+                            String correctAnswerString = correctAnswers.isEmpty() ? "Improvement suggestions" : String.join(", ", correctAnswers);
                             // Định dạng đáp án đúng với màu xanh
                             int answerStart = spannable.length();
                             spannable.append(correctAnswerString);
                             int answerEnd = spannable.length();
-                            spannable.setSpan(new ForegroundColorSpan(Color.parseColor("#4CAF50")), answerStart, answerEnd, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
+                            if (correctAnswers.isEmpty()) {
+                                // Tạo ClickableSpan để bắt sự kiện nhấn vào
+                                ClickableSpan clickableSpan = new ClickableSpan() {
+                                    @Override
+                                    public void onClick(@NonNull View widget) {
+                                        SharedPreferences sharedPreferences = getSharedPreferences("AppPrefs", MODE_PRIVATE);
+                                        String improvementSuggestion = sharedPreferences.getString("improvement_suggestion", "No suggestion available.");
+
+                                        // Hiển thị hộp thoại khi nhấn vào "See improvement suggestions"
+                                        new AlertDialog.Builder(tableResult.getContext())
+                                                .setTitle("Improvement Suggestions")
+                                                .setMessage(improvementSuggestion) // Hiển thị nội dung từ API
+                                                .setPositiveButton("OK", (dialog, which) -> dialog.dismiss())
+                                                .show();
+                                    }
+
+                                    @Override
+                                    public void updateDrawState(@NonNull TextPaint ds) {
+                                        super.updateDrawState(ds);
+                                        ds.setColor(Color.BLUE);  // Màu xanh để giống liên kết
+                                        ds.setUnderlineText(true); // Gạch chân
+                                    }
+                                };
+                                spannable.setSpan(clickableSpan, answerStart, answerEnd, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                            }
+                            spannable.setSpan(new ForegroundColorSpan(Color.parseColor("#4CAF50")), answerStart, answerEnd, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                            spannable.setSpan(new RelativeSizeSpan(0.8f), answerStart, answerEnd, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE); // Cỡ chữ nhỏ hơn
                             questionTextView.setText(spannable);
                             questionTextView.setPadding(10, 10, 10, 10);
-                            questionTextView.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 1));
+                            questionTextView.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 2));
                             questionTextView.setTypeface(null, Typeface.BOLD);
-
+                            questionTextView.setMovementMethod(LinkMovementMethod.getInstance());
                             // TextView cho câu trả lời của người dùng
                             TextView userAnswerTextView = new TextView(tableResult.getContext());
-                            userAnswerTextView.setText(answer.getAnswerContent());
+                            String userAnswer = answer.getAnswerContent().trim();
+
+                            // Chuyển câu trả lời của người dùng thành danh sách và sắp xếp
+                            List<String> userAnswers = Arrays.stream(userAnswer.split(","))
+                                    .map(String::trim) // Loại bỏ khoảng trắng
+                                    .sorted() // Sắp xếp theo bảng chữ cái
+                                    .collect(Collectors.toList());
+                            String userAnswerFormatted = String.join(", ", userAnswers);
+                            userAnswerTextView.setText(userAnswerFormatted);
                             userAnswerTextView.setPadding(10, 10, 10, 10);
                             userAnswerTextView.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 1));
                             userAnswerTextView.setTypeface(null, Typeface.BOLD);
@@ -324,13 +361,14 @@ public class PointResultLessonActivity extends AppCompatActivity {
                             pointTextView.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 1));
                             pointTextView.setGravity(Gravity.CENTER);
                             pointTextView.setTypeface(null, Typeface.BOLD);
+
                             // Đổi màu chữ tùy theo đúng/sai
-                            if (answer.getPointAchieved() == 0) {
-                                userAnswerTextView.setTextColor(ContextCompat.getColor(tableResult.getContext(), android.R.color.holo_red_dark));
-                                pointTextView.setTextColor(ContextCompat.getColor(tableResult.getContext(), android.R.color.holo_red_dark));
-                            } else {
+                            if (userAnswers.equals(correctAnswers)) {
                                 userAnswerTextView.setTextColor(ContextCompat.getColor(tableResult.getContext(), android.R.color.holo_green_dark));
                                 pointTextView.setTextColor(ContextCompat.getColor(tableResult.getContext(), android.R.color.holo_green_dark));
+                            } else {
+                                userAnswerTextView.setTextColor(ContextCompat.getColor(tableResult.getContext(), android.R.color.holo_red_dark));
+                                pointTextView.setTextColor(ContextCompat.getColor(tableResult.getContext(), android.R.color.holo_red_dark));
                             }
                             // Thêm các TextView vào hàng
                             row.addView(questionTextView);

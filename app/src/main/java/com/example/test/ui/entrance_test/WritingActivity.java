@@ -2,6 +2,7 @@ package com.example.test.ui.entrance_test;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -129,12 +130,18 @@ public class WritingActivity extends AppCompatActivity {
             @Override
             public void onSuccess(EvaluationResult result) {
 
+                SharedPreferences sharedPreferences = getSharedPreferences("AppPrefs", MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
 
                 // Lưu kết quả vào hệ thống
                 quesManager.saveUserAnswer(questionIds.get(currentStep), userAnswer, result.getPoint(), result.getimprovements(), new ApiCallback() {
                     @Override
                     public void onSuccess() {
                         Log.d("WritingActivity.this", "Lưu thành công!");
+                        Log.d("improve","improve:"+ result.getimprovements());
+                        editor.putString("improvement_suggestion", result.getimprovements());
+                        editor.apply(); // Lưu thay đổi
+
                         progressDialog.dismiss();
                         runOnUiThread(() -> {
                             PopupHelper.showResultPopup(WritingActivity.this, questype, null, null, result.getPoint(), result.getimprovements(), result.getevaluation(), () -> {
