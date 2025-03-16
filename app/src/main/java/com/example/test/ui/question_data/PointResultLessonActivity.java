@@ -85,6 +85,7 @@ public class PointResultLessonActivity extends AppCompatActivity {
         });
         btnDiscuss.setOnClickListener(v -> {
             Intent intent = new Intent(PointResultLessonActivity.this, DiscussionActivity.class);
+            intent.putExtra("lessonId", lessonID);
             startActivity(intent);
         });
     }

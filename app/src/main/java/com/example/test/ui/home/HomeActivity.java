@@ -34,8 +34,10 @@ public class HomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
+
         vpgMain = findViewById(R.id.vpg_main);
         bottomBar = findViewById(R.id.bottom_bar);
+
 
         // Gán Adapter cho ViewPager2
         vpgMain.setAdapter(new MainAdapter(this));
@@ -45,6 +47,7 @@ public class HomeActivity extends AppCompatActivity {
         btnexplore= bottomBar.findViewById(R.id.ic_explore);
         btnprofile= bottomBar.findViewById(R.id.ic_profile);
         btnstudy = bottomBar.findViewById(R.id.ic_study);
+
 
         vpgMain.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
@@ -63,9 +66,6 @@ public class HomeActivity extends AppCompatActivity {
         btnprofile.setOnClickListener(v -> {
             vpgMain.setCurrentItem(2);
         });
-        btnstudy.setOnClickListener(v -> {
-            vpgMain.setCurrentItem(3);
-        });
 
         updateIconColors(0);
 
@@ -77,7 +77,6 @@ public class HomeActivity extends AppCompatActivity {
         icHome.setColorFilter(position == 0 ? selectedColor : unselectedColor);
         btnexplore.setColorFilter(position == 1 ? selectedColor : unselectedColor);
         btnprofile.setColorFilter(position == 2 ? selectedColor : unselectedColor);
-        btnstudy.setColorFilter(position == 3 ? selectedColor : unselectedColor);
     }
     private void loadLocale() {
         SharedPreferences prefs = getSharedPreferences("Settings", MODE_PRIVATE);

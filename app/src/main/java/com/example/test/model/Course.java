@@ -5,6 +5,7 @@ import java.util.List;
 public class Course {
     private int id;
     private String name;
+
     private String intro;
     private int diffLevel;
     private int recomLevel;
