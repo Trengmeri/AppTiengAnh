@@ -1,5 +1,7 @@
 package com.example.test.model;
 
+import android.text.TextUtils;
+
 import java.util.List;
 
 public class Flashcard {
@@ -15,12 +17,16 @@ public class Flashcard {
     private boolean learnedStatus;
     private String vietNameseMeaning;
 
-    public Flashcard(String word, List<Integer> definitionIndices, int partOfSpeechIndex) {
+    public Flashcard(int id, String word, List<Integer> definitionIndices, int partOfSpeechIndex) {
+        this.id = id;
         this.word = word;
-        this.definitions = definitionIndices.toString(); // Chuyển danh sách sang chuỗi
-        this.partOfSpeech = convertPartOfSpeech(partOfSpeechIndex); // Đổi chỉ mục thành loại từ
+        this.definitions = convertDefinitionsToString(definitionIndices);
+        this.partOfSpeech = convertPartOfSpeech(partOfSpeechIndex);
     }
-
+    // Chuyển danh sách định nghĩa thành chuỗi, ngăn cách bằng dấu phẩy
+    private String convertDefinitionsToString(List<Integer> definitionIndices) {
+        return definitionIndices != null ? TextUtils.join(", ", definitionIndices) : "No definitions";
+    }
     // Hàm chuyển đổi chỉ mục thành loại từ
     private String convertPartOfSpeech(int index) {
         String[] partsOfSpeech = {"Noun", "Verb", "Adjective", "Adverb"}; // Cập nhật danh sách theo app của bạn

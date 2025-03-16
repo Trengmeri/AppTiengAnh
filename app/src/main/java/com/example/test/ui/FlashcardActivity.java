@@ -69,7 +69,6 @@ public class FlashcardActivity extends AppCompatActivity {
     private AppCompatButton selectedSpeechButton = null;
     private AppCompatButton selectedPhoneticButton = null;
     private AppCompatButton selectedDefinitionButton = null;
-    private List<Flashcard> flashcardList = new ArrayList<>();
     private FlashcardAdapter flashcardAdapter;
 
 
@@ -96,7 +95,7 @@ public class FlashcardActivity extends AppCompatActivity {
         btnPrevious = findViewById(R.id.btnPrevious);
         btnNext.setAlpha(0.5f);
         btnNext.setEnabled(false);
-        flashcardAdapter = new FlashcardAdapter(this, flashcardList);
+        flashcardAdapter = new FlashcardAdapter(this, flashcards);
         @SuppressLint("CutPasteId") RecyclerView recyclerView = findViewById(R.id.recyclerViewFlashcards);
         recyclerView.setAdapter(flashcardAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -307,29 +306,56 @@ public class FlashcardActivity extends AppCompatActivity {
                             Toast.makeText(FlashcardActivity.this, "Vui lòng nhập từ vựng!", Toast.LENGTH_SHORT).show();
                             return;
                         }
-                        String userId = SharedPreferencesManager.getInstance(getApplicationContext()).getID();
+                        int userId = Integer.parseInt(SharedPreferencesManager.getInstance(getApplicationContext()).getID());
                         Log.d("DEBUG","wordflash:"+ wordflash);
                         Log.d("DEBUG","speech:"+ partOfSpeechIndex);
                         Log.d("DEBUG","definition:"+ definitionIndices);
                         Log.d("DEBUG","userid:"+ userId);
-                        flashcardManager.addFlashcardToGroup(wordflash, definitionIndices, partOfSpeechIndex, userId, new AddFlashCardApiCallback<String>() {
-                            @SuppressLint("NotifyDataSetChanged")
+                        flashcardManager.createFlashcard(wordflash, definitionIndices, partOfSpeechIndex, userId, new AddFlashCardApiCallback<String>() {
                             @Override
-                            public void onSuccess() {
-                                runOnUiThread(() -> {
-                                    Log.d("Debug","success");
-                                    Toast.makeText(FlashcardActivity.this, "Thêm flashcard thành công!", Toast.LENGTH_SHORT).show();
-                                    Flashcard newFlashcard = new Flashcard(wordflash, definitionIndices, partOfSpeechIndex);
+                            public void onSuccess(String flashcardId) { // Lấy ID của flashcard vừa tạo
+                                if (flashcardId == null) {
+                                    runOnUiThread(() -> Toast.makeText(FlashcardActivity.this, "Lỗi tạo flashcard!", Toast.LENGTH_SHORT).show());
+                                    return;
+                                }
 
-                                    // Cập nhật danh sách & giao diện
-                                    flashcardList.add(newFlashcard);
-                                    flashcardAdapter.notifyDataSetChanged();
-                                    dialog.dismiss();
+                                Log.d("DEBUG", "Flashcard created with ID: " + flashcardId);
+                                int groupID = Integer.parseInt(SharedPreferencesManager.getInstance(getApplicationContext()).getID());
+                                // 🔹 Gọi API để thêm flashcard vào nhóm
+                                flashcardManager.addFlashcardToGroup(Integer.parseInt(flashcardId), groupID, new AddFlashCardApiCallback<String>() {
+                                    @Override
+                                    public void onSuccess(String result) {
+                                        runOnUiThread(() -> {
+                                            Log.d("DEBUG", "Flashcard added to group");
+
+                                            // 🔹 Cập nhật UI
+                                            Flashcard newFlashcard = new Flashcard(Integer.parseInt(flashcardId), wordflash, definitionIndices, partOfSpeechIndex);
+                                            flashcards.add(newFlashcard);
+                                            flashcardAdapter.notifyItemInserted(flashcards.size() - 1);
+                                            recyclerViewFlashcards.scrollToPosition(flashcards.size() - 1);
+
+                                            Toast.makeText(FlashcardActivity.this, "Thêm flashcard thành công!", Toast.LENGTH_SHORT).show();
+                                            dialog.dismiss();
+                                        });
+                                    }
+
+                                    @Override
+                                    public void onSuccess() {
+
+                                    }
+
+                                    @Override
+                                    public void onFailure(String errorMessage) {
+                                        runOnUiThread(() -> {
+                                            Log.e("DEBUG", "API Error: " + errorMessage);
+                                            Toast.makeText(FlashcardActivity.this, "Lỗi thêm vào nhóm: " + errorMessage, Toast.LENGTH_SHORT).show();
+                                        });
+                                    }
                                 });
                             }
 
                             @Override
-                            public void onSuccess(String response) {
+                            public void onSuccess() {
 
                             }
 
@@ -337,7 +363,7 @@ public class FlashcardActivity extends AppCompatActivity {
                             public void onFailure(String errorMessage) {
                                 runOnUiThread(() -> {
                                     Log.e("DEBUG", "API Error: " + errorMessage);
-                                    Toast.makeText(FlashcardActivity.this, "Lỗi: " + errorMessage, Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(FlashcardActivity.this, "Lỗi tạo flashcard: " + errorMessage, Toast.LENGTH_SHORT).show();
                                 });
                             }
                         });

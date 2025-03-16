@@ -1,5 +1,6 @@
 package com.example.test.api;
 
+import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.example.test.response.ApiResponseFlashcard;
@@ -73,13 +74,18 @@ public class FlashcardManager extends BaseApiManager {
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
+                String responseBody = response.body().string();
                 if (response.isSuccessful()) {
-                    String responseBody = response.body().string();
-                    ApiResponseFlashcardGroup apiResponse = gson.fromJson(responseBody,
-                            ApiResponseFlashcardGroup.class);
-                    callback.onSuccess(apiResponse);
+                    try {
+                        JSONObject responseJson = new JSONObject(responseBody);
+                        JSONObject data = responseJson.getJSONObject("data");
+                        String groupID = data.optString("id");
+                        callback.onSuccess(groupID);
+                    } catch (JSONException e) {
+                        callback.onFailure("Lỗi phân tích phản hồi JSON: " + e.getMessage());
+                    }
                 } else {
-                    callback.onFailure("Error: " + response.code());
+                    callback.onFailure("Thất bại: " + response.message());
                 }
             }
 
@@ -291,7 +297,7 @@ public class FlashcardManager extends BaseApiManager {
             callback.onFailure("Encoding error: " + e.getMessage());
         }
     }
-    public void addFlashcardToGroup(String word, List<Integer> definitionIndices, int partOfSpeechIndex, String userId, AddFlashCardApiCallback<String> callback) {
+    public void createFlashcard(String word, List<Integer> definitionIndices, int partOfSpeechIndex, int userId, AddFlashCardApiCallback<String> callback) {
         String url = BASE_URL + "/api/v1/flashcards";
         MediaType JSON = MediaType.get("application/json; charset=utf-8");
 
@@ -322,10 +328,16 @@ public class FlashcardManager extends BaseApiManager {
                 Log.d("DEBUG", "Response Body: " + responseBody);
 
                 if (response.isSuccessful()) {
-                    ApiResponseFlashcard apiResponse = gson.fromJson(responseBody, ApiResponseFlashcard.class);
-                    callback.onSuccess();
+                    try {
+                        JSONObject responseJson = new JSONObject(responseBody);
+                        JSONObject data = responseJson.getJSONObject("data");
+                        String flashcardID = data.optString("id");
+                        callback.onSuccess(flashcardID);
+                    } catch (JSONException e) {
+                        callback.onFailure("Lỗi phân tích phản hồi JSON: " + e.getMessage());
+                    }
                 } else {
-                    callback.onFailure("Error: " + response.code() + " - " + responseBody);
+                    callback.onFailure("Thất bại: " + response.message());
                 }
             }
 
@@ -336,6 +348,42 @@ public class FlashcardManager extends BaseApiManager {
             }
         });
     }
+    public void addFlashcardToGroup(int flashcardId, int groupId, AddFlashCardApiCallback<String> callback) {
+        // URL của API với flashcardId và groupId
+        String url = BASE_URL + "/api/v1/flashcard-groups/" + groupId + "/group/" + flashcardId;
+
+        // Yêu cầu POST với body rỗng vì API có thể chỉ cần ID trong URL
+        Request request = new Request.Builder()
+                .url(url)
+                .post(RequestBody.create("", MediaType.parse("application/json; charset=utf-8")))
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.e("FlashcardManager", "Kết nối thất bại: " + e.getMessage());
+                callback.onFailure("Không thể kết nối đến API.");
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String responseBody = response.body().string();
+                Log.d("FlashcardManager", "Phản hồi từ server: " + responseBody);
+                if (response.isSuccessful()) {
+                    try {
+                        JSONObject responseJson = new JSONObject(responseBody);
+                        String message = responseJson.optString("message", "Thêm flashcard vào group thành công!");
+                        callback.onSuccess(message);
+                    } catch (JSONException e) {
+                        callback.onFailure("Lỗi xử lý JSON: " + e.getMessage());
+                    }
+                } else {
+                    callback.onFailure("Thêm flashcard vào group thất bại! " + response.message());
+                }
+            }
+        });
+    }
+
 
     // Phương thức phân tích JSON
     private String parseJson(String json) {
