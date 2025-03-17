@@ -321,14 +321,14 @@ public class FlashcardActivity extends AppCompatActivity {
 
                                 Log.d("DEBUG", "Flashcard created with ID: " + flashcardId);
                                 int groupID = Integer.parseInt(SharedPreferencesManager.getInstance(getApplicationContext()).getID());
-                                // 🔹 Gọi API để thêm flashcard vào nhóm
+                                //  Gọi API để thêm flashcard vào nhóm
                                 flashcardManager.addFlashcardToGroup(Integer.parseInt(flashcardId), groupID, new AddFlashCardApiCallback<String>() {
                                     @Override
                                     public void onSuccess(String result) {
                                         runOnUiThread(() -> {
                                             Log.d("DEBUG", "Flashcard added to group");
 
-                                            // 🔹 Cập nhật UI
+                                            // Cập nhật UI
                                             Flashcard newFlashcard = new Flashcard(Integer.parseInt(flashcardId), wordflash, definitionIndices, partOfSpeechIndex);
                                             flashcards.add(newFlashcard);
                                             flashcardAdapter.notifyItemInserted(flashcards.size() - 1);
