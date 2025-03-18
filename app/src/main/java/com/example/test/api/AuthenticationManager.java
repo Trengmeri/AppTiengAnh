@@ -86,6 +86,8 @@ public class AuthenticationManager extends BaseApiManager {
                         // Lưu User và access token
                         SharedPreferencesManager.getInstance(context).saveUser(user);
                         SharedPreferencesManager.getInstance(context).saveAccessToken(accessToken);
+                        SharedPreferencesManager.getInstance(context).saveID(String.valueOf(userId));
+
 
                         callback.onSuccess();
                     } catch (JSONException e) {

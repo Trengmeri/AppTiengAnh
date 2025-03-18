@@ -2,10 +2,12 @@ package com.example.test.ui;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -15,9 +17,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
+import androidx.appcompat.widget.AppCompatTextView;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -31,6 +33,7 @@ import com.example.test.model.Meaning;
 import com.example.test.model.Phonetic;
 import com.example.test.model.WordData;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -63,7 +66,7 @@ public class DictionaryActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 String word = edtWord.getText().toString().trim();
-                showDefinitionDialog(word);
+                showDefinition(word);
             }
         });
 
@@ -74,8 +77,13 @@ public class DictionaryActivity extends AppCompatActivity {
             }
         });
     }
-    private void showDefinitionDialog(String word) {
+    private void showDefinition(String word) {
         flashcardManager.fetchWordDefinition(word, new AddFlashCardApiCallback<WordData>() {
+            @Override
+            public void onSuccess() {
+
+            }
+
             @Override
             public void onSuccess(WordData wordData) {
                 runOnUiThread(() -> {
@@ -89,70 +97,91 @@ public class DictionaryActivity extends AppCompatActivity {
                     @SuppressLint({"MissingInflatedId", "LocalSuppress"}) LinearLayout partOfSpeechContainer = contentView.findViewById(R.id.partOfSpeechContainer);
 
                     List<AppCompatButton> phoneticButtons = new ArrayList<>();
+                    List<AppCompatButton> speechButtons = new ArrayList<>();
                     List<AppCompatButton> definitionButtons = new ArrayList<>();
-                    List<AppCompatButton> meaningButtons = new ArrayList<>();
 
                     // Hiển thị phonetics
                     if (wordData.getPhonetics() != null && !wordData.getPhonetics().isEmpty()) {
                         for (Phonetic phonetic : wordData.getPhonetics()) {
                             AppCompatButton btn = new AppCompatButton(DictionaryActivity.this);
                             btn.setText(phonetic.getText());
-                            btn.setLayoutParams(new LinearLayout.LayoutParams(
-                                    LinearLayout.LayoutParams.WRAP_CONTENT,
-                                    LinearLayout.LayoutParams.WRAP_CONTENT));
-                            btn.setBackgroundResource(R.drawable.item_phonetic);
-                            btn.setTextColor(ContextCompat.getColor(DictionaryActivity.this, R.color.black));
-                            btn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
-                            btn.setPadding(40, 10, 20, 10);
-                            btn.setTag(false);
-                            btn.setGravity(Gravity.START | Gravity.CENTER_VERTICAL);
+                            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                                    ViewGroup.LayoutParams.WRAP_CONTENT,  // Chiều rộng co giãn theo nội dung
+                                    ViewGroup.LayoutParams.WRAP_CONTENT   // Chiều cao tự động co giãn
+                            );
+                            params.setMargins(8, 8, 8, 8); // (left, top, right, bottom)
 
+                            btn.setLayoutParams(params);
+                            btn.setBackgroundResource(R.drawable.btn_item_click);
+                            btn.setTextColor(ContextCompat.getColor(DictionaryActivity.this, R.color.black));
+                            btn.setTextSize(14);
+                            btn.setGravity(Gravity.CENTER); // Căn giữa văn bản
+                            btn.setTag(false);
                             btn.setOnClickListener(v -> {
                                 for (AppCompatButton otherBtn : phoneticButtons) {
-                                    otherBtn.setBackgroundResource(R.drawable.item_phonetic);
-                                    otherBtn.setTag(false);
+                                    Log.d("DEBUG", "Số nút trong phoneticButtons: " + phoneticButtons.size());
+
+                                    otherBtn.setSelected(false);
+                                    otherBtn.setBackgroundResource(R.drawable.btn_item_click);
                                 }
-                                btn.setBackgroundResource(R.drawable.item_phonetic_selected);
-                                btn.setTag(true);
+                                btn.setSelected(true);
+                                btn.setBackgroundResource(R.drawable.btn_item_click);
                             });
 
                             phoneticButtons.add(btn);
                             phoneticContainer.addView(btn);
                         }
                     } else {
-                        phoneticContainer.addView(new androidx.appcompat.widget.AppCompatTextView(DictionaryActivity.this) {{
-                            setText("No phonetics available");
-                        }});
+                        phoneticContainer
+                                .addView(new AppCompatTextView(DictionaryActivity.this) {
+                                    {
+                                        setText("No phonetics available");
+                                    }
+                                });
                     }
 
                     // Hiển thị Part of Speech
                     if (wordData.getMeanings() != null) {
-                        for (Meaning meaning : wordData.getMeanings()) {
+                        for (int i = 0; i < wordData.getMeanings().size(); i++) {
+                            Meaning meaning = wordData.getMeanings().get(i);
                             if (meaning.getPartOfSpeech() != null) {
                                 AppCompatButton btn = new AppCompatButton(DictionaryActivity.this);
                                 btn.setText(meaning.getPartOfSpeech());
-                                btn.setLayoutParams(new LinearLayout.LayoutParams(
-                                        LinearLayout.LayoutParams.WRAP_CONTENT,
-                                        LinearLayout.LayoutParams.WRAP_CONTENT));
-
+                                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                                        ViewGroup.LayoutParams.WRAP_CONTENT,  // Chiều rộng co giãn theo nội dung
+                                        ViewGroup.LayoutParams.WRAP_CONTENT   // Chiều cao tự động co giãn
+                                );
+                                params.setMargins(8, 8, 8, 8); // (left, top, right, bottom)
+                                btn.setLayoutParams(params);
+                                btn.setBackgroundResource(R.drawable.btn_item_click);
                                 btn.setTextColor(ContextCompat.getColor(DictionaryActivity.this, R.color.black));
-                                btn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
-                                btn.setPadding(20, 10, 20, 10);
+                                btn.setTextSize(14);
                                 btn.setTag(false);
-                                btn.setGravity(Gravity.START | Gravity.CENTER_VERTICAL);
+                                btn.setGravity(Gravity.CENTER); // Căn giữa văn bản
 
+                                // Sự kiện click cho button Part of Speech
                                 btn.setOnClickListener(v -> {
-                                    updateDefinitions(definitionContainer, meaning, contentView,
-                                            phoneticButtons, definitionButtons, meaningButtons);
-                                });
+                                    for (AppCompatButton otherBtn : speechButtons) {
+                                        Log.d("DEBUG", "Số nút trong phoneticButtons: " + speechButtons.size());
 
+                                        otherBtn.setSelected(false);
+                                        otherBtn.setBackgroundResource(R.drawable.btn_item_click);
+                                    }
+                                    btn.setSelected(true);
+                                    btn.setBackgroundResource(R.drawable.btn_item_click);
+                                    // Hiển thị definitions cho part of speech đã chọn
+                                    updateDefinitions(definitionContainer, meaning, contentView,
+                                            phoneticButtons, definitionButtons, speechButtons);
+                                });
+                                speechButtons.add(btn);
                                 partOfSpeechContainer.addView(btn);
                             }
                         }
 
+                        // Hiển thị definitions cho part of speech đầu tiên
                         if (!wordData.getMeanings().isEmpty()) {
                             updateDefinitions(definitionContainer, wordData.getMeanings().get(0), contentView,
-                                    phoneticButtons, definitionButtons, meaningButtons);
+                                    phoneticButtons, definitionButtons, speechButtons);
                         }
                     }
 
@@ -171,7 +200,7 @@ public class DictionaryActivity extends AppCompatActivity {
 
     private void updateDefinitions(LinearLayout definitionContainer, Meaning meaning, View dialogView,
                                    List<AppCompatButton> phoneticButtons, List<AppCompatButton> definitionButtons,
-                                   List<AppCompatButton> meaningButtons) {
+                                   List<AppCompatButton> speechButtons) {
 
         definitionContainer.removeAllViews();
         ScrollView definitionScrollView = dialogView.findViewById(R.id.definitionScrollView);
@@ -191,10 +220,14 @@ public class DictionaryActivity extends AppCompatActivity {
             for (Definition definition : meaning.getDefinitions()) {
                 AppCompatButton btn = new AppCompatButton(DictionaryActivity.this);
                 btn.setText(definition.getDefinition());
-                btn.setLayoutParams(new LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.MATCH_PARENT,
-                        LinearLayout.LayoutParams.WRAP_CONTENT));
-                btn.setBackgroundResource(R.drawable.item_definition);
+                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.WRAP_CONTENT,  // Chiều rộng co giãn theo nội dung
+                        ViewGroup.LayoutParams.WRAP_CONTENT   // Chiều cao tự động co giãn
+                );
+                params.setMargins(8, 5, 0, 0); // (left, top, right, bottom)
+
+                btn.setLayoutParams(params);
+                btn.setBackgroundResource(R.drawable.btn_item_def_click);
                 btn.setTextColor(ContextCompat.getColor(DictionaryActivity.this, R.color.black));
                 btn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 10);
                 btn.setPadding(40, 10, 40, 10);
@@ -203,38 +236,47 @@ public class DictionaryActivity extends AppCompatActivity {
 
                 btn.setOnClickListener(v -> {
                     // Gọi API để dịch nghĩa
-                    flashcardManager.translateDefinition(definition.getDefinition(),
-                            new AddFlashCardApiCallback<String>() {
-                                @Override
-                                public void onSuccess(String vietnameseMeaning) {
-                                    // Cập nhật UI trong luồng chính
-                                    runOnUiThread(() -> {
-                                        // Hiển thị nghĩa tiếng Việt
-                                        TextView vietnameseMeaningTextView = dialogView
-                                                .findViewById(R.id.vietnameseMeaningTextView);
-                                        vietnameseMeaningTextView.setText(vietnameseMeaning);
-                                    });
-                                }
+                    try {
+                        flashcardManager.translateDefinition(definition.getDefinition(),
+                                new AddFlashCardApiCallback<String>() {
+                                    @Override
+                                    public void onSuccess() {
 
-                                @Override
-                                public void onFailure(String errorMessage) {
-                                    runOnUiThread(() -> {
-                                        Toast.makeText(DictionaryActivity.this, "Error: " + errorMessage,
-                                                        Toast.LENGTH_SHORT)
-                                                .show();
-                                    });
-                                }
-                            });
+                                    }
 
-                    for (AppCompatButton otherBtn : definitionButtons) {
-                        otherBtn.setBackgroundResource(R.drawable.item_definition);
-                        otherBtn.setTag(false);
+                                    @Override
+                                    public void onSuccess(String vietnameseMeaning) {
+                                        // Cập nhật UI trong luồng chính
+                                        runOnUiThread(() -> {
+                                            // Hiển thị nghĩa tiếng Việt
+                                            TextView vietnameseMeaningTextView = dialogView
+                                                    .findViewById(R.id.vietnameseMeaningTextView);
+                                            vietnameseMeaningTextView.setText(vietnameseMeaning);
+                                        });
+                                    }
+
+                                    @Override
+                                    public void onFailure(String errorMessage) {
+                                        runOnUiThread(() -> {
+                                            Toast.makeText(DictionaryActivity.this, "Error: " + errorMessage,
+                                                            Toast.LENGTH_SHORT)
+                                                    .show();
+                                        });
+                                    }
+                                });
+                    } catch (UnsupportedEncodingException e) {
+                        throw new RuntimeException(e);
                     }
-                    btn.setBackgroundResource(R.drawable.item_definition_selected);
-                    btn.setTag(true);
-                    //checkEnableDone(phoneticButtons, definitionButtons, meaningButtons, btnDone);
-                });
+                    for (AppCompatButton otherBtn : definitionButtons) {
+                        Log.d("DEBUG", "Số nút trong definitionButtons: " + definitionButtons.size());
 
+                        otherBtn.setSelected(false);
+                        otherBtn.setBackgroundResource(R.drawable.btn_item_def_click);
+                    }
+                    btn.setSelected(true);
+                    btn.setBackgroundResource(R.drawable.btn_item_def_click);
+                });
+                definitionButtons.add(btn);
                 definitionContainer.addView(btn);
             }
         } else {

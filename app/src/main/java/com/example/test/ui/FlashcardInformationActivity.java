@@ -210,7 +210,7 @@ public class FlashcardInformationActivity extends AppCompatActivity {
 
                 btnSound.setEnabled(true);
                 btnSound.setOnClickListener(v -> {
-                    Toast.makeText(this, "Đang tải âm thanh...", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(this, "Đang tải âm thanh...", Toast.LENGTH_SHORT).show();
                     playAudio(audioUrl);
                 });
             } else {

@@ -31,6 +31,7 @@ import com.example.test.model.MediaFile;
 import com.example.test.model.Question;
 import com.example.test.model.QuestionChoice;
 import com.example.test.model.Result;
+import com.example.test.ui.question_data.PointResultCourseActivity;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -110,7 +111,7 @@ public class Pick1Activity extends AppCompatActivity {
                                     fetchQuestion(questionIds.get(currentStep)); // Lấy câu hỏi tiếp theo
                                     updateProgressBar(progressBar, currentStep); // Cập nhật thanh tiến trình
                                 } else {
-                                    Intent intent = new Intent(Pick1Activity.this, PickManyActivity.class);
+                                    Intent intent = new Intent(Pick1Activity.this, PointResultCourseActivity.class);
                                     startActivity(intent);
                                     finish();
                                 }

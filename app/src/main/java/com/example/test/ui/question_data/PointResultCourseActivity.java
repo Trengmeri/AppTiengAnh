@@ -310,6 +310,7 @@ public class PointResultCourseActivity extends AppCompatActivity {
             compSpeak.setText("Complete: " + String.format("%.1f",comS/s));
             correctWrite.setText(getString(R.string.point) + totalPointW);
             compWrite.setText("Complete: " + String.format("%.1f",comW/w));
+
         });
     }
 

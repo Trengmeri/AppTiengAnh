@@ -1,12 +1,19 @@
 package com.example.test.ui.entrance_test;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
+import android.text.TextPaint;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
 import android.text.style.ForegroundColorSpan;
+import android.text.style.RelativeSizeSpan;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -18,6 +25,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
@@ -192,6 +200,7 @@ private void fetchLessonData(int lessonId) {
                     @Override
                     public void onSuccess(Answer answer) {
                         runOnUiThread(() -> {
+
                             // Tạo một hàng mới cho bảng
                             TableRow row = new TableRow(tableTestResult.getContext());
 
@@ -208,7 +217,7 @@ private void fetchLessonData(int lessonId) {
                             spannable.append("Correct: ");
                             int correctEnd = spannable.length();
                             spannable.setSpan(new ForegroundColorSpan(Color.parseColor("#4CAF50")), correctStart, correctEnd, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-
+                            spannable.setSpan(new RelativeSizeSpan(0.8f), correctStart, correctEnd, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE); // Cỡ chữ nhỏ hơn
                             // Lấy danh sách đáp án đúng và sắp xếp lại
                             List<String> correctAnswers = question.getQuestionChoices()
                                     .stream()
@@ -216,18 +225,44 @@ private void fetchLessonData(int lessonId) {
                                     .map(QuestionChoice::getChoiceContent)
                                     .sorted() // Sắp xếp theo bảng chữ cái
                                     .collect(Collectors.toList());
-                            String correctAnswerString = correctAnswers.isEmpty() ? "N/A" : String.join(", ", correctAnswers);
+                            String correctAnswerString = correctAnswers.isEmpty() ? "Improvement suggestions" : String.join(", ", correctAnswers);
                             // Định dạng đáp án đúng với màu xanh
                             int answerStart = spannable.length();
                             spannable.append(correctAnswerString);
                             int answerEnd = spannable.length();
-                            spannable.setSpan(new ForegroundColorSpan(Color.parseColor("#4CAF50")), answerStart, answerEnd, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
+                            if (correctAnswers.isEmpty()) {
+                                // Tạo ClickableSpan để bắt sự kiện nhấn vào
+                                ClickableSpan clickableSpan = new ClickableSpan() {
+                                    @Override
+                                    public void onClick(@NonNull View widget) {
+                                        SharedPreferences sharedPreferences = getSharedPreferences("AppPrefs", MODE_PRIVATE);
+                                        String improvementSuggestion = sharedPreferences.getString("improvement_suggestion", "No suggestion available.");
+
+                                        // Hiển thị hộp thoại khi nhấn vào "See improvement suggestions"
+                                        new AlertDialog.Builder(tableTestResult.getContext())
+                                                .setTitle("Improvement Suggestions")
+                                                .setMessage(improvementSuggestion) // Hiển thị nội dung từ API
+                                                .setPositiveButton("OK", (dialog, which) -> dialog.dismiss())
+                                                .show();
+                                    }
+
+                                    @Override
+                                    public void updateDrawState(@NonNull TextPaint ds) {
+                                        super.updateDrawState(ds);
+                                        ds.setColor(Color.BLUE);  // Màu xanh để giống liên kết
+                                        ds.setUnderlineText(true); // Gạch chân
+                                    }
+                                };
+                                spannable.setSpan(clickableSpan, answerStart, answerEnd, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                            }
+                            spannable.setSpan(new ForegroundColorSpan(Color.parseColor("#4CAF50")), answerStart, answerEnd, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                            spannable.setSpan(new RelativeSizeSpan(0.8f), answerStart, answerEnd, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE); // Cỡ chữ nhỏ hơn
                             questionTextView.setText(spannable);
                             questionTextView.setPadding(10, 10, 10, 10);
-                            questionTextView.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 1));
+                            questionTextView.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 2));
                             questionTextView.setTypeface(null, Typeface.BOLD);
-
+                            questionTextView.setMovementMethod(LinkMovementMethod.getInstance());
                             // TextView cho câu trả lời của người dùng
                             TextView userAnswerTextView = new TextView(tableTestResult.getContext());
                             String userAnswer = answer.getAnswerContent().trim();

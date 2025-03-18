@@ -2,6 +2,7 @@ package com.example.test.ui;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.Editable;
@@ -29,6 +30,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.test.R;
+import com.example.test.SharedPreferencesManager;
 import com.example.test.response.ApiResponseFlashcard;
 import com.example.test.response.ApiResponseOneFlashcard;
 import com.example.test.ui.explore.ExploreActivity;
@@ -308,7 +310,7 @@ public class GroupFlashcardActivity extends AppCompatActivity {
         btnAdd.setOnClickListener(v -> {
             String groupName = edtGroupName.getText().toString().trim();
             if (!groupName.isEmpty()) {
-                int userId = 1; // Thay đổi ID người dùng nếu cần
+                int userId = Integer.parseInt(SharedPreferencesManager.getInstance(getApplicationContext()).getID());// Thay đổi ID người dùng nếu cần
                 flashcardManager.createFlashcardGroup(groupName, userId, new FlashcardApiCallback() {
                     @Override
                     public void onSuccess(Object response) {
@@ -319,6 +321,12 @@ public class GroupFlashcardActivity extends AppCompatActivity {
                             FlashcardGroup newGroup = response.getData(); // Đảm bảo rằng getData() trả về
                                                                           // FlashcardGroup
                             addGroupButton(newGroup.getName(), newGroup.getId()); // Sử dụng tên nhóm từ phản hồi
+                            int groupID= newGroup.getId();
+                            SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("MyPrefs", MODE_PRIVATE);
+                            SharedPreferences.Editor editor = sharedPreferences.edit();
+                            editor.putString("GROUP_ID", String.valueOf(groupID));
+                            editor.apply();  // Lưu không đồng bộ (nên dùng)
+
                             fetchFlashcardGroups(currentPage); // Cập nhật danh sách nhóm
                             dialog.dismiss(); // Đóng hộp thoại
                         });
