@@ -29,6 +29,15 @@ public class SharedPreferencesManager {
         return instance;
     }
 
+    public void saveRequestCode(int requestCode) {
+        sharedPreferences.edit().putInt("requestCode", requestCode).apply();
+    }
+
+    public int getRequestCode() {
+        return sharedPreferences.getInt("requestCode", 1000); // Mặc định là 1000 nếu chưa có
+    }
+
+
     public void saveID(String id) {
         sharedPreferences.edit().putString(KEY_USER_ID, id).apply();
     }

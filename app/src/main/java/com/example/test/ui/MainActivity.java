@@ -37,6 +37,7 @@ import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         // Load lại ngôn ngữ trước khi hiển thị giao diện
@@ -51,6 +52,13 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
         AlarmScheduler.logAllAlarms(this);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+            if (!alarmManager.canScheduleExactAlarms()) {
+                Intent intent = new Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM);
+                startActivity(intent);
+            }
+        }
 
 
         // Chuyển sang Intro2 sau 3 giây

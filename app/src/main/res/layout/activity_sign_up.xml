@@ -204,41 +204,42 @@
                             android:id="@+id/btnUp"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="12dp"
-                            android:layout_marginEnd="18dp"
+                            android:layout_marginBottom="20dp"
+                            android:layout_marginLeft="20dp"
+                            android:layout_marginRight="30dp"
                             android:backgroundTint="#BC6136"
                             android:enabled="false"
                             android:alpha="0.5"
                             android:text="Sign Up"
                             android:textColor="#FFFFFF"
                             android:textColorLink="#9E3A00"/>
-                    <TextView
-                        android:id="@+id/textView5"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="1dp"
-                        android:text="Or Continue With"
-                        android:textColor="#7A7A7A"
-                        android:layout_gravity="center" />
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:padding="8dp">
-                        <ImageView
-                            android:id="@+id/imageView5"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:background="@drawable/icon_gg"/>
+<!--                    <TextView-->
+<!--                        android:id="@+id/textView5"-->
+<!--                        android:layout_width="wrap_content"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_marginTop="1dp"-->
+<!--                        android:text="Or Continue With"-->
+<!--                        android:textColor="#7A7A7A"-->
+<!--                        android:layout_gravity="center" />-->
+<!--                    <LinearLayout-->
+<!--                        android:layout_width="wrap_content"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_gravity="center"-->
+<!--                        android:padding="8dp">-->
+<!--                        <ImageView-->
+<!--                            android:id="@+id/imageView5"-->
+<!--                            android:layout_width="wrap_content"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:background="@drawable/icon_gg"/>-->
 
-                        <ImageView
-                            android:id="@+id/imageView6"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="25dp"
-                            android:layout_marginTop="6dp"
-                            android:background="@drawable/facebook" />
-                    </LinearLayout>
+<!--                        <ImageView-->
+<!--                            android:id="@+id/imageView6"-->
+<!--                            android:layout_width="wrap_content"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:layout_marginStart="25dp"-->
+<!--                            android:layout_marginTop="6dp"-->
+<!--                            android:background="@drawable/facebook" />-->
+<!--                    </LinearLayout>-->
                 </LinearLayout>
                 <LinearLayout
                     android:layout_width="match_parent"

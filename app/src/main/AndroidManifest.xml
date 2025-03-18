@@ -37,7 +37,8 @@
         </receiver>
         <receiver
             android:name=".ui.schedule.AlarmReceiver"
-            android:exported="false" />
+            android:exported="false"
+            android:enabled="true"/>
 
         <activity
             android:name=".ui.profile.LanguageActivity"
