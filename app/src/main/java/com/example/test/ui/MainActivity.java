@@ -9,6 +9,7 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Build;
+import android.os.PowerManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.PowerManager;
@@ -65,8 +66,28 @@ public class MainActivity extends AppCompatActivity {
         new Handler().postDelayed(() -> {
             Intent intent = new Intent(MainActivity.this, Intro2Activity.class);
             startActivity(intent);
-            finish();
         }, 3000);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        isIgnoringBatteryOptimizations();
+        requestBatteryOptimization();
+    }
+
+    private boolean isIgnoringBatteryOptimizations() {
+        PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
+        return powerManager.isIgnoringBatteryOptimizations(getPackageName());
+    }
+
+
+    private void requestBatteryOptimization() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            Intent intent = new Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
+            intent.setData(Uri.parse("package:" + getPackageName()));
+            startActivity(intent);
+        }
     }
 
     private void loadLocale() {

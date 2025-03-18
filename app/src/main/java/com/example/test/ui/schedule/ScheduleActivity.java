@@ -3,12 +3,15 @@ package com.example.test.ui.schedule;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.AlarmManager;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.PowerManager;
 import android.provider.Settings;
 import android.util.Log;
@@ -207,10 +210,10 @@ public class ScheduleActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 createSchedule();
-                finish();
             }
         });
     }
+
 
     private void updateGoalSelectionUI() {
         check_basic.setVisibility(selectedGoal == 1? View.VISIBLE: View.GONE);
@@ -272,8 +275,8 @@ public class ScheduleActivity extends AppCompatActivity {
             scheduleManager.createSchedule(schedule, new ApiCallback() {
                 @Override
                 public void onSuccess() {
-                    // Xử lý thành công
                     Log.d("ScheduleActivity", "Tạo lịch học thành công: " + schedule.toString());
+                    showDialog("Success", "Lịch học đã được đặt thành công!");
                 }
 
                 @Override
@@ -281,12 +284,31 @@ public class ScheduleActivity extends AppCompatActivity {
 
                 @Override
                 public void onFailure(String errorMessage) {
-                    // Xử lý lỗi
                     Log.e("ScheduleActivity", "Lỗi tạo lịch học: " + errorMessage);
+                    showDialog("Error", "Bạn đã đặt lịch học này rồi!");
                 }
             });
         }
     }
+    private void showDialog(String title, String message) {
+        runOnUiThread(() -> {
+            AlertDialog dialog = new AlertDialog.Builder(ScheduleActivity.this)
+                    .setTitle(title)
+                    .setMessage(message)
+                    .create();
+
+            dialog.show();
+
+            // Tự động đóng dialog & activity sau 2 giây
+            new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                dialog.dismiss();
+                finish(); // Kết thúc Activity
+            }, 2000);
+        });
+    }
+
+
+
 
     private List<Schedule> gatherScheduleData() {
         String hourStr = textViewReminderTimeHour.getText().toString();
