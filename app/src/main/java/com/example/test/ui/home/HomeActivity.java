@@ -56,14 +56,13 @@ public class HomeActivity extends AppCompatActivity {
         icHome.setOnClickListener(v -> {
             vpgMain.setCurrentItem(0);
         });
-
-        btnexplore.setOnClickListener(v -> {
+        btnstudy.setOnClickListener(v -> {
             vpgMain.setCurrentItem(1);
         });
-        btnprofile.setOnClickListener(v -> {
+        btnexplore.setOnClickListener(v -> {
             vpgMain.setCurrentItem(2);
         });
-        btnstudy.setOnClickListener(v -> {
+        btnprofile.setOnClickListener(v -> {
             vpgMain.setCurrentItem(3);
         });
 
@@ -73,15 +72,14 @@ public class HomeActivity extends AppCompatActivity {
     private void updateIconColors(int position) {
         int selectedColor = ContextCompat.getColor(this, R.color.color_selected);
         int unselectedColor = ContextCompat.getColor(this, R.color.color_unselected);
-
         icHome.setColorFilter(position == 0 ? selectedColor : unselectedColor);
-        btnexplore.setColorFilter(position == 1 ? selectedColor : unselectedColor);
-        btnprofile.setColorFilter(position == 2 ? selectedColor : unselectedColor);
-        btnstudy.setColorFilter(position == 3 ? selectedColor : unselectedColor);
+        btnstudy.setColorFilter(position == 1 ? selectedColor : unselectedColor);
+        btnexplore.setColorFilter(position == 2 ? selectedColor : unselectedColor);
+        btnprofile.setColorFilter(position == 3 ? selectedColor : unselectedColor);
     }
     private void loadLocale() {
         SharedPreferences prefs = getSharedPreferences("Settings", MODE_PRIVATE);
-        String language = prefs.getString("Language", "en");
+        String language = prefs.getString("Language", "vn");
 
         Locale locale = new Locale(language);
         Locale.setDefault(locale);

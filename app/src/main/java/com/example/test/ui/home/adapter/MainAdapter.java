@@ -25,11 +25,11 @@ public class MainAdapter extends FragmentStateAdapter {
         if (position == 0) {
             return new HomeFragment();
         } else if (position ==1) {
-            return new ExploreFragment();
-        } else if( position == 2) {
-            return new ProfileFragment();
-        } else {
             return new StudyFragment();
+        } else if( position == 2) {
+            return new ExploreFragment();
+        } else {
+            return new ProfileFragment();
         }
     }
 
