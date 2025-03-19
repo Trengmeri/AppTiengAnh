@@ -1,7 +1,10 @@
 package com.example.test.ui.schedule;
 
+import static android.Manifest.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS;
+
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -20,6 +23,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -49,6 +54,7 @@ public class ScheduleActivity extends AppCompatActivity {
     private int currentHour = 0;
     private int currentMinute = 0;
     private int selectedGoal = 0; // 0: None, 1: Basic, 2: Advance, 3: LevelUp
+    private ActivityResultLauncher<Intent> batteryOptimizationLauncher;
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -212,8 +218,46 @@ public class ScheduleActivity extends AppCompatActivity {
                 createSchedule();
             }
         });
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+            if (!alarmManager.canScheduleExactAlarms()) {
+                Intent intent = new Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM);
+                startActivity(intent);
+            }
+        }
+
+        batteryOptimizationLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == Activity.RESULT_OK) {
+                        Log.d("ScheduleActivity", "NGuoi dung cap quyen thanh cong");
+                    }
+                }
+        );
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (!isIgnoringBatteryOptimizations()) {
+            requestBatteryOptimization();
+        }
+    }
+
+    private boolean isIgnoringBatteryOptimizations() {
+        PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
+        return powerManager.isIgnoringBatteryOptimizations(getPackageName());
+    }
+
+
+    private void requestBatteryOptimization() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            Intent intent = new Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
+            intent.setData(Uri.parse("package:" + getPackageName()));
+            batteryOptimizationLauncher.launch(intent);
+        }
+    }
 
     private void updateGoalSelectionUI() {
         check_basic.setVisibility(selectedGoal == 1? View.VISIBLE: View.GONE);

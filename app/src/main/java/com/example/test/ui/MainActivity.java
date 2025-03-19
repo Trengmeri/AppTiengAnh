@@ -53,14 +53,6 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
         AlarmScheduler.logAllAlarms(this);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-            if (!alarmManager.canScheduleExactAlarms()) {
-                Intent intent = new Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM);
-                startActivity(intent);
-            }
-        }
-
 
         // Chuyển sang Intro2 sau 3 giây
         new Handler().postDelayed(() -> {
@@ -69,26 +61,6 @@ public class MainActivity extends AppCompatActivity {
         }, 3000);
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        isIgnoringBatteryOptimizations();
-        requestBatteryOptimization();
-    }
-
-    private boolean isIgnoringBatteryOptimizations() {
-        PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
-        return powerManager.isIgnoringBatteryOptimizations(getPackageName());
-    }
-
-
-    private void requestBatteryOptimization() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            Intent intent = new Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
-            intent.setData(Uri.parse("package:" + getPackageName()));
-            startActivity(intent);
-        }
-    }
 
     private void loadLocale() {
         SharedPreferences prefs = getSharedPreferences("Settings", MODE_PRIVATE);
