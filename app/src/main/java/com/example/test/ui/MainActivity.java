@@ -9,6 +9,7 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Build;
+import android.os.PowerManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.PowerManager;
@@ -37,6 +38,7 @@ import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         // Load lại ngôn ngữ trước khi hiển thị giao diện
@@ -52,14 +54,13 @@ public class MainActivity extends AppCompatActivity {
         });
         AlarmScheduler.logAllAlarms(this);
 
-
         // Chuyển sang Intro2 sau 3 giây
         new Handler().postDelayed(() -> {
             Intent intent = new Intent(MainActivity.this, Intro2Activity.class);
             startActivity(intent);
-            finish();
         }, 3000);
     }
+
 
     private void loadLocale() {
         SharedPreferences prefs = getSharedPreferences("Settings", MODE_PRIVATE);

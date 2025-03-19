@@ -22,6 +22,14 @@ public class AlarmReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         Log.d("AlarmReceiver", "🔥 Báo thức kích hoạt! Đang gửi thông báo...");
 
+        // Khởi động một Foreground Service để đảm bảo báo thức chạy
+        Intent serviceIntent = new Intent(context, AlarmService.class);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            context.startForegroundService(serviceIntent);
+        } else {
+            context.startService(serviceIntent);
+        }
+
         // 🔥 Kiểm tra quyền trước khi gửi thông báo (Android 13+)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (ContextCompat.checkSelfPermission(context, android.Manifest.permission.POST_NOTIFICATIONS)

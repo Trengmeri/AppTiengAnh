@@ -350,7 +350,7 @@ public class FlashcardManager extends BaseApiManager {
     }
     public void addFlashcardToGroup(int flashcardId, int groupId, AddFlashCardApiCallback<String> callback) {
         // URL của API với flashcardId và groupId
-        String url = BASE_URL + "/api/v1/flashcard-groups/" + groupId + "/group/" + flashcardId;
+        String url = BASE_URL + "/api/v1/flashcard-groups/" + flashcardId + "/group/" + groupId;
 
         // Yêu cầu POST với body rỗng vì API có thể chỉ cần ID trong URL
         Request request = new Request.Builder()

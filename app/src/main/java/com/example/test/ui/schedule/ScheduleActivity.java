@@ -1,14 +1,20 @@
 package com.example.test.ui.schedule;
 
+import static android.Manifest.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS;
+
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.AlarmManager;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.PowerManager;
 import android.provider.Settings;
 import android.util.Log;
@@ -17,6 +23,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -46,6 +54,7 @@ public class ScheduleActivity extends AppCompatActivity {
     private int currentHour = 0;
     private int currentMinute = 0;
     private int selectedGoal = 0; // 0: None, 1: Basic, 2: Advance, 3: LevelUp
+    private ActivityResultLauncher<Intent> batteryOptimizationLauncher;
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -207,9 +216,47 @@ public class ScheduleActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 createSchedule();
-                finish();
             }
         });
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+            if (!alarmManager.canScheduleExactAlarms()) {
+                Intent intent = new Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM);
+                startActivity(intent);
+            }
+        }
+
+        batteryOptimizationLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == Activity.RESULT_OK) {
+                        Log.d("ScheduleActivity", "NGuoi dung cap quyen thanh cong");
+                    }
+                }
+        );
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (!isIgnoringBatteryOptimizations()) {
+            requestBatteryOptimization();
+        }
+    }
+
+    private boolean isIgnoringBatteryOptimizations() {
+        PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
+        return powerManager.isIgnoringBatteryOptimizations(getPackageName());
+    }
+
+
+    private void requestBatteryOptimization() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            Intent intent = new Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
+            intent.setData(Uri.parse("package:" + getPackageName()));
+            batteryOptimizationLauncher.launch(intent);
+        }
     }
 
     private void updateGoalSelectionUI() {
@@ -272,8 +319,8 @@ public class ScheduleActivity extends AppCompatActivity {
             scheduleManager.createSchedule(schedule, new ApiCallback() {
                 @Override
                 public void onSuccess() {
-                    // Xử lý thành công
                     Log.d("ScheduleActivity", "Tạo lịch học thành công: " + schedule.toString());
+                    showDialog("Success", "Lịch học đã được đặt thành công!");
                 }
 
                 @Override
@@ -281,12 +328,31 @@ public class ScheduleActivity extends AppCompatActivity {
 
                 @Override
                 public void onFailure(String errorMessage) {
-                    // Xử lý lỗi
                     Log.e("ScheduleActivity", "Lỗi tạo lịch học: " + errorMessage);
+                    showDialog("Error", "Bạn đã đặt lịch học này rồi!");
                 }
             });
         }
     }
+    private void showDialog(String title, String message) {
+        runOnUiThread(() -> {
+            AlertDialog dialog = new AlertDialog.Builder(ScheduleActivity.this)
+                    .setTitle(title)
+                    .setMessage(message)
+                    .create();
+
+            dialog.show();
+
+            // Tự động đóng dialog & activity sau 2 giây
+            new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                dialog.dismiss();
+                finish(); // Kết thúc Activity
+            }, 2000);
+        });
+    }
+
+
+
 
     private List<Schedule> gatherScheduleData() {
         String hourStr = textViewReminderTimeHour.getText().toString();

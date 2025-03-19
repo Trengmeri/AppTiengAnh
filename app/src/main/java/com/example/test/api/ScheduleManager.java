@@ -69,7 +69,7 @@ public class ScheduleManager extends BaseApiManager {
                         callback.onSuccess();
                         int requestCode = schedule.getId(); // Hoặc dùng một ID duy nhất khác
 
-                        AlarmScheduler.scheduleAlarm(context, schedule.getScheduleTime(), requestCode);
+                        AlarmScheduler.scheduleAlarm(context, schedule.getScheduleTime());
 
                         try {
                             JSONObject responseJson = new JSONObject(responseBody);
