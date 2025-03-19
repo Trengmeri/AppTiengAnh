@@ -47,7 +47,7 @@ public class ChooseFieldsActivity extends AppCompatActivity {
         btnEco.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(ChooseFieldsActivity.this, ReviewActivity.class);
+                Intent intent = new Intent(ChooseFieldsActivity.this, CourseActivity.class);
                 startActivity(intent);
             }
         });

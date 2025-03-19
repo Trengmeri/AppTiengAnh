@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#F5F9FF"
-    tools:context=".ui.ReviewActivity">
+    tools:context=".ui.CourseActivity">
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -170,68 +170,68 @@
 
                 </LinearLayout>
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginEnd="16dp"
-                    android:layout_marginBottom="8dp"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
-                    android:padding="8dp">
+<!--                <LinearLayout-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_marginStart="16dp"-->
+<!--                    android:layout_marginEnd="16dp"-->
+<!--                    android:layout_marginBottom="8dp"-->
+<!--                    android:orientation="horizontal"-->
+<!--                    android:gravity="center_vertical"-->
+<!--                    android:padding="8dp">-->
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Rate this course:"
-                        android:textSize="14sp"
-                        android:textStyle="bold"
-                        android:textColor="@color/black"
-                        android:layout_gravity="center"
-                        android:layout_marginEnd="25dp"/>
+<!--                    <TextView-->
+<!--                        android:layout_width="wrap_content"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:text="Rate this course:"-->
+<!--                        android:textSize="14sp"-->
+<!--                        android:textStyle="bold"-->
+<!--                        android:textColor="@color/black"-->
+<!--                        android:layout_gravity="center"-->
+<!--                        android:layout_marginEnd="25dp"/>-->
 
-                    <RatingBar
-                        android:id="@+id/ratingBar"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:numStars="5"
-                        android:stepSize="1.0"
-                        android:rating="5"
-                        android:isIndicator="false"
-                        style="?android:attr/ratingBarStyleSmall"
-                        android:scaleX="1.5"
-                        android:scaleY="1.5"
-                        android:theme="@style/CustomRatingBar" />
-                </LinearLayout>
+<!--                    <RatingBar-->
+<!--                        android:id="@+id/ratingBar"-->
+<!--                        android:layout_width="wrap_content"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:numStars="5"-->
+<!--                        android:stepSize="1.0"-->
+<!--                        android:rating="5"-->
+<!--                        android:isIndicator="false"-->
+<!--                        style="?android:attr/ratingBarStyleSmall"-->
+<!--                        android:scaleX="1.5"-->
+<!--                        android:scaleY="1.5"-->
+<!--                        android:theme="@style/CustomRatingBar" />-->
+<!--                </LinearLayout>-->
 
 
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="16dp"
-                    android:padding="8dp"
-                    android:orientation="horizontal"
-                    android:background="@drawable/border_bg"
-                    android:gravity="center_vertical">
+<!--                <LinearLayout-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_margin="16dp"-->
+<!--                    android:padding="8dp"-->
+<!--                    android:orientation="horizontal"-->
+<!--                    android:background="@drawable/border_bg"-->
+<!--                    android:gravity="center_vertical">-->
 
-                    <EditText
-                        android:id="@+id/edtReview"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:hint="Wirte a review..."
-                        android:padding="8dp"
-                        android:background="@null"
-                        android:textSize="14sp"/>
+<!--                    <EditText-->
+<!--                        android:id="@+id/edtReview"-->
+<!--                        android:layout_width="0dp"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_weight="1"-->
+<!--                        android:hint="Wirte a review..."-->
+<!--                        android:padding="8dp"-->
+<!--                        android:background="@null"-->
+<!--                        android:textSize="14sp"/>-->
 
-                    <ImageView
-                        android:id="@+id/btSendReview"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/icon_send"
-                        android:padding="8dp"/>
-                </LinearLayout>
+<!--                    <ImageView-->
+<!--                        android:id="@+id/btSendReview"-->
+<!--                        android:layout_width="wrap_content"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:background="@drawable/icon_send"-->
+<!--                        android:padding="8dp"/>-->
+<!--                </LinearLayout>-->
 
 
                 <androidx.constraintlayout.widget.ConstraintLayout
