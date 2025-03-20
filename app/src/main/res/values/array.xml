@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="fields_array">
+        <item>IT</item>
+        <item>CONSTRUCTION</item>
+        <item>ECONOMIC</item>
+        <item>ELECTRICITY</item>
+    </string-array>
+</resources>
