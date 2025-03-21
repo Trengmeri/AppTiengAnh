@@ -123,7 +123,6 @@
                     android:layout_gravity="center"
                     android:orientation="vertical"
                     android:padding="@dimen/dp40"
-                    android:visibility="gone"
                     >
 
                     <!-- Hình ảnh minh họa -->
@@ -195,22 +194,28 @@
                         android:gravity="center"
                         android:orientation="vertical"
                         android:padding="@dimen/dp40"
-
+                        android:visibility="invisible"
                         >
-                        <TextView
+                        <LinearLayout
                             android:id="@+id/tvBackContent"
-                            android:layout_width="200dp"
-                            android:layout_height="300dp"
-                            android:textSize="18sp"
-                            android:textStyle="bold"/>
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical">
+                            <TextView
+                                android:id="@+id/tvDefinition"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textSize="18sp"
+                                android:textStyle="bold"/>
 
-                        <!-- Thêm TextView cho ví dụ -->
-                        <TextView
-                            android:id="@+id/tvExamples"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textSize="16sp"
-                            android:layout_marginTop="10dp"/>
+                            <!-- Thêm TextView cho ví dụ -->
+                            <TextView
+                                android:id="@+id/tvExamples"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textSize="16sp"
+                                android:layout_marginTop="10dp"/>
+                        </LinearLayout>
                     </LinearLayout>
                 </FrameLayout>
 
@@ -227,18 +232,18 @@
             android:layout_gravity="center">
 
         </androidx.appcompat.widget.AppCompatButton>
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/btnExample"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            style="@style/Answer_Multi_style"
-            android:background="@drawable/btn_flash"
-            android:text="Example"
-            android:textSize="20sp"
-            android:layout_marginTop="8dp"
-            android:layout_gravity="center">
+<!--        <androidx.appcompat.widget.AppCompatButton-->
+<!--            android:id="@+id/btnExample"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            style="@style/Answer_Multi_style"-->
+<!--            android:background="@drawable/btn_flash"-->
+<!--            android:text="Example"-->
+<!--            android:textSize="20sp"-->
+<!--            android:layout_marginTop="8dp"-->
+<!--            android:layout_gravity="center">-->
 
-        </androidx.appcompat.widget.AppCompatButton>
+<!--        </androidx.appcompat.widget.AppCompatButton>-->
         </LinearLayout>
 
 

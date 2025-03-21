@@ -208,8 +208,6 @@ public class FlashcardActivity extends AppCompatActivity {
                         for (Phonetic phonetic : wordData.getPhonetics()) {
                             AppCompatButton btn = new AppCompatButton(FlashcardActivity.this);
                             btn.setText(phonetic.getText());
-//                            String phoneticText = new String(phonetic.getText().getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
-//                            btn.setText(phoneticText);
                             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                                     ViewGroup.LayoutParams.WRAP_CONTENT,  // Chiều rộng co giãn theo nội dung
                                     ViewGroup.LayoutParams.WRAP_CONTENT   // Chiều cao tự động co giãn
@@ -422,6 +420,8 @@ public class FlashcardActivity extends AppCompatActivity {
                 btn.setGravity(Gravity.START | Gravity.CENTER_VERTICAL);
 
                 btn.setOnClickListener(v -> {
+                    Log.d("DEBUG", "Selected definition: " + definition.getDefinition());
+
                     // Gọi API để dịch nghĩa
                     try {
                         flashcardManager.translateDefinition(definition.getDefinition(),

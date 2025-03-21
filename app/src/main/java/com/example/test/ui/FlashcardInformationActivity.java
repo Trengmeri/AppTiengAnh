@@ -10,6 +10,7 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.view.View;
 import android.animation.AnimatorInflater;
@@ -40,7 +41,7 @@ import com.example.test.model.Flashcard;
 public class FlashcardInformationActivity extends AppCompatActivity {
     private boolean isFrontVisible = true;
     private View frontSide, backSide;
-    private TextView tvBackContent;
+    private TextView tvDefinition;
     private AnimatorSet flipIn, flipOut;
     private ImageView btnX;
     private TextView tvAddedDate, tvWord, tvPronunciation, tvExamples, txtNumRed, txtNumGreen;
@@ -49,6 +50,7 @@ public class FlashcardInformationActivity extends AppCompatActivity {
     private ImageView btnSound;
     private MediaPlayer mediaPlayer;
     FrameLayout flashcardContainer;
+    LinearLayout tvBackContent;
     private int countRed = 0;  // Đếm số lần vuốt phải
     private int countGreen = 0; // Đếm số lần vuốt trái
     private float x1, x2;
@@ -113,9 +115,9 @@ public class FlashcardInformationActivity extends AppCompatActivity {
     private void initializeViews() {
         frontSide = findViewById(R.id.frontSide);
         backSide = findViewById(R.id.backSide);
-        tvBackContent = findViewById(R.id.tvBackContent);
+        tvDefinition = findViewById(R.id.tvDefinition);
         btnDefinition = findViewById(R.id.btnDefinition);
-        btnExample = findViewById(R.id.btnExample);
+        //btnExample = findViewById(R.id.btnExample);
         btnX = findViewById(R.id.btnX);
         tvAddedDate = findViewById(R.id.tvAddedDate);
         tvExamples = findViewById(R.id.tvExamples);
@@ -125,6 +127,7 @@ public class FlashcardInformationActivity extends AppCompatActivity {
         txtNumGreen= findViewById(R.id.txtNumGreen);
         txtNumRed= findViewById(R.id.txtNumRed);
         flashcardContainer= findViewById(R.id.flashcardContainer);
+        tvBackContent= findViewById(R.id.tvBackContent);
     }
 
     private void setupAnimations() {
@@ -209,13 +212,13 @@ public class FlashcardInformationActivity extends AppCompatActivity {
             final String examples = flashcard.getExamples();
 
             btnDefinition.setOnClickListener(v -> {
-                Log.d("FlashcardInfo", "Definition button clicked. Content: " + definitions);
-                flipCard(definitions);
+                Log.d("FlashcardInfo", "BtnDef clicked: " + definitions + ", example: " + examples);
+                flipCard(definitions, examples);
             });
-            btnExample.setOnClickListener(v -> {
-                Log.d("FlashcardInfo", "Example button clicked. Content: " + examples);
-                flipCard(examples);
-            });
+//            btnExample.setOnClickListener(v -> {
+//                Log.d("FlashcardInfo", "Example button clicked. Content: " + examples);
+//                flipCard(examples);
+//            });
 
             // Xử lý nút phát âm thanh
             String audioUrlRaw = flashcard.getPhoneticAudio();
@@ -240,8 +243,9 @@ public class FlashcardInformationActivity extends AppCompatActivity {
         }
     }
 
-    private void flipCard(String content) {
-        Log.d("FlashcardInfo", "Flipping card with content: " + content);
+    private void flipCard(String definition, String example) {
+        Log.d("FlashcardInfo", "Flipping card with definition: " + definition + ", example: " + example);
+
         if (isFrontVisible) {
            // flipOut.setTarget(frontSide);
             flipIn.setTarget(backSide);
@@ -251,7 +255,8 @@ public class FlashcardInformationActivity extends AppCompatActivity {
                 public void onAnimationEnd(android.animation.Animator animation) {
                     frontSide.setVisibility(View.GONE);
                     backSide.setVisibility(View.VISIBLE);
-                    tvBackContent.setText(content);
+                    tvDefinition.setText("Definition: "+definition);
+                    tvExamples.setText("Example"+example);
                     flipIn.start();
                 }
 

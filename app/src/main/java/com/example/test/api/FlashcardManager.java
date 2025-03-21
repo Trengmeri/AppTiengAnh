@@ -308,13 +308,12 @@ public class FlashcardManager extends BaseApiManager {
         String definitionIndicesJson = gson.toJson(definitionIndices);
 
         // Tạo JSON body
-        JsonObject jsonObject = new JsonObject();
-        jsonObject.addProperty("word", word);
-        jsonObject.add("definitionIndices", gson.toJsonTree(definitionIndices)); // Chuyển List thành JSON array
-        jsonObject.addProperty("partOfSpeechIndex", partOfSpeechIndex);
-        jsonObject.addProperty("userId", userId); // Giữ nguyên kiểu số, không phải String
-
-        String jsonBody = gson.toJson(jsonObject);
+        String jsonBody = "{"
+                + "\"word\":\"" + word + "\","
+                + "\"definitionIndices\":" + definitionIndicesJson + ","
+                + "\"partOfSpeechIndex\":" + partOfSpeechIndex + ","
+                + "\"userId\":\"" + userId + "\""
+                + "}";
         RequestBody body = RequestBody.create(jsonBody, JSON);
 
         Request request = new Request.Builder()
