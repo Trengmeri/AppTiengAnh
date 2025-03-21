@@ -30,12 +30,14 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
+import com.example.test.NevigateQuestion;
 import com.example.test.R;
 import com.example.test.api.ApiCallback;
 import com.example.test.api.LessonManager;
 import com.example.test.api.QuestionManager;
 import com.example.test.api.ResultManager;
 import com.example.test.model.Answer;
+import com.example.test.model.Course;
 import com.example.test.model.Enrollment;
 import com.example.test.model.Lesson;
 import com.example.test.model.Question;
@@ -53,7 +55,7 @@ import java.util.stream.Collectors;
 
 public class PointResultLessonActivity extends AppCompatActivity {
 
-    Button btnDone,btnDiscuss;
+    Button btnDone,btnDiscuss, btnNext;
     private int lessonID,courseID;
     QuestionManager quesManager = new QuestionManager(this);
     LessonManager lesManager = new LessonManager();
@@ -79,6 +81,7 @@ public class PointResultLessonActivity extends AppCompatActivity {
 
         fetchCourseData(courseID,lessonID);
         fetchLessonData(lessonID);
+        makepoint(courseID,lessonID);
         btnDone.setOnClickListener(v -> {
                 Intent intent = new Intent(PointResultLessonActivity.this, HomeActivity.class);
                 startActivity(intent);
@@ -91,6 +94,7 @@ public class PointResultLessonActivity extends AppCompatActivity {
 
     public void AnhXa(){
         btnDone = findViewById(R.id.btnDone);
+        btnNext = findViewById(R.id.btnNext);
         point = findViewById(R.id.point);
         star1 = findViewById(R.id.star1);
         star2 = findViewById(R.id.star2);
@@ -98,6 +102,60 @@ public class PointResultLessonActivity extends AppCompatActivity {
         btnDiscuss=findViewById(R.id.btnDiscuss);
         tableResult= findViewById(R.id.tableResult);
     }
+
+    private void makepoint(int courseId, int lessonId) {
+        lesManager.fetchCourseById(courseId, new ApiCallback<Course>() {
+            @Override
+            public void onSuccess() {}
+
+            @Override
+            public void onSuccess(Course course) {
+                if (course != null) {
+                    Integer maxLessonId = course.getLessonIds().stream().max(Integer::compareTo).orElse(lessonId);
+                    if (maxLessonId > lessonId) {
+                        btnNext.setText(getString(R.string.nextques));
+                        lesManager.fetchLessonById(lessonId, new ApiCallback<Lesson>(){
+
+                            @Override
+                            public void onSuccess() {
+
+                            }
+                            @Override
+                            public void onSuccess(Lesson lesson) {
+                                btnNext.setOnClickListener(view -> {
+                                    Intent intent = new Intent(PointResultLessonActivity.this, NevigateQuestion.class);
+                                    intent.putExtra("courseId", course.getId());
+                                    intent.putExtra("lessonId", lessonId + 1);
+                                    intent.putExtra("questionIds", new ArrayList<>(lesson.getQuestionIds()));
+                                    startActivity(intent);
+                                    finish();
+                                });
+                            }
+                            @Override
+                            public void onFailure(String errorMessage) {
+
+                            }
+                        });
+
+                    } else {
+                        btnNext.setText(getString(R.string.viewpointcourse));
+                        btnNext.setOnClickListener(view -> {
+                            Intent intent = new Intent(PointResultLessonActivity.this, PointResultCourseActivity.class);
+                            intent.putExtra("courseId", course.getId());
+                            startActivity(intent);
+                            finish();
+                        });
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(String errorMessage) {
+                Log.e("makepoint", "Error: " + errorMessage);
+            }
+        });
+    }
+
 
     private void fetchCourseData(int courseId, int lessonId) {
         resultManager.createEnrollment(courseId, new ApiCallback() {

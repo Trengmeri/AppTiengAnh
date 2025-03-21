@@ -7,7 +7,7 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
-    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS"/>
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="com.android.alarm.permission.SET_ALARM" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
@@ -25,6 +25,9 @@
         android:theme="@style/Theme.Test"
         tools:targetApi="31">
         <activity
+            android:name=".ui.question_data.ListeningChoiceActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.study.StudyActivity"
             android:exported="false" />
 
@@ -38,8 +41,8 @@
         </receiver>
         <receiver
             android:name=".ui.schedule.AlarmReceiver"
-            android:exported="false"
-            android:enabled="true"/>
+            android:enabled="true"
+            android:exported="false" />
 
         <activity
             android:name=".ui.profile.LanguageActivity"

@@ -45,7 +45,7 @@ public class PointResultCourseActivity extends AppCompatActivity {
     LessonManager lesManager = new LessonManager();
     ResultManager resultManager = new ResultManager(this);
     private Set<Integer> addedResultIds = new HashSet<>();
-    private int enrollmentId;
+    private int enrollmentId, courseID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,7 +53,8 @@ public class PointResultCourseActivity extends AppCompatActivity {
         setContentView(R.layout.activity_point_result);
 
         initializeViews();
-        fetchCourseData(1);
+        courseID = getIntent().getIntExtra("courseId",1);
+        fetchCourseData(courseID);
 
         btnReview.setOnClickListener(v -> {
             Intent intent = new Intent(PointResultCourseActivity.this, ReviewAnswerActivity.class);

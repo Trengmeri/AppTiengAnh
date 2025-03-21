@@ -83,12 +83,14 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
-    <ImageView
-        android:id="@+id/btnListen"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="25dp"
-        app:srcCompat="@drawable/listening" />
+
+            <ImageView
+                android:id="@+id/btnListen"
+                android:layout_width="322dp"
+                android:layout_height="217dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="25dp"
+                app:srcCompat="@drawable/listening" />
 
     <TextView
         android:id="@+id/tvQuestion"

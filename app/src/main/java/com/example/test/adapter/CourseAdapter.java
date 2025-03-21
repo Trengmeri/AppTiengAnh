@@ -1,5 +1,6 @@
 package com.example.test.adapter;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
@@ -7,6 +8,7 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +18,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -103,19 +106,19 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseView
             textView.setOnClickListener(v -> {
                 lessonManager.fetchLessonById(lessonId, new ApiCallback<Lesson>() {
                     @Override
-                    public void onSuccess(Lesson lesson) {
-                        Intent intent = new Intent(context, NevigateQuestion.class);
-                        intent.putExtra("skill", lesson.getSkillType());
-                        intent.putExtra("courseId", course.getId());
-                        intent.putExtra("lessonId", lessonId);
-                        intent.putExtra("questionIds", new ArrayList<>(lesson.getQuestionIds())); // Truyền danh sách câu hỏi
-                        context.startActivity(intent);
-                    }
-
-                    @Override
                     public void onSuccess() {
 
                     }
+
+                    @Override
+                    public void onSuccess(Lesson lesson) {
+                        Intent intent = new Intent(context, NevigateQuestion.class);
+                        intent.putExtra("courseId", course.getId());
+                        intent.putExtra("lessonId", lessonId);
+                        intent.putExtra("questionIds", new ArrayList<>(lesson.getQuestionIds()));
+                        context.startActivity(intent);
+                    }
+
 
                     @Override
                     public void onFailure(String errorMessage) {
@@ -123,6 +126,7 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseView
                     }
                 });
             });
+
 
             holder.lessonContainer.addView(textView);
         }

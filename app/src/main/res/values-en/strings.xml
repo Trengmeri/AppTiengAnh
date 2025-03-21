@@ -6,10 +6,14 @@
     <string name="welcome">Welcome !</string>
     <string name="mycourse">My course</string>
     <string name="suggestcourse">Suggestion Course</string>
+    <string name="txt_editPro">Edit Profile</string>
+    <string name="nextques">Next question</string>
+    <string name="viewpointcourse">View course result</string>
     <string name="load">Loading...</string>
     <string name="invalid_username">Not a valid username</string>
     <string name="invalid_password">Password must be >5 characters</string>
     <string name="login_failed">Login failed</string>
+    <string name="backhome">Go to home</string>
     <string name="fill_blank">Fill in the blank</string>
     <string name="listen_rewrite">Listen and rewrite the answer</string>
     <string name="ques_lis">What are they talking about ?</string>

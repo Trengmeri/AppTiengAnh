@@ -6,6 +6,9 @@
     <string name="welcome">Chào mừng !</string>
     <string name="mycourse">Khóa học của tôi</string>
     <string name="suggestcourse">Khóa học đề xuất</string>
+    <string name="txt_editPro">Sửa hồ sơ</string>
+    <string name="nextques">Câu hỏi tiếp theo</string>
+    <string name="viewpointcourse">Xem kết quả khóa học</string>
     <string name="invalid_username">Không phải tên người dùng hợp lệ</string>
     <string name="invalid_password">Mật khẩu phải > 5 ký tự</string>
     <string name="login_failed">Đăng nhập thất bại</string>
@@ -16,6 +19,7 @@
     <string name="review">Xem lại câu trả lời</string>
     <string name="grammar">Ngữ pháp</string>
     <string name="writting">Viết</string>
+    <string name="backhome">Về trang chủ</string>
     <string name="lis">Nghe</string>
     <string name="speak">Nói</string>
     <string name="write">Viết</string>
