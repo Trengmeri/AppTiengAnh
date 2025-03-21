@@ -83,25 +83,6 @@ public class GroupFlashcardActivity extends AppCompatActivity {
         btnPrevious.setAlpha(0.5f);
         btnPrevious.setEnabled(false);
 
-
-//        groupFlcid.setOnTouchListener((v, event) -> {
-//            if (event.getAction() == MotionEvent.ACTION_UP) {
-//                Drawable[] drawables = groupFlcid.getCompoundDrawablesRelative();
-//                if (drawables[2] != null) { // Kiểm tra drawableEnd có tồn tại không
-//                    int drawableWidth = drawables[2].getBounds().width();
-//                    int buttonWidth = groupFlcid.getWidth();
-//                    int touchX = (int) event.getX();
-//
-//                    // Kiểm tra xem người dùng có chạm vào drawableEnd không
-//                    if (touchX >= (buttonWidth - drawableWidth - groupFlcid.getPaddingEnd())) {
-//                        int groupId = (int) groupFlcid.getTag(); // Retrieve the groupId from the button's tag
-//                        showEditGroupDialog(groupFlcid, groupId); // Pass the groupId
-//                        return true;
-//                    }
-//                }
-//            }
-//            return false;
-//        });
         btnNext.setOnClickListener(v -> {
             if (currentPage < totalPages) {
                 currentPage++;
@@ -321,11 +302,11 @@ public class GroupFlashcardActivity extends AppCompatActivity {
                             FlashcardGroup newGroup = response.getData(); // Đảm bảo rằng getData() trả về
                                                                           // FlashcardGroup
                             addGroupButton(newGroup.getName(), newGroup.getId()); // Sử dụng tên nhóm từ phản hồi
-                            int groupID= newGroup.getId();
-                            SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("MyPrefs", MODE_PRIVATE);
-                            SharedPreferences.Editor editor = sharedPreferences.edit();
-                            editor.putString("GROUP_ID", String.valueOf(groupID));
-                            editor.apply();  // Lưu không đồng bộ (nên dùng)
+                            //int groupID= newGroup.getId();
+//                            SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("MyPrefs", MODE_PRIVATE);
+//                            SharedPreferences.Editor editor = sharedPreferences.edit();
+//                            editor.putString("GROUP_ID", String.valueOf(groupID));
+//                            editor.apply();  // Lưu không đồng bộ (nên dùng)
 
                             fetchFlashcardGroups(currentPage); // Cập nhật danh sách nhóm
                             dialog.dismiss(); // Đóng hộp thoại

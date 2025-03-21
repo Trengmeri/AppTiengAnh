@@ -1,5 +1,6 @@
 package com.example.test.api;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 
@@ -19,6 +20,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.List;
 
 import com.google.gson.JsonObject;
@@ -28,7 +30,6 @@ import org.json.JSONObject;
 
 public class FlashcardManager extends BaseApiManager {
     private Gson gson;
-
     public FlashcardManager() {
         gson = new Gson();
     }
@@ -231,6 +232,7 @@ public class FlashcardManager extends BaseApiManager {
             public void onResponse(Call call, Response response) throws IOException {
                 if (response.isSuccessful()) {
                     String responseData = response.body().string();
+                    //String responseData = new String(response.body().bytes(), StandardCharsets.UTF_8);
                     Log.d("API Response", responseData);
 
                     // Phân tích JSON
@@ -297,7 +299,7 @@ public class FlashcardManager extends BaseApiManager {
             callback.onFailure("Encoding error: " + e.getMessage());
         }
     }
-    public void createFlashcard(String word, List<Integer> definitionIndices, int partOfSpeechIndex, int userId, AddFlashCardApiCallback<String> callback) {
+    public void createFlashcard(Context context,String word, List<Integer> definitionIndices, int partOfSpeechIndex, int userId, AddFlashCardApiCallback<String> callback) {
         String url = BASE_URL + "/api/v1/flashcards";
         MediaType JSON = MediaType.get("application/json; charset=utf-8");
 
@@ -306,13 +308,13 @@ public class FlashcardManager extends BaseApiManager {
         String definitionIndicesJson = gson.toJson(definitionIndices);
 
         // Tạo JSON body
-        String jsonBody = "{"
-                + "\"word\":\"" + word + "\","
-                + "\"definitionIndices\":" + definitionIndicesJson + ","
-                + "\"partOfSpeechIndex\":" + partOfSpeechIndex + ","
-                + "\"userId\":\"" + userId + "\""
-                + "}";
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("word", word);
+        jsonObject.add("definitionIndices", gson.toJsonTree(definitionIndices)); // Chuyển List thành JSON array
+        jsonObject.addProperty("partOfSpeechIndex", partOfSpeechIndex);
+        jsonObject.addProperty("userId", userId); // Giữ nguyên kiểu số, không phải String
 
+        String jsonBody = gson.toJson(jsonObject);
         RequestBody body = RequestBody.create(jsonBody, JSON);
 
         Request request = new Request.Builder()
@@ -323,24 +325,41 @@ public class FlashcardManager extends BaseApiManager {
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                String responseBody = response.body().string();
-                Log.d("DEBUG", "Response Code: " + response.code());
-                Log.d("DEBUG", "Response Body: " + responseBody);
+                byte[] responseBytes = response.body().bytes();
+                String responseBody = new String(responseBytes, StandardCharsets.UTF_8);
+                Log.d("DEBUG", "Raw bytes: " + Arrays.toString(responseBytes)); // Kiểm tra byte gốc
+                Log.d("DEBUG", "UTF-8 Decoded: " + responseBody);
 
                 if (response.isSuccessful()) {
                     try {
                         JSONObject responseJson = new JSONObject(responseBody);
-                        JSONObject data = responseJson.getJSONObject("data");
-                        String flashcardID = data.optString("id");
-                        callback.onSuccess(flashcardID);
+
+                        // ✅ 4. Kiểm tra "data" có tồn tại không
+                        if (responseJson.has("data")) {
+                            JSONObject data = responseJson.getJSONObject("data");
+                            String rawPhoneticText = data.optString("phoneticText", ""); // Lấy dữ liệu gốc
+
+                            // Kiểm tra xem dữ liệu có lỗi encoding không
+                            Log.d("DEBUG_RAW_PHONETIC", "Raw phonetic: " + rawPhoneticText);
+                            SharedPreferences sharedPreferences = context.getSharedPreferences("FlashcardPrefs", Context.MODE_PRIVATE);
+                            SharedPreferences.Editor editor = sharedPreferences.edit();
+                            editor.putString("phoneticText", rawPhoneticText);
+                            editor.apply();
+
+
+                            String flashcardID = data.optString("id", ""); // Tránh lỗi nếu "id" không có
+                            callback.onSuccess(flashcardID);
+                        } else {
+                            callback.onFailure("Lỗi: Không tìm thấy 'data' trong phản hồi.");
+                        }
+
                     } catch (JSONException e) {
-                        callback.onFailure("Lỗi phân tích phản hồi JSON: " + e.getMessage());
+                        callback.onFailure("Lỗi phân tích JSON: " + e.getMessage());
                     }
                 } else {
                     callback.onFailure("Thất bại: " + response.message());
                 }
             }
-
 
             @Override
             public void onFailure(Call call, IOException e) {

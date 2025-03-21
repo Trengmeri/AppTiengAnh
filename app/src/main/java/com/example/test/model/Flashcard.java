@@ -1,7 +1,13 @@
 package com.example.test.model;
 
 import android.text.TextUtils;
+import android.util.Log;
 
+import java.time.Duration;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class Flashcard {
@@ -69,7 +75,6 @@ public class Flashcard {
     public String getPhoneticText() {
         return phoneticText;
     }
-
     public void setPhoneticText(String phoneticText) {
         this.phoneticText = phoneticText;
     }
@@ -85,6 +90,20 @@ public class Flashcard {
     public String getAddedDate() {
         return addedDate;
     }
+    public static String extractDateTimeVietnam(String addedDate) {
+        // Chuyển chuỗi ISO 8601 thành ZonedDateTime ở UTC
+        ZonedDateTime utcTime = ZonedDateTime.parse(addedDate);
+
+        // Chuyển sang múi giờ Việt Nam (UTC+7)
+        ZonedDateTime vietnamTime = utcTime.withZoneSameInstant(ZoneId.of("Asia/Ho_Chi_Minh"));
+
+        // Format lại thành "YYYY-MM-DD HH:mm:ss"
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+        return vietnamTime.format(formatter);
+    }
+
+
 
     public void setAddedDate(String addedDate) {
         this.addedDate = addedDate;
@@ -92,6 +111,24 @@ public class Flashcard {
 
     public String getLastReviewed() {
         return lastReviewed;
+    }
+    public static String timeAgo(String lastReviewed) {
+        Instant lastTime = Instant.parse(lastReviewed);
+        Instant now = Instant.now();
+        Duration duration = Duration.between(lastTime, now);
+        long minutesAgo = duration.toMinutes();
+        long hoursAgo = duration.toHours();
+        long daysAgo = duration.toDays();
+
+        if (daysAgo >= 1) {
+            return extractDateTimeVietnam(lastReviewed); // Hiển thị ngày + giờ
+        } else if (hoursAgo >= 1) {
+            return hoursAgo + " hours ago";
+        } else if (minutesAgo > 0) {
+            return minutesAgo + " minutes ago";
+        } else {
+            return "Just now";
+        }
     }
 
     public void setLastReviewed(String lastReviewed) {

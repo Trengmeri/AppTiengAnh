@@ -38,7 +38,8 @@ public class FlashcardAdapter extends RecyclerView.Adapter<FlashcardAdapter.Flas
     public void onBindViewHolder(@NonNull FlashcardViewHolder holder, int position) {
         Flashcard flashcard = flashcards.get(position);
         holder.wordTextView.setText(flashcard.getWord());
-        holder.meaningTextView.setText(flashcard.getVietNameseMeaning());
+        String lastRv= flashcard.getLastReviewed();
+        holder.tvLastReviewed.setText("Last reviewed: "+flashcard.timeAgo(lastRv));
         // Thêm sự kiện click cho item flashcard
         holder.itemView.setOnClickListener(v -> {
             Intent intent = new Intent(context, FlashcardInformationActivity.class);
@@ -56,13 +57,13 @@ public class FlashcardAdapter extends RecyclerView.Adapter<FlashcardAdapter.Flas
 
     public static class FlashcardViewHolder extends RecyclerView.ViewHolder {
         TextView wordTextView;
-        TextView meaningTextView;
+        TextView tvLastReviewed;
         ImageView iconRemove;
 
         public FlashcardViewHolder(@NonNull View itemView) {
             super(itemView);
             wordTextView = itemView.findViewById(R.id.wordTextView);
-            meaningTextView = itemView.findViewById(R.id.meaningTextView);
+            tvLastReviewed = itemView.findViewById(R.id.tvLastReviewed);
             iconRemove = itemView.findViewById(R.id.iconRemove);
         }
     }

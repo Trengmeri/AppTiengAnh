@@ -50,6 +50,7 @@ import com.example.test.response.FlashcardGroupResponse;
 import com.google.android.material.button.MaterialButton;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -66,12 +67,7 @@ public class FlashcardActivity extends AppCompatActivity {
     private int totalPages = 1;
     private final int pageSize = 4; // Mỗi trang hiển thị 5 nhóm flashcard
     private ImageView btnNext, btnPrevious;
-    private AppCompatButton selectedSpeechButton = null;
-    private AppCompatButton selectedPhoneticButton = null;
-    private AppCompatButton selectedDefinitionButton = null;
     private FlashcardAdapter flashcardAdapter;
-
-
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -179,6 +175,7 @@ public class FlashcardActivity extends AppCompatActivity {
 
     }
 
+
     @SuppressLint("MissingInflatedId")
     private void showDefinitionDialog(String word) {
         flashcardManager.fetchWordDefinition(word, new AddFlashCardApiCallback<WordData>() {
@@ -211,6 +208,8 @@ public class FlashcardActivity extends AppCompatActivity {
                         for (Phonetic phonetic : wordData.getPhonetics()) {
                             AppCompatButton btn = new AppCompatButton(FlashcardActivity.this);
                             btn.setText(phonetic.getText());
+//                            String phoneticText = new String(phonetic.getText().getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
+//                            btn.setText(phoneticText);
                             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                                     ViewGroup.LayoutParams.WRAP_CONTENT,  // Chiều rộng co giãn theo nội dung
                                     ViewGroup.LayoutParams.WRAP_CONTENT   // Chiều cao tự động co giãn
@@ -221,6 +220,7 @@ public class FlashcardActivity extends AppCompatActivity {
                             btn.setBackgroundResource(R.drawable.btn_item_click);
                             btn.setTextColor(ContextCompat.getColor(FlashcardActivity.this, R.color.black));
                             btn.setTextSize(14);
+                            btn.setAllCaps(false);
                             btn.setGravity(Gravity.CENTER); // Căn giữa văn bản
                             btn.setTag(false);
                             btn.setOnClickListener(v -> {
@@ -263,6 +263,7 @@ public class FlashcardActivity extends AppCompatActivity {
                                 btn.setBackgroundResource(R.drawable.btn_item_click);
                                 btn.setTextColor(ContextCompat.getColor(FlashcardActivity.this, R.color.black));
                                 btn.setTextSize(14);
+                                btn.setAllCaps(false);
                                 btn.setTag(false);
                                 btn.setGravity(Gravity.CENTER); // Căn giữa văn bản
 
@@ -311,7 +312,7 @@ public class FlashcardActivity extends AppCompatActivity {
                         Log.d("DEBUG","speech:"+ partOfSpeechIndex);
                         Log.d("DEBUG","definition:"+ definitionIndices);
                         Log.d("DEBUG","userid:"+ userId);
-                        flashcardManager.createFlashcard(wordflash, definitionIndices, partOfSpeechIndex, userId, new AddFlashCardApiCallback<String>() {
+                        flashcardManager.createFlashcard(getApplicationContext(),wordflash, definitionIndices, partOfSpeechIndex, userId, new AddFlashCardApiCallback<String>() {
                             @Override
                             public void onSuccess(String flashcardId) { // Lấy ID của flashcard vừa tạo
                                 if (flashcardId == null) {
@@ -320,20 +321,20 @@ public class FlashcardActivity extends AppCompatActivity {
                                 }
 
                                 Log.d("DEBUG", "Flashcard created with ID: " + flashcardId);
-                                int groupID = Integer.parseInt(SharedPreferencesManager.getInstance(getApplicationContext()).getID());
+                                //int groupID = Integer.parseInt(SharedPreferencesManager.getInstance(getApplicationContext()).getID());
+                                int groupId = getIntent().getIntExtra("GROUP_ID", -1);
+                                Log.d("GroupID:", "Group ID duoc goi :"+ groupId);
                                 //  Gọi API để thêm flashcard vào nhóm
-                                flashcardManager.addFlashcardToGroup(Integer.parseInt(flashcardId), groupID, new AddFlashCardApiCallback<String>() {
+                                flashcardManager.addFlashcardToGroup(Integer.parseInt(flashcardId), groupId, new AddFlashCardApiCallback<String>() {
                                     @Override
                                     public void onSuccess(String result) {
                                         runOnUiThread(() -> {
                                             Log.d("DEBUG", "Flashcard added to group");
-
                                             // Cập nhật UI
                                             Flashcard newFlashcard = new Flashcard(Integer.parseInt(flashcardId), wordflash, definitionIndices, partOfSpeechIndex);
                                             flashcards.add(newFlashcard);
-                                            flashcardAdapter.notifyItemInserted(flashcards.size() - 1);
+                                            flashcardAdapter.notifyDataSetChanged(); // Cập nhật toàn bộ danh sách
                                             recyclerViewFlashcards.scrollToPosition(flashcards.size() - 1);
-
                                             Toast.makeText(FlashcardActivity.this, "Thêm flashcard thành công!", Toast.LENGTH_SHORT).show();
                                             dialog.dismiss();
                                         });
@@ -416,6 +417,7 @@ public class FlashcardActivity extends AppCompatActivity {
                 btn.setTextColor(ContextCompat.getColor(FlashcardActivity.this, R.color.black));
                 btn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 10);
                 btn.setPadding(40, 10, 40, 10);
+                btn.setAllCaps(false);
                 btn.setTag(false);
                 btn.setGravity(Gravity.START | Gravity.CENTER_VERTICAL);
 

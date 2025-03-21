@@ -2,6 +2,9 @@ package com.example.test.ui;
 
 import android.animation.AnimatorSet;
 import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -21,6 +24,9 @@ import android.util.Log;
 import android.media.MediaPlayer;
 import android.media.AudioAttributes;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 
 import com.example.test.R;
 import com.example.test.response.ApiResponseFlashcard;
@@ -145,7 +151,9 @@ public class FlashcardInformationActivity extends AppCompatActivity {
                 if (response != null && response.getData() != null) {
                     Flashcard flashcard = response.getData();
                     Log.d("FlashcardInfo", "Received flashcard: " + flashcard.toString());
-                    runOnUiThread(() -> updateUI(flashcard));
+                    runOnUiThread(() -> {
+                            updateUI(flashcard);
+                    });
                 } else {
                     Log.e("FlashcardInfo", "Response or data is null");
                 }
@@ -181,12 +189,20 @@ public class FlashcardInformationActivity extends AppCompatActivity {
         });
     }
 
-    private void updateUI(Flashcard flashcard) {
+    private void updateUI(Flashcard flashcard){
         if (flashcard != null) {
             Log.d("FlashcardInfo", "Updating UI with flashcard data");
             tvWord.setText(flashcard.getWord());
-            tvPronunciation.setText(flashcard.getPhoneticText());
-            tvAddedDate.setText("Added date: " + flashcard.getAddedDate());
+
+            SharedPreferences sharedPreferences = getSharedPreferences("FlashcardPrefs", Context.MODE_PRIVATE);
+            String phoneticText = sharedPreferences.getString("phoneticText", ""); // Lấy giá trị hoặc "" nếu không có
+
+            Log.d("DEBUG_PHONETIC", "Phonetic from SharedPreferences: " + phoneticText);
+
+            runOnUiThread(() -> tvPronunciation.setText(phoneticText));
+
+            String addeddate=flashcard.getAddedDate();
+            tvAddedDate.setText("Added date: " + flashcard.extractDateTimeVietnam(addeddate));
 
             // Thiết lập sự kiện click cho các nút với dữ liệu từ flashcard
             final String definitions = flashcard.getDefinitions();
@@ -349,4 +365,17 @@ public class FlashcardInformationActivity extends AppCompatActivity {
                 .withEndAction(() -> view.setTranslationX(0)) // Reset vị trí về 0
                 .start();
     }
+    private String processPhoneticText(String phoneticText) {
+        if (phoneticText == null || phoneticText.isEmpty()) {
+            return "";
+        }
+        try {
+            // Chuyển từ ISO-8859-1 sang UTF-8 (nếu cần)
+            return new String(phoneticText.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
+        } catch (Exception e) {
+            Log.e("PhoneticProcessing", "Error processing phonetic text", e);
+            return phoneticText; // Trả về nguyên bản nếu có lỗi
+        }
+    }
+
 }
