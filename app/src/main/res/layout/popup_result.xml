@@ -27,34 +27,28 @@
     android:gravity="left"
     android:layout_marginBottom="20dp" />
 
-    <TextView
-        android:id="@+id/tvResultMessage2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        android:textColor="@android:color/black"
-        android:gravity="left"
-        android:layout_marginBottom="10dp"
-        android:visibility="gone"/>
-
-    <!-- Nội dung chi tiết -->
-    <TextView
-        android:id="@+id/tvResultDetail2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="18sp"
-        android:textColor="@android:color/black"
-        android:gravity="left"
-        android:layout_marginBottom="20dp"
-        android:visibility="gone"/>
-
         <!-- Nút chuyển câu hỏi -->
-    <Button
-    android:id="@+id/btnNextQuestion"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_gravity="center"
-    android:text="Next question"
-    android:backgroundTint="#BC6136"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:padding="10dp">
+
+        <Button
+            android:id="@+id/btnview"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="View improvement"
+            android:visibility="gone"/>
+
+        <Button
+            android:id="@+id/btnNextQuestion"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Next question"/>
     </LinearLayout>
+
+</LinearLayout>

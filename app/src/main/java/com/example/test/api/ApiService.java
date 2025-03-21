@@ -72,4 +72,45 @@ public class ApiService {
             callback.onFailure("JSON creation error: " + e.getMessage());
         }
     }
+
+    public void getSuggestionFromApi(String question, ApiCallback callback) {
+        String token = SharedPreferencesManager.getInstance(context).getAccessToken();
+
+        try {
+            JSONObject jsonBody = new JSONObject();
+            jsonBody.put("question", question);
+            jsonBody.put("prompt", "short evaluate");
+
+            RequestBody body = RequestBody.create(jsonBody.toString(), MediaType.get("application/json; charset=utf-8"));
+
+            Request request = new Request.Builder()
+                    .url(BASE_URL + "/api/v1/perplexity/suggest")
+                    .addHeader("Authorization", "Bearer " + token)
+                    .post(body)
+                    .build();
+
+            new Thread(() -> {
+                try {
+                    Response response = client.newCall(request).execute();
+                    if (!response.isSuccessful()) {
+                        callback.onFailure("API error: " + response.message());
+                        return;
+                    }
+                    String responseBody = response.body().string(); // Lưu body vào biến trước
+                    Log.d("API_RESPONSE", "JSON: " + responseBody);
+
+                    JSONObject responseObject = new JSONObject(responseBody);
+                    JSONObject dataObject = responseObject.getJSONObject("data"); // Lấy object `data`
+
+                    callback.onSuccess();
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    callback.onFailure("Request error: " + e.getMessage());
+                }
+            }).start();
+        } catch (Exception e) {
+            callback.onFailure("JSON creation error: " + e.getMessage());
+        }
+    }
 }

@@ -148,13 +148,13 @@ public class LessonManager extends BaseApiManager {
             }
         });
     }
-    public void fetchAllCourseIds(ApiCallback<List<Integer>> callback) {
+    public void fetchAllCourseIds(String prostatus, ApiCallback<List<Integer>> callback) {
         List<Integer> allCourseIds = new ArrayList<>();
-        fetchCoursesByPage(0, allCourseIds, callback);
+        fetchCoursesByPage(0, prostatus, allCourseIds, callback);
     }
 
-    private void fetchCoursesByPage(int page, List<Integer> allCourseIds, ApiCallback<List<Integer>> callback) {
-        String url = BASE_URL + "/api/v1/courses?page=" + page;
+    private void fetchCoursesByPage(int page,String prostatus, List<Integer> allCourseIds, ApiCallback<List<Integer>> callback) {
+        String url = BASE_URL + "/api/v1/courses?page=" + page + "&courseStatus=" + prostatus;
 
         Request request = new Request.Builder()
                 .url(url)
@@ -188,7 +188,7 @@ public class LessonManager extends BaseApiManager {
                     }
 
                     if (page + 1 < totalPages) {
-                        fetchCoursesByPage(page + 1, allCourseIds, callback);
+                        fetchCoursesByPage(page + 1, prostatus, allCourseIds, callback);
                     } else {
                         callback.onSuccess(allCourseIds);
                     }

@@ -85,7 +85,7 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseView
                 @Override
                 public void onSuccess(Result result) {
                     new Handler(Looper.getMainLooper()).post(() -> {
-                        textView.setBackgroundResource(R.drawable.bg_lesson);
+                        textView.setBackgroundResource(R.drawable.bg_lesson_cricle);
                         textView.setBackgroundTintList(null);// Nếu có kết quả thì đặt bg_lesson
                     });
                 }
@@ -93,7 +93,7 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseView
                 @Override
                 public void onFailure(String errorMessage) {
                     new Handler(Looper.getMainLooper()).post(() -> {
-                        textView.setBackgroundResource(R.drawable.bg_lesson); // Giữ nền mặc định
+                        textView.setBackgroundResource(R.drawable.bg_lesson_cricle); // Giữ nền mặc định
                         textView.setBackgroundTintList(ColorStateList.valueOf(Color.GRAY)); // Áp màu xám
                     });
                 }

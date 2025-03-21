@@ -4,10 +4,62 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="16dp">
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerView"
-        android:layout_margin="10dp"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="wrap_content"
+        android:background="#E8F1FF"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginTop="@dimen/dp_16">
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnAbout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/Text_Button_All"
+            android:layout_weight="1"
+            android:background="@drawable/bg_about"
+            android:textSize="16sp"
+            android:text="@string/mycourse"/>
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnLesson"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/Text_Button_All"
+            android:layout_weight="1"
+            android:textSize="16sp"
+            android:text="@string/suggestcourse"
+            android:background="@drawable/bg_lesson"/>
+    </LinearLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:id="@+id/contentAbout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="@dimen/dp_30">
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerView1"
+                android:layout_margin="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/contentLes"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="@dimen/dp_30"
+            android:orientation="vertical"
+            android:visibility="invisible">
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerView2"
+                android:layout_margin="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+        </LinearLayout>
+    </FrameLayout>
+
+
 </LinearLayout>

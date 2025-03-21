@@ -96,12 +96,6 @@
                     android:textSize="18sp"
                     android:textStyle="bold"/>
 
-                <!-- RecyclerView cho các tùy chọn đáp án -->
-<!--                <androidx.recyclerview.widget.RecyclerView-->
-<!--                    android:id="@+id/recyclerViewChoices"-->
-<!--                    android:layout_width="match_parent"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:layout_marginBottom="16dp"/>-->
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -117,6 +111,11 @@
                     android:gravity="top"
                     android:background="@android:color/transparent"
                     android:hint="Write your answer"/>
+                <TextView
+                    android:id="@+id/key"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="16dp"/>
 
                 <!-- Nút kiểm tra -->
                 <Button
