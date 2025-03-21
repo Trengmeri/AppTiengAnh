@@ -57,7 +57,8 @@ public class AlarmReceiver extends BroadcastReceiver {
                 .setContentTitle("Lịch học")
                 .setContentText("Đến giờ học rồi!")
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setAutoCancel(true);
+                .setAutoCancel(true)
+                .setContentIntent(pendingIntent);
 
         NotificationManagerCompat manager = NotificationManagerCompat.from(context);
         manager.notify(1, builder.build());
