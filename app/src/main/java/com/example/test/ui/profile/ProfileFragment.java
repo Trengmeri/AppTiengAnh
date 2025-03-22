@@ -31,6 +31,9 @@ import com.example.test.model.User;
 import com.example.test.ui.EditProfileActivity;
 import com.example.test.ui.SignInActivity;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 public class ProfileFragment extends Fragment {
     TextView userName, userEmail;
     LinearLayout btnLogout,btnedit, term , language;
@@ -53,6 +56,7 @@ public class ProfileFragment extends Fragment {
         userEmail = view.findViewById(R.id.userEmail);
 
         User user = SharedPreferencesManager.getInstance(getContext()).getUser();
+        Log.d("Userow", "abc: " + SharedPreferencesManager.getInstance(getContext()).getUser());
         if (user != null) {
             userName.setText(user.getName());
             userEmail.setText(user.getEmail());
@@ -95,6 +99,7 @@ public class ProfileFragment extends Fragment {
         });
 
     }
+
     private void showLogoutDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
         builder.setTitle("Xác nhận đăng xuất");

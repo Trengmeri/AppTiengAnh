@@ -13,7 +13,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
-
         <TextView
             android:id="@+id/backtoProfile"
             android:layout_width="match_parent"
@@ -139,7 +138,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:saveEnabled="false"
-            android:alpha="0.5"
+            android:alpha="0.5"SharedPreferencesManager.getInstance(getContext()).getUser()
             android:background="@drawable/btn_joincourse" />
 
         <TextView

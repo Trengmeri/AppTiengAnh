@@ -226,7 +226,6 @@ public class EditProfileActivity extends AppCompatActivity {
         }
         return null;
     }
-
     private void uploadAvatar(Uri imageUri) {
         if (imageUri == null) {
             Toast.makeText(this, "No image selected", Toast.LENGTH_SHORT).show();
@@ -317,6 +316,7 @@ public class EditProfileActivity extends AppCompatActivity {
                     Toast.makeText(EditProfileActivity.this,
                             "Profile updated successfully", Toast.LENGTH_SHORT).show();
                     btnUpdate.setEnabled(true);
+
                     finish();
                 });
             }
