@@ -30,7 +30,7 @@ import java.util.List;
 
 public class WrittingActivity extends AppCompatActivity {
 
-    private TextView tvContent;
+    private TextView tvContent, key;
     private EditText etAnswer;
     private Button btnCheckAnswers;
     private QuestionManager quesManager;
@@ -52,6 +52,7 @@ public class WrittingActivity extends AppCompatActivity {
         setContentView(R.layout.activity_writting);
 
         tvContent = findViewById(R.id.tvContent);
+        key = findViewById(R.id.key);
         etAnswer = findViewById(R.id.etAnswer);
         btnCheckAnswers = findViewById(R.id.btnCheckAnswers);
         quesManager = new QuestionManager(this);
@@ -125,14 +126,10 @@ public class WrittingActivity extends AppCompatActivity {
 
         apiService.sendAnswerToApi(questionContent, userAnswer, new ApiCallback<EvaluationResult>() {
             @Override
-            public void onSuccess() {
-
-            }
+            public void onSuccess() {}
 
             @Override
             public void onSuccess(EvaluationResult result) {
-
-
                 // Lưu kết quả vào hệ thống
                 quesManager.saveUserAnswer(questions.get(currentStep).getId(), userAnswer, result.getPoint(), result.getimprovements(), new ApiCallback() {
                     @Override
@@ -170,8 +167,26 @@ public class WrittingActivity extends AppCompatActivity {
             @Override
             public void onFailure(String errorMessage) {
                 progressDialog.dismiss();
-                Log.e("WritingActivity", "Lỗi lưu câu trả lời: " + errorMessage);
-                showErrorDialog("Lỗi khi lưu câu trả lời. Vui lòng thử lại.");
+                Log.e("WritingActivity", "Câu trả lời khong hop le: " + errorMessage);
+                showErrorDialog("Câu trả lời khong hop le. Vui lòng thử lại.");
+                apiService.getSuggestionFromApi(questionContent, new ApiCallback<String>(){
+
+                    @Override
+                    public void onSuccess() {
+
+                    }
+
+                    @Override
+                    public void onSuccess(String tip) {
+                        key.setText(tip);
+                        key.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
+                    }
+
+                    @Override
+                    public void onFailure(String errorMessage) {
+
+                    }
+                });
             }
         });
     }

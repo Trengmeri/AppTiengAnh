@@ -2,6 +2,8 @@
     <string name="app_name" translatable="false">Encybara</string>
     <string name="back">Back</string>
     <string name="load">Loading...</string>
+    <string name="mycourse">My course</string>
+    <string name="suggestcourse">Suggestion Course</string>
     <string name="title_activity_login" translatable="false">LoginActivity</string>
     <string name="prompt_email" translatable="false">Email</string>
     <string name="prompt_password">Password</string>
