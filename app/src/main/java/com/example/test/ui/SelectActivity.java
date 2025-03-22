@@ -16,11 +16,14 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.test.R;
+import com.example.test.api.ApiCallback;
+import com.example.test.api.ApiService;
 import com.example.test.ui.home.HomeActivity;
 
 public class SelectActivity extends AppCompatActivity {
     Button btnTest, btnNew;
     TextView btnBack;
+    ApiService apiService = new ApiService(this);
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -38,51 +41,62 @@ public class SelectActivity extends AppCompatActivity {
         btnBack= findViewById(R.id.btnBack);
         SharedPreferences sharedPreferences = getSharedPreferences("LoginPrefs", MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
-//
-//        Log.d("DEBUG", "SelectActivity is opened. Updating lastActivity...");
-//        // Lưu lại `lastActivity` khi mở SelectActivity
-//        String currentActivity = SelectActivity.class.getName();
-//        editor.putString("lastActivity", currentActivity);
-//        editor.apply();
-//
-//        Log.d("DEBUG", "SelectActivity opened, lastActivity saved as: " + currentActivity);
-//        editor.putString("lastActivity", SelectActivity.class.getName()); // Ghi đè giá trị cũ
-//        editor.apply();
 
-        btnTest.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(SelectActivity.this, LoadingTestActivity.class);
-                startActivity(intent);
-                // Lưu trạng thái đã chọn
-//                editor.putBoolean("hasSelectedOption", true);
-//                editor.putString("lastActivity", HomeActivity.class.getName()); // Chuyển đến HomeActivity
-//                editor.apply();
+        btnTest.setOnClickListener(view -> {
+            apiService.startTest(new ApiCallback() {
+                @Override
+                public void onSuccess() {
+                    Intent intent = new Intent(SelectActivity.this, LoadingTestActivity.class);
+                    startActivity(intent);
+//                 Lưu trạng thái đã chọn
+                    editor.putBoolean("hasSelectedOption", true);
+                    editor.putString("lastActivity", HomeActivity.class.getName()); // Chuyển đến HomeActivity
+                    editor.apply();
+                    finish(); // Đóng SelectActivity
+                }
 
-                finish(); // Đóng SelectActivity
+                @Override
+                public void onSuccess(Object result) {
 
-            }
+                }
+
+                @Override
+                public void onFailure(String errorMessage) {
+                    Log.e("DEBUG", "API Failed: " + errorMessage);
+
+                }
+            });
         });
 
-        btnNew.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(SelectActivity.this, HomeActivity.class);
-                startActivity(intent);
-                // Lưu trạng thái đã chọn
-//                editor.putBoolean("hasSelectedOption", true);
-//                editor.putString("lastActivity", HomeActivity.class.getName()); // Chuyển đến HomeActivity
-//                editor.apply();
+        btnNew.setOnClickListener(view -> {
+            apiService.skipTest(new ApiCallback() {
+                @Override
+                public void onSuccess() {
+                    Intent intent = new Intent(SelectActivity.this, HomeActivity.class);
+                    startActivity(intent);
+                    // Lưu trạng thái đã chọn
+                editor.putBoolean("hasSelectedOption", true);
+                editor.putString("lastActivity", HomeActivity.class.getName()); // Chuyển đến HomeActivity
+                editor.apply();
 
-                finish(); // Đóng SelectActivity
-            }
+                    finish(); // Đóng SelectActivity
+                }
+
+                @Override
+                public void onSuccess(Object result) {
+
+                }
+
+                @Override
+                public void onFailure(String errorMessage) {
+                    Log.e("DEBUG", "API Failed: " + errorMessage);
+
+                }
+            });
         });
-        btnBack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(SelectActivity.this, ChooseFieldsActivity.class);
-                startActivity(intent);
-            }
+        btnBack.setOnClickListener(view -> {
+            Intent intent = new Intent(SelectActivity.this, ChooseFieldsActivity.class);
+            startActivity(intent);
         });
     }
 //    @Override

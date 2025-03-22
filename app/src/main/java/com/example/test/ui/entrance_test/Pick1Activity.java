@@ -14,10 +14,13 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.test.NetworkChangeReceiver;
 import com.example.test.PopupHelper;
 import com.example.test.R;
+import com.example.test.adapter.ChoiceAdapter;
 import com.example.test.api.ApiCallback;
 import com.example.test.api.LessonManager;
 import com.example.test.api.QuestionManager;
@@ -31,6 +34,7 @@ import com.example.test.model.MediaFile;
 import com.example.test.model.Question;
 import com.example.test.model.QuestionChoice;
 import com.example.test.model.Result;
+import com.example.test.ui.question_data.GrammarPick1QuestionActivity;
 import com.example.test.ui.question_data.PointResultCourseActivity;
 
 import java.io.IOException;
@@ -49,7 +53,6 @@ public class Pick1Activity extends AppCompatActivity {
     private  String questype;
     private int totalSteps; // Tổng số bước trong thanh tiến trình
     private AppCompatButton selectedAnswer = null;
-    private AppCompatButton btnAnswer1, btnAnswer2, btnAnswer3, btnAnswer4;
     private Button btnCheckAnswer;
     QuestionManager quesManager = new QuestionManager(this);
     LessonManager lesManager = new LessonManager();
@@ -58,26 +61,32 @@ public class Pick1Activity extends AppCompatActivity {
     NetworkChangeReceiver networkReceiver;
     private List<Integer> questionIds;
     private int answerIds;// Danh sách questionIds
+    private RecyclerView recyclerViewChoices;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_grammar_question);
 
-        // Ánh xạ các thành phần UI
-        btnAnswer1 = findViewById(R.id.btnOption1);
-        btnAnswer2 = findViewById(R.id.btnOption2);
-        btnAnswer3 = findViewById(R.id.btnOption3);
-        btnAnswer4 = findViewById(R.id.btnOption4);
         btnCheckAnswer = findViewById(R.id.btnCheckAnswer);
         tvContent = findViewById(R.id.tvContent);
-        LinearLayout progressBar = findViewById(R.id.progressBar); // Ánh xạ ProgressBar
-        setupAnswerClickListeners();
+        LinearLayout progressBar = findViewById(R.id.progressBar);
+        recyclerViewChoices = findViewById(R.id.recyclerViewChoices);
+        int columnCount = 2; // Số cột
+        GridLayoutManager layoutManager = new GridLayoutManager(this, columnCount);
+        layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+            @Override
+            public int getSpanSize(int position) {
+                return 1; // Mỗi button chiếm 1 cột
+            }
+        });
+        recyclerViewChoices.setLayoutManager(layoutManager);
+        recyclerViewChoices.setHasFixedSize(true);
         updateProgressBar(progressBar, currentStep);
         networkReceiver = new NetworkChangeReceiver();
 
         // Lấy lessonId từ intent hoặc một nguồn khác
-        int lessonId = 1;
+        int lessonId = 2;
         fetchLessonAndQuestions(lessonId); // Gọi phương thức để lấy bài học và câu hỏi
 
         btnCheckAnswer.setOnClickListener(v -> {
@@ -102,8 +111,7 @@ public class Pick1Activity extends AppCompatActivity {
                         // Hiển thị popup
                         runOnUiThread(() -> {
                             PopupHelper.showResultPopup(Pick1Activity.this, questype, userAnswers, correctAnswers, null, null, null, () -> {
-                                // Callback khi nhấn Next Question trên popup
-                                resetAnswerColors();
+
                                 currentStep++; // Tăng currentStep
 
                                 // Kiểm tra nếu hoàn thành
@@ -111,7 +119,7 @@ public class Pick1Activity extends AppCompatActivity {
                                     fetchQuestion(questionIds.get(currentStep)); // Lấy câu hỏi tiếp theo
                                     updateProgressBar(progressBar, currentStep); // Cập nhật thanh tiến trình
                                 } else {
-                                    Intent intent = new Intent(Pick1Activity.this, PointResultCourseActivity.class);
+                                    Intent intent = new Intent(Pick1Activity.this, ListeningActivity.class);
                                     startActivity(intent);
                                     finish();
                                 }
@@ -213,26 +221,19 @@ public class Pick1Activity extends AppCompatActivity {
                     String questionContent = question.getQuesContent();
                     Log.d("Pick1Activity", "Câu hỏi: " + questionContent);
 
-                    // Lấy danh sách lựa chọn
                     List<QuestionChoice> choices = question.getQuestionChoices();
                     if (choices != null && !choices.isEmpty()) {
-                        for (QuestionChoice choice : choices) {
-                            Log.d("Pick1Activity", "Lựa chọn: " + choice.getChoiceContent() +
-                                    " (Đáp án đúng: " + choice.isChoiceKey() + ")");
-                        }
-
-                        // Cập nhật giao diện người dùng
                         runOnUiThread(() -> {
                             tvContent.setText(questionContent);
-                            btnAnswer1.setText(choices.get(0).getChoiceContent());
-                            btnAnswer2.setText(choices.get(1).getChoiceContent());
-                            btnAnswer3.setText(choices.get(2).getChoiceContent());
-                            btnAnswer4.setText(choices.get(3).getChoiceContent());
-
-                            correctAnswers = choices.stream()
-                                    .filter(QuestionChoice::isChoiceKey) // Lọc ra các đáp án đúng
-                                    .map(QuestionChoice::getChoiceContent) // Chuyển đổi thành nội dung đáp án
-                                    .collect(Collectors.toList());
+                            userAnswers.clear();
+                            ChoiceAdapter choiceAdapter = new ChoiceAdapter(Pick1Activity.this, choices, userAnswers);
+                            recyclerViewChoices.setAdapter(choiceAdapter);
+                            correctAnswers.clear();
+                            for (QuestionChoice choice : choices) {
+                                if (choice.isChoiceKey()) {
+                                    correctAnswers.add(choice.getChoiceContent());
+                                }
+                            }
                         });
                     } else {
                         Log.e("Pick1Activity", "Câu hỏi không có lựa chọn.");
@@ -270,56 +271,5 @@ public class Pick1Activity extends AppCompatActivity {
             colorAnimator.setDuration(300); // Thời gian chuyển đổi màu
             colorAnimator.start();
         }
-    }
-
-    private void setupAnswerClickListeners() {
-        View.OnClickListener answerClickListener = new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                AppCompatButton clickedButton = (AppCompatButton) view;
-
-                // Kiểm tra nếu đáp án đã được chọn trước đó
-                if (selectedAnswer != null && selectedAnswer == clickedButton) {
-                    // Nếu đáp án đang được chọn lại, gỡ bỏ chọn
-                    clickedButton.setBackgroundResource(R.drawable.bg_answer); // Màu nền mặc định
-                    selectedAnswer = null;
-
-                    // Xóa đáp án khỏi danh sách
-                    userAnswers.remove(clickedButton.getText().toString());
-                } else {
-                    // Nếu có đáp án được chọn trước đó, gỡ màu của đáp án cũ
-                    if (selectedAnswer != null) {
-                        selectedAnswer.setBackgroundResource(R.drawable.bg_answer);
-                    }
-
-                    // Đặt màu cho đáp án mới được chọn
-                    clickedButton.setBackgroundResource(R.drawable.bg_answer_pressed);
-
-                    // Cập nhật đáp án được chọn
-                    selectedAnswer = clickedButton;
-
-                    // Thêm đáp án mới vào danh sách
-                    String answerText = clickedButton.getText().toString();
-                    if (!userAnswers.contains(answerText)) {
-                        userAnswers.add(answerText);
-                    }
-                }
-            }
-        };
-
-        // Đăng ký lắng nghe sự kiện cho tất cả các nút đáp án
-        btnAnswer1.setOnClickListener(answerClickListener);
-        btnAnswer2.setOnClickListener(answerClickListener);
-        btnAnswer3.setOnClickListener(answerClickListener);
-        btnAnswer4.setOnClickListener(answerClickListener);
-    }
-
-    private void resetAnswerColors() {
-        // Đặt lại màu nền cho tất cả các đáp án về màu mặc định
-        userAnswers.clear();
-        btnAnswer1.setBackgroundResource(R.drawable.bg_answer);
-        btnAnswer2.setBackgroundResource(R.drawable.bg_answer);
-        btnAnswer3.setBackgroundResource(R.drawable.bg_answer);
-        btnAnswer4.setBackgroundResource(R.drawable.bg_answer);
     }
 }

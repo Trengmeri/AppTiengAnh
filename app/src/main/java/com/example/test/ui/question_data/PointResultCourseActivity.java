@@ -58,6 +58,7 @@ public class PointResultCourseActivity extends AppCompatActivity {
 
         btnReview.setOnClickListener(v -> {
             Intent intent = new Intent(PointResultCourseActivity.this, ReviewAnswerActivity.class);
+            intent.putExtra("courseId", courseID);
             startActivity(intent);
         });
 
@@ -93,9 +94,6 @@ public class PointResultCourseActivity extends AppCompatActivity {
     }
 
     private void fetchCourseData(int courseId) {
-        resultManager.createEnrollment(courseId, new ApiCallback() {
-            @Override
-            public void onSuccess() {
                 lesManager.fetchCourseById(courseId,new ApiCallback<Course>() {
                     @Override
                     public void onSuccess() {}
@@ -119,16 +117,6 @@ public class PointResultCourseActivity extends AppCompatActivity {
                         Log.e("PointResultActivity",errorMessage);
                     }
                 });
-            }
-
-            @Override
-            public void onFailure(String errorMessage) {
-
-            }
-
-            @Override
-            public void onSuccess(Object result){}
-        });
     }
 
     private void fetchLessonAndCreateResult(int lessonId, int courseId) {

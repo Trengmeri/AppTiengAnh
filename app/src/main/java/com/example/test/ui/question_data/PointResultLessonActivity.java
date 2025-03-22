@@ -158,9 +158,7 @@ public class PointResultLessonActivity extends AppCompatActivity {
 
 
     private void fetchCourseData(int courseId, int lessonId) {
-        resultManager.createEnrollment(courseId, new ApiCallback() {
-            @Override
-            public void onSuccess() {
+
                 resultManager.getEnrollment(courseId, new ApiCallback<Enrollment>() {
                     @Override
                     public void onSuccess() {
@@ -223,16 +221,7 @@ public class PointResultLessonActivity extends AppCompatActivity {
 
                     }
                 });
-            }
 
-            @Override
-            public void onFailure(String errorMessage) {
-
-            }
-
-            @Override
-            public void onSuccess(Object result){}
-        });
     }
 
 

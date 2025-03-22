@@ -19,6 +19,8 @@
         android:textStyle="bold"
         android:layout_marginTop="20dp"
         android:layout_gravity="center"/>
+
+    <!-- Thanh tiến trình -->
     <LinearLayout
         android:id="@+id/progressBar"
         android:layout_width="wrap_content"
@@ -26,153 +28,64 @@
         android:orientation="horizontal"
         android:layout_gravity="center">
 
-        <!-- Step 1 (Active) -->
-        <View
-            android:layout_width="32dp"
-            android:layout_height="8dp"
-            android:background="#E0E0E0"
-            android:layout_margin="4dp" />
-
-        <!-- Step 2 (Inactive) -->
-        <View
-            android:layout_width="32dp"
-            android:layout_height="8dp"
-            android:background="#E0E0E0"
-            android:layout_margin="4dp" />
-
-        <!-- Step 3 (Inactive) -->
-        <View
-            android:layout_width="32dp"
-            android:layout_height="8dp"
-            android:background="#E0E0E0"
-            android:layout_margin="4dp" />
-
-        <!-- Step 4 (Inactive) -->
-        <View
-            android:layout_width="32dp"
-            android:layout_height="8dp"
-            android:background="#E0E0E0"
-            android:layout_margin="4dp" />
-
-        <!-- Step 5 (Inactive) -->
-        <View
-            android:layout_width="32dp"
-            android:layout_height="8dp"
-            android:background="#E0E0E0"
-            android:layout_margin="4dp" />
+        <View android:layout_width="32dp" android:layout_height="8dp" android:background="#E0E0E0" android:layout_margin="4dp" />
+        <View android:layout_width="32dp" android:layout_height="8dp" android:background="#E0E0E0" android:layout_margin="4dp" />
+        <View android:layout_width="32dp" android:layout_height="8dp" android:background="#E0E0E0" android:layout_margin="4dp" />
+        <View android:layout_width="32dp" android:layout_height="8dp" android:background="#E0E0E0" android:layout_margin="4dp" />
+        <View android:layout_width="32dp" android:layout_height="8dp" android:background="#E0E0E0" android:layout_margin="4dp" />
     </LinearLayout>
 
-    <!-- Nội dung câu hỏi -->
-    <TextView
-        android:id="@+id/tvQuestion"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
-        android:layout_marginStart="@dimen/dp_16"
-        android:drawableStart="@drawable/jam_write"
-        android:drawablePadding="10dp"
-        android:text="@string/fill_blank"
-        android:textSize="22sp"
-        android:textStyle="bold" />
-
+    <!-- Nội dung cuộn được -->
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:fillViewport="true">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="vertical">
-    <TextView
-        android:id="@+id/tvContent"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="60dp"
-        android:layout_marginStart="@dimen/dp_16"
-        android:padding="10dp"
-        android:text=""
-        android:textSize="18sp"
-        android:textStyle="bold" />
 
-    <GridLayout
-        android:id="@+id/gridLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/dp_16"
-        android:columnCount="2"
-        android:rowCount="2"
-        android:columnOrderPreserved="true"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="16dp">
+            <TextView
+                android:id="@+id/tvQuestion"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="40dp"
+                android:layout_marginStart="@dimen/dp_16"
+                android:drawableStart="@drawable/jam_write"
+                android:drawablePadding="10dp"
+                android:text="@string/fill_blank"
+                android:textSize="22sp"
+                android:textStyle="bold" />
 
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/btnOption1"
-            style="@style/Text_Button_All"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:padding="8dp"
-            android:layout_columnWeight="1"
-            android:layout_margin="25dp"
-            android:background="@drawable/button_background"
-            android:text=""
-            android:textColor="@color/black"/>
-<!--            android:text="computer" />-->
+            <TextView
+                android:id="@+id/tvContent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="20dp"
+                android:padding="10dp"
+                android:text=""
+                android:textSize="18sp"
+                android:textStyle="bold" />
 
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/btnOption2"
-            style="@style/Text_Button_All"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_columnWeight="1"
-            android:layout_margin="25dp"
-            android:text=""
-            android:background="@drawable/button_background"
-            android:textColor="@color/black"/>
-<!--            android:text="internet" />-->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerViewChoices"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/dp40"
+                android:layout_gravity="center" />
 
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/btnOption3"
-            style="@style/Text_Button_All"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_columnWeight="1"
-            android:layout_margin="25dp"
-            android:text=""
-            android:background="@drawable/button_background"
-            android:textColor="@color/black"/>
-<!--            android:text="database" />-->
-
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/btnOption4"
-            style="@style/Text_Button_All"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_columnWeight="1"
-            android:layout_margin="25dp"
-            android:text=""
-            android:background="@drawable/button_background"
-            android:textColor="@color/black"/>
-<!--            android:text="operator" />-->
-    </GridLayout>
-
-    <!-- Nút kiểm tra -->
-    <Button
-        android:id="@+id/btnCheckAnswer"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:layout_marginRight="@dimen/dp_30"
-        android:layout_marginLeft="@dimen/dp_30"
-        android:text="@string/check"
-        android:backgroundTint="#C0CEEF"
-        android:textColor="@color/black"
-        android:layout_gravity="center"/>
+            <!-- Nút kiểm tra -->
+            <Button
+                android:id="@+id/btnCheckAnswer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:layout_marginLeft="@dimen/dp_30"
+                android:layout_marginRight="@dimen/dp_30"
+                android:text="@string/check"
+                android:backgroundTint="#C0CEEF"
+                android:textColor="@color/black"/>
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
-    <!-- FrameLayout để hiển thị popup hoặc nội dung khác -->
-    <FrameLayout
-        android:id="@+id/popupContainer"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom" />
 </LinearLayout>

@@ -58,7 +58,7 @@ public class ReviewAnswerActivity extends AppCompatActivity {
     LessonManager lesManager = new LessonManager();
     QuestionManager quesManager = new QuestionManager(this);
     ResultManager resultManager = new ResultManager(this);
-    int lessonId;
+    int lessonId, courseID;
     TableLayout tableTestResult;
     @SuppressLint("MissingInflatedId")
     @Override
@@ -79,7 +79,8 @@ public class ReviewAnswerActivity extends AppCompatActivity {
         btnBackto.setOnClickListener(v -> {
             finish();
         });
-        fetchCourseData(1); // Thay courseId bằng courseId thực tế
+        courseID = getIntent().getIntExtra("courseId",1);
+        fetchCourseData(courseID);
     }
 
 //    private LinearLayout addLessonLayout(String lessonName) {

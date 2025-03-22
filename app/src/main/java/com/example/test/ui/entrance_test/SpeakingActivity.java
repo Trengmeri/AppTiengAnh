@@ -73,7 +73,7 @@ public class SpeakingActivity extends AppCompatActivity implements SpeechRecogni
         tvTranscription = findViewById(R.id.tvTranscription);
         Button btnCheckResult = findViewById(R.id.btnCheckResult);
         tvQuestion = findViewById(R.id.tvQuestion);
-        int lessonId = 4;
+        int lessonId = 16;
         fetchLessonAndQuestions(lessonId);
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {

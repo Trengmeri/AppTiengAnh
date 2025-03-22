@@ -12,6 +12,8 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 
+import okhttp3.Call;
+import okhttp3.Callback;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -100,9 +102,10 @@ public class ApiService {
                     Log.d("API_RESPONSE", "JSON: " + responseBody);
 
                     JSONObject responseObject = new JSONObject(responseBody);
-                    JSONObject dataObject = responseObject.getJSONObject("data"); // Lấy object `data`
+                    JSONObject dataObject = responseObject.getJSONObject("data");
+                    String tip = dataObject.getString("tips");// Lấy object `data`
 
-                    callback.onSuccess();
+                    callback.onSuccess(tip);
 
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -113,4 +116,83 @@ public class ApiService {
             callback.onFailure("JSON creation error: " + e.getMessage());
         }
     }
+    public void startTest(ApiCallback callback) {
+        String token = SharedPreferencesManager.getInstance(context).getAccessToken();
+        String userId = SharedPreferencesManager.getInstance(context).getID();
+
+        RequestBody emptyBody = RequestBody.create("", MediaType.get("application/json; charset=utf-8"));
+
+        Request request = new Request.Builder()
+                .url(BASE_URL + "/api/v1/initial-assessment/" + userId + "/start")
+                .addHeader("Authorization", "Bearer " + token)
+                .post(emptyBody)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.e("API_ERROR", "Start Test Failed: " + e.getMessage());
+                callback.onFailure("Request error: " + e.getMessage());
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String responseBody = response.body().string();
+                Log.d("API_RESPONSE", "Start Test Response: " + responseBody);
+
+                try {
+                    JSONObject responseObject = new JSONObject(responseBody);
+                    int statusCode = responseObject.optInt("statusCode", -1);
+
+                    if (statusCode == 200) {
+                        callback.onSuccess();
+                    } else {
+                        callback.onFailure("Failed with status: " + statusCode);
+                    }
+                } catch (Exception e) {
+                    callback.onFailure("JSON parsing error: " + e.getMessage());
+                }
+            }
+        });
+    }
+    public void skipTest(ApiCallback callback) {
+        String token = SharedPreferencesManager.getInstance(context).getAccessToken();
+        String userId = SharedPreferencesManager.getInstance(context).getID();
+
+        RequestBody emptyBody = RequestBody.create("", MediaType.get("application/json; charset=utf-8"));
+
+        Request request = new Request.Builder()
+                .url(BASE_URL + "/api/v1/initial-assessment/" + userId + "/skip")
+                .addHeader("Authorization", "Bearer " + token)
+                .post(emptyBody)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.e("API_ERROR", "Skip Test Failed: " + e.getMessage());
+                callback.onFailure("Request error: " + e.getMessage());
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String responseBody = response.body().string();
+                Log.d("API_RESPONSE", "Skip Test Response: " + responseBody);
+
+                try {
+                    JSONObject responseObject = new JSONObject(responseBody);
+                    int statusCode = responseObject.optInt("statusCode", -1);
+
+                    if (statusCode == 200) {
+                        callback.onSuccess();
+                    } else {
+                        callback.onFailure("Failed with status: " + statusCode);
+                    }
+                } catch (Exception e) {
+                    callback.onFailure("JSON parsing error: " + e.getMessage());
+                }
+            }
+        });
+    }
+
 }
