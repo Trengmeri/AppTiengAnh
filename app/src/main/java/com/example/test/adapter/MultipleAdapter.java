@@ -13,13 +13,13 @@ import com.example.test.model.QuestionChoice;
 
 import java.util.List;
 
-public class ChoiceAdapter extends RecyclerView.Adapter<ChoiceAdapter.ChoiceViewHolder> {
+public class MultipleAdapter extends RecyclerView.Adapter<MultipleAdapter.ChoiceViewHolder> {
 
     private List<QuestionChoice> choices;
     private Context context;
     private List<String> userAnswers;
 
-    public ChoiceAdapter(Context context, List<QuestionChoice> choices, List<String> userAnswers) {
+    public MultipleAdapter(Context context, List<QuestionChoice> choices, List<String> userAnswers) {
         this.context = context;
         this.choices = choices;
         this.userAnswers = userAnswers;

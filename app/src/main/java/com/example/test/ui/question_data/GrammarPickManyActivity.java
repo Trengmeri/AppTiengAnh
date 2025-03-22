@@ -18,7 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.test.PopupHelper;
 import com.example.test.R;
-import com.example.test.adapter.ChoiceAdapter;
+import com.example.test.adapter.MultipleAdapter;
 import com.example.test.api.ApiCallback;
 import com.example.test.api.LessonManager;
 import com.example.test.api.QuestionManager;
@@ -192,7 +192,7 @@ public class GrammarPickManyActivity extends AppCompatActivity {
                             runOnUiThread(() -> {
                                 tvContent.setText(questionContent);
                                 userAnswers.clear();
-                                ChoiceAdapter choiceAdapter = new ChoiceAdapter(GrammarPickManyActivity.this, choices, userAnswers);
+                                MultipleAdapter choiceAdapter = new MultipleAdapter(GrammarPickManyActivity.this, choices, userAnswers);
                                 recyclerViewChoices.setAdapter(choiceAdapter);
                                 correctAnswers.clear();
                                 for (QuestionChoice choice : choices) {

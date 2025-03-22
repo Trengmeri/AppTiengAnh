@@ -6,8 +6,8 @@ public class Course {
     private int id;
     private String name;
     private String intro;
-    private int diffLevel;
-    private int recomLevel;
+    private double diffLevel;
+    private double recomLevel;
     private String courseType;
     private String speciField;
     private String createBy;
@@ -42,19 +42,19 @@ public class Course {
         this.intro = intro;
     }
 
-    public int getDiffLevel() {
+    public double getDiffLevel() {
         return diffLevel;
     }
 
-    public void setDiffLevel(int diffLevel) {
+    public void setDiffLevel(double diffLevel) {
         this.diffLevel = diffLevel;
     }
 
-    public int getRecomLevel() {
+    public double getRecomLevel() {
         return recomLevel;
     }
 
-    public void setRecomLevel(int recomLevel) {
+    public void setRecomLevel(double recomLevel) {
         this.recomLevel = recomLevel;
     }
 

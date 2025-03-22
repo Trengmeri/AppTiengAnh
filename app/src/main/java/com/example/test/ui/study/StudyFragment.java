@@ -56,14 +56,14 @@ public class StudyFragment extends Fragment {
         btnLesson= view.findViewById(R.id.btnLesson);
         contentAbout = view.findViewById(R.id.contentAbout);
         contentLes = view.findViewById(R.id.contentLes);
-        prostatus = "True";
+        prostatus = "PUBLIC";
 
         btnAbout.setOnClickListener(v -> {
             btnAbout.setBackground(ContextCompat.getDrawable(requireContext(), R.drawable.bg_about));
             btnLesson.setBackground(ContextCompat.getDrawable(requireContext(), R.drawable.bg_lesson));
             contentAbout.setVisibility(View.VISIBLE);
             contentLes.setVisibility(View.GONE);
-            prostatus = "True";
+            prostatus = "PUBLIC";
         });
 
         btnLesson.setOnClickListener(v -> {
@@ -71,7 +71,7 @@ public class StudyFragment extends Fragment {
             btnAbout.setBackground(ContextCompat.getDrawable(requireContext(), R.drawable.bg_lesson));
             contentAbout.setVisibility(View.GONE);
             contentLes.setVisibility(View.VISIBLE);
-            prostatus = "False";
+            prostatus = "PRIVATE";
         });
 
         courseList = new ArrayList<>();

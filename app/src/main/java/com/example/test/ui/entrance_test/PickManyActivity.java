@@ -18,20 +18,15 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.test.PopupHelper;
 import com.example.test.R;
-import com.example.test.adapter.ChoiceAdapter;
+import com.example.test.adapter.MultipleAdapter;
 import com.example.test.api.ApiCallback;
 import com.example.test.api.LessonManager;
 import com.example.test.api.QuestionManager;
 import com.example.test.api.ResultManager;
 import com.example.test.model.Answer;
-import com.example.test.model.Course;
-import com.example.test.model.Discussion;
 import com.example.test.model.Lesson;
-import com.example.test.model.MediaFile;
 import com.example.test.model.Question;
 import com.example.test.model.QuestionChoice;
-import com.example.test.model.Result;
-import com.example.test.ui.question_data.ListeningQuestionActivity;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -204,7 +199,7 @@ public class PickManyActivity extends AppCompatActivity {
                         runOnUiThread(() -> {
                             tvContent.setText(questionContent);
                             userAnswers.clear();
-                            ChoiceAdapter choiceAdapter = new ChoiceAdapter(PickManyActivity.this, choices, userAnswers);
+                            MultipleAdapter choiceAdapter = new MultipleAdapter(PickManyActivity.this, choices, userAnswers);
                             recyclerViewChoices.setAdapter(choiceAdapter);
                             correctAnswers.clear();
                             for (QuestionChoice choice : choices) {
