@@ -3,6 +3,8 @@ package com.example.test.ui;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.Editable;
@@ -11,6 +13,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -131,7 +134,7 @@ public class GroupFlashcardActivity extends AppCompatActivity {
         AlertDialog dialog = new AlertDialog.Builder(this)
                 .setView(dialogView)
                 .create();
-
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         // Bật/tắt nút "Edit" nếu có thay đổi trong EditText
         edtEditGroupName.addTextChangedListener(new TextWatcher() {
             @Override
@@ -252,7 +255,6 @@ public class GroupFlashcardActivity extends AppCompatActivity {
         builder.setView(dialogView);
 
         AlertDialog dialog = builder.create();
-
         @SuppressLint({"MissingInflatedId", "LocalSuppress"})
         EditText edtGroupName = dialogView.findViewById(R.id.edtGroupName);
         Button btnAdd = dialogView.findViewById(R.id.btnAdd);
@@ -423,6 +425,7 @@ public class GroupFlashcardActivity extends AppCompatActivity {
         groupView.setOnClickListener(v -> {
             Intent intent = new Intent(GroupFlashcardActivity.this, FlashcardActivity.class);
             intent.putExtra("GROUP_ID", groupId);
+            intent.putExtra("GROUP_NAME",groupName);
             startActivity(intent);
         });
 

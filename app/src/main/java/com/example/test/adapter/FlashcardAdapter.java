@@ -2,6 +2,7 @@ package com.example.test.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,7 +15,14 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.test.R;
+import com.example.test.api.FlashcardApiCallback;
+import com.example.test.api.FlashcardManager;
 import com.example.test.model.Flashcard;
+import com.example.test.response.ApiResponseFlashcard;
+import com.example.test.response.ApiResponseFlashcardGroup;
+import com.example.test.response.ApiResponseOneFlashcard;
+import com.example.test.response.FlashcardGroupResponse;
+import com.example.test.ui.FlashcardActivity;
 import com.example.test.ui.FlashcardInformationActivity;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 
@@ -40,6 +48,12 @@ public class FlashcardAdapter extends RecyclerView.Adapter<FlashcardAdapter.Flas
         holder.wordTextView.setText(flashcard.getWord());
         String lastRv= flashcard.getLastReviewed();
         holder.tvLastReviewed.setText("Last reviewed: "+flashcard.timeAgo(lastRv));
+        if (holder.iconRemove == null) {
+            Log.e("FlashcardAdapter", "iconRemove is null at position " + position);
+        } else {
+            Log.d("FlashcardAdapter", "iconRemove found at position " + position);
+        }
+
         // Thêm sự kiện click cho item flashcard
         holder.itemView.setOnClickListener(v -> {
             Intent intent = new Intent(context, FlashcardInformationActivity.class);
@@ -47,7 +61,10 @@ public class FlashcardAdapter extends RecyclerView.Adapter<FlashcardAdapter.Flas
             context.startActivity(intent); // Khởi động activity thông tin flashcard
         });
         // Sự kiện click vào iconRemove để hiển thị dialog xác nhận
-        holder.iconRemove.setOnClickListener(v -> showRemoveDialog(position));
+        holder.iconRemove.setOnClickListener(v -> {
+            Log.d("FlashcardAdapter", "Clicked on remove icon at position " + position);
+            showRemoveDialog(position);
+        });
     }
 
     @Override
@@ -65,6 +82,7 @@ public class FlashcardAdapter extends RecyclerView.Adapter<FlashcardAdapter.Flas
             wordTextView = itemView.findViewById(R.id.wordTextView);
             tvLastReviewed = itemView.findViewById(R.id.tvLastReviewed);
             iconRemove = itemView.findViewById(R.id.iconRemove);
+
         }
     }
     private void showRemoveDialog(int position) {
@@ -72,16 +90,62 @@ public class FlashcardAdapter extends RecyclerView.Adapter<FlashcardAdapter.Flas
         bottomSheetDialog.setContentView(R.layout.dialog_remove_flash); // Tạo file XML cho dialog
         Button btnCancel = bottomSheetDialog.findViewById(R.id.btnCancel);
         Button btnRemove = bottomSheetDialog.findViewById(R.id.btnRemove);
+        TextView tvNameFlash=bottomSheetDialog.findViewById(R.id.tvNameFlash);
+        TextView tvRemove= bottomSheetDialog.findViewById(R.id.tvRemove);
+
+        Flashcard flashcard = flashcards.get(position);
+
+        String groupName = ((FlashcardActivity) context).getIntent().getStringExtra("GROUP_NAME");
+        tvRemove.setText("Remove from " + groupName+ " ?");
+
+        tvNameFlash.setText(flashcard.getWord());
         btnCancel.setOnClickListener(v -> bottomSheetDialog.dismiss());
+        FlashcardManager flashcardManager = new FlashcardManager();
         btnRemove.setOnClickListener(v -> {
-            // Xóa flashcard khỏi màn hình
-//            LinearLayout layoutFlashcards = findViewById(R.id.flashContainer);
-//            layoutFlashcards.removeView(flashcardView);
-//            bottomSheetDialog.dismiss(); // Đóng hộp thoại sau khi xóa
-            flashcards.remove(position);  // Xóa khỏi danh sách
-            notifyItemRemoved(position); // Cập nhật RecyclerView
+            int flashcardId = flashcards.get(position).getId(); // Lấy ID của flashcard cần xóa
+
+            flashcardManager.deleteFlashcardById(flashcardId, new FlashcardApiCallback() {
+                @Override
+                public void onSuccess(Object response) {
+                    // Xóa flashcard khỏi danh sách và cập nhật RecyclerView
+                    Log.d("FlashcardAdapter", "Flashcard deleted successfully");
+                }
+
+                @Override
+                public void onSuccess(ApiResponseFlashcardGroup response) {
+
+                }
+
+                @Override
+                public void onSuccess(FlashcardGroupResponse response) {
+
+                }
+
+                @Override
+                public void onSuccess(ApiResponseFlashcard response) {
+
+                }
+
+                @Override
+                public void onSuccess(ApiResponseOneFlashcard response) {
+
+                }
+
+                @Override
+                public void onFailure(String errorMessage) {
+                    Log.e("FlashcardAdapter", "Failed to delete flashcard: " + errorMessage);
+                }
+            });
+            flashcards.remove(position);
+            notifyItemRemoved(position);
+            notifyItemRangeChanged(position, flashcards.size()); // Cập nhật lại các vị trí item còn lại
             bottomSheetDialog.dismiss(); // Đóng dialog
         });
         bottomSheetDialog.show();
     }
+    public void setFlashcards(List<Flashcard> newFlashcards) {
+        this.flashcards = newFlashcards;
+        notifyDataSetChanged();
+    }
+
 }

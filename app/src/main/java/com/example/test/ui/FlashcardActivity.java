@@ -2,6 +2,8 @@ package com.example.test.ui;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -62,7 +64,8 @@ public class FlashcardActivity extends AppCompatActivity {
     private RecyclerView recyclerViewFlashcards;
     private FlashcardManager flashcardManager;
     NetworkChangeReceiver networkReceiver;
-    TextView flBack;
+    LinearLayout flBack;
+    TextView tvGroupName;
     ImageView btnAddFlash, btnremove;
     private List<Flashcard> flashcards = new ArrayList<>();
     private EditText edtFlashName;
@@ -92,6 +95,7 @@ public class FlashcardActivity extends AppCompatActivity {
         btnremove = findViewById(R.id.iconRemove);
         btnNext = findViewById(R.id.btnNext);
         btnPrevious = findViewById(R.id.btnPrevious);
+        tvGroupName= findViewById(R.id.tvGroupName);
         btnNext.setAlpha(0.5f);
         btnNext.setEnabled(false);
         flashcardAdapter = new FlashcardAdapter(this, flashcards);
@@ -103,6 +107,7 @@ public class FlashcardActivity extends AppCompatActivity {
         btnPrevious.setAlpha(0.5f);
         btnPrevious.setEnabled(false);
 
+        tvGroupName.setText(getIntent().getStringExtra("GROUP_NAME"));
         int groupId = getIntent().getIntExtra("GROUP_ID", -1);
         if (groupId != -1) {
             fetchFlashcards(groupId,currentPage);
@@ -133,6 +138,7 @@ public class FlashcardActivity extends AppCompatActivity {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             LayoutInflater inflater = getLayoutInflater();
             View dialogView = inflater.inflate(R.layout.dialog_add_flash, null);
+
             builder.setView(dialogView);
 
             AlertDialog dialog = builder.create();
@@ -345,9 +351,10 @@ public class FlashcardActivity extends AppCompatActivity {
                                             Log.d("DEBUG", "Flashcard added to group");
                                             // Cập nhật UI
                                             Flashcard newFlashcard = new Flashcard(Integer.parseInt(flashcardId), wordflash, definitionIndices, partOfSpeechIndex);
-                                            flashcards.add(newFlashcard);
-                                            flashcardAdapter.notifyDataSetChanged(); // Cập nhật toàn bộ danh sách
-                                            recyclerViewFlashcards.scrollToPosition(flashcards.size() - 1);
+                                            flashcards.add(0, newFlashcard);
+                                            flashcardAdapter.setFlashcards(flashcards); // Nếu adapter có phương thức này
+                                            flashcardAdapter.notifyItemInserted(0);
+                                            recyclerViewFlashcards.scrollToPosition(0);
                                             Toast.makeText(FlashcardActivity.this, "Thêm flashcard thành công!", Toast.LENGTH_SHORT).show();
                                             dialog.dismiss();
                                         });
@@ -355,7 +362,6 @@ public class FlashcardActivity extends AppCompatActivity {
 
                                     @Override
                                     public void onSuccess() {
-
                                     }
 
                                     @Override
@@ -365,6 +371,7 @@ public class FlashcardActivity extends AppCompatActivity {
                                             Toast.makeText(FlashcardActivity.this, "Lỗi thêm vào nhóm: " + errorMessage, Toast.LENGTH_SHORT).show();
                                         });
                                     }
+
                                 });
                             }
 
