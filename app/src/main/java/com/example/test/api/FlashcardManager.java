@@ -342,7 +342,7 @@ public class FlashcardManager extends BaseApiManager {
                             Log.d("DEBUG_RAW_PHONETIC", "Raw phonetic: " + rawPhoneticText);
                             SharedPreferences sharedPreferences = context.getSharedPreferences("FlashcardPrefs", Context.MODE_PRIVATE);
                             SharedPreferences.Editor editor = sharedPreferences.edit();
-                            editor.putString("phoneticText", rawPhoneticText);
+                            editor.putString("phoneticText" + word, rawPhoneticText); // Lưu theo từng từ
                             editor.apply();
 
 

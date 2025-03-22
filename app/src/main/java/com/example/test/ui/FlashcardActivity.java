@@ -205,6 +205,7 @@ public class FlashcardActivity extends AppCompatActivity {
 
                     // Hiển thị phonetics
                     if (wordData.getPhonetics() != null && !wordData.getPhonetics().isEmpty()) {
+                        phoneticButtons.clear();
                         for (Phonetic phonetic : wordData.getPhonetics()) {
                             AppCompatButton btn = new AppCompatButton(FlashcardActivity.this);
                             btn.setText(phonetic.getText());
@@ -247,6 +248,7 @@ public class FlashcardActivity extends AppCompatActivity {
 
                     // Hiển thị Part of Speech
                     if (wordData.getMeanings() != null) {
+                        speechButtons.clear();
                         for (int i = 0; i < wordData.getMeanings().size(); i++) {
                             Meaning meaning = wordData.getMeanings().get(i);
                             if (meaning.getPartOfSpeech() != null) {
@@ -387,6 +389,7 @@ public class FlashcardActivity extends AppCompatActivity {
             Button btnDone) {
 
         definitionContainer.removeAllViews();
+        definitionButtons.clear();
         ScrollView definitionScrollView = dialogView.findViewById(R.id.definitionScrollView);
 
         int numberOfButtons = 0;
@@ -399,6 +402,13 @@ public class FlashcardActivity extends AppCompatActivity {
 
         definitionScrollView.setLayoutParams(
                 new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, scrollViewHeight));
+
+        if (meaning.getDefinitions() != null) {
+            Log.d("DEBUG", "Số lượng definitions: " + meaning.getDefinitions().size());
+            for (Definition def : meaning.getDefinitions()) {
+                Log.d("DEBUG", "Definition: " + def.getDefinition());
+            }
+        }
         // Hiển thị definitions cho part of speech đã chọn
         if (meaning.getDefinitions() != null && !meaning.getDefinitions().isEmpty()) {
             for (Definition definition : meaning.getDefinitions()) {
@@ -454,7 +464,7 @@ public class FlashcardActivity extends AppCompatActivity {
                     } catch (UnsupportedEncodingException e) {
                         throw new RuntimeException(e);
                     }
-
+                    Log.d("DEBUG", "Số nút trong definitionButtons trước khi cập nhật: " + definitionButtons.size());
                     for (AppCompatButton otherBtn : definitionButtons) {
                         Log.d("DEBUG", "Số nút trong definitionButtons: " + definitionButtons.size());
 
@@ -467,6 +477,11 @@ public class FlashcardActivity extends AppCompatActivity {
                 });
                 definitionButtons.add(btn);
                 definitionContainer.addView(btn);
+            }
+            // Log kiểm tra sau khi thêm nút
+            Log.d("DEBUG", "Tổng số definitionButtons sau khi thêm: " + definitionButtons.size());
+            for (AppCompatButton btn : definitionButtons) {
+                Log.d("DEBUG", "Button text: " + btn.getText().toString());
             }
         } else {
             definitionContainer.addView(new androidx.appcompat.widget.AppCompatTextView(FlashcardActivity.this) {

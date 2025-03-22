@@ -198,8 +198,7 @@ public class FlashcardInformationActivity extends AppCompatActivity {
             tvWord.setText(flashcard.getWord());
 
             SharedPreferences sharedPreferences = getSharedPreferences("FlashcardPrefs", Context.MODE_PRIVATE);
-            String phoneticText = sharedPreferences.getString("phoneticText", ""); // Lấy giá trị hoặc "" nếu không có
-
+            String phoneticText = sharedPreferences.getString("phoneticText" + flashcard.getWord(), "");
             Log.d("DEBUG_PHONETIC", "Phonetic from SharedPreferences: " + phoneticText);
 
             runOnUiThread(() -> tvPronunciation.setText(phoneticText));
@@ -207,9 +206,11 @@ public class FlashcardInformationActivity extends AppCompatActivity {
             String addeddate=flashcard.getAddedDate();
             tvAddedDate.setText("Added date: " + flashcard.extractDateTimeVietnam(addeddate));
 
-            // Thiết lập sự kiện click cho các nút với dữ liệu từ flashcard
             final String definitions = flashcard.getDefinitions();
             final String examples = flashcard.getExamples();
+            Log.d("DEBUG_DEFINITIONS", "Definitions: " + definitions);
+            Log.d("DEBUG_EXAMPLES", "Examples: " + examples);
+            // Thiết lập sự kiện click cho các nút với dữ liệu từ flashcard
 
             btnDefinition.setOnClickListener(v -> {
                 Log.d("FlashcardInfo", "BtnDef clicked: " + definitions + ", example: " + examples);
@@ -256,7 +257,7 @@ public class FlashcardInformationActivity extends AppCompatActivity {
                     frontSide.setVisibility(View.GONE);
                     backSide.setVisibility(View.VISIBLE);
                     tvDefinition.setText("Definition: "+definition);
-                    tvExamples.setText("Example"+example);
+                    tvExamples.setText("Example: "+example);
                     flipIn.start();
                 }
 
