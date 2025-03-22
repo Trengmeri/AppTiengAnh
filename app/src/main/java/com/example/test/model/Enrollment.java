@@ -7,8 +7,17 @@ public class Enrollment {
     private int enrollmentId;
     private int userId;
     private int courseId;
+    private boolean proStatus;
     private int totalPoints;
     private double comLevel;
+
+    public boolean isProStatus() {
+        return proStatus;
+    }
+
+    public void setProStatus(boolean proStatus) {
+        this.proStatus = proStatus;
+    }
 
     public int getEnrollmentId() {
         return enrollmentId;

@@ -1,6 +1,7 @@
 package com.example.test.ui.study;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -20,6 +21,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.test.R;
 import com.example.test.adapter.CourseAdapter;
 import com.example.test.api.ApiCallback;
+import com.example.test.api.EnrollmentManager;
 import com.example.test.api.LessonManager;
 import com.example.test.model.Course;
 
@@ -31,9 +33,10 @@ public class StudyFragment extends Fragment {
     private CourseAdapter adapter;
     private List<Course> courseList;
     private LessonManager lessonManager;
+    private EnrollmentManager enrollmentManager;
     AppCompatButton btnAbout, btnLesson;
     LinearLayout contentAbout, contentLes;
-    String prostatus;
+    String prostatus = "false";
 
     public StudyFragment() {
     }
@@ -43,6 +46,12 @@ public class StudyFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_study, container, false);
         return view;
+    }
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        enrollmentManager = new EnrollmentManager(context); // Lấy context khi Fragment được gắn vào Activity
     }
 
     @SuppressLint("WrongViewCast")
@@ -56,14 +65,12 @@ public class StudyFragment extends Fragment {
         btnLesson= view.findViewById(R.id.btnLesson);
         contentAbout = view.findViewById(R.id.contentAbout);
         contentLes = view.findViewById(R.id.contentLes);
-        prostatus = "PUBLIC";
 
         btnAbout.setOnClickListener(v -> {
             btnAbout.setBackground(ContextCompat.getDrawable(requireContext(), R.drawable.bg_about));
             btnLesson.setBackground(ContextCompat.getDrawable(requireContext(), R.drawable.bg_lesson));
             contentAbout.setVisibility(View.VISIBLE);
             contentLes.setVisibility(View.GONE);
-            prostatus = "PUBLIC";
         });
 
         btnLesson.setOnClickListener(v -> {
@@ -71,7 +78,6 @@ public class StudyFragment extends Fragment {
             btnAbout.setBackground(ContextCompat.getDrawable(requireContext(), R.drawable.bg_lesson));
             contentAbout.setVisibility(View.GONE);
             contentLes.setVisibility(View.VISIBLE);
-            prostatus = "PRIVATE";
         });
 
         courseList = new ArrayList<>();
@@ -82,7 +88,7 @@ public class StudyFragment extends Fragment {
         fetchCourses();
     }
     private void fetchCourses() {
-        lessonManager.fetchAllCourseIds(prostatus, new ApiCallback<List<Integer>>() {
+        enrollmentManager.fetchAllEnrolledCourseIds(prostatus, new ApiCallback<List<Integer>>() {
             @Override
             public void onSuccess() {}
 

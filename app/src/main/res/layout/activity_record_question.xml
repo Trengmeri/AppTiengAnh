@@ -127,8 +127,12 @@
                     android:textAlignment="center" />
             </LinearLayout>
 
-
-
+            <TextView
+                android:id="@+id/key"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:textSize="16dp"/>
 
             <Button
                 android:id="@+id/btnCheckResult"
@@ -137,7 +141,7 @@
                 android:text="@string/check"
                 android:textSize="20dp"
                 android:backgroundTint="#BC6136"
-                android:layout_marginTop="26dp"
+                android:layout_marginTop="20dp"
                 android:layout_gravity="center" />
 
         </LinearLayout>

@@ -11,6 +11,7 @@ import com.example.test.model.EvaluationResult;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -22,7 +23,12 @@ import okhttp3.Response;
 
 public class ApiService {
     private final Context context;
-    private final OkHttpClient client = new OkHttpClient();
+    private final OkHttpClient client  = new OkHttpClient.Builder()
+            .connectTimeout(30, TimeUnit.SECONDS)  // Thời gian kết nối tối đa
+            .readTimeout(30, TimeUnit.SECONDS)     // Thời gian đọc dữ liệu tối đa
+            .writeTimeout(30, TimeUnit.SECONDS)    // Thời gian ghi dữ liệu tối đa
+            .build();
+
 
     public ApiService(Context context) {
         this.context = context;
@@ -81,7 +87,7 @@ public class ApiService {
         try {
             JSONObject jsonBody = new JSONObject();
             jsonBody.put("question", question);
-            jsonBody.put("prompt", "short evaluate");
+            jsonBody.put("prompt", "For student at basic level");
 
             RequestBody body = RequestBody.create(jsonBody.toString(), MediaType.get("application/json; charset=utf-8"));
 

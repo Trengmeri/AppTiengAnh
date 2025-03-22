@@ -10,6 +10,7 @@ import android.media.AudioAttributes;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.View;
 import android.widget.*;
@@ -39,7 +40,7 @@ public class RecordQuestionActivity extends AppCompatActivity implements SpeechR
 
     private MediaPlayer mediaPlayer;
     private ImageView imgVoice;
-    private TextView tvTranscription;
+    private TextView tvTranscription, key;
     private SpeechRecognitionHelper speechRecognitionHelper;
 
     private List<String> userAnswers = new ArrayList<>();
@@ -70,6 +71,7 @@ public class RecordQuestionActivity extends AppCompatActivity implements SpeechR
         tvTranscription = findViewById(R.id.tvTranscription);
         Button btnCheckResult = findViewById(R.id.btnCheckResult);
         tvQuestion = findViewById(R.id.tvQuestion);
+        key = findViewById(R.id.key);
 
 
         currentQuestionIndex = getIntent().getIntExtra("currentQuestionIndex", 0);
@@ -156,6 +158,37 @@ public class RecordQuestionActivity extends AppCompatActivity implements SpeechR
                 progressDialog.dismiss();
                 Log.e("WritingActivity", "Lỗi lưu câu trả lời: " + errorMessage);
                 showErrorDialog("Lỗi khi lưu câu trả lời. Vui lòng thử lại.");
+                apiService.getSuggestionFromApi(questionContent, new ApiCallback<String>(){
+
+                    @Override
+                    public void onSuccess() {
+
+                    }
+
+                    @Override
+                    public void onSuccess(String tip) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                key.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
+                                key.setMovementMethod(new ScrollingMovementMethod());
+
+                                String formattedTip = tip
+                                        .replaceAll("(?<!\\d)\\. ", ".\n")
+                                        .replaceAll(": ", ":\n");
+
+                                key.setText("Tip: \n" +formattedTip);
+                            }
+                        });
+                    }
+
+
+
+                    @Override
+                    public void onFailure(String errorMessage) {
+
+                    }
+                });
             }
         });
     }

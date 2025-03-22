@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -178,9 +179,22 @@ public class WrittingActivity extends AppCompatActivity {
 
                     @Override
                     public void onSuccess(String tip) {
-                        key.setText(tip);
-                        key.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                key.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
+                                key.setMovementMethod(new ScrollingMovementMethod());
+
+                                String formattedTip = tip
+                                        .replaceAll("(?<!\\d)\\. ", ".\n")
+                                        .replaceAll(": ", ":\n");
+
+                                key.setText("Tip: \n" +formattedTip);
+                            }
+                        });
                     }
+
+
 
                     @Override
                     public void onFailure(String errorMessage) {
