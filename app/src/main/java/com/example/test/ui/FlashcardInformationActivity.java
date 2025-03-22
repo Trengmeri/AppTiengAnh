@@ -28,6 +28,10 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 import com.example.test.R;
 import com.example.test.response.ApiResponseFlashcard;
@@ -197,11 +201,16 @@ public class FlashcardInformationActivity extends AppCompatActivity {
             Log.d("FlashcardInfo", "Updating UI with flashcard data");
             tvWord.setText(flashcard.getWord());
 
+//            SharedPreferences sharedPreferences = getSharedPreferences("FlashcardPrefs", Context.MODE_PRIVATE);
+//            String phoneticText = sharedPreferences.getString("phoneticText" + flashcard.getWord(), "");
+//            Log.d("DEBUG_PHONETIC", "Phonetic from SharedPreferences: " + phoneticText);
             SharedPreferences sharedPreferences = getSharedPreferences("FlashcardPrefs", Context.MODE_PRIVATE);
             String phoneticText = sharedPreferences.getString("phoneticText" + flashcard.getWord(), "");
-            Log.d("DEBUG_PHONETIC", "Phonetic from SharedPreferences: " + phoneticText);
+            String cleanedPhonetic = getUniquePhonetic(phoneticText);
+            Log.d("DEBUG_CLEANED_PHONETIC", "Cleaned phonetic: " + cleanedPhonetic);
 
-            runOnUiThread(() -> tvPronunciation.setText(phoneticText));
+            runOnUiThread(() -> tvPronunciation.setText(cleanedPhonetic));
+
 
             String addeddate=flashcard.getAddedDate();
             tvAddedDate.setText("Added date: " + flashcard.extractDateTimeVietnam(addeddate));
@@ -371,17 +380,22 @@ public class FlashcardInformationActivity extends AppCompatActivity {
                 .withEndAction(() -> view.setTranslationX(0)) // Reset vị trí về 0
                 .start();
     }
-    private String processPhoneticText(String phoneticText) {
+    private String getUniquePhonetic(String phoneticText) {
         if (phoneticText == null || phoneticText.isEmpty()) {
-            return "";
+            return "No pronunciation available";
         }
-        try {
-            // Chuyển từ ISO-8859-1 sang UTF-8 (nếu cần)
-            return new String(phoneticText.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
-        } catch (Exception e) {
-            Log.e("PhoneticProcessing", "Error processing phonetic text", e);
-            return phoneticText; // Trả về nguyên bản nếu có lỗi
+
+        // Chia chuỗi thành từng phần bằng dấu ";"
+        String[] phoneticArray = phoneticText.split(";");
+
+        // Sử dụng Set để loại bỏ các phiên âm trùng lặp
+        Set<String> uniquePhonetics = new LinkedHashSet<>();
+        for (String phonetic : phoneticArray) {
+            uniquePhonetics.add(phonetic.trim()); // Loại bỏ khoảng trắng thừa
         }
+
+        // Ghép lại thành chuỗi mới, mỗi phiên âm cách nhau dấu "; "
+        return String.join("; ", uniquePhonetics);
     }
 
 }

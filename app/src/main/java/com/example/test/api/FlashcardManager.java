@@ -341,9 +341,15 @@ public class FlashcardManager extends BaseApiManager {
                             // Kiểm tra xem dữ liệu có lỗi encoding không
                             Log.d("DEBUG_RAW_PHONETIC", "Raw phonetic: " + rawPhoneticText);
                             SharedPreferences sharedPreferences = context.getSharedPreferences("FlashcardPrefs", Context.MODE_PRIVATE);
-                            SharedPreferences.Editor editor = sharedPreferences.edit();
-                            editor.putString("phoneticText" + word, rawPhoneticText); // Lưu theo từng từ
-                            editor.apply();
+                            String existingPhonetic = sharedPreferences.getString("phoneticText" + word, "");
+                            Log.d("DEBUG_PHONETIC_SAVE", "Saved phonetic for " + word + ": " + rawPhoneticText);
+
+                            // Chỉ lưu nếu phonetic chưa tồn tại
+                            if (!existingPhonetic.contains(rawPhoneticText)) {
+                                SharedPreferences.Editor editor = sharedPreferences.edit();
+                                editor.putString("phoneticText" + word, rawPhoneticText);
+                                editor.apply();
+                            }
 
 
                             String flashcardID = data.optString("id", ""); // Tránh lỗi nếu "id" không có
