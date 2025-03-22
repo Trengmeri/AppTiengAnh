@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.test.R;
 import com.example.test.adapter.CourseAdapter;
 import com.example.test.api.ApiCallback;
+import com.example.test.api.CourseManager;
 import com.example.test.api.LessonManager;
 import com.example.test.model.Course;
 
@@ -25,6 +26,7 @@ public class StudyActivity extends AppCompatActivity {
     private CourseAdapter adapter;
     private List<Course> courseList;
     LessonManager lessonManager = new LessonManager();
+    CourseManager courseManager = new CourseManager(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,7 +62,7 @@ public class StudyActivity extends AppCompatActivity {
     }
     private void fetchLessonsForCourses(List<Integer> courseIds) {
         for (Integer courseId : courseIds) {
-            lessonManager.fetchCourseById(courseId, new ApiCallback<Course>() {
+            courseManager.fetchCourseById(courseId, new ApiCallback<Course>() {
                 @Override
                 public void onSuccess() {
                 }
@@ -79,3 +81,4 @@ public class StudyActivity extends AppCompatActivity {
     }
 
 }
+

@@ -81,6 +81,9 @@
             android:name=".ui.entrance_test.ReviewAnswerActivity"
             android:exported="false" />
         <activity
+            android:name=".ui.CourseInformationActivity"
+            android:exported="true" />
+        <activity
             android:name=".ui.CourseActivity"
             android:exported="true" />
         <activity

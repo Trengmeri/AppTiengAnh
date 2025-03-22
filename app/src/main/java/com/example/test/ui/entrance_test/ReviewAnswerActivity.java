@@ -34,6 +34,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.test.R;
 import com.example.test.api.ApiCallback;
+import com.example.test.api.CourseManager;
 import com.example.test.api.LessonManager;
 import com.example.test.api.QuestionManager;
 import com.example.test.api.ResultManager;
@@ -58,6 +59,7 @@ public class ReviewAnswerActivity extends AppCompatActivity {
     LessonManager lesManager = new LessonManager();
     QuestionManager quesManager = new QuestionManager(this);
     ResultManager resultManager = new ResultManager(this);
+    CourseManager courseManager = new CourseManager(this);
     int lessonId;
     TableLayout tableTestResult;
     @SuppressLint("MissingInflatedId")
@@ -91,7 +93,7 @@ public class ReviewAnswerActivity extends AppCompatActivity {
 //    }
 
     private void fetchCourseData(int courseId) {
-        lesManager.fetchCourseById(courseId, new ApiCallback<Course>() {
+        courseManager.fetchCourseById(courseId, new ApiCallback<Course>() {
             @Override
             public void onSuccess() {
             }

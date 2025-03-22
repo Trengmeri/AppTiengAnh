@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.test.R;
+import com.example.test.api.CourseManager;
 import com.example.test.model.Enrollment;
 import com.example.test.ui.entrance_test.ReviewAnswerActivity;
 import com.example.test.ui.home.HomeActivity;
@@ -44,6 +45,7 @@ public class PointResultCourseActivity extends AppCompatActivity {
     QuestionManager quesManager = new QuestionManager(this);
     LessonManager lesManager = new LessonManager();
     ResultManager resultManager = new ResultManager(this);
+    CourseManager courseManager = new CourseManager(this);
     private Set<Integer> addedResultIds = new HashSet<>();
     private int enrollmentId;
 
@@ -95,7 +97,7 @@ public class PointResultCourseActivity extends AppCompatActivity {
         resultManager.createEnrollment(courseId, new ApiCallback() {
             @Override
             public void onSuccess() {
-                lesManager.fetchCourseById(courseId,new ApiCallback<Course>() {
+                courseManager.fetchCourseById(courseId,new ApiCallback<Course>() {
                     @Override
                     public void onSuccess() {}
 
