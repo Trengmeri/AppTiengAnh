@@ -28,7 +28,7 @@
                             android:layout_height="110dp"
                             android:layout_marginTop="35dp"
                             android:scaleType="centerCrop"
-                            android:background="@drawable/ava_loading1"/>
+                            android:background="@drawable/ava_loading2"/>
 
                     </LinearLayout>
 

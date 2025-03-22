@@ -55,11 +55,9 @@ public class CourseActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         getCourseInfor();
         CourseAdapter adapter = new CourseAdapter(this,listCourse);
-        adapter.notifyDataSetChanged();
         recyclerView.setAdapter(adapter);
 
     }
-
     private void getCourseInfor() {
         courseManager.fetchEnrollmentsByUser(curUserId, true, 1, 4, new ApiCallback<List<Enrollment>>() {
             @Override
@@ -72,7 +70,6 @@ public class CourseActivity extends AppCompatActivity {
                 for (Enrollment enrollment : data) {
                     int courseId = enrollment.getCourseId();
                     courseManager.fetchCourseById(courseId, new ApiCallback<Course>() {
-
                         @Override
                         public void onSuccess() {
 
@@ -80,12 +77,15 @@ public class CourseActivity extends AppCompatActivity {
 
                         @Override
                         public void onSuccess(Course result) {
-                            listCourse.add(result);
+                            runOnUiThread(() -> {
+                                listCourse.add(result);
+                                recyclerView.getAdapter().notifyDataSetChanged(); // Cập nhật UI
+                            });
                         }
 
                         @Override
                         public void onFailure(String errorMessage) {
-
+                            Log.e("API_ERROR", "Lỗi: " + errorMessage);
                         }
                     });
                 }
@@ -97,4 +97,7 @@ public class CourseActivity extends AppCompatActivity {
             }
         });
     }
+
+
+
 }
