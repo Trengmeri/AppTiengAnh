@@ -40,6 +40,7 @@ import com.example.test.api.FlashcardApiCallback;
 import com.example.test.api.FlashcardManager;
 import com.example.test.model.Definition;
 import com.example.test.model.Flashcard;
+import com.example.test.model.FlashcardUtils;
 import com.example.test.model.Meaning;
 import com.example.test.model.Phonetic;
 import com.example.test.model.WordData;
@@ -48,10 +49,12 @@ import com.example.test.response.ApiResponseFlashcardGroup;
 import com.example.test.response.ApiResponseOneFlashcard;
 import com.example.test.response.FlashcardGroupResponse;
 import com.google.android.material.button.MaterialButton;
+import com.google.gson.Gson;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class FlashcardActivity extends AppCompatActivity {
@@ -187,6 +190,13 @@ public class FlashcardActivity extends AppCompatActivity {
             @Override
             public void onSuccess(WordData wordData) {
                 runOnUiThread(() -> {
+                    // Gộp các nghĩa trước khi hiển thị
+                    List<WordData> mergedData = FlashcardUtils.mergeWordData(Collections.singletonList(wordData));
+                    Log.d("DEBUG", "Dữ liệu trước khi merge: " + new Gson().toJson(wordData));
+                    Log.d("DEBUG", "Dữ liệu sau khi merge: " + new Gson().toJson(mergedData));
+
+                    WordData mergedWordData = mergedData.get(0); // Chỉ lấy phần tử đầu tiên vì chỉ có 1 từ
+
                     LayoutInflater inflater = getLayoutInflater();
                     View dialogView = inflater.inflate(R.layout.dialog_add_definition, null);
 
@@ -204,9 +214,9 @@ public class FlashcardActivity extends AppCompatActivity {
 //                    List<AppCompatButton> meaningButtons = new ArrayList<>();
 
                     // Hiển thị phonetics
-                    if (wordData.getPhonetics() != null && !wordData.getPhonetics().isEmpty()) {
+                    if (mergedWordData.getPhonetics() != null && !mergedWordData.getPhonetics().isEmpty()) {
                         phoneticButtons.clear();
-                        for (Phonetic phonetic : wordData.getPhonetics()) {
+                        for (Phonetic phonetic : mergedWordData.getPhonetics()) {
                             AppCompatButton btn = new AppCompatButton(FlashcardActivity.this);
                             btn.setText(phonetic.getText());
                             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
@@ -247,11 +257,14 @@ public class FlashcardActivity extends AppCompatActivity {
                     }
 
                     // Hiển thị Part of Speech
-                    if (wordData.getMeanings() != null) {
+                    if (mergedWordData.getMeanings() != null && !mergedWordData.getMeanings().isEmpty()) {
                         speechButtons.clear();
-                        for (int i = 0; i < wordData.getMeanings().size(); i++) {
-                            Meaning meaning = wordData.getMeanings().get(i);
-                            if (meaning.getPartOfSpeech() != null) {
+                        Log.d("DEBUG", "Số meanings: " + mergedWordData.getMeanings().size());
+                        for (int i = 0; i < mergedWordData.getMeanings().size(); i++) {
+                            Meaning meaning = mergedWordData.getMeanings().get(i);
+                            Log.d("DEBUG", "Thêm nút Part of Speech: " + meaning.getPartOfSpeech());
+                            if (meaning.getPartOfSpeech() != null && !meaning.getPartOfSpeech().trim().isEmpty()) {
+
                                 AppCompatButton btn = new AppCompatButton(FlashcardActivity.this);
                                 btn.setText(meaning.getPartOfSpeech());
                                 LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
@@ -288,8 +301,8 @@ public class FlashcardActivity extends AppCompatActivity {
                         }
 
                         // Hiển thị definitions cho part of speech đầu tiên
-                        if (!wordData.getMeanings().isEmpty()) {
-                            updateDefinitions(definitionContainer, wordData.getMeanings().get(0), dialogView,
+                        if (!mergedWordData.getMeanings().isEmpty()) {
+                            updateDefinitions(definitionContainer, mergedWordData.getMeanings().get(0), dialogView,
                                     phoneticButtons, definitionButtons, speechButtons, btnDone);
                         }
                     }

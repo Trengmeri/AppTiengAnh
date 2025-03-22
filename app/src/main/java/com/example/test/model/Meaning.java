@@ -6,6 +6,9 @@ public class Meaning {
     private String partOfSpeech;
     private List<Definition> definitions;
 
+    public Meaning(String key, List<Definition> value) {
+    }
+
     // Getters and Setters
     public String getPartOfSpeech() {
         return partOfSpeech;
