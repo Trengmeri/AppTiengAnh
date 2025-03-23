@@ -15,6 +15,7 @@ import com.example.test.ui.question_data.GrammarPick1QuestionActivity;
 import com.example.test.ui.question_data.GrammarPickManyActivity;
 import com.example.test.ui.question_data.ListeningChoiceActivity;
 import com.example.test.ui.question_data.ListeningQuestionActivity;
+import com.example.test.ui.question_data.ReadingTextActivity;
 import com.example.test.ui.question_data.RecordQuestionActivity;
 import com.example.test.ui.question_data.WrittingActivity;
 
@@ -101,9 +102,14 @@ public class NevigateQuestion extends AppCompatActivity {
 
         if ("READING".equals(skill)) {
             String quesType = question.getQuesType().trim().toUpperCase();
-            intent = new Intent(this, "MULTIPLE".equals(quesType)
-                    ? GrammarPickManyActivity.class
-                    : GrammarPick1QuestionActivity.class);
+            if ("MULTIPLE".equals(quesType)) {
+                intent = new Intent(this, GrammarPickManyActivity.class);
+            } else if ("TEXT".equals(quesType)) {
+                intent = new Intent(this, ReadingTextActivity.class);
+            } else {
+                intent = new Intent(this, GrammarPick1QuestionActivity.class);
+            }
+
 
     } else if ("LISTENING".equals(skill)) {
             String quesType = question.getQuesType().trim().toUpperCase();

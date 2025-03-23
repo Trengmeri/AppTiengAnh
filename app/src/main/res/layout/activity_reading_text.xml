@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".ui.question_data.GrammarPick1QuestionActivity">
+    tools:context=".ui.question_data.ReadingTextActivity">
 
     <!-- Tiêu đề -->
     <TextView
@@ -68,12 +68,25 @@
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerViewChoices"
+            <LinearLayout
+                android:id="@+id/linearLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="@dimen/dp40"
-                android:layout_gravity="center_horizontal"/>
+                android:layout_marginTop="20dp"
+                android:layout_marginStart="@dimen/dp_16"
+                android:layout_marginEnd="@dimen/dp_16"
+                android:background="@drawable/rounded_corner"
+                android:backgroundTint="#FFDDD0"
+                android:orientation="horizontal"
+                android:padding="16dp">
+
+                <EditText
+                    android:id="@+id/etAnswer"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:ems="30"
+                    android:hint="Answer...."/>
+            </LinearLayout>
 
             <!-- Nút kiểm tra -->
             <Button

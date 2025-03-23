@@ -25,10 +25,10 @@
         android:theme="@style/Theme.Test"
         tools:targetApi="31">
         <activity
-            android:name=".ui.question_data.ListeningChoiceActivity"
+            android:name=".ui.question_data.ReadingTextActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.study.StudyActivity"
+            android:name=".ui.question_data.ListeningChoiceActivity"
             android:exported="false" />
 
         <receiver
@@ -75,13 +75,16 @@
             android:name=".ui.entrance_test.ListeningActivity"
             android:exported="false" />
         <activity
+            android:name=".ui.entrance_test.ListeningPick1Activity"
+            android:exported="false" />
+        <activity
             android:name=".ui.entrance_test.SpeakingActivity"
             android:exported="false" />
         <activity
             android:name=".ui.question_data.PointResultLessonActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.entrance_test.ReviewAnswerActivity"
+            android:name=".ui.question_data.ReviewAnswerActivity"
             android:exported="false" />
         <activity
             android:name=".ui.CourseActivity"

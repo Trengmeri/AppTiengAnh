@@ -70,14 +70,14 @@ public class GrammarPick1QuestionActivity extends AppCompatActivity {
         recyclerViewChoices = findViewById(R.id.recyclerViewChoices);
         int columnCount = 2; // Số cột
         GridLayoutManager layoutManager = new GridLayoutManager(this, columnCount);
-        layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
-            @Override
-            public int getSpanSize(int position) {
-                return 1; // Mỗi button chiếm 1 cột
-            }
-        });
+//        layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+//            @Override
+//            public int getSpanSize(int position) {
+//                return 1; // Mỗi button chiếm 1 cột
+//            }
+//        });
         recyclerViewChoices.setLayoutManager(layoutManager);
-        recyclerViewChoices.setHasFixedSize(true);
+        recyclerViewChoices.setHasFixedSize(false);
         LinearLayout progressBar = findViewById(R.id.progressBar);
         updateProgressBar(progressBar, currentQuestionIndex);
         networkReceiver = new NetworkChangeReceiver();

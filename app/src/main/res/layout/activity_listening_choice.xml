@@ -102,66 +102,12 @@
                 android:textSize="24sp"
                 android:textStyle="bold" />
 
-            <GridLayout
-                android:id="@+id/gridLayout"
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerViewChoices"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="@dimen/dp_16"
-                android:columnCount="2"
-                android:rowCount="2"
-                android:columnOrderPreserved="true"
-                android:layout_marginTop="16dp"
-                android:layout_marginBottom="16dp">
-
-                <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/btnOption1"
-                    style="@style/Text_Button_All"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:padding="8dp"
-                    android:layout_columnWeight="1"
-                    android:layout_margin="25dp"
-                    android:background="@drawable/button_background"
-                    android:text=""
-                    android:textColor="@color/black"/>
-                <!--            android:text="computer" />-->
-
-                <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/btnOption2"
-                    style="@style/Text_Button_All"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_columnWeight="1"
-                    android:layout_margin="25dp"
-                    android:text=""
-                    android:background="@drawable/button_background"
-                    android:textColor="@color/black"/>
-                <!--            android:text="internet" />-->
-
-                <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/btnOption3"
-                    style="@style/Text_Button_All"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_columnWeight="1"
-                    android:layout_margin="25dp"
-                    android:text=""
-                    android:background="@drawable/button_background"
-                    android:textColor="@color/black"/>
-                <!--            android:text="database" />-->
-
-                <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/btnOption4"
-                    style="@style/Text_Button_All"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_columnWeight="1"
-                    android:layout_margin="25dp"
-                    android:text=""
-                    android:background="@drawable/button_background"
-                    android:textColor="@color/black"/>
-                <!--            android:text="operator" />-->
-            </GridLayout>
+                android:layout_margin="@dimen/dp40"
+                android:layout_gravity="center_horizontal"/>
 
             <Button
                 android:id="@+id/btnCheckResult"

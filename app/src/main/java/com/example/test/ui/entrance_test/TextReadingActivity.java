@@ -7,92 +7,81 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.AppCompatButton;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.test.NetworkChangeReceiver;
 import com.example.test.PopupHelper;
 import com.example.test.R;
-import com.example.test.adapter.ChoiceAdapter;
 import com.example.test.api.ApiCallback;
 import com.example.test.api.LessonManager;
 import com.example.test.api.QuestionManager;
 import com.example.test.api.ResultManager;
 import com.example.test.model.Answer;
-import com.example.test.model.Course;
-import com.example.test.model.Enrollment;
-import com.example.test.model.Discussion;
 import com.example.test.model.Lesson;
-import com.example.test.model.MediaFile;
 import com.example.test.model.Question;
 import com.example.test.model.QuestionChoice;
-import com.example.test.model.Result;
 import com.example.test.ui.question_data.GrammarPick1QuestionActivity;
-import com.example.test.ui.question_data.PointResultCourseActivity;
+import com.example.test.ui.question_data.GrammarPickManyActivity;
+import com.example.test.ui.question_data.PointResultLessonActivity;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
-public class Pick1Activity extends AppCompatActivity {
+public class TextReadingActivity extends AppCompatActivity {
     List<String> correctAnswers = new ArrayList<>();
     private List<String> userAnswers = new ArrayList<>();
-    private int currentStep = 0; // Bước hiện tại (bắt đầu từ 0)
-    private  String questype;
+    private int currentStep =0;
     private int totalSteps; // Tổng số bước trong thanh tiến trình
-    private AppCompatButton selectedAnswer = null;
+    private List<Integer> questionIds;
     private Button btnCheckAnswer;
     QuestionManager quesManager = new QuestionManager(this);
     LessonManager lesManager = new LessonManager();
     ResultManager resultManager = new ResultManager(this);
     TextView tvContent;
+    private EditText etAnswer;
+    private int lessonID,courseID;
     NetworkChangeReceiver networkReceiver;
-    private List<Integer> questionIds;
-    private int answerIds;// Danh sách questionIds
-    private RecyclerView recyclerViewChoices;
+    private int answerIds;
+    private  String questype;
+    private List<Question> questions; // Danh sách câu hỏi
+    private int currentQuestionIndex; // Vị trí câu hỏi hiện tại
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_grammar_question);
+        setContentView(R.layout.activity_reading_text);
 
+        // Ánh xạ các thành phần UI
         btnCheckAnswer = findViewById(R.id.btnCheckAnswer);
         tvContent = findViewById(R.id.tvContent);
+        etAnswer = findViewById(R.id.etAnswer);
         LinearLayout progressBar = findViewById(R.id.progressBar);
-        recyclerViewChoices = findViewById(R.id.recyclerViewChoices);
-        int columnCount = 2; // Số cột
-        GridLayoutManager layoutManager = new GridLayoutManager(this, columnCount);
-        layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
-            @Override
-            public int getSpanSize(int position) {
-                return 1; // Mỗi button chiếm 1 cột
-            }
-        });
-        recyclerViewChoices.setLayoutManager(layoutManager);
-        recyclerViewChoices.setHasFixedSize(true);
-        updateProgressBar(progressBar, currentStep);
+        updateProgressBar(progressBar, currentQuestionIndex);
         networkReceiver = new NetworkChangeReceiver();
 
         // Lấy lessonId từ intent hoặc một nguồn khác
-        int lessonId = 2;
+        int lessonId = 1;
         fetchLessonAndQuestions(lessonId); // Gọi phương thức để lấy bài học và câu hỏi
 
         btnCheckAnswer.setOnClickListener(v -> {
+            String userAnswer = etAnswer.getText().toString().trim();
+            userAnswers.clear(); // Xóa các câu trả lời trước đó
+            userAnswers.add(userAnswer); // Thêm câu trả lời mới vào danh sách
+            Log.d("TextReadingActivity", "User Answers: " + userAnswers);
             if (userAnswers.isEmpty()) {
-                Toast.makeText(Pick1Activity.this, "Vui lòng trả lời câu hỏi!", Toast.LENGTH_SHORT)
-                        .show();
+                Toast.makeText(TextReadingActivity.this, "Vui lòng trả lời câu hỏi!", Toast.LENGTH_SHORT).show();
             } else {
                 StringBuilder sb = new StringBuilder();
                 for (int i = 0; i < userAnswers.size(); i++) {
@@ -103,23 +92,22 @@ public class Pick1Activity extends AppCompatActivity {
                 }
                 String answerContent = sb.toString();
                 // Lưu câu trả lời của người dùng
-                quesManager.saveUserAnswer(questionIds.get(currentStep), answerContent, 0,null, new ApiCallback() {
+                quesManager.saveUserAnswer(questionIds.get(currentStep), answerContent, 0, null, new ApiCallback() {
 
                     @Override
                     public void onSuccess() {
-                        Log.e("Pick1Activity", "Câu trả lời đã được lưu: " + answerContent);
+                        Log.e("TextReadingActivity", "Câu trả lời đã được lưu: " + answerContent);
                         // Hiển thị popup
                         runOnUiThread(() -> {
-                            PopupHelper.showResultPopup(Pick1Activity.this, questype, userAnswers, correctAnswers, null, null, null, () -> {
-
+                            PopupHelper.showResultPopup(TextReadingActivity.this, questype, userAnswers, correctAnswers, null, null, null, () -> {
                                 currentStep++; // Tăng currentStep
 
                                 // Kiểm tra nếu hoàn thành
                                 if (currentStep < totalSteps) {
                                     fetchQuestion(questionIds.get(currentStep)); // Lấy câu hỏi tiếp theo
-                                    updateProgressBar(progressBar, currentStep); // Cập nhật thanh tiến trình
+                                    updateProgressBar(progressBar, currentStep); // Cập nhật thanh tiến trình// Cập nhật thanh tiến trình
                                 } else {
-                                    Intent intent = new Intent(Pick1Activity.this, PointResultCourseActivity.class);
+                                    Intent intent = new Intent(TextReadingActivity.this, Pick1Activity.class);
                                     startActivity(intent);
                                     finish();
                                 }
@@ -130,32 +118,33 @@ public class Pick1Activity extends AppCompatActivity {
                             public void onSuccess() {
                             }
 
+
                             @Override
                             public void onSuccess(Answer answer) {
                                 if (answer != null) {
                                     answerIds = answer.getId();
-                                    Log.e("Pick1Activity", "Answer ID từ API: " + answer.getId());
+                                    Log.e("TextReadingActivity", "Answer ID từ API: " + answer.getId());
                                     if (answerIds != 0) {
                                         QuestionManager.gradeAnswer(answerIds, new Callback() {
                                             @Override
                                             public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                                                Log.e("Pick1Activity", "Lỗi khi chấm điểm: " + e.getMessage());
+                                                Log.e("TextReadingActivity", "Lỗi khi chấm điểm: " + e.getMessage());
                                             }
 
                                             @Override
                                             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                                                 if (response.isSuccessful()) {
-                                                    Log.e("Pick1Activity", "Chấm điểm thành công cho Answer ID: " + answerIds +"Diem: "+ answer.getPointAchieved());
+                                                    Log.e("TextReadingActivity", "Chấm điểm thành công cho Answer ID: " + answerIds);
                                                 } else {
-                                                    Log.e("Pick1Activity", "Lỗi từ server: " + response.code());
+                                                    Log.e("TextReadingActivity", "Lỗi từ server: " + response.code());
                                                 }
                                             }
                                         });
                                     } else {
-                                        Log.e("Pick1Activity", "Bài học không có câu trl.");
+                                        Log.e("TextReadingActivity", "Bài học không có câu trl.");
                                     }
                                 } else {
-                                    Log.e("Pick1Activity", "Không nhận được câu trả lời từ API.");
+                                    Log.e("TextReadingActivity", "Không nhận được câu trả lời từ API.");
                                 }
                             }
 
@@ -167,17 +156,18 @@ public class Pick1Activity extends AppCompatActivity {
                     }
 
                     @Override
-                    public void onSuccess(Object result) {}
+                    public void onSuccess(Object result) {
+
+                    }
+
                     @Override
                     public void onFailure(String errorMessage) {
-                        Log.e("Pick1Activity", errorMessage);
+
                     }
                 });
-
             }
         });
     }
-
     private void fetchLessonAndQuestions(int lessonId) {
         lesManager.fetchLessonById(lessonId, new ApiCallback<Lesson>() {
             @Override
@@ -187,7 +177,7 @@ public class Pick1Activity extends AppCompatActivity {
                     questionIds = lesson.getQuestionIds(); // Lưu trữ danh sách questionIds
                     totalSteps = questionIds.size(); // Cập nhật tổng số bước
                     if (questionIds != null && !questionIds.isEmpty()) {
-                        fetchQuestion(questionIds.get(currentStep)); // Lấy câu hỏi đầu tiên
+                        fetchQuestion(questionIds.get(currentStep));
                     } else {
                         Log.e("Pick1Activity", "Bài học không có câu hỏi.");
                     }
@@ -219,27 +209,16 @@ public class Pick1Activity extends AppCompatActivity {
                     // Lấy nội dung câu hỏi
                     questype = question.getQuesType();
                     String questionContent = question.getQuesContent();
-                    Log.d("Pick1Activity", "Câu hỏi: " + questionContent);
-
+                    tvContent.setText(questionContent);
                     List<QuestionChoice> choices = question.getQuestionChoices();
-                    if (choices != null && !choices.isEmpty()) {
-                        runOnUiThread(() -> {
-                            tvContent.setText(questionContent);
-                            userAnswers.clear();
-                            ChoiceAdapter choiceAdapter = new ChoiceAdapter(Pick1Activity.this, choices, userAnswers);
-                            recyclerViewChoices.setAdapter(choiceAdapter);
-                            correctAnswers.clear();
-                            for (QuestionChoice choice : choices) {
-                                if (choice.isChoiceKey()) {
-                                    correctAnswers.add(choice.getChoiceContent());
-                                }
-                            }
-                        });
-                    } else {
-                        Log.e("Pick1Activity", "Câu hỏi không có lựa chọn.");
+                    correctAnswers.clear();
+                    for (QuestionChoice choice : choices) {
+                        if (choice.isChoiceKey()) {
+                            correctAnswers.add(choice.getChoiceContent());
+                        }
                     }
                 } else {
-                    Log.e("Pick1Activity", "Câu hỏi trả về là null.");
+                    Log.e("TextReadingActivity", "Câu hỏi trả về là null.");
                 }
             }
 

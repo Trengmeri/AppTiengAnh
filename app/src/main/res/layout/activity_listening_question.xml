@@ -119,8 +119,7 @@
             android:layout_width="match_parent"
             android:layout_height="48dp"
             android:ems="30"
-            android:hint="Answer...."
-            android:inputType="text"/>
+            android:hint="Answer...."/>
     </LinearLayout>
 
     <Button

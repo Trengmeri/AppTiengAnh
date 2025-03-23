@@ -15,6 +15,8 @@ import android.widget.TextView;
 import org.json.JSONObject;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class PopupHelper {
 
@@ -43,14 +45,22 @@ public class PopupHelper {
         Button btnNext = popupView.findViewById(R.id.btnNextQuestion);
         Button btnview = popupView.findViewById(R.id.btnview);
 
-        if ("MULTIPLE".equals(questType) || "CHOICE".equals(questType) || "LISTENING".equals(questType)) {
-            if (userAnswers.equals(correctAnswers)) {
+        if ("MULTIPLE".equals(questType) || "CHOICE".equals(questType) || "TEXT".equals(questType)) {
+            Set<String> userSet = userAnswers.stream()
+                    .map(String::toLowerCase)
+                    .collect(Collectors.toSet());
+
+            Set<String> correctSet = correctAnswers.stream()
+                    .map(String::toLowerCase)
+                    .collect(Collectors.toSet());
+
+            if (userSet.equals(correctSet)) {
                 tvMessage.setText(String.format("%s\n%s", activity.getString(R.string.correct), activity.getString(R.string.ANS)));
                 tvMessage.setTextColor(activity.getResources().getColor(android.R.color.holo_green_dark));
                 tvDetail.setText(String.join(", ", correctAnswers));
                 popupView.setBackgroundResource(R.drawable.popup_background_correct);
                 btnNext.setBackgroundColor(activity.getResources().getColor(android.R.color.holo_green_dark));
-            } else {
+            }else {
                 tvMessage.setText(String.format("%s\n%s", activity.getString(R.string.oops), activity.getString(R.string.COANS)));
                 tvMessage.setTextColor(activity.getResources().getColor(android.R.color.holo_red_dark));
                 tvDetail.setText(String.join(", ", correctAnswers));

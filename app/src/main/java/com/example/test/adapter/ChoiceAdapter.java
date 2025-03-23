@@ -9,6 +9,7 @@ import android.widget.GridLayout;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatButton;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.test.R;
@@ -41,30 +42,26 @@ public class ChoiceAdapter extends RecyclerView.Adapter<ChoiceAdapter.ChoiceView
         String answer = choice.getChoiceContent();
         holder.choiceButton.setText(answer);
 
-        // Đảm bảo bố cục hiển thị đúng
-        ViewGroup.LayoutParams params = holder.choiceButton.getLayoutParams();
-        if (params instanceof ViewGroup.MarginLayoutParams) {
-            ((ViewGroup.MarginLayoutParams) params).setMargins(16, 16, 16, 16);
-        }
-        holder.choiceButton.setLayoutParams(params);
-
-        // Kiểm tra nếu lựa chọn đã được chọn trước đó
-        if (userAnswers.contains(answer)) {
+        // Đặt màu nền dựa trên trạng thái được chọn
+        if (!userAnswers.isEmpty() && userAnswers.get(0).equals(answer)) {
             holder.choiceButton.setBackgroundResource(R.color.colorPressed);
         } else {
             holder.choiceButton.setBackgroundResource(R.color.colorDefault);
         }
 
         holder.choiceButton.setOnClickListener(v -> {
-            if (userAnswers.contains(answer)) {
-                userAnswers.remove(answer);
-                holder.choiceButton.setBackgroundResource(R.color.colorDefault);
+            // Nếu lựa chọn này đã được chọn, thì bỏ chọn nó
+            if (!userAnswers.isEmpty() && userAnswers.get(0).equals(answer)) {
+                userAnswers.clear();
             } else {
+                // Chỉ giữ lại một lựa chọn duy nhất
+                userAnswers.clear();
                 userAnswers.add(answer);
-                holder.choiceButton.setBackgroundResource(R.color.colorPressed);
             }
+            notifyDataSetChanged(); // Cập nhật lại giao diện RecyclerView
         });
     }
+
 
     @Override
     public int getItemCount() {

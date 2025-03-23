@@ -121,7 +121,7 @@ public class ListeningActivity extends AppCompatActivity {
                                     fetchQuestion(questionIds.get(currentStep)); // Lấy câu hỏi tiếp theo
                                     updateProgressBar(progressBar, currentStep); // Cập nhật thanh tiến trình// Cập nhật thanh tiến trình
                                 } else {
-                                    Intent intent = new Intent(ListeningActivity.this, WritingActivity.class);
+                                    Intent intent = new Intent(ListeningActivity.this, ListeningPick1Activity.class);
                                     startActivity(intent);
                                     finish();
                                 }
@@ -222,29 +222,26 @@ public class ListeningActivity extends AppCompatActivity {
             @Override
             public void onSuccess(Question question) {
                 if (question != null) {
-                    // Lấy nội dung câu hỏi
                     questype = question.getQuesType();
-                    String questionContent = question.getQuesContent();
-                    List<QuestionChoice> choices = question.getQuestionChoices();
-                    correctAnswers.clear();
-                    for (QuestionChoice choice : choices) {
-                        if (choice.isChoiceKey()) {
-                            correctAnswers.add(choice.getChoiceContent());
+                    runOnUiThread(() -> {
+                        tvQuestion.setText(question.getQuesContent());
+                        List<QuestionChoice> choices = question.getQuestionChoices();
+                        correctAnswers.clear();
+                        for (QuestionChoice choice : choices) {
+                            if (choice.isChoiceKey()) {
+                                correctAnswers.add(choice.getChoiceContent());
+                            }
                         }
-                    }
+                    });
                 } else {
-                    Log.e("ListeningActivity", "Câu hỏi trả về là null.");
+                    Log.e("ListeningQuestionActivity", "Câu hỏi trả về là null.");
                 }
             }
 
-
-
             @Override
             public void onFailure(String errorMessage) {
-                Log.e("Pick1Activity", errorMessage);
+                Log.e("GrammarPick1QuestionActivity", errorMessage);
             }
-
-
 
             @Override
             public void onSuccess() {}
