@@ -28,13 +28,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class StudyFragment extends Fragment {
-    private RecyclerView recyclerView1, recyclerView2;
+    private RecyclerView recyclerView;
     private CourseAdapter adapter;
     private List<Course> courseList;
-    private LessonManager lessonManager;
-    AppCompatButton btnAbout, btnLesson;
-    LinearLayout contentAbout, contentLes;
-    String prostatus;
+    private LessonManager lessonManager = new LessonManager();
+    AppCompatButton btnMyCourse, btnSuggestCourse;
+    private String prostatus = "True"; // Mac dinh ban dau cho xem khoa hoc cua toi
 
     public StudyFragment() {
     }
@@ -50,36 +49,31 @@ public class StudyFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        recyclerView1 = view.findViewById(R.id.recyclerView1);
-        recyclerView1.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerView = view.findViewById(R.id.recyclerView);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        btnAbout= view.findViewById(R.id.btnAbout);
-        btnLesson= view.findViewById(R.id.btnLesson);
-        contentAbout = view.findViewById(R.id.contentAbout);
-        contentLes = view.findViewById(R.id.contentLes);
-        prostatus = "True";
+        btnMyCourse= view.findViewById(R.id.btnMyCourse);
+        btnSuggestCourse= view.findViewById(R.id.btnSuggestCourse);
 
-        btnAbout.setOnClickListener(v -> {
-            btnAbout.setBackground(ContextCompat.getDrawable(requireContext(), R.drawable.bg_about));
-            btnLesson.setBackground(ContextCompat.getDrawable(requireContext(), R.drawable.bg_lesson));
-            contentAbout.setVisibility(View.VISIBLE);
-            contentLes.setVisibility(View.GONE);
+        // cau hinh recyclerView
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        courseList = new ArrayList<>();
+        adapter = new CourseAdapter(getContext(), courseList);
+        recyclerView.setAdapter(adapter);
+
+        btnMyCourse.setOnClickListener(v -> {
+            btnMyCourse.setBackground(ContextCompat.getDrawable(requireContext(), R.drawable.bg_about));
+            btnMyCourse.setBackground(ContextCompat.getDrawable(requireContext(), R.drawable.bg_lesson));
             prostatus = "True";
         });
 
-        btnLesson.setOnClickListener(v -> {
-            btnLesson.setBackground(ContextCompat.getDrawable(requireContext(), R.drawable.bg_about));
-            btnAbout.setBackground(ContextCompat.getDrawable(requireContext(), R.drawable.bg_lesson));
-            contentAbout.setVisibility(View.GONE);
-            contentLes.setVisibility(View.VISIBLE);
+        btnSuggestCourse.setOnClickListener(v -> {
+            btnSuggestCourse.setBackground(ContextCompat.getDrawable(requireContext(), R.drawable.bg_about));
+            btnSuggestCourse.setBackground(ContextCompat.getDrawable(requireContext(), R.drawable.bg_lesson));
             prostatus = "False";
         });
 
-        courseList = new ArrayList<>();
-        adapter = new CourseAdapter(getContext(), courseList);
-        recyclerView1.setAdapter(adapter);
 
-        lessonManager = new LessonManager();
         fetchCourses();
     }
     private void fetchCourses() {

@@ -19,8 +19,26 @@
         android:textStyle="bold"
         android:layout_marginTop="20dp"
         android:layout_gravity="center"/>
+
+    <ImageView
+        android:id="@+id/imgLessonMaterial"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_marginTop="16dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/lesson_placeholder"/> <!-- Ảnh mặc định -->
+    <Button
+        android:id="@+id/btnToggleImage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_gravity="center"
+        android:text="Ẩn ảnh"/>
+
+
     <LinearLayout
         android:id="@+id/progressBar"
+        android:layout_marginTop="16dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"

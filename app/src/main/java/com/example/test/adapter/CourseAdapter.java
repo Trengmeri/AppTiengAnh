@@ -58,9 +58,10 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseView
         Course course = courseList.get(position);
         holder.tvCourseTitle.setText(course.getName());
         holder.tvCourseDescription.setText(course.getIntro());
-
-        // Xóa tất cả lesson trước khi thêm mới
-        holder.lessonContainer.removeAllViews(); // Sắp xếp lesson theo thứ tự tăng dần
+//        if()
+//
+//        // Xóa tất cả lesson trước khi thêm mới
+//        holder.lessonContainer.removeAllViews(); // Sắp xếp lesson theo thứ tự tăng dần
 
 
         // Thêm từng Lesson ID vào layout

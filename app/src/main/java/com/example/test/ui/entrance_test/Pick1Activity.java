@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -54,6 +55,7 @@ public class Pick1Activity extends AppCompatActivity {
     QuestionManager quesManager = new QuestionManager(this);
     LessonManager lesManager = new LessonManager();
     ResultManager resultManager = new ResultManager(this);
+    private boolean isImageVisible = true; // Trạng thái ban đầu: ảnh hiển thị
     TextView tvContent;
     NetworkChangeReceiver networkReceiver;
     private List<Integer> questionIds;
@@ -75,6 +77,7 @@ public class Pick1Activity extends AppCompatActivity {
         setupAnswerClickListeners();
         updateProgressBar(progressBar, currentStep);
         networkReceiver = new NetworkChangeReceiver();
+        anHienAnh();
 
         // Lấy lessonId từ intent hoặc một nguồn khác
         int lessonId = 1;
@@ -169,6 +172,20 @@ public class Pick1Activity extends AppCompatActivity {
             }
         });
     }
+    private void anHienAnh() {
+        ImageView imgLessonMaterial = findViewById(R.id.imgLessonMaterial);
+        Button btnToggleImage = findViewById(R.id.btnToggleImage);
+        btnToggleImage.setOnClickListener(v -> {
+            if (isImageVisible) {
+                imgLessonMaterial.setVisibility(View.GONE); // Ẩn ảnh
+                btnToggleImage.setText("Hiện ảnh");
+            } else {
+                imgLessonMaterial.setVisibility(View.VISIBLE); // Hiện ảnh
+                btnToggleImage.setText("Ẩn ảnh");
+            }
+            isImageVisible = !isImageVisible; // Đảo trạng thái
+        });
+    }
 
     private void fetchLessonAndQuestions(int lessonId) {
         lesManager.fetchLessonById(lessonId, new ApiCallback<Lesson>() {
@@ -224,16 +241,25 @@ public class Pick1Activity extends AppCompatActivity {
                         // Cập nhật giao diện người dùng
                         runOnUiThread(() -> {
                             tvContent.setText(questionContent);
-                            btnAnswer1.setText(choices.get(0).getChoiceContent());
-                            btnAnswer2.setText(choices.get(1).getChoiceContent());
-                            btnAnswer3.setText(choices.get(2).getChoiceContent());
-                            btnAnswer4.setText(choices.get(3).getChoiceContent());
+
+                            if (choices.size() > 0) btnAnswer1.setText(choices.get(0).getChoiceContent());
+                            else btnAnswer1.setVisibility(View.GONE);
+
+                            if (choices.size() > 1) btnAnswer2.setText(choices.get(1).getChoiceContent());
+                            else btnAnswer2.setVisibility(View.GONE);
+
+                            if (choices.size() > 2) btnAnswer3.setText(choices.get(2).getChoiceContent());
+                            else btnAnswer3.setVisibility(View.GONE);
+
+                            if (choices.size() > 3) btnAnswer4.setText(choices.get(3).getChoiceContent());
+                            else btnAnswer4.setVisibility(View.GONE);
 
                             correctAnswers = choices.stream()
-                                    .filter(QuestionChoice::isChoiceKey) // Lọc ra các đáp án đúng
-                                    .map(QuestionChoice::getChoiceContent) // Chuyển đổi thành nội dung đáp án
+                                    .filter(QuestionChoice::isChoiceKey)
+                                    .map(QuestionChoice::getChoiceContent)
                                     .collect(Collectors.toList());
                         });
+
                     } else {
                         Log.e("Pick1Activity", "Câu hỏi không có lựa chọn.");
                     }
