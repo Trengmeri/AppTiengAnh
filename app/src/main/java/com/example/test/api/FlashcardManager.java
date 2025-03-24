@@ -467,7 +467,98 @@ public class FlashcardManager extends BaseApiManager {
         });
     }
 
+    public void markFlashcardAsLearned(int flashcardId, FlashcardApiCallback callback) {
+        Log.d("FlashcardManager", "Starting API call to mark flashcard as learned. ID: " + flashcardId);
 
+        String url = BASE_URL + "/api/v1/flashcards/" + flashcardId + "/learned";
+        Log.d("FlashcardManager", "API URL: " + url);
+
+        // Dữ liệu gửi lên (nếu API yêu cầu dữ liệu)
+//        RequestBody requestBody = RequestBody.create(
+//                "{\"status\":\"learned\"}",
+//                MediaType.parse("application/json")
+//        );
+
+        Request request = new Request.Builder()
+                .url(url)
+                .put(RequestBody.create(new byte[0], null))
+                .addHeader("Content-Type", "application/json")
+                .addHeader("Authorization", "Bearer YOUR_ACCESS_TOKEN") // Thay YOUR_ACCESS_TOKEN nếu cần
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.e("FlashcardManager", "API call failed", e);
+                callback.onFailure(e.getMessage());
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                Log.d("FlashcardManager", "Received API response. Code: " + response.code());
+
+                if (!response.isSuccessful()) {
+                    Log.e("FlashcardManager", "API error response: " + response.code());
+                    callback.onFailure("Server returned " + response.code());
+                    return;
+                }
+
+                try {
+                    String jsonData = response.body().string();
+                    Log.d("FlashcardManager", "API response body: " + jsonData);
+
+                    Gson gson = new Gson();
+                    ApiResponseOneFlashcard apiResponse = gson.fromJson(jsonData, ApiResponseOneFlashcard.class);
+
+                    if (apiResponse != null && apiResponse.getData() != null) {
+                        Log.d("FlashcardManager", "Successfully updated flashcard as learned");
+                        callback.onSuccess(apiResponse);
+                    } else {
+                        Log.e("FlashcardManager", "API response parsing error: response or data is null");
+                        callback.onFailure("Invalid response format");
+                    }
+                } catch (Exception e) {
+                    Log.e("FlashcardManager", "Error parsing API response", e);
+                    callback.onFailure("Error parsing response: " + e.getMessage());
+                }
+            }
+        });
+    }
+    public void markFlashcardAsUnlearned(int flashcardId, FlashcardApiCallback callback) {
+        Log.d("FlashcardManager", "Starting API call to mark flashcard as unlearned. ID: " + flashcardId);
+
+        String url = BASE_URL + "/api/v1/flashcards/" + flashcardId + "/unlearned";
+        Log.d("FlashcardManager", "API URL: " + url);
+
+        Request request = new Request.Builder()
+                .url(url)
+                .put(RequestBody.create(new byte[0], null)) // Gửi request PUT mà không có body
+                .addHeader("Authorization", "Bearer YOUR_ACCESS_TOKEN") // Thay YOUR_ACCESS_TOKEN nếu cần
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.e("FlashcardManager", "API call failed", e);
+                callback.onFailure(e.getMessage());
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                Log.d("FlashcardManager", "Received API response. Code: " + response.code());
+
+                if (!response.isSuccessful()) {
+                    Log.e("FlashcardManager", "API error response: " + response.code());
+                    callback.onFailure("Server returned " + response.code());
+                    return;
+                }
+
+                String responseData = response.body() != null ? response.body().string() : "Success";
+                Log.d("FlashcardManager", "API response body: " + responseData);
+                callback.onSuccess(responseData);
+            }
+        });
+    }
     // Phương thức phân tích JSON
     private String parseJson(String json) {
         try {

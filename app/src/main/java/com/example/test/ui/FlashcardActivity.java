@@ -345,18 +345,28 @@ public class FlashcardActivity extends AppCompatActivity {
                                 Log.d("GroupID:", "Group ID duoc goi :"+ groupId);
                                 //  Gọi API để thêm flashcard vào nhóm
                                 flashcardManager.addFlashcardToGroup(Integer.parseInt(flashcardId), groupId, new AddFlashCardApiCallback<String>() {
+                                    @SuppressLint("NotifyDataSetChanged")
                                     @Override
                                     public void onSuccess(String result) {
                                         runOnUiThread(() -> {
                                             Log.d("DEBUG", "Flashcard added to group");
                                             // Cập nhật UI
                                             Flashcard newFlashcard = new Flashcard(Integer.parseInt(flashcardId), wordflash, definitionIndices, partOfSpeechIndex);
+//                                            flashcards.add(0,newFlashcard);
+//                                            flashcardAdapter.notifyDataSetChanged();
+//                                            //flashcardAdapter.notifyItemInserted(0);
+//                                            recyclerViewFlashcards.scrollToPosition(0);
                                             flashcards.add(0, newFlashcard);
-                                            flashcardAdapter.setFlashcards(flashcards); // Nếu adapter có phương thức này
                                             flashcardAdapter.notifyItemInserted(0);
+                                            flashcardAdapter.notifyItemRangeChanged(0, flashcards.size()); // Cập nhật lại tất cả item
                                             recyclerViewFlashcards.scrollToPosition(0);
+
                                             Toast.makeText(FlashcardActivity.this, "Thêm flashcard thành công!", Toast.LENGTH_SHORT).show();
-                                            dialog.dismiss();
+                                            if (!isFinishing() && dialog != null && dialog.isShowing()) {
+                                                dialog.dismiss();
+                                            }
+
+
                                         });
                                     }
 

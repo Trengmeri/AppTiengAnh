@@ -1,5 +1,6 @@
 package com.example.test.adapter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
@@ -26,6 +27,7 @@ import com.example.test.ui.FlashcardActivity;
 import com.example.test.ui.FlashcardInformationActivity;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class FlashcardAdapter extends RecyclerView.Adapter<FlashcardAdapter.FlashcardViewHolder> {
@@ -42,12 +44,20 @@ public class FlashcardAdapter extends RecyclerView.Adapter<FlashcardAdapter.Flas
         return new FlashcardViewHolder(view);
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(@NonNull FlashcardViewHolder holder, int position) {
         Flashcard flashcard = flashcards.get(position);
         holder.wordTextView.setText(flashcard.getWord());
         String lastRv= flashcard.getLastReviewed();
-        holder.tvLastReviewed.setText("Last reviewed: "+flashcard.timeAgo(lastRv));
+        //holder.tvLastReviewed.setText("Last reviewed: "+flashcard.timeAgo(lastRv));
+        String timeAgo = flashcard.timeAgo(lastRv);
+        if (timeAgo == null || timeAgo.equals("Lỗi thời gian")) {
+            holder.tvLastReviewed.setText("Không có thời gian");
+        } else {
+            holder.tvLastReviewed.setText("Last reviewed: "+ timeAgo);
+        }
+
         if (holder.iconRemove == null) {
             Log.e("FlashcardAdapter", "iconRemove is null at position " + position);
         } else {
@@ -56,8 +66,11 @@ public class FlashcardAdapter extends RecyclerView.Adapter<FlashcardAdapter.Flas
 
         // Thêm sự kiện click cho item flashcard
         holder.itemView.setOnClickListener(v -> {
+            int selectedIndex = holder.getAdapterPosition();
             Intent intent = new Intent(context, FlashcardInformationActivity.class);
+            intent.putParcelableArrayListExtra("FLASHCARD_LIST", new ArrayList<>(flashcards)); // Gửi danh sách flashcards
             intent.putExtra("FLASHCARD_ID", flashcard.getId()); // Gửi ID flashcard đến FlashcardInformationActivity
+            intent.putExtra("FLASHCARD_INDEX", selectedIndex);
             context.startActivity(intent); // Khởi động activity thông tin flashcard
         });
         // Sự kiện click vào iconRemove để hiển thị dialog xác nhận

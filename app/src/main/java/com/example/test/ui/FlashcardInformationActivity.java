@@ -6,6 +6,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.widget.FrameLayout;
@@ -31,6 +33,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 import com.example.test.R;
@@ -59,6 +62,10 @@ public class FlashcardInformationActivity extends AppCompatActivity {
     private int countGreen = 0; // Đếm số lần vuốt trái
     private float x1, x2;
     private static final int SWIPE_THRESHOLD = 150; // Ngưỡng vuốt tối thiểu
+    private List<Flashcard> flashcardList;
+    private Flashcard selectedFlashcard;
+    private int flashcardIndex ; // Bắt đầu từ flashcard đầu tiên
+    FlashcardManager flashcardManager = new FlashcardManager();
 
     @SuppressLint({"ResourceType", "MissingInflatedId", "ClickableViewAccessibility"})
     @Override
@@ -75,6 +82,10 @@ public class FlashcardInformationActivity extends AppCompatActivity {
         setupAnimations();
         setupClickListeners();
         // Lấy ID flashcard từ Intent
+        // Nhận danh sách flashcards từ Intent
+        flashcardList = getIntent().getParcelableArrayListExtra("FLASHCARD_LIST");
+        // Nhận chỉ mục flashcard từ Intent, mặc định là 0 nếu không có
+        flashcardIndex = getIntent().getIntExtra("FLASHCARD_INDEX", 0);
         int flashcardId = getIntent().getIntExtra("FLASHCARD_ID", -1);
         if (flashcardId != -1) {
             Log.d("FlashcardInfo", "Starting to fetch flashcard with ID: " + flashcardId);
@@ -83,6 +94,7 @@ public class FlashcardInformationActivity extends AppCompatActivity {
             Log.e("FlashcardInfo", "Invalid flashcard ID");
             Toast.makeText(this, "Không tìm thấy flashcard", Toast.LENGTH_SHORT).show();
         }
+
         flashcardContainer.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -96,16 +108,80 @@ public class FlashcardInformationActivity extends AppCompatActivity {
                         float deltaX = x2 - x1;
 
                         if (Math.abs(deltaX) > SWIPE_THRESHOLD) { // Kiểm tra khoảng cách vuốt
+                            //if (selectedFlashcard == null) return false;
+                           // int flashcardId = selectedFlashcard.getId();
                             if (deltaX > 0) {
                                 // Vuốt sang phải
-                                animateSwipe(flashcardContainer, 1000, true);
+                                animateSwipe(flashcardContainer, 600, true);
                                 countGreen++;
                                 txtNumGreen.setText(String.valueOf(countGreen));
+//                                flashcardManager.markFlashcardAsLearned(flashcardId, new FlashcardApiCallback() {
+//                                    @Override
+//                                    public void onSuccess(Object response) {
+//                                        Log.d("FlashcardSwipe", "Marked as learned successfull. " );
+//                                    }
+//
+//                                    @Override
+//                                    public void onSuccess(ApiResponseFlashcardGroup response) {
+//
+//                                    }
+//
+//                                    @Override
+//                                    public void onSuccess(FlashcardGroupResponse response) {
+//
+//                                    }
+//
+//                                    @Override
+//                                    public void onSuccess(ApiResponseFlashcard response) {
+//
+//                                    }
+//
+//                                    @Override
+//                                    public void onSuccess(ApiResponseOneFlashcard response) {
+//
+//                                    }
+//
+//                                    @Override
+//                                    public void onFailure(String errorMessage) {
+//                                        Log.e("FlashcardSwipe", "Failed to mark as learned: " + errorMessage);
+//                                    }
+//                                });
                             } else {
                                 // Vuốt sang trái
-                                animateSwipe(flashcardContainer, 1000, false);
+                                animateSwipe(flashcardContainer, 400, false);
                                 countRed++;
                                 txtNumRed.setText(String.valueOf(countRed));
+//                                flashcardManager.markFlashcardAsUnlearned(flashcardId, new FlashcardApiCallback() {
+//                                    @Override
+//                                    public void onSuccess(Object response) {
+//                                        Log.d("FlashcardSwipe", "Marked as unlearned succesfull ");
+//                                    }
+//
+//                                    @Override
+//                                    public void onSuccess(ApiResponseFlashcardGroup response) {
+//
+//                                    }
+//
+//                                    @Override
+//                                    public void onSuccess(FlashcardGroupResponse response) {
+//
+//                                    }
+//
+//                                    @Override
+//                                    public void onSuccess(ApiResponseFlashcard response) {
+//
+//                                    }
+//
+//                                    @Override
+//                                    public void onSuccess(ApiResponseOneFlashcard response) {
+//
+//                                    }
+//
+//                                    @Override
+//                                    public void onFailure(String errorMessage) {
+//                                        Log.e("FlashcardSwipe", "Failed to mark as unlearned: " + errorMessage);
+//                                    }
+//                                });
                             }
                         }
                         return true;
@@ -150,7 +226,7 @@ public class FlashcardInformationActivity extends AppCompatActivity {
     private void fetchFlashcardData(int flashcardId) {
         Log.d("FlashcardInfo", "Fetching flashcard with ID: " + flashcardId);
 
-        FlashcardManager flashcardManager = new FlashcardManager();
+
         flashcardManager.fetchFlashcardById(flashcardId, new FlashcardApiCallback() {
             @Override
             public void onSuccess(ApiResponseOneFlashcard response) {
@@ -371,15 +447,18 @@ public class FlashcardInformationActivity extends AppCompatActivity {
             mediaPlayer = null;
         }
     }
-    private void animateSwipe(View view, int duration, boolean isRight) {
-        float translationX = isRight ? 800f : -800f;
-
+    private void animateSwipe(View view, int duration, boolean toRight) {
+        float translationX = toRight ? view.getWidth() : -view.getWidth();
         view.animate()
                 .translationX(translationX)
-                .setDuration(duration)
-                .withEndAction(() -> view.setTranslationX(0)) // Reset vị trí về 0
+                .setDuration(600)  // Giảm từ 800ms xuống 400ms
+                .withEndAction(() -> {
+                    view.setTranslationX(0); // Đặt lại vị trí ban đầu
+                    showNextFlashcard();  // Chuyển flashcard sau khi animation kết thúc
+                })
                 .start();
     }
+
     private String getUniquePhonetic(String phoneticText) {
         if (phoneticText == null || phoneticText.isEmpty()) {
             return "No pronunciation available";
@@ -397,5 +476,21 @@ public class FlashcardInformationActivity extends AppCompatActivity {
         // Ghép lại thành chuỗi mới, mỗi phiên âm cách nhau dấu "; "
         return String.join("; ", uniquePhonetics);
     }
+    private void showNextFlashcard() {
+        if (flashcardList != null && !flashcardList.isEmpty()) {
+            flashcardIndex++; // Tăng index để lấy flashcard tiếp theo
+            if (flashcardIndex >= flashcardList.size()) {
+                flashcardIndex = 0; // Nếu hết flashcard thì quay lại đầu (hoặc có thể hiển thị thông báo)
+            }
+            selectedFlashcard = flashcardList.get(flashcardIndex);
+            new Handler(Looper.getMainLooper()).post(() -> updateUI(selectedFlashcard));
+
+        } else {
+            Toast.makeText(this, "Hết flashcard để hiển thị!", Toast.LENGTH_SHORT).show();
+            finish(); // Đóng activity nếu không còn flashcard nào
+        }
+    }
+
+
 
 }
