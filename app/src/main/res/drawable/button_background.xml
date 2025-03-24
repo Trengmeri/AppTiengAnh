@@ -5,8 +5,8 @@
         android:drawable="@drawable/bg_answer_pressed"/>
 
     <!-- Khi button được nhấn -->
-    <item android:state_pressed="true"
-        android:drawable="@drawable/bg_answer_pressed"/>
+<!--    <item android:state_pressed="true"-->
+<!--        android:drawable="@drawable/bg_answer_pressed"/>-->
 
     <!-- Mặc định -->
     <item android:drawable="@drawable/bg_answer"/>
