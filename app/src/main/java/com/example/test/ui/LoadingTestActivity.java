@@ -13,6 +13,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.test.R;
 import com.example.test.ui.entrance_test.Pick1Activity;
+import com.example.test.ui.entrance_test.TextReadingActivity;
 
 public class LoadingTestActivity extends AppCompatActivity {
 
@@ -32,7 +33,7 @@ public class LoadingTestActivity extends AppCompatActivity {
         ldText= findViewById(R.id.loadingText);
         new Handler().postDelayed(() -> {
             // Intent để chuyển màn hình
-            Intent intent = new Intent(LoadingTestActivity.this, Pick1Activity.class);
+            Intent intent = new Intent(LoadingTestActivity.this, TextReadingActivity.class);
             startActivity(intent);
             finish(); // Kết thúc màn hình hiện tại
         }, 3000);

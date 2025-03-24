@@ -211,7 +211,7 @@ public class TextReadingActivity extends AppCompatActivity {
                     // Lấy nội dung câu hỏi
                     questype = question.getQuesType();
                     String questionContent = question.getQuesContent();
-                    tvContent.setText(questionContent);
+                    runOnUiThread(() -> tvContent.setText(questionContent));
                     List<QuestionChoice> choices = question.getQuestionChoices();
                     correctAnswers.clear();
                     for (QuestionChoice choice : choices) {

@@ -75,6 +75,9 @@
             android:name=".ui.entrance_test.ListeningActivity"
             android:exported="false" />
         <activity
+            android:name=".ui.entrance_test.TextReadingActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.entrance_test.ListeningPick1Activity"
             android:exported="false" />
         <activity
