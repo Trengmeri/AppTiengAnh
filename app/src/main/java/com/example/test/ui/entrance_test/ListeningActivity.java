@@ -77,7 +77,7 @@ public class ListeningActivity extends AppCompatActivity {
         btnCheckResult = findViewById(R.id.btnCheckResult);
         tvQuestion = findViewById(R.id.tvQuestion);
         etAnswer = findViewById(R.id.etAnswer);
-        int lessonId = 12;
+        int lessonId = 4;
         fetchLessonAndQuestions(lessonId);
 
         progressBar = findViewById(R.id.progressBar); // Ánh xạ ProgressBar
@@ -91,6 +91,8 @@ public class ListeningActivity extends AppCompatActivity {
                 mediaPlayer = null;
             }
             String userAnswer = etAnswer.getText().toString().trim();
+            // Xóa nội dung EditText ngay khi bấm "Check Answers"
+            etAnswer.setText("");
             userAnswers.clear(); // Xóa các câu trả lời trước đó
             userAnswers.add(userAnswer); // Thêm câu trả lời mới vào danh sách
             Log.d("ListeningActivity", "User Answers: " + userAnswers);

@@ -73,7 +73,7 @@ public class SpeakingActivity extends AppCompatActivity implements SpeechRecogni
         tvTranscription = findViewById(R.id.tvTranscription);
         Button btnCheckResult = findViewById(R.id.btnCheckResult);
         tvQuestion = findViewById(R.id.tvQuestion);
-        int lessonId = 16;
+        int lessonId = 5;
         fetchLessonAndQuestions(lessonId);
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
@@ -100,6 +100,8 @@ public class SpeakingActivity extends AppCompatActivity implements SpeechRecogni
     private void checkAnswer(String userAnswer) {
         String questionContent = tvQuestion.getText().toString().trim();
         ApiService apiService = new ApiService(this);
+        // Xóa nội dung EditText ngay khi bấm "Check Answers"
+        tvTranscription.setText("");
         // Hiển thị ProgressDialog
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage(getString(R.string.load));

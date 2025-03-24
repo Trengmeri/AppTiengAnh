@@ -92,7 +92,7 @@ public class ListeningPick1Activity extends AppCompatActivity {
         });
         recyclerViewChoices.setLayoutManager(layoutManager);
         recyclerViewChoices.setHasFixedSize(true);
-        int lessonId = 11;
+        int lessonId = 3;
         fetchLessonAndQuestions(lessonId);
 
         progressBar = findViewById(R.id.progressBar); // Ánh xạ ProgressBar

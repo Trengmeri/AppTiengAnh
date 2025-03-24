@@ -119,7 +119,7 @@ public class Pick1Activity extends AppCompatActivity {
                                     fetchQuestion(questionIds.get(currentStep)); // Lấy câu hỏi tiếp theo
                                     updateProgressBar(progressBar, currentStep); // Cập nhật thanh tiến trình
                                 } else {
-                                    Intent intent = new Intent(Pick1Activity.this, PointResultCourseActivity.class);
+                                    Intent intent = new Intent(Pick1Activity.this, WritingActivity.class);
                                     startActivity(intent);
                                     finish();
                                 }

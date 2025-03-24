@@ -36,7 +36,7 @@ public class WritingActivity extends AppCompatActivity {
     private QuestionManager quesManager;
     private LessonManager lessonManager = new LessonManager();
     private  String questype;
-    int lessonId = 10;
+    int lessonId = 6;
     private List<Integer> questionIds;
     private int currentStep = 0;
     private int totalSteps;
@@ -116,6 +116,9 @@ public class WritingActivity extends AppCompatActivity {
     private void checkAnswer(String userAnswer) {
         String questionContent = tvContent.getText().toString().trim();
         ApiService apiService = new ApiService(this);
+
+        // Xóa nội dung EditText ngay khi bấm "Check Answers"
+        etAnswer.setText("");
 
         // Hiển thị ProgressDialog
         progressDialog = new ProgressDialog(this);

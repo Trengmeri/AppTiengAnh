@@ -77,6 +77,8 @@ public class TextReadingActivity extends AppCompatActivity {
 
         btnCheckAnswer.setOnClickListener(v -> {
             String userAnswer = etAnswer.getText().toString().trim();
+            // Xóa nội dung EditText ngay khi bấm "Check Answers"
+            etAnswer.setText("");
             userAnswers.clear(); // Xóa các câu trả lời trước đó
             userAnswers.add(userAnswer); // Thêm câu trả lời mới vào danh sách
             Log.d("TextReadingActivity", "User Answers: " + userAnswers);

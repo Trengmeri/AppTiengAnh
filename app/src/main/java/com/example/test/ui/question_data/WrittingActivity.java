@@ -119,6 +119,9 @@ public class WrittingActivity extends AppCompatActivity {
         String questionContent = tvContent.getText().toString().trim();
         ApiService apiService = new ApiService(this);
 
+        // Xóa nội dung EditText ngay khi bấm "Check Answers"
+        etAnswer.setText("");
+
         // Hiển thị ProgressDialog
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage(getString(R.string.load));
