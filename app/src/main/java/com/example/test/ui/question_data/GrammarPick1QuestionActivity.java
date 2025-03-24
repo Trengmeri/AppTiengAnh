@@ -247,7 +247,6 @@ public class GrammarPick1QuestionActivity extends AppCompatActivity {
         startActivity(intent);
         finish();
     }
-
     private void updateProgressBar(LinearLayout progressBarSteps, int step) {
         if (step < progressBarSteps.getChildCount()) {
             final View currentStepView = progressBarSteps.getChildAt(step);

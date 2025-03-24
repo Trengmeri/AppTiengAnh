@@ -81,7 +81,7 @@ public class ListeningActivity extends AppCompatActivity {
         fetchLessonAndQuestions(lessonId);
 
         progressBar = findViewById(R.id.progressBar); // Ánh xạ ProgressBar
-
+        createProgressBars(totalSteps, currentStep); // Tạo progress bar dựa trên số câu hỏi thực tế
 
 
         btnCheckResult.setOnClickListener(v -> {
@@ -121,7 +121,7 @@ public class ListeningActivity extends AppCompatActivity {
                                 // Kiểm tra nếu hoàn thành
                                 if (currentStep < totalSteps) {
                                     fetchQuestion(questionIds.get(currentStep)); // Lấy câu hỏi tiếp theo
-                                    updateProgressBar(progressBar, currentStep); // Cập nhật thanh tiến trình// Cập nhật thanh tiến trình
+                                    createProgressBars(totalSteps, currentStep); // Tạo progress bar dựa trên số câu hỏi thực tế
                                 } else {
                                     Intent intent = new Intent(ListeningActivity.this, ListeningPick1Activity.class);
                                     startActivity(intent);
@@ -192,7 +192,10 @@ public class ListeningActivity extends AppCompatActivity {
                 if (lesson != null) {
                     // Lấy danh sách questionIds từ lesson
                     questionIds = lesson.getQuestionIds(); // Lưu trữ danh sách questionIds
-                    totalSteps = questionIds.size(); // Cập nhật tổng số bước
+                    runOnUiThread(() -> {
+                        totalSteps = questionIds.size(); // Cập nhật tổng số câu hỏi thực tế từ API
+                        createProgressBars(totalSteps, currentStep); // Tạo progress bar dựa trên số câu hỏi thực tế
+                    });
                     if (questionIds != null && !questionIds.isEmpty()) {
                         fetchQuestion(questionIds.get(currentStep)); // Lấy câu hỏi đầu tiên
                         fetchAudioUrl(questionIds.get(currentStep));
@@ -250,19 +253,22 @@ public class ListeningActivity extends AppCompatActivity {
         });
     }
 
-    private void updateProgressBar(LinearLayout progressBarSteps, int step) {
-        if (step < progressBarSteps.getChildCount()) {
-            final View currentStepView = progressBarSteps.getChildAt(step);
+    private void createProgressBars(int totalQuestions, int currentProgress) {
+        LinearLayout progressContainer = findViewById(R.id.progressContainer);
+        progressContainer.removeAllViews(); // Xóa thanh cũ nếu có
 
-            // Animation thay đổi màu
-            ObjectAnimator colorAnimator = ObjectAnimator.ofArgb(
-                    currentStepView,
-                    "backgroundColor",
-                    Color.parseColor("#E0E0E0"), // Màu ban đầu
-                    Color.parseColor("#C4865E") // Màu đã hoàn thành
-            );
-            colorAnimator.setDuration(300); // Thời gian chuyển đổi màu
-            colorAnimator.start();
+        for (int i = 0; i < totalQuestions; i++) {
+            View bar = new View(this);
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(32, 8); // Kích thước mỗi thanh
+            params.setMargins(4, 4, 4, 4); // Khoảng cách giữa các thanh
+            bar.setLayoutParams(params);
+
+            if (i < currentProgress) {
+                bar.setBackgroundColor(Color.parseColor("#C4865E")); // Màu đã hoàn thành
+            } else {
+                bar.setBackgroundColor(Color.parseColor("#E0E0E0")); // Màu chưa hoàn thành
+            }
+            progressContainer.addView(bar);
         }
     }
 

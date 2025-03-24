@@ -3,12 +3,14 @@ package com.example.test.ui.entrance_test;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -53,6 +55,7 @@ public class WritingActivity extends AppCompatActivity {
         etAnswer = findViewById(R.id.etAnswer);
         btnCheckAnswers = findViewById(R.id.btnCheckAnswers);
         quesManager = new QuestionManager(this);
+        createProgressBars(totalSteps, currentStep); // Cập nhật thanh tiến trình mỗi lần chuyển câu
 
         fetchLessonAndQuestions(lessonId);
 
@@ -78,7 +81,21 @@ public class WritingActivity extends AppCompatActivity {
             public void onSuccess(Lesson lesson) {
                 if (lesson != null) {
                     questionIds = lesson.getQuestionIds();
-                    totalSteps = questionIds.size();
+                    if (questionIds == null) {
+                        Log.e("WritingActivity", "Lỗi: lesson.getQuestionIds() trả về null!");
+                        return;
+                    }
+                    Log.d("WritingActivity", "Số lượng câu hỏi: " + questionIds.size()); // Kiểm tra số lượng câu hỏi
+
+                    if (questionIds.isEmpty()) {
+                        Log.e("WritingActivity", "Danh sách câu hỏi rỗng!");
+                        return;
+                    }
+                    runOnUiThread(() -> {
+                        totalSteps = questionIds.size(); // Cập nhật tổng số câu hỏi thực tế từ API
+                        createProgressBars(totalSteps, currentStep); // Tạo progress bar dựa trên số câu hỏi thực tế
+                    });
+
                     if (questionIds != null && !questionIds.isEmpty()) {
                         fetchQuestion(questionIds.get(currentStep));
                     }
@@ -153,6 +170,7 @@ public class WritingActivity extends AppCompatActivity {
                                 currentStep++;
                                 if (currentStep < totalSteps) {
                                     fetchQuestion(questionIds.get(currentStep));
+                                    createProgressBars(totalSteps, currentStep); // Cập nhật thanh tiến trình mỗi lần chuyển câu
                                 } else {
                                     Intent intent = new Intent(WritingActivity.this, PointResultCourseActivity.class);
                                     startActivity(intent);
@@ -225,5 +243,22 @@ public class WritingActivity extends AppCompatActivity {
         });
     }
 
+    private void createProgressBars(int totalQuestions, int currentProgress) {
+        LinearLayout progressContainer = findViewById(R.id.progressContainer);
+        progressContainer.removeAllViews(); // Xóa thanh cũ nếu có
 
+        for (int i = 0; i < totalQuestions; i++) {
+            View bar = new View(this);
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(32, 8); // Kích thước mỗi thanh
+            params.setMargins(4, 4, 4, 4); // Khoảng cách giữa các thanh
+            bar.setLayoutParams(params);
+
+            if (i < currentProgress) {
+                bar.setBackgroundColor(Color.parseColor("#C4865E")); // Màu đã hoàn thành
+            } else {
+                bar.setBackgroundColor(Color.parseColor("#E0E0E0")); // Màu chưa hoàn thành
+            }
+            progressContainer.addView(bar);
+        }
+    }
 }

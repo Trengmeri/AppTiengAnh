@@ -4,10 +4,12 @@ import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.pm.PackageManager;
 import android.content.Intent;
+import android.graphics.Color;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.*;
 import android.os.Handler;
 import android.media.AudioAttributes;
@@ -83,6 +85,8 @@ public class SpeakingActivity extends AppCompatActivity implements SpeechRecogni
         }
 
         LinearLayout progressBar = findViewById(R.id.progressBar);
+        createProgressBars(totalSteps, currentStep); // Cập nhật thanh tiến trình mỗi lần chuyển câu
+
 
         btnCheckResult.setOnClickListener(v -> {
             String userAnswer = tvTranscription.getText().toString().trim();
@@ -129,6 +133,7 @@ public class SpeakingActivity extends AppCompatActivity implements SpeechRecogni
                                 currentStep++;
                                 if (currentStep < totalSteps) {
                                     fetchQuestion(questionIds.get(currentStep));
+                                    createProgressBars(totalSteps, currentStep); // Cập nhật thanh tiến trình mỗi lần chuyển câu
                                 } else {
                                     Intent intent = new Intent(SpeakingActivity.this, WritingActivity.class);
                                     startActivity(intent);
@@ -181,7 +186,10 @@ public class SpeakingActivity extends AppCompatActivity implements SpeechRecogni
             public void onSuccess(Lesson lesson) {
                 if (lesson != null) {
                     questionIds = lesson.getQuestionIds();
-                    totalSteps = questionIds.size();
+                    runOnUiThread(() -> {
+                        totalSteps = questionIds.size(); // Cập nhật tổng số câu hỏi thực tế từ API
+                        createProgressBars(totalSteps, currentStep); // Tạo progress bar dựa trên số câu hỏi thực tế
+                    });
                     if (questionIds != null && !questionIds.isEmpty()) {
                         fetchQuestion(questionIds.get(currentStep));
                     }
@@ -261,5 +269,23 @@ public class SpeakingActivity extends AppCompatActivity implements SpeechRecogni
     private void initializeSpeechRecognition() {
         speechRecognitionHelper = new SpeechRecognitionHelper(this, this);
         speechRecognitionHelper.startListening();
+    }
+    private void createProgressBars(int totalQuestions, int currentProgress) {
+        LinearLayout progressContainer = findViewById(R.id.progressContainer);
+        progressContainer.removeAllViews(); // Xóa thanh cũ nếu có
+
+        for (int i = 0; i < totalQuestions; i++) {
+            View bar = new View(this);
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(32, 8); // Kích thước mỗi thanh
+            params.setMargins(4, 4, 4, 4); // Khoảng cách giữa các thanh
+            bar.setLayoutParams(params);
+
+            if (i < currentProgress) {
+                bar.setBackgroundColor(Color.parseColor("#C4865E")); // Màu đã hoàn thành
+            } else {
+                bar.setBackgroundColor(Color.parseColor("#E0E0E0")); // Màu chưa hoàn thành
+            }
+            progressContainer.addView(bar);
+        }
     }
 }

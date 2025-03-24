@@ -68,7 +68,7 @@ public class GrammarPickManyActivity extends AppCompatActivity {
         courseID = getIntent().getIntExtra("courseID",1);
         lessonID = getIntent().getIntExtra("lessonID",1);
         Log.d("pickmany","Lesson ID: "+ lessonID + "courseID: "+ courseID);
-
+        createProgressBars(totalSteps, currentQuestionIndex);
 
         // Hiển thị câu hỏi hiện tại
         loadQuestion(currentQuestionIndex);
@@ -104,7 +104,7 @@ public class GrammarPickManyActivity extends AppCompatActivity {
                                 currentQuestionIndex++;
                                 if (currentQuestionIndex < questions.size()) {
                                     Question nextQuestion = questions.get(currentQuestionIndex);
-                                    updateProgressBar(progressBar, currentQuestionIndex);
+                                    createProgressBars(totalSteps, currentQuestionIndex);
                                     if (nextQuestion.getQuesType().equals("CHOICE")) {
                                         Intent intent = new Intent(GrammarPickManyActivity.this, GrammarPick1QuestionActivity.class);
                                         intent.putExtra("currentQuestionIndex", currentQuestionIndex);
@@ -179,6 +179,7 @@ public class GrammarPickManyActivity extends AppCompatActivity {
     private void loadQuestion(int index) {
         if (index < questions.size()) {
             Question question = questions.get(index);
+
             quesManager.fetchQuestionContentFromApi(question.getId(), new ApiCallback<Question>() {
                 @Override
                 public void onSuccess(Question question) {
@@ -230,18 +231,22 @@ public class GrammarPickManyActivity extends AppCompatActivity {
         finish();
     }
 
-    private void updateProgressBar(LinearLayout progressBarSteps, int step) {
-        if (step < progressBarSteps.getChildCount()) {
-            final View currentStepView = progressBarSteps.getChildAt(step);
+    private void createProgressBars(int totalQuestions, int currentProgress) {
+        LinearLayout progressContainer = findViewById(R.id.progressContainer);
+        progressContainer.removeAllViews(); // Xóa thanh cũ nếu có
 
-            ObjectAnimator colorAnimator = ObjectAnimator.ofArgb(
-                    currentStepView,
-                    "backgroundColor",
-                    Color.parseColor("#E0E0E0"),
-                    Color.parseColor("#C4865E")
-            );
-            colorAnimator.setDuration(200);
-            colorAnimator.start();
+        for (int i = 0; i < totalQuestions; i++) {
+            View bar = new View(this);
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(32, 8); // Kích thước mỗi thanh
+            params.setMargins(4, 4, 4, 4); // Khoảng cách giữa các thanh
+            bar.setLayoutParams(params);
+
+            if (i < currentProgress) {
+                bar.setBackgroundColor(Color.parseColor("#C4865E")); // Màu đã hoàn thành
+            } else {
+                bar.setBackgroundColor(Color.parseColor("#E0E0E0")); // Màu chưa hoàn thành
+            }
+            progressContainer.addView(bar);
         }
     }
 }

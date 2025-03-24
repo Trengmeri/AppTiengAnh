@@ -64,7 +64,7 @@
             android:exported="false" />
         <activity
             android:name=".ui.entrance_test.WritingActivity"
-            android:exported="false" />
+            android:exported="true" />
         <activity
             android:name=".ui.entrance_test.Pick1Activity"
             android:exported="false" />
