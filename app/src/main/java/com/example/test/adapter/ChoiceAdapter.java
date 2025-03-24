@@ -1,5 +1,6 @@
 package com.example.test.adapter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -36,27 +37,39 @@ public class ChoiceAdapter extends RecyclerView.Adapter<ChoiceAdapter.ChoiceView
         return new ChoiceViewHolder(view);
     }
 
+    @SuppressLint("ResourceType")
     @Override
     public void onBindViewHolder(@NonNull ChoiceViewHolder holder, int position) {
         QuestionChoice choice = choices.get(position);
         String answer = choice.getChoiceContent();
         holder.choiceButton.setText(answer);
 
-        // Đặt màu nền dựa trên trạng thái được chọn
+        // Đảm bảo bố cục hiển thị đúng
+        ViewGroup.LayoutParams params = holder.choiceButton.getLayoutParams();
+        if (params instanceof ViewGroup.MarginLayoutParams) {
+            ((ViewGroup.MarginLayoutParams) params).setMargins(16, 16, 16, 16);
+        }
+        holder.choiceButton.setLayoutParams(params);
+
+        // Kiểm tra nếu lựa chọn đã được chọn trước đó
         if (!userAnswers.isEmpty() && userAnswers.get(0).equals(answer)) {
-            holder.choiceButton.setBackgroundResource(R.color.colorPressed);
+            holder.choiceButton.setBackground(ContextCompat.getDrawable(context, R.drawable.button_background));
         } else {
-            holder.choiceButton.setBackgroundResource(R.color.colorDefault);
+            holder.choiceButton.setBackground(ContextCompat.getDrawable(context, R.drawable.button_background));
         }
 
         holder.choiceButton.setOnClickListener(v -> {
+            boolean isSelected = holder.choiceButton.isSelected();
+            holder.choiceButton.setSelected(!isSelected);
             // Nếu lựa chọn này đã được chọn, thì bỏ chọn nó
             if (!userAnswers.isEmpty() && userAnswers.get(0).equals(answer)) {
+                holder.choiceButton.setBackground(ContextCompat.getDrawable(context, R.drawable.button_background));
                 userAnswers.clear();
             } else {
                 // Chỉ giữ lại một lựa chọn duy nhất
                 userAnswers.clear();
                 userAnswers.add(answer);
+                holder.choiceButton.setBackground(ContextCompat.getDrawable(context, R.drawable.button_background));
             }
             notifyDataSetChanged(); // Cập nhật lại giao diện RecyclerView
         });

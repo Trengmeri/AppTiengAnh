@@ -1,9 +1,14 @@
 package com.example.test.model;
 
-public class FlashcardGroup {
-    private int id;
-    private String name;
+import com.google.gson.annotations.SerializedName;
 
+public class FlashcardGroup {
+    @SerializedName("id")
+    private int id;
+    @SerializedName("name")
+    private String name;
+    @SerializedName("userId")
+    private int userId;
     // Getters và Setters
     public int getId() {
         return id;
@@ -19,5 +24,8 @@ public class FlashcardGroup {
 
     public void setName(String name) {
         this.name = name;
+    }
+    public int getUserId() {
+        return userId;
     }
 }

@@ -25,6 +25,8 @@ import java.util.List;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonSyntaxException;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -58,7 +60,6 @@ public class FlashcardManager extends BaseApiManager {
             }
         });
     }
-
     public void createFlashcardGroup(String groupName, int userId, FlashcardApiCallback callback) {
         String url = BASE_URL + "/api/v1/flashcard-groups";
         MediaType JSON = MediaType.get("application/json; charset=utf-8");
@@ -76,14 +77,20 @@ public class FlashcardManager extends BaseApiManager {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 String responseBody = response.body().string();
+                Log.e("API_RESPONSE", "Dữ liệu trả về: " + responseBody); // Kiểm tra JSON từ API
+
                 if (response.isSuccessful()) {
                     try {
-                        JSONObject responseJson = new JSONObject(responseBody);
-                        JSONObject data = responseJson.getJSONObject("data");
-                        String groupID = data.optString("id");
-                        callback.onSuccess(groupID);
-                    } catch (JSONException e) {
-                        callback.onFailure("Lỗi phân tích phản hồi JSON: " + e.getMessage());
+                        Gson gson = new Gson();
+                        ApiResponseFlashcardGroup apiResponse = gson.fromJson(responseBody, ApiResponseFlashcardGroup.class);
+
+                        if (apiResponse != null && apiResponse.getData() != null) {
+                            callback.onSuccess(apiResponse); // Chỉ gọi một lần với dữ liệu đúng
+                        } else {
+                            callback.onFailure("Dữ liệu nhóm flashcard bị null từ API.");
+                        }
+                    } catch (JsonSyntaxException e) {
+                        callback.onFailure("Lỗi phân tích JSON: " + e.getMessage());
                     }
                 } else {
                     callback.onFailure("Thất bại: " + response.message());
@@ -96,6 +103,8 @@ public class FlashcardManager extends BaseApiManager {
             }
         });
     }
+
+
 
     public void fetchFlashcardsInGroup(int groupId, FlashcardApiCallback callback) {
         String url = BASE_URL + "/api/v1/flashcard-groups/" + groupId;

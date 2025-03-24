@@ -297,12 +297,14 @@ public class GroupFlashcardActivity extends AppCompatActivity {
                 flashcardManager.createFlashcardGroup(groupName, userId, new FlashcardApiCallback() {
                     @Override
                     public void onSuccess(Object response) {
+
                     }
                     @Override
                     public void onSuccess(ApiResponseFlashcardGroup response) {
+                        Log.d("GroupFlashcardActivity", "onSuccess(ApiResponseFlashcardGroup) được gọi");
                         runOnUiThread(() -> { // Đảm bảo cập nhật UI trên UI thread
                             FlashcardGroup newGroup = response.getData(); // Đảm bảo rằng getData() trả về
-                                                                          // FlashcardGroup
+                            // FlashcardGroup
                             addGroupButton(newGroup.getName(), newGroup.getId()); // Sử dụng tên nhóm từ phản hồi
                             //int groupID= newGroup.getId();
 //                            SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("MyPrefs", MODE_PRIVATE);
@@ -317,17 +319,15 @@ public class GroupFlashcardActivity extends AppCompatActivity {
 
                     @Override
                     public void onSuccess(FlashcardGroupResponse response) {
-                        // Không làm gì ở đây
+
                     }
 
                     @Override
                     public void onSuccess(ApiResponseFlashcard response) {
-
                     }
 
                     @Override
                     public void onSuccess(ApiResponseOneFlashcard response) {
-
                     }
 
                     @Override
