@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -29,7 +30,7 @@ import java.util.List;
 
 public class WritingActivity extends AppCompatActivity {
 
-    private TextView tvContent;
+    private TextView tvContent, key;
     private EditText etAnswer;
     private Button btnCheckAnswers;
     private QuestionManager quesManager;
@@ -48,6 +49,7 @@ public class WritingActivity extends AppCompatActivity {
         setContentView(R.layout.activity_writting);
 
         tvContent = findViewById(R.id.tvContent);
+        key = findViewById(R.id.key);
         etAnswer = findViewById(R.id.etAnswer);
         btnCheckAnswers = findViewById(R.id.btnCheckAnswers);
         quesManager = new QuestionManager(this);
@@ -174,8 +176,39 @@ public class WritingActivity extends AppCompatActivity {
             @Override
             public void onFailure(String errorMessage) {
                 progressDialog.dismiss();
-                Log.e("WritingActivity", "Lỗi lưu câu trả lời: " + errorMessage);
-                showErrorDialog("Lỗi khi lưu câu trả lời. Vui lòng thử lại.");
+                Log.e("WritingActivity", "Câu trả lời khong hop le: " + errorMessage);
+                showErrorDialog(getString(R.string.invalidans));
+                apiService.getSuggestionFromApi(questionContent, new ApiCallback<String>(){
+
+                    @Override
+                    public void onSuccess() {
+
+                    }
+
+                    @Override
+                    public void onSuccess(String tip) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                key.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
+                                key.setMovementMethod(new ScrollingMovementMethod());
+
+                                String formattedTip = tip
+                                        .replaceAll("(?<!\\d)\\. ", ".\n")
+                                        .replaceAll(": ", ":\n");
+
+                                key.setText("Tip: \n" +formattedTip);
+                            }
+                        });
+                    }
+
+
+
+                    @Override
+                    public void onFailure(String errorMessage) {
+
+                    }
+                });
             }
         });
     }
