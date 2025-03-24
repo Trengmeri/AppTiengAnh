@@ -27,12 +27,19 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:layout_gravity="center">
+        <LinearLayout
+            android:id="@+id/progressContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginTop="8dp"/>
 
-        <View android:layout_width="32dp" android:layout_height="8dp" android:background="#E0E0E0" android:layout_margin="4dp" />
-        <View android:layout_width="32dp" android:layout_height="8dp" android:background="#E0E0E0" android:layout_margin="4dp" />
-        <View android:layout_width="32dp" android:layout_height="8dp" android:background="#E0E0E0" android:layout_margin="4dp" />
-        <View android:layout_width="32dp" android:layout_height="8dp" android:background="#E0E0E0" android:layout_margin="4dp" />
-        <View android:layout_width="32dp" android:layout_height="8dp" android:background="#E0E0E0" android:layout_margin="4dp" />
+<!--        <View android:layout_width="32dp" android:layout_height="8dp" android:background="#E0E0E0" android:layout_margin="4dp" />-->
+<!--        <View android:layout_width="32dp" android:layout_height="8dp" android:background="#E0E0E0" android:layout_margin="4dp" />-->
+<!--        <View android:layout_width="32dp" android:layout_height="8dp" android:background="#E0E0E0" android:layout_margin="4dp" />-->
+<!--        <View android:layout_width="32dp" android:layout_height="8dp" android:background="#E0E0E0" android:layout_margin="4dp" />-->
+<!--        <View android:layout_width="32dp" android:layout_height="8dp" android:background="#E0E0E0" android:layout_margin="4dp" />-->
     </LinearLayout>
 
     <!-- Nội dung cuộn được -->

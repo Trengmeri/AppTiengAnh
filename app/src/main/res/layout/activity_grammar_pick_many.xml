@@ -31,40 +31,13 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:layout_gravity="center">
-
-            <!-- Step 1 (Active) -->
-            <View
-                android:layout_width="32dp"
-                android:layout_height="8dp"
-                android:background="#C4865E"
-                android:layout_margin="4dp" />
-            <!-- Step 2 (Inactive) -->
-            <View
-                android:layout_width="32dp"
-                android:layout_height="8dp"
-                android:background="#E0E0E0"
-                android:layout_margin="4dp" />
-
-            <!-- Step 3 (Inactive) -->
-            <View
-                android:layout_width="32dp"
-                android:layout_height="8dp"
-                android:background="#E0E0E0"
-                android:layout_margin="4dp" />
-
-            <!-- Step 4 (Inactive) -->
-            <View
-                android:layout_width="32dp"
-                android:layout_height="8dp"
-                android:background="#E0E0E0"
-                android:layout_margin="4dp" />
-
-            <!-- Step 5 (Inactive) -->
-            <View
-                android:layout_width="32dp"
-                android:layout_height="8dp"
-                android:background="#E0E0E0"
-                android:layout_margin="4dp" />
+            <LinearLayout
+                android:id="@+id/progressContainer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:layout_marginTop="8dp"/>
         </LinearLayout>
 
         <TextView
