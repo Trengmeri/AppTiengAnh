@@ -3,6 +3,8 @@ package com.example.test.ui;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.Editable;
@@ -11,6 +13,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -83,25 +86,6 @@ public class GroupFlashcardActivity extends AppCompatActivity {
         btnPrevious.setAlpha(0.5f);
         btnPrevious.setEnabled(false);
 
-
-//        groupFlcid.setOnTouchListener((v, event) -> {
-//            if (event.getAction() == MotionEvent.ACTION_UP) {
-//                Drawable[] drawables = groupFlcid.getCompoundDrawablesRelative();
-//                if (drawables[2] != null) { // Kiểm tra drawableEnd có tồn tại không
-//                    int drawableWidth = drawables[2].getBounds().width();
-//                    int buttonWidth = groupFlcid.getWidth();
-//                    int touchX = (int) event.getX();
-//
-//                    // Kiểm tra xem người dùng có chạm vào drawableEnd không
-//                    if (touchX >= (buttonWidth - drawableWidth - groupFlcid.getPaddingEnd())) {
-//                        int groupId = (int) groupFlcid.getTag(); // Retrieve the groupId from the button's tag
-//                        showEditGroupDialog(groupFlcid, groupId); // Pass the groupId
-//                        return true;
-//                    }
-//                }
-//            }
-//            return false;
-//        });
         btnNext.setOnClickListener(v -> {
             if (currentPage < totalPages) {
                 currentPage++;
@@ -150,7 +134,7 @@ public class GroupFlashcardActivity extends AppCompatActivity {
         AlertDialog dialog = new AlertDialog.Builder(this)
                 .setView(dialogView)
                 .create();
-
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         // Bật/tắt nút "Edit" nếu có thay đổi trong EditText
         edtEditGroupName.addTextChangedListener(new TextWatcher() {
             @Override
@@ -271,7 +255,6 @@ public class GroupFlashcardActivity extends AppCompatActivity {
         builder.setView(dialogView);
 
         AlertDialog dialog = builder.create();
-
         @SuppressLint({"MissingInflatedId", "LocalSuppress"})
         EditText edtGroupName = dialogView.findViewById(R.id.edtGroupName);
         Button btnAdd = dialogView.findViewById(R.id.btnAdd);
@@ -314,18 +297,20 @@ public class GroupFlashcardActivity extends AppCompatActivity {
                 flashcardManager.createFlashcardGroup(groupName, userId, new FlashcardApiCallback() {
                     @Override
                     public void onSuccess(Object response) {
+
                     }
                     @Override
                     public void onSuccess(ApiResponseFlashcardGroup response) {
+                        Log.d("GroupFlashcardActivity", "onSuccess(ApiResponseFlashcardGroup) được gọi");
                         runOnUiThread(() -> { // Đảm bảo cập nhật UI trên UI thread
                             FlashcardGroup newGroup = response.getData(); // Đảm bảo rằng getData() trả về
-                                                                          // FlashcardGroup
+                            // FlashcardGroup
                             addGroupButton(newGroup.getName(), newGroup.getId()); // Sử dụng tên nhóm từ phản hồi
-                            int groupID= newGroup.getId();
-                            SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("MyPrefs", MODE_PRIVATE);
-                            SharedPreferences.Editor editor = sharedPreferences.edit();
-                            editor.putString("GROUP_ID", String.valueOf(groupID));
-                            editor.apply();  // Lưu không đồng bộ (nên dùng)
+                            //int groupID= newGroup.getId();
+//                            SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("MyPrefs", MODE_PRIVATE);
+//                            SharedPreferences.Editor editor = sharedPreferences.edit();
+//                            editor.putString("GROUP_ID", String.valueOf(groupID));
+//                            editor.apply();  // Lưu không đồng bộ (nên dùng)
 
                             fetchFlashcardGroups(currentPage); // Cập nhật danh sách nhóm
                             dialog.dismiss(); // Đóng hộp thoại
@@ -334,17 +319,15 @@ public class GroupFlashcardActivity extends AppCompatActivity {
 
                     @Override
                     public void onSuccess(FlashcardGroupResponse response) {
-                        // Không làm gì ở đây
+
                     }
 
                     @Override
                     public void onSuccess(ApiResponseFlashcard response) {
-
                     }
 
                     @Override
                     public void onSuccess(ApiResponseOneFlashcard response) {
-
                     }
 
                     @Override
@@ -442,6 +425,7 @@ public class GroupFlashcardActivity extends AppCompatActivity {
         groupView.setOnClickListener(v -> {
             Intent intent = new Intent(GroupFlashcardActivity.this, FlashcardActivity.class);
             intent.putExtra("GROUP_ID", groupId);
+            intent.putExtra("GROUP_NAME",groupName);
             startActivity(intent);
         });
 

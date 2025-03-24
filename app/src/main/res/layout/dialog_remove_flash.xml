@@ -9,9 +9,9 @@
     android:background="@drawable/bg_remove_flash">
 
     <TextView
+        android:id="@+id/tvRemove"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Remove From Flashcard?"
         android:textSize="18sp"
         android:textStyle="bold"
         android:gravity="center"
@@ -32,39 +32,29 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/dp_16">
+            android:layout_marginTop="@dimen/dp_30"
+            android:layout_marginStart="@dimen/dp_30"
+            android:layout_marginEnd="@dimen/dp_30">
             <TextView
+                android:id="@+id/tvNameFlash"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/dp_30"
-                android:text="IT"
-                android:textColor="#FF6B00"
-                android:textSize="20sp"
+                android:text="Email (n)"
                 android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"/>
+                android:textSize="26sp"
+                android:textColor="@color/black"
+                android:layout_marginTop="10dp"
+                tools:ignore="MissingConstraints" />
             <ImageView
                 android:id="@+id/removeBtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
-                android:layout_marginEnd="@dimen/dp_30"
                 android:background="@drawable/btn_remove"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"/>
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Email (n)"
-            android:textStyle="bold"
-            android:textSize="26sp"
-            android:textColor="@color/black"
-            android:layout_marginStart="@dimen/dp_30"
-            android:layout_marginTop="10dp"
-            />
 
     </LinearLayout>
 

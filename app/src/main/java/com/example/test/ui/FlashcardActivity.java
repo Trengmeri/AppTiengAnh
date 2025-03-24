@@ -2,6 +2,8 @@ package com.example.test.ui;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -40,6 +42,7 @@ import com.example.test.api.FlashcardApiCallback;
 import com.example.test.api.FlashcardManager;
 import com.example.test.model.Definition;
 import com.example.test.model.Flashcard;
+import com.example.test.model.FlashcardUtils;
 import com.example.test.model.Meaning;
 import com.example.test.model.Phonetic;
 import com.example.test.model.WordData;
@@ -48,9 +51,12 @@ import com.example.test.response.ApiResponseFlashcardGroup;
 import com.example.test.response.ApiResponseOneFlashcard;
 import com.example.test.response.FlashcardGroupResponse;
 import com.google.android.material.button.MaterialButton;
+import com.google.gson.Gson;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class FlashcardActivity extends AppCompatActivity {
@@ -58,7 +64,8 @@ public class FlashcardActivity extends AppCompatActivity {
     private RecyclerView recyclerViewFlashcards;
     private FlashcardManager flashcardManager;
     NetworkChangeReceiver networkReceiver;
-    TextView flBack;
+    LinearLayout flBack;
+    TextView tvGroupName;
     ImageView btnAddFlash, btnremove;
     private List<Flashcard> flashcards = new ArrayList<>();
     private EditText edtFlashName;
@@ -66,12 +73,7 @@ public class FlashcardActivity extends AppCompatActivity {
     private int totalPages = 1;
     private final int pageSize = 4; // Mỗi trang hiển thị 5 nhóm flashcard
     private ImageView btnNext, btnPrevious;
-    private AppCompatButton selectedSpeechButton = null;
-    private AppCompatButton selectedPhoneticButton = null;
-    private AppCompatButton selectedDefinitionButton = null;
     private FlashcardAdapter flashcardAdapter;
-
-
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -93,6 +95,7 @@ public class FlashcardActivity extends AppCompatActivity {
         btnremove = findViewById(R.id.iconRemove);
         btnNext = findViewById(R.id.btnNext);
         btnPrevious = findViewById(R.id.btnPrevious);
+        tvGroupName= findViewById(R.id.tvGroupName);
         btnNext.setAlpha(0.5f);
         btnNext.setEnabled(false);
         flashcardAdapter = new FlashcardAdapter(this, flashcards);
@@ -104,6 +107,7 @@ public class FlashcardActivity extends AppCompatActivity {
         btnPrevious.setAlpha(0.5f);
         btnPrevious.setEnabled(false);
 
+        tvGroupName.setText(getIntent().getStringExtra("GROUP_NAME"));
         int groupId = getIntent().getIntExtra("GROUP_ID", -1);
         if (groupId != -1) {
             fetchFlashcards(groupId,currentPage);
@@ -134,6 +138,7 @@ public class FlashcardActivity extends AppCompatActivity {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             LayoutInflater inflater = getLayoutInflater();
             View dialogView = inflater.inflate(R.layout.dialog_add_flash, null);
+
             builder.setView(dialogView);
 
             AlertDialog dialog = builder.create();
@@ -179,6 +184,7 @@ public class FlashcardActivity extends AppCompatActivity {
 
     }
 
+
     @SuppressLint("MissingInflatedId")
     private void showDefinitionDialog(String word) {
         flashcardManager.fetchWordDefinition(word, new AddFlashCardApiCallback<WordData>() {
@@ -190,6 +196,13 @@ public class FlashcardActivity extends AppCompatActivity {
             @Override
             public void onSuccess(WordData wordData) {
                 runOnUiThread(() -> {
+                    // Gộp các nghĩa trước khi hiển thị
+                    List<WordData> mergedData = FlashcardUtils.mergeWordData(Collections.singletonList(wordData));
+                    Log.d("DEBUG", "Dữ liệu trước khi merge: " + new Gson().toJson(wordData));
+                    Log.d("DEBUG", "Dữ liệu sau khi merge: " + new Gson().toJson(mergedData));
+
+                    WordData mergedWordData = mergedData.get(0); // Chỉ lấy phần tử đầu tiên vì chỉ có 1 từ
+
                     LayoutInflater inflater = getLayoutInflater();
                     View dialogView = inflater.inflate(R.layout.dialog_add_definition, null);
 
@@ -207,8 +220,9 @@ public class FlashcardActivity extends AppCompatActivity {
 //                    List<AppCompatButton> meaningButtons = new ArrayList<>();
 
                     // Hiển thị phonetics
-                    if (wordData.getPhonetics() != null && !wordData.getPhonetics().isEmpty()) {
-                        for (Phonetic phonetic : wordData.getPhonetics()) {
+                    if (mergedWordData.getPhonetics() != null && !mergedWordData.getPhonetics().isEmpty()) {
+                        phoneticButtons.clear();
+                        for (Phonetic phonetic : mergedWordData.getPhonetics()) {
                             AppCompatButton btn = new AppCompatButton(FlashcardActivity.this);
                             btn.setText(phonetic.getText());
                             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
@@ -221,6 +235,7 @@ public class FlashcardActivity extends AppCompatActivity {
                             btn.setBackgroundResource(R.drawable.btn_item_click);
                             btn.setTextColor(ContextCompat.getColor(FlashcardActivity.this, R.color.black));
                             btn.setTextSize(14);
+                            btn.setAllCaps(false);
                             btn.setGravity(Gravity.CENTER); // Căn giữa văn bản
                             btn.setTag(false);
                             btn.setOnClickListener(v -> {
@@ -248,10 +263,14 @@ public class FlashcardActivity extends AppCompatActivity {
                     }
 
                     // Hiển thị Part of Speech
-                    if (wordData.getMeanings() != null) {
-                        for (int i = 0; i < wordData.getMeanings().size(); i++) {
-                            Meaning meaning = wordData.getMeanings().get(i);
-                            if (meaning.getPartOfSpeech() != null) {
+                    if (mergedWordData.getMeanings() != null && !mergedWordData.getMeanings().isEmpty()) {
+                        speechButtons.clear();
+                        Log.d("DEBUG", "Số meanings: " + mergedWordData.getMeanings().size());
+                        for (int i = 0; i < mergedWordData.getMeanings().size(); i++) {
+                            Meaning meaning = mergedWordData.getMeanings().get(i);
+                            Log.d("DEBUG", "Thêm nút Part of Speech: " + meaning.getPartOfSpeech());
+                            if (meaning.getPartOfSpeech() != null && !meaning.getPartOfSpeech().trim().isEmpty()) {
+
                                 AppCompatButton btn = new AppCompatButton(FlashcardActivity.this);
                                 btn.setText(meaning.getPartOfSpeech());
                                 LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
@@ -263,6 +282,7 @@ public class FlashcardActivity extends AppCompatActivity {
                                 btn.setBackgroundResource(R.drawable.btn_item_click);
                                 btn.setTextColor(ContextCompat.getColor(FlashcardActivity.this, R.color.black));
                                 btn.setTextSize(14);
+                                btn.setAllCaps(false);
                                 btn.setTag(false);
                                 btn.setGravity(Gravity.CENTER); // Căn giữa văn bản
 
@@ -287,8 +307,8 @@ public class FlashcardActivity extends AppCompatActivity {
                         }
 
                         // Hiển thị definitions cho part of speech đầu tiên
-                        if (!wordData.getMeanings().isEmpty()) {
-                            updateDefinitions(definitionContainer, wordData.getMeanings().get(0), dialogView,
+                        if (!mergedWordData.getMeanings().isEmpty()) {
+                            updateDefinitions(definitionContainer, mergedWordData.getMeanings().get(0), dialogView,
                                     phoneticButtons, definitionButtons, speechButtons, btnDone);
                         }
                     }
@@ -311,7 +331,7 @@ public class FlashcardActivity extends AppCompatActivity {
                         Log.d("DEBUG","speech:"+ partOfSpeechIndex);
                         Log.d("DEBUG","definition:"+ definitionIndices);
                         Log.d("DEBUG","userid:"+ userId);
-                        flashcardManager.createFlashcard(wordflash, definitionIndices, partOfSpeechIndex, userId, new AddFlashCardApiCallback<String>() {
+                        flashcardManager.createFlashcard(getApplicationContext(),wordflash, definitionIndices, partOfSpeechIndex, userId, new AddFlashCardApiCallback<String>() {
                             @Override
                             public void onSuccess(String flashcardId) { // Lấy ID của flashcard vừa tạo
                                 if (flashcardId == null) {
@@ -320,20 +340,21 @@ public class FlashcardActivity extends AppCompatActivity {
                                 }
 
                                 Log.d("DEBUG", "Flashcard created with ID: " + flashcardId);
-                                int groupID = Integer.parseInt(SharedPreferencesManager.getInstance(getApplicationContext()).getID());
-                                // 🔹 Gọi API để thêm flashcard vào nhóm
-                                flashcardManager.addFlashcardToGroup(Integer.parseInt(flashcardId), groupID, new AddFlashCardApiCallback<String>() {
+                                //int groupID = Integer.parseInt(SharedPreferencesManager.getInstance(getApplicationContext()).getID());
+                                int groupId = getIntent().getIntExtra("GROUP_ID", -1);
+                                Log.d("GroupID:", "Group ID duoc goi :"+ groupId);
+                                //  Gọi API để thêm flashcard vào nhóm
+                                flashcardManager.addFlashcardToGroup(Integer.parseInt(flashcardId), groupId, new AddFlashCardApiCallback<String>() {
                                     @Override
                                     public void onSuccess(String result) {
                                         runOnUiThread(() -> {
                                             Log.d("DEBUG", "Flashcard added to group");
-
-                                            // 🔹 Cập nhật UI
+                                            // Cập nhật UI
                                             Flashcard newFlashcard = new Flashcard(Integer.parseInt(flashcardId), wordflash, definitionIndices, partOfSpeechIndex);
-                                            flashcards.add(newFlashcard);
-                                            flashcardAdapter.notifyItemInserted(flashcards.size() - 1);
-                                            recyclerViewFlashcards.scrollToPosition(flashcards.size() - 1);
-
+                                            flashcards.add(0, newFlashcard);
+                                            flashcardAdapter.setFlashcards(flashcards); // Nếu adapter có phương thức này
+                                            flashcardAdapter.notifyItemInserted(0);
+                                            recyclerViewFlashcards.scrollToPosition(0);
                                             Toast.makeText(FlashcardActivity.this, "Thêm flashcard thành công!", Toast.LENGTH_SHORT).show();
                                             dialog.dismiss();
                                         });
@@ -341,7 +362,6 @@ public class FlashcardActivity extends AppCompatActivity {
 
                                     @Override
                                     public void onSuccess() {
-
                                     }
 
                                     @Override
@@ -351,6 +371,7 @@ public class FlashcardActivity extends AppCompatActivity {
                                             Toast.makeText(FlashcardActivity.this, "Lỗi thêm vào nhóm: " + errorMessage, Toast.LENGTH_SHORT).show();
                                         });
                                     }
+
                                 });
                             }
 
@@ -388,6 +409,7 @@ public class FlashcardActivity extends AppCompatActivity {
             Button btnDone) {
 
         definitionContainer.removeAllViews();
+        definitionButtons.clear();
         ScrollView definitionScrollView = dialogView.findViewById(R.id.definitionScrollView);
 
         int numberOfButtons = 0;
@@ -400,6 +422,13 @@ public class FlashcardActivity extends AppCompatActivity {
 
         definitionScrollView.setLayoutParams(
                 new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, scrollViewHeight));
+
+        if (meaning.getDefinitions() != null) {
+            Log.d("DEBUG", "Số lượng definitions: " + meaning.getDefinitions().size());
+            for (Definition def : meaning.getDefinitions()) {
+                Log.d("DEBUG", "Definition: " + def.getDefinition());
+            }
+        }
         // Hiển thị definitions cho part of speech đã chọn
         if (meaning.getDefinitions() != null && !meaning.getDefinitions().isEmpty()) {
             for (Definition definition : meaning.getDefinitions()) {
@@ -416,10 +445,13 @@ public class FlashcardActivity extends AppCompatActivity {
                 btn.setTextColor(ContextCompat.getColor(FlashcardActivity.this, R.color.black));
                 btn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 10);
                 btn.setPadding(40, 10, 40, 10);
+                btn.setAllCaps(false);
                 btn.setTag(false);
                 btn.setGravity(Gravity.START | Gravity.CENTER_VERTICAL);
 
                 btn.setOnClickListener(v -> {
+                    Log.d("DEBUG", "Selected definition: " + definition.getDefinition());
+
                     // Gọi API để dịch nghĩa
                     try {
                         flashcardManager.translateDefinition(definition.getDefinition(),
@@ -452,7 +484,7 @@ public class FlashcardActivity extends AppCompatActivity {
                     } catch (UnsupportedEncodingException e) {
                         throw new RuntimeException(e);
                     }
-
+                    Log.d("DEBUG", "Số nút trong definitionButtons trước khi cập nhật: " + definitionButtons.size());
                     for (AppCompatButton otherBtn : definitionButtons) {
                         Log.d("DEBUG", "Số nút trong definitionButtons: " + definitionButtons.size());
 
@@ -465,6 +497,11 @@ public class FlashcardActivity extends AppCompatActivity {
                 });
                 definitionButtons.add(btn);
                 definitionContainer.addView(btn);
+            }
+            // Log kiểm tra sau khi thêm nút
+            Log.d("DEBUG", "Tổng số definitionButtons sau khi thêm: " + definitionButtons.size());
+            for (AppCompatButton btn : definitionButtons) {
+                Log.d("DEBUG", "Button text: " + btn.getText().toString());
             }
         } else {
             definitionContainer.addView(new androidx.appcompat.widget.AppCompatTextView(FlashcardActivity.this) {

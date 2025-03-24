@@ -1,5 +1,6 @@
 package com.example.test.adapter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -22,6 +23,8 @@ public class ChoiceAdapter extends RecyclerView.Adapter<ChoiceAdapter.ChoiceView
     private List<QuestionChoice> choices;
     private Context context;
     private List<String> userAnswers;
+    private int selectedPosition = -1; // Lưu vị trí của lựa chọn đã chọn
+
 
     public ChoiceAdapter(Context context, List<QuestionChoice> choices, List<String> userAnswers) {
         this.context = context;
@@ -36,27 +39,34 @@ public class ChoiceAdapter extends RecyclerView.Adapter<ChoiceAdapter.ChoiceView
         return new ChoiceViewHolder(view);
     }
 
+    @SuppressLint("ResourceType")
     @Override
-    public void onBindViewHolder(@NonNull ChoiceViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ChoiceViewHolder holder, @SuppressLint("RecyclerView") int position) {
         QuestionChoice choice = choices.get(position);
         String answer = choice.getChoiceContent();
         holder.choiceButton.setText(answer);
 
-        // Đặt màu nền dựa trên trạng thái được chọn
-        if (!userAnswers.isEmpty() && userAnswers.get(0).equals(answer)) {
-            holder.choiceButton.setBackgroundResource(R.color.colorPressed);
+        // Kiểm tra nếu lựa chọn đã được chọn trước đó
+        if (position == selectedPosition) {
+            holder.choiceButton.setBackground(ContextCompat.getDrawable(context, R.drawable.bg_answer_pressed)); // Màu khi được chọn
+
         } else {
-            holder.choiceButton.setBackgroundResource(R.color.colorDefault);
+            holder.choiceButton.setBackground(ContextCompat.getDrawable(context, R.drawable.bg_answer)); // Màu khi được chọn
+
         }
 
         holder.choiceButton.setOnClickListener(v -> {
+            boolean isSelected = holder.choiceButton.isSelected();
+            holder.choiceButton.setSelected(!isSelected);
             // Nếu lựa chọn này đã được chọn, thì bỏ chọn nó
-            if (!userAnswers.isEmpty() && userAnswers.get(0).equals(answer)) {
+            if (position == selectedPosition) {
+                selectedPosition = -1; // Không có nút nào được chọn
                 userAnswers.clear();
             } else {
                 // Chỉ giữ lại một lựa chọn duy nhất
                 userAnswers.clear();
                 userAnswers.add(answer);
+                selectedPosition = position; // Cập nhật vị trí đã chọn
             }
             notifyDataSetChanged(); // Cập nhật lại giao diện RecyclerView
         });

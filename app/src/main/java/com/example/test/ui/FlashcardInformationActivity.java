@@ -2,11 +2,15 @@ package com.example.test.ui;
 
 import android.animation.AnimatorSet;
 import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.view.View;
 import android.animation.AnimatorInflater;
@@ -21,6 +25,13 @@ import android.util.Log;
 import android.media.MediaPlayer;
 import android.media.AudioAttributes;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 import com.example.test.R;
 import com.example.test.response.ApiResponseFlashcard;
@@ -34,7 +45,7 @@ import com.example.test.model.Flashcard;
 public class FlashcardInformationActivity extends AppCompatActivity {
     private boolean isFrontVisible = true;
     private View frontSide, backSide;
-    private TextView tvBackContent;
+    private TextView tvDefinition;
     private AnimatorSet flipIn, flipOut;
     private ImageView btnX;
     private TextView tvAddedDate, tvWord, tvPronunciation, tvExamples, txtNumRed, txtNumGreen;
@@ -43,6 +54,7 @@ public class FlashcardInformationActivity extends AppCompatActivity {
     private ImageView btnSound;
     private MediaPlayer mediaPlayer;
     FrameLayout flashcardContainer;
+    LinearLayout tvBackContent;
     private int countRed = 0;  // Đếm số lần vuốt phải
     private int countGreen = 0; // Đếm số lần vuốt trái
     private float x1, x2;
@@ -107,9 +119,9 @@ public class FlashcardInformationActivity extends AppCompatActivity {
     private void initializeViews() {
         frontSide = findViewById(R.id.frontSide);
         backSide = findViewById(R.id.backSide);
-        tvBackContent = findViewById(R.id.tvBackContent);
+        tvDefinition = findViewById(R.id.tvDefinition);
         btnDefinition = findViewById(R.id.btnDefinition);
-        btnExample = findViewById(R.id.btnExample);
+        //btnExample = findViewById(R.id.btnExample);
         btnX = findViewById(R.id.btnX);
         tvAddedDate = findViewById(R.id.tvAddedDate);
         tvExamples = findViewById(R.id.tvExamples);
@@ -119,6 +131,7 @@ public class FlashcardInformationActivity extends AppCompatActivity {
         txtNumGreen= findViewById(R.id.txtNumGreen);
         txtNumRed= findViewById(R.id.txtNumRed);
         flashcardContainer= findViewById(R.id.flashcardContainer);
+        tvBackContent= findViewById(R.id.tvBackContent);
     }
 
     private void setupAnimations() {
@@ -145,7 +158,9 @@ public class FlashcardInformationActivity extends AppCompatActivity {
                 if (response != null && response.getData() != null) {
                     Flashcard flashcard = response.getData();
                     Log.d("FlashcardInfo", "Received flashcard: " + flashcard.toString());
-                    runOnUiThread(() -> updateUI(flashcard));
+                    runOnUiThread(() -> {
+                            updateUI(flashcard);
+                    });
                 } else {
                     Log.e("FlashcardInfo", "Response or data is null");
                 }
@@ -181,25 +196,39 @@ public class FlashcardInformationActivity extends AppCompatActivity {
         });
     }
 
-    private void updateUI(Flashcard flashcard) {
+    private void updateUI(Flashcard flashcard){
         if (flashcard != null) {
             Log.d("FlashcardInfo", "Updating UI with flashcard data");
             tvWord.setText(flashcard.getWord());
-            tvPronunciation.setText(flashcard.getPhoneticText());
-            tvAddedDate.setText("Added date: " + flashcard.getAddedDate());
 
-            // Thiết lập sự kiện click cho các nút với dữ liệu từ flashcard
+//            SharedPreferences sharedPreferences = getSharedPreferences("FlashcardPrefs", Context.MODE_PRIVATE);
+//            String phoneticText = sharedPreferences.getString("phoneticText" + flashcard.getWord(), "");
+//            Log.d("DEBUG_PHONETIC", "Phonetic from SharedPreferences: " + phoneticText);
+            SharedPreferences sharedPreferences = getSharedPreferences("FlashcardPrefs", Context.MODE_PRIVATE);
+            String phoneticText = sharedPreferences.getString("phoneticText" + flashcard.getWord(), "");
+            String cleanedPhonetic = getUniquePhonetic(phoneticText);
+            Log.d("DEBUG_CLEANED_PHONETIC", "Cleaned phonetic: " + cleanedPhonetic);
+
+            runOnUiThread(() -> tvPronunciation.setText(cleanedPhonetic));
+
+
+            String addeddate=flashcard.getAddedDate();
+            tvAddedDate.setText("Added date: " + flashcard.extractDateTimeVietnam(addeddate));
+
             final String definitions = flashcard.getDefinitions();
             final String examples = flashcard.getExamples();
+            Log.d("DEBUG_DEFINITIONS", "Definitions: " + definitions);
+            Log.d("DEBUG_EXAMPLES", "Examples: " + examples);
+            // Thiết lập sự kiện click cho các nút với dữ liệu từ flashcard
 
             btnDefinition.setOnClickListener(v -> {
-                Log.d("FlashcardInfo", "Definition button clicked. Content: " + definitions);
-                flipCard(definitions);
+                Log.d("FlashcardInfo", "BtnDef clicked: " + definitions + ", example: " + examples);
+                flipCard(definitions, examples);
             });
-            btnExample.setOnClickListener(v -> {
-                Log.d("FlashcardInfo", "Example button clicked. Content: " + examples);
-                flipCard(examples);
-            });
+//            btnExample.setOnClickListener(v -> {
+//                Log.d("FlashcardInfo", "Example button clicked. Content: " + examples);
+//                flipCard(examples);
+//            });
 
             // Xử lý nút phát âm thanh
             String audioUrlRaw = flashcard.getPhoneticAudio();
@@ -224,8 +253,9 @@ public class FlashcardInformationActivity extends AppCompatActivity {
         }
     }
 
-    private void flipCard(String content) {
-        Log.d("FlashcardInfo", "Flipping card with content: " + content);
+    private void flipCard(String definition, String example) {
+        Log.d("FlashcardInfo", "Flipping card with definition: " + definition + ", example: " + example);
+
         if (isFrontVisible) {
            // flipOut.setTarget(frontSide);
             flipIn.setTarget(backSide);
@@ -235,7 +265,8 @@ public class FlashcardInformationActivity extends AppCompatActivity {
                 public void onAnimationEnd(android.animation.Animator animation) {
                     frontSide.setVisibility(View.GONE);
                     backSide.setVisibility(View.VISIBLE);
-                    tvBackContent.setText(content);
+                    tvDefinition.setText("Definition: "+definition);
+                    tvExamples.setText("Example: "+example);
                     flipIn.start();
                 }
 
@@ -349,4 +380,22 @@ public class FlashcardInformationActivity extends AppCompatActivity {
                 .withEndAction(() -> view.setTranslationX(0)) // Reset vị trí về 0
                 .start();
     }
+    private String getUniquePhonetic(String phoneticText) {
+        if (phoneticText == null || phoneticText.isEmpty()) {
+            return "No pronunciation available";
+        }
+
+        // Chia chuỗi thành từng phần bằng dấu ";"
+        String[] phoneticArray = phoneticText.split(";");
+
+        // Sử dụng Set để loại bỏ các phiên âm trùng lặp
+        Set<String> uniquePhonetics = new LinkedHashSet<>();
+        for (String phonetic : phoneticArray) {
+            uniquePhonetics.add(phonetic.trim()); // Loại bỏ khoảng trắng thừa
+        }
+
+        // Ghép lại thành chuỗi mới, mỗi phiên âm cách nhau dấu "; "
+        return String.join("; ", uniquePhonetics);
+    }
+
 }
