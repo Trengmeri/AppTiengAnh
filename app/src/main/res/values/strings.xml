@@ -51,6 +51,11 @@
     <string name="Language">Select Language</string>
     <string name="backhome">Go to home</string>
     <string name="invalidans">Invalid answer. Please try again.</string>
+    <string name="starttest">Take a \n small test!</string>
+    <string name="nonetest">Start a new\n program!</string>
+    <string name="englishlevel">Choose your \nenglish level</string>
+    <string name="levelintro">Choose a starting level\nthat matches your proficiency.</string>
+    <string name="start">Start here</string>
     <string name="writeans">Write your answer....</string>
     <string name="VN">Vietnamese</string>
     <string name="Eng">English</string>

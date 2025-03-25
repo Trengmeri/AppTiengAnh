@@ -20,10 +20,11 @@ import com.example.test.api.ApiCallback;
 import com.example.test.api.ApiService;
 import com.example.test.api.ResultManager;
 import com.example.test.model.Enrollment;
+import com.example.test.ui.englishlevel.EnglishLevelActivity;
 import com.example.test.ui.home.HomeActivity;
 
 public class SelectActivity extends AppCompatActivity {
-    Button btnTest, btnNew;
+    Button btnTest, btnNew, btnpick;
     TextView btnBack;
     int enrollmentId;
     ApiService apiService = new ApiService(this);
@@ -35,16 +36,17 @@ public class SelectActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_select);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
         btnNew = findViewById(R.id.btnNextProgram);
         btnTest = findViewById(R.id.btnTest);
         btnBack= findViewById(R.id.btnBack);
+        btnpick = findViewById(R.id.btnpick);
         SharedPreferences sharedPreferences = getSharedPreferences("LoginPrefs", MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
+
+        btnpick.setOnClickListener(view -> {
+            Intent intent = new Intent(SelectActivity.this, EnglishLevelActivity.class);
+            startActivity(intent);
+        });
 
         btnTest.setOnClickListener(view -> {
             apiService.startTest(new ApiCallback() {

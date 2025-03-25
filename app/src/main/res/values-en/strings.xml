@@ -9,6 +9,10 @@
     <string name="txt_editPro">Edit Profile</string>
     <string name="nextques">Next question</string>
     <string name="viewpointcourse">View course result</string>
+    <string name="nonetest">Start a new\n program!</string>
+    <string name="englishlevel">Choose your \nenglish level</string>
+    <string name="levelintro">Choose a starting level\nthat matches your proficiency.</string>
+    <string name="start">Start here</string>
     <string name="load">Loading...</string>
     <string name="invalid_username">Not a valid username</string>
     <string name="invalid_password">Password must be >5 characters</string>
@@ -16,6 +20,7 @@
     <string name="backhome">Go to home</string>
     <string name="writeans">Write your answer....</string>
     <string name="invalidans">Invalid answer. Please try again.</string>
+    <string name="starttest">Take a \n small test!</string>
     <string name="fill_blank">Fill in the blank</string>
     <string name="listen_rewrite">Listen and rewrite the answer</string>
     <string name="ques_lis">What are they talking about ?</string>
