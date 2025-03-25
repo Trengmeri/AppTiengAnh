@@ -20,6 +20,7 @@ import com.example.test.NetworkChangeReceiver;
 import com.example.test.PopupHelper;
 import com.example.test.R;
 import com.example.test.api.ApiCallback;
+import com.example.test.api.LearningMaterialsManager;
 import com.example.test.api.LessonManager;
 import com.example.test.api.QuestionManager;
 import com.example.test.api.ResultManager;
@@ -52,10 +53,11 @@ public class Pick1Activity extends AppCompatActivity {
     private AppCompatButton selectedAnswer = null;
     private AppCompatButton btnAnswer1, btnAnswer2, btnAnswer3, btnAnswer4;
     private Button btnCheckAnswer;
+    private ImageView imgLessonMaterial;
     QuestionManager quesManager = new QuestionManager(this);
     LessonManager lesManager = new LessonManager();
     ResultManager resultManager = new ResultManager(this);
-    private boolean isImageVisible = true; // Trạng thái ban đầu: ảnh hiển thị
+    private LearningMaterialsManager materialsManager;
     TextView tvContent;
     NetworkChangeReceiver networkReceiver;
     private List<Integer> questionIds;
@@ -73,11 +75,15 @@ public class Pick1Activity extends AppCompatActivity {
         btnAnswer4 = findViewById(R.id.btnOption4);
         btnCheckAnswer = findViewById(R.id.btnCheckAnswer);
         tvContent = findViewById(R.id.tvContent);
+        imgLessonMaterial= findViewById(R.id.imgLessonMaterial);
+
         LinearLayout progressBar = findViewById(R.id.progressBar); // Ánh xạ ProgressBar
         setupAnswerClickListeners();
         updateProgressBar(progressBar, currentStep);
         networkReceiver = new NetworkChangeReceiver();
-        anHienAnh();
+        materialsManager = new LearningMaterialsManager(this);
+
+        materialsManager.fetchAndLoadImage(1, imgLessonMaterial);
 
         // Lấy lessonId từ intent hoặc một nguồn khác
         int lessonId = 1;
@@ -170,20 +176,6 @@ public class Pick1Activity extends AppCompatActivity {
                 });
 
             }
-        });
-    }
-    private void anHienAnh() {
-        ImageView imgLessonMaterial = findViewById(R.id.imgLessonMaterial);
-        Button btnToggleImage = findViewById(R.id.btnToggleImage);
-        btnToggleImage.setOnClickListener(v -> {
-            if (isImageVisible) {
-                imgLessonMaterial.setVisibility(View.GONE); // Ẩn ảnh
-                btnToggleImage.setText("Hiện ảnh");
-            } else {
-                imgLessonMaterial.setVisibility(View.VISIBLE); // Hiện ảnh
-                btnToggleImage.setText("Ẩn ảnh");
-            }
-            isImageVisible = !isImageVisible; // Đảo trạng thái
         });
     }
 
