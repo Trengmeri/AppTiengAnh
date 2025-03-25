@@ -5,6 +5,7 @@ import java.util.List;
 public class Course {
     private int id;
     private String name;
+
     private String intro;
     private double diffLevel;
     private double recomLevel;
@@ -15,6 +16,7 @@ public class Course {
     private String updateBy;
     private String updateAt;
     private int sumLesson;
+    private boolean proStatus;
     private List<Integer> lessonIds;
 
     // Getters and Setters
@@ -120,5 +122,13 @@ public class Course {
 
     public void setLessonIds(List<Integer> lessonIds) {
         this.lessonIds = lessonIds;
+    }
+
+    public boolean isProStatus() {
+        return proStatus;
+    }
+
+    public void setProStatus(boolean proStatus) {
+        this.proStatus = proStatus;
     }
 }

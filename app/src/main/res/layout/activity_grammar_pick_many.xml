@@ -24,9 +24,11 @@
             android:layout_marginTop="20dp"
             android:layout_gravity="center"/>
 
+
         <!-- Thanh tiến trình -->
         <LinearLayout
             android:id="@+id/progressBar"
+            android:layout_marginTop="16dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
@@ -68,6 +70,13 @@
             android:layout_marginBottom="16dp"
             android:textSize="18sp"
             android:textStyle="bold"/>
+            <ImageView
+                android:id="@+id/imgLessonMaterial"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:layout_marginTop="16dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/lesson_placeholder"/> <!-- Ảnh mặc định -->
 
         <!-- RecyclerView cho các tùy chọn đáp án -->
         <androidx.recyclerview.widget.RecyclerView

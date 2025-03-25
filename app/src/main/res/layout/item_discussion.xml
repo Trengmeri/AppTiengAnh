@@ -2,32 +2,27 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="horizontal"
-    android:background="@color/white"
-    android:layout_marginStart="@dimen/dp_30"
-    android:layout_marginTop="6dp"
-    android:layout_marginEnd="@dimen/dp_16"
-    android:paddingBottom="@dimen/dp_16">
+    android:orientation="vertical"
+    android:padding="8dp"
+    android:background="@color/white">
 
-    <!-- Avatar -->
-    <ImageView
-        android:id="@+id/imgAvatar"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:background="@drawable/icon_numlesson"/>
-
-    <!-- Nội dung bình luận -->
+    <!-- Avatar và Nội dung chính -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_marginStart="8dp">
+        android:orientation="horizontal">
 
-        <!-- Tên user + Đánh giá -->
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <ImageView
+            android:id="@+id/imgAvatar"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/icon_numlesson"/>
+
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginStart="8dp">
 
             <TextView
                 android:id="@+id/txtUser"
@@ -35,75 +30,61 @@
                 android:layout_height="wrap_content"
                 android:text="User Name"
                 android:textStyle="bold"
-                android:textSize="17sp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"/>
+                android:textSize="17sp"/>
 
-            <FrameLayout
-                android:layout_width="wrap_content"
+            <TextView
+                android:id="@+id/txtContent"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+                android:text="Discussion content here..."
+                android:textSize="13sp"
+                android:textColor="#545454"/>
+
+            <!-- Like và thời gian -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="8dp">
 
                 <ImageView
+                    android:id="@+id/btnLike"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/rated_star"/>
+                    android:src="@drawable/like_selector"/>
 
                 <TextView
-                    android:id="@+id/txtRating"
+                    android:id="@+id/txtLikeCount"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="4.5"
+                    android:text="123"
+                    android:textSize="12sp"
+                    android:layout_marginStart="5dp"/>
+
+<!--                <TextView-->
+<!--                    android:id="@+id/txtCreatedAt"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:text="2 weeks ago"-->
+<!--                    android:textSize="12sp"-->
+<!--                    android:layout_marginStart="20dp"/>-->
+
+                <TextView
+                    android:id="@+id/txtReply"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Reply"
+                    android:textSize="12sp"
                     android:textStyle="bold"
-                    android:layout_gravity="end"
-                    android:layout_marginEnd="10dp"
-                    android:layout_marginTop="3dp"/>
-            </FrameLayout>
+                    android:layout_marginStart="20dp"/>
+            </LinearLayout>
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <!-- Nội dung bình luận -->
-        <TextView
-            android:id="@+id/txtContent"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Discussion content here..."
-            android:textColor="#545454"
-            android:textSize="13sp"
-            android:layout_marginEnd="@dimen/dp_16"
-            android:layout_marginTop="5dp"/>
-
-        <!-- Like + Thời gian -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp">
-
-            <ImageView
-                android:id="@+id/btnLike"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/like_selector"/>
-
-            <TextView
-                android:id="@+id/txtLikeCount"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
-                android:textStyle="bold"
-                android:text="123"
-                android:textSize="12sp"/>
-
-            <TextView
-                android:id="@+id/txtCreatedAt"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/dp_16"
-                android:textStyle="bold"
-                android:textSize="12sp"
-                android:text="2 weeks ago"/>
+            <!-- RecyclerView Reply -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerReply"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
         </LinearLayout>
-
     </LinearLayout>
+
 </LinearLayout>

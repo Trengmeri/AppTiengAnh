@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -39,6 +40,7 @@ public class WritingActivity extends AppCompatActivity {
     private LessonManager lessonManager = new LessonManager();
     private  String questype;
     int lessonId = 5;
+    private boolean isImageVisible = true;
     private List<Integer> questionIds;
     private int currentStep = 0;
     private int totalSteps;
@@ -57,6 +59,7 @@ public class WritingActivity extends AppCompatActivity {
         quesManager = new QuestionManager(this);
         int enrollmentId = getIntent().getIntExtra("enrollmentId", 1);
         createProgressBars(totalSteps, currentStep); // Cập nhật thanh tiến trình mỗi lần chuyển câu
+        anHienAnh();
 
         fetchLessonAndQuestions(lessonId);
 
@@ -243,6 +246,20 @@ public class WritingActivity extends AppCompatActivity {
                     .setMessage(message)
                     .setPositiveButton("OK", (dialog, which) -> dialog.dismiss())
                     .show();
+        });
+    }
+    private void anHienAnh() {
+        ImageView imgLessonMaterial = findViewById(R.id.imgLessonMaterial);
+        Button btnToggleImage = findViewById(R.id.btnToggleImage);
+        btnToggleImage.setOnClickListener(v -> {
+            if (isImageVisible) {
+                imgLessonMaterial.setVisibility(View.GONE); // Ẩn ảnh
+                btnToggleImage.setText("Hiện ảnh");
+            } else {
+                imgLessonMaterial.setVisibility(View.VISIBLE); // Hiện ảnh
+                btnToggleImage.setText("Ẩn ảnh");
+            }
+            isImageVisible = !isImageVisible; // Đảo trạng thái
         });
     }
 

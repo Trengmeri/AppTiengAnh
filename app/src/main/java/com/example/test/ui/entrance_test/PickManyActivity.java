@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -45,6 +46,7 @@ public class PickManyActivity extends AppCompatActivity {
     private int answerIds;// Danh sách questionIds
     private TextView tvContent;
     private  String questype;
+    private boolean isImageVisible = true;
     private RecyclerView recyclerViewChoices;
     private LinearLayout progressBar;
     QuestionManager quesManager = new QuestionManager(this);
@@ -61,6 +63,7 @@ public class PickManyActivity extends AppCompatActivity {
         tvContent = findViewById(R.id.tvContent);
         Button btnCheckAnswers = findViewById(R.id.btnCheckAnswers);
         progressBar = findViewById(R.id.progressBar);
+
         createProgressBars(totalSteps, currentStep); // Cập nhật thanh tiến trình mỗi lần chuyển câu
 
         int lessonId = 2;

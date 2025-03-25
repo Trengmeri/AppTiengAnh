@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -23,6 +24,7 @@ import com.example.test.PopupHelper;
 import com.example.test.R;
 import com.example.test.adapter.ChoiceAdapter;
 import com.example.test.api.ApiCallback;
+import com.example.test.api.LearningMaterialsManager;
 import com.example.test.api.LessonManager;
 import com.example.test.api.QuestionManager;
 import com.example.test.api.ResultManager;
@@ -55,9 +57,11 @@ public class Pick1Activity extends AppCompatActivity {
     private int totalSteps; // Tổng số bước trong thanh tiến trình
     private AppCompatButton selectedAnswer = null;
     private Button btnCheckAnswer;
+    private ImageView imgLessonMaterial;
     QuestionManager quesManager = new QuestionManager(this);
     LessonManager lesManager = new LessonManager();
     ResultManager resultManager = new ResultManager(this);
+    private LearningMaterialsManager materialsManager;
     TextView tvContent;
     NetworkChangeReceiver networkReceiver;
     private List<Integer> questionIds;
@@ -71,6 +75,11 @@ public class Pick1Activity extends AppCompatActivity {
 
         btnCheckAnswer = findViewById(R.id.btnCheckAnswer);
         tvContent = findViewById(R.id.tvContent);
+        imgLessonMaterial= findViewById(R.id.imgLessonMaterial);
+
+        LinearLayout progressBar = findViewById(R.id.progressBar); // Ánh xạ ProgressBar
+        setupAnswerClickListeners();
+        updateProgressBar(progressBar, currentStep);
         LinearLayout progressBar = findViewById(R.id.progressBar);
 
         recyclerViewChoices = findViewById(R.id.recyclerViewChoices);
@@ -87,6 +96,9 @@ public class Pick1Activity extends AppCompatActivity {
         createProgressBars(totalSteps, currentStep); // Cập nhật thanh tiến trình mỗi lần chuyển câu
 
         networkReceiver = new NetworkChangeReceiver();
+        materialsManager = new LearningMaterialsManager(this);
+
+        materialsManager.fetchAndLoadImage(1, imgLessonMaterial);
 
         // Lấy lessonId từ intent hoặc một nguồn khác
         int lessonId = 2;
@@ -244,6 +256,7 @@ public class Pick1Activity extends AppCompatActivity {
                                 }
                             }
                         });
+
                     } else {
                         Log.e("Pick1Activity", "Câu hỏi không có lựa chọn.");
                     }

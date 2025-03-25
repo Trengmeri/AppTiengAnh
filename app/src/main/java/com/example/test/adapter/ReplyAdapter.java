@@ -1,7 +1,6 @@
 package com.example.test.adapter;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
@@ -13,7 +12,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.test.R;
@@ -23,44 +21,38 @@ import com.example.test.api.DiscussionManager;
 import com.example.test.api.UserManager;
 import com.example.test.model.Discussion;
 import com.example.test.model.User;
-import com.example.test.ui.DiscussionActivity;
 
 import java.util.List;
 
-public class DiscussionAdapter extends RecyclerView.Adapter<DiscussionAdapter.ViewHolder> {
-    private List<Discussion> discussions;
+public class ReplyAdapter extends RecyclerView.Adapter<ReplyAdapter.ViewHolder> {
+    private List<Discussion> replies;
     private Context context;
-    private ReplyAdapter replyAdapter;
-
     private UserManager userManager;
     private DiscussionManager discussionManager;
-    private OnReplyClickListener replyClickListener;
-    private final int currentUserID = SharedPreferencesManager.getInstance(context).getUser().getId();
+    private  int currentUserID;
+//    private final int currentUserID = SharedPreferencesManager.getInstance(context).getUser().getId();
 
-
-    public DiscussionAdapter(Context context, List<Discussion> discussions,  OnReplyClickListener replyClickListener) {
+    public ReplyAdapter(Context context, List<Discussion> replies, int currentUserID) {
         this.context = context;
-        this.discussions = discussions;
-        this.userManager = new UserManager(context);
+        this.replies = replies;
+        this.userManager= new UserManager(context);
         this.discussionManager= new DiscussionManager(context);
-        this.replyClickListener = replyClickListener;
-        if (currentUserID == -1) {
-            Log.e("ReviewAdapter", "User chưa đăng nhập, userId không hợp lệ");
-        }// Lưu lại listener
+        this.currentUserID = currentUserID;
     }
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.item_discussion, parent, false);
+        View view = LayoutInflater.from(context).inflate(R.layout.item_reply, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Discussion discussion = discussions.get(position);
+        Discussion reply = replies.get(position);
 
-        int userId = discussion.getUserID();
+        int userId = reply.getUserID();
+        Log.d("ReplyActivity", "UserID: "+ userId);
         userManager.fetchUserById(userId, new ApiCallback<User>() {
             @Override
             public void onSuccess() {
@@ -80,10 +72,10 @@ public class DiscussionAdapter extends RecyclerView.Adapter<DiscussionAdapter.Vi
                 });
             }
         });
-        holder.txtContent.setText(discussion.getContent());
+        holder.txtContent.setText(reply.getContent());
 
         // Kiểm tra trạng thái like
-        discussionManager.isDiscussionLiked(currentUserID, discussion.getId(), new ApiCallback<Boolean>() {
+        discussionManager.isDiscussionLiked(currentUserID, reply.getId(), new ApiCallback<Boolean>() {
             @Override
             public void onSuccess() {
 
@@ -91,7 +83,7 @@ public class DiscussionAdapter extends RecyclerView.Adapter<DiscussionAdapter.Vi
 
             @Override
             public void onSuccess(Boolean isLiked) {
-                discussion.setLiked(isLiked);
+                reply.setLiked(isLiked);
                 new Handler(Looper.getMainLooper()).post(() -> {
                     holder.btnLike.setSelected(isLiked);
                 });
@@ -102,27 +94,23 @@ public class DiscussionAdapter extends RecyclerView.Adapter<DiscussionAdapter.Vi
                 Log.e("DiscussionAdapter", "Lỗi kiểm tra like: " + errorMessage);
             }
         });
-        holder.txtLikeCount.setText(String.valueOf(discussion.getNumLike()));
+        holder.txtLikeCount.setText(String.valueOf(reply.getNumLike()));
 
 
         // Xử lý sự kiện bấm nút Like
         holder.btnLike.setOnClickListener(v -> {
-            if (currentUserID == -1) {
-                Toast.makeText(context, "Vui lòng đăng nhập để thích đánh giá!", Toast.LENGTH_SHORT).show();
-                return;
-            }
-            boolean isLiked = discussion.isLiked();
-            int newLikeCount = isLiked ? discussion.getNumLike() - 1 : discussion.getNumLike() + 1;
+            boolean isLiked = reply.isLiked();
+            int newLikeCount = isLiked ? reply.getNumLike() - 1 : reply.getNumLike() + 1;
 
             // Cập nhật UI ngay lập tức
-            discussion.setNumLike(newLikeCount);
-            discussion.setLiked(!isLiked);
+            reply.setNumLike(newLikeCount);
+            reply.setLiked(!isLiked);
             holder.txtLikeCount.setText(String.valueOf(newLikeCount));
             holder.btnLike.setSelected(!isLiked);
 
             // Gửi API like/unlike
             if (!isLiked) {
-                discussionManager.likeDiscussion(currentUserID, discussion.getId(), new ApiCallback<Void>() {
+                discussionManager.likeDiscussion(currentUserID, reply.getId(), new ApiCallback<Void>() {
                     @Override
                     public void onSuccess() {
 
@@ -135,11 +123,11 @@ public class DiscussionAdapter extends RecyclerView.Adapter<DiscussionAdapter.Vi
 
                     @Override
                     public void onFailure(String errorMessage) {
-                        rollbackLike(holder, discussion, isLiked);
+                        rollbackLike(holder, reply, isLiked);
                     }
                 });
             } else {
-                discussionManager.unlikeDiscussion(currentUserID, discussion.getId(), new ApiCallback<Void>() {
+                discussionManager.unlikeDiscussion(currentUserID, reply.getId(), new ApiCallback<Void>() {
                     @Override
                     public void onSuccess() {
 
@@ -152,56 +140,19 @@ public class DiscussionAdapter extends RecyclerView.Adapter<DiscussionAdapter.Vi
 
                     @Override
                     public void onFailure(String errorMessage) {
-                        rollbackLike(holder, discussion, isLiked);
+                        rollbackLike(holder, reply, isLiked);
                     }
                 });
             }
         });
-
-
-        // Xu ly khi bam reply
-        holder.txtReply.setOnClickListener(v -> {
-            if (replyClickListener != null) {
-                replyClickListener.onReplyClicked(discussion.getId());
-            }
-        });
-
-
-
-
-        // Hiển thị danh sách reply
-        if (holder.recyclerReply.getLayoutManager() == null) {
-            holder.recyclerReply.setLayoutManager(new LinearLayoutManager(context));
-        }
-        replyAdapter = new ReplyAdapter(context, discussion.getReplies(), currentUserID);
-        holder.recyclerReply.setAdapter(replyAdapter);
-        replyAdapter.notifyDataSetChanged();
-
     }
 
     @Override
     public int getItemCount() {
-        return discussions.size();
-    }
-    public void addDiscussion(Discussion discussion) {
-        if (discussions != null) {
-            discussions.add(discussion); // Thêm vào cuối danh sách (hoặc `.add(0, discussion)` để thêm vào đầu)
-            notifyItemInserted(0); // Cập nhật RecyclerView
-        } else {
-            Log.e("DiscussionAdapter", "discussionList is null");
-        }
+        return replies.size();
     }
 
-    public void addMoreDiscussions(List<Discussion> newDiscussions) {
-        if (newDiscussions != null && !newDiscussions.isEmpty()) {
-            int startPosition = discussions.size();
-            discussions.addAll(newDiscussions);
-            notifyItemRangeInserted(startPosition, newDiscussions.size());
-        }
-    }
-
-
-    private void rollbackLike(ViewHolder holder, Discussion discussion, boolean previousState) {
+    private void rollbackLike(ReplyAdapter.ViewHolder holder, Discussion discussion, boolean previousState) {
         discussion.setNumLike(previousState ? discussion.getNumLike() + 1 : discussion.getNumLike() - 1);
         discussion.setLiked(previousState);
 
@@ -217,32 +168,17 @@ public class DiscussionAdapter extends RecyclerView.Adapter<DiscussionAdapter.Vi
         });
     }
 
-    public interface OnReplyClickListener {
-        void onReplyClicked(int discussionId);
-    }
-    public List<Discussion> getDiscussions() {
-        return discussions;
-    }
-
-
-
-
-
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView txtUser, txtContent, txtLikeCount, txtReply;
-        RecyclerView recyclerReply;
+        TextView txtUser, txtContent, txtCreatedAt, txtLikeCount;
         ImageView btnLike;
 
         public ViewHolder(View itemView) {
             super(itemView);
-            btnLike = itemView.findViewById(R.id.btnLike);
             txtUser = itemView.findViewById(R.id.txtUser);
             txtContent = itemView.findViewById(R.id.txtContent);
-            txtLikeCount = itemView.findViewById(R.id.txtLikeCount);
+            txtLikeCount= itemView.findViewById(R.id.txtLikeCount);
+            btnLike= itemView.findViewById(R.id.btnLike);
 //            txtCreatedAt = itemView.findViewById(R.id.txtCreatedAt);
-            txtReply = itemView.findViewById(R.id.txtReply);
-            recyclerReply = itemView.findViewById(R.id.recyclerReply);
         }
     }
 }
-

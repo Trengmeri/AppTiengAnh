@@ -2,7 +2,6 @@ package com.example.test.ui;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -46,6 +45,21 @@ public class ChooseFieldsActivity extends AppCompatActivity {
 
 
         btnEco.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(ChooseFieldsActivity.this, CourseInformationActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        btnConstruct.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(ChooseFieldsActivity.this, DiscussionActivity.class);
+                startActivity(intent);
+            }
+        });
+        btnMechan.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(ChooseFieldsActivity.this, CourseActivity.class);

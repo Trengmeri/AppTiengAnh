@@ -155,6 +155,7 @@ public class LessonManager extends BaseApiManager {
 
     private void fetchCoursesByPage(int page,String prostatus, List<Integer> allCourseIds, ApiCallback<List<Integer>> callback) {
         String url = BASE_URL + "/api/v1/courses?page=" + page + "&courseStatus=" + prostatus;
+        boolean checkProStatus = (prostatus.toLowerCase().equals("true"));
 
         Request request = new Request.Builder()
                 .url(url)
@@ -184,6 +185,7 @@ public class LessonManager extends BaseApiManager {
                     List<Course> courses = gson.fromJson(jsonResponse.getAsJsonObject("data").get("content"), listType);
 
                     for (Course course : courses) {
+                        course.setProStatus(checkProStatus);
                         allCourseIds.add(course.getId());
                     }
 

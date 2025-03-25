@@ -6,50 +6,77 @@ import java.util.List;
 
 
 public class Discussion {
-    private Long id;
+    private int id;
+
+    @SerializedName("userId")
+    private int userID;
+
+    @SerializedName("lessonId")
+    private int lessonID;
+
+    @SerializedName("content")
     private String content;
 
-    @SerializedName("user_id")
-    private User user;
-
-    @SerializedName("lesson_id")
-    private Lesson lesson;
-
-    @SerializedName("parent_id")
-    private Discussion parentDiscussion;
-
-    private List<Discussion> replies;
+    @SerializedName("numLike")
     private int numLike;
 
+    @SerializedName("replies")
+    private List<Discussion> replies; // Danh sách các phản hồi (reply)
 
-    public Discussion(Long id, String content, User user, Lesson lesson, Discussion parentDiscussion, int numLike) {
-        id = id;
-        this.content = content;
-        this.user = user;
-        this.lesson = lesson;
-        this.parentDiscussion = parentDiscussion;
-        this.numLike = numLike;
+    private boolean isLiked;
+
+    public Discussion(){}
+
+
+
+    // Getters và Setters
+    public int getId() {
+        return id;
     }
 
-    // Getter và Setter
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public void setId(int id) {
+        this.id = id;
+    }
 
-    public String getContent() { return content; }
-    public void setContent(String content) { this.content = content; }
+    public int getUserID() {
+        return userID;
+    }
 
-    public User getUser() { return user; }
-    public void setUser(User user) { this.user = user; }
+    public void setUserID(int userID) {
+        this.userID = userID;
+    }
 
-    public Lesson getLesson() { return lesson; }
-    public void setLesson(Lesson lesson) { this.lesson = lesson; }
+    public int getLessonID() {
+        return lessonID;
+    }
 
-    public Discussion getParentDiscussion() { return parentDiscussion; }
-    public void setParentDiscussion(Discussion parentDiscussion) { this.parentDiscussion = parentDiscussion; }
+    public void setLessonID(int lessonID) {
+        this.lessonID = lessonID;
+    }
 
-    public List<Discussion> getReplies() { return replies; }
-    public void setReplies(List<Discussion> replies) { this.replies = replies; }
+    public String getContent() {
+        return content;
+    }
 
-    public int getNumLike() { return numLike; }
-    public void setNumLike(int numLike) { this.numLike = numLike; }
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public int getNumLike() {
+        return numLike;
+    }
+
+    public void setNumLike(int numLike) {
+        this.numLike = numLike;
+    }
+    public boolean isLiked() { return isLiked; }
+    public void setLiked(boolean isLiked) { this.isLiked = isLiked; }
+
+    public List<Discussion> getReplies() {
+        return replies;
+    }
+
+    public void setReplies(List<Discussion> replies) {
+        this.replies = replies;
+    }
 }

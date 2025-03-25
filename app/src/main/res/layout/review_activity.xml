@@ -6,7 +6,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.DiscussionActivity"
+    tools:context=".ui.CourseActivity"
     android:padding="16dp"
     android:background="@color/white">
 
@@ -16,7 +16,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="20sp"
-        android:text="@string/txt_discussion"
+        android:text="@string/txt_rvCourse"
         android:textStyle="bold"
         android:textColor="@color/black"
         android:drawableStart="@drawable/icon_back"
@@ -28,7 +28,7 @@
 
     <!-- Danh sách bình luận -->
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_discussions"
+        android:id="@+id/rv_Review"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:paddingTop="8dp"
@@ -52,46 +52,43 @@
             android:padding="12dp"
             android:orientation="vertical">
 
-            <!-- Thanh hiển thị "Đang phản hồi ..." -->
+
+<!--            phan hien danh gia sao-->
+
             <LinearLayout
-                android:id="@+id/replyContainer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="8dp"
+                android:gravity="left"
                 android:orientation="horizontal"
-                android:visibility="gone"
-                android:background="@color/light_gray"
-                android:padding="8dp"
-                android:layout_marginBottom="8dp">
+                android:padding="8dp">
 
                 <TextView
-                    android:id="@+id/txtReplyingTo"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Đang phản hồi "
+                    android:layout_gravity="center"
+                    android:layout_marginEnd="25dp"
+                    android:text="Rate this course:"
+                    android:textColor="@color/black"
                     android:textSize="14sp"
-                    android:textColor="@color/black"/>
+                    android:textStyle="bold" />
 
-                <TextView
-                    android:id="@+id/txtReplyUser"
+                <RatingBar
+                    android:id="@+id/ratingBar"
+                    style="?android:attr/ratingBarStyleSmall"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textStyle="bold"
-                    android:textSize="14sp"
-                    android:textColor="@color/black"/>
-
-                <TextView
-                    android:id="@+id/txtCancelReply"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text=" · Hủy"
-                    android:paddingStart="8dp"
-                    android:textSize="14sp"
-                    android:textColor="@color/grayy"
-                    android:clickable="true"
-                    android:background="?attr/selectableItemBackground"/>
+                    android:isIndicator="false"
+                    android:numStars="5"
+                    android:rating="5"
+                    android:scaleX="1.5"
+                    android:scaleY="1.5"
+                    android:stepSize="1.0"
+                    android:theme="@style/CustomRatingBar" />
             </LinearLayout>
 
-            <!-- Phần nhập bình luận -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -101,17 +98,17 @@
                 android:gravity="center_vertical">
 
                 <EditText
-                    android:id="@+id/editDiscussion"
+                    android:id="@+id/editReview"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="52dp"
                     android:layout_weight="1"
-                    android:hint="Viết bình luận..."
-                    android:textSize="16sp"
                     android:background="@null"
-                    android:padding="8dp"/>
+                    android:hint="Write a review..."
+                    android:padding="8dp"
+                    android:textSize="16sp" />
 
                 <ImageView
-                    android:id="@+id/btSendDiscussion"
+                    android:id="@+id/btnSendReview"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:src="@drawable/icon_send"

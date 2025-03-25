@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -48,6 +49,7 @@ public class GrammarPick1QuestionActivity extends AppCompatActivity {
     private AppCompatButton selectedAnswer = null;
     private Button btnCheckAnswer;
     private RecyclerView recyclerViewChoices;
+    private boolean isImageVisible = true; // Trạng thái ban đầu: ảnh hiển thị
     QuestionManager quesManager = new QuestionManager(this);
     LessonManager lesManager = new LessonManager();
     ResultManager resultManager = new ResultManager(this);
@@ -81,6 +83,7 @@ public class GrammarPick1QuestionActivity extends AppCompatActivity {
         LinearLayout progressBar = findViewById(R.id.progressBar);
         updateProgressBar(progressBar, currentQuestionIndex);
         networkReceiver = new NetworkChangeReceiver();
+        anHienAnh();
 
         // Nhận dữ liệu từ Intent
         currentQuestionIndex = getIntent().getIntExtra("currentQuestionIndex", 0);
@@ -205,6 +208,22 @@ public class GrammarPick1QuestionActivity extends AppCompatActivity {
             }
         });
     }
+
+    private void anHienAnh() {
+        ImageView imgLessonMaterial = findViewById(R.id.imgLessonMaterial);
+        Button btnToggleImage = findViewById(R.id.btnToggleImage);
+        btnToggleImage.setOnClickListener(v -> {
+            if (isImageVisible) {
+                imgLessonMaterial.setVisibility(View.GONE); // Ẩn ảnh
+                btnToggleImage.setText("Hiện ảnh");
+            } else {
+                imgLessonMaterial.setVisibility(View.VISIBLE); // Hiện ảnh
+                btnToggleImage.setText("Ẩn ảnh");
+            }
+            isImageVisible = !isImageVisible; // Đảo trạng thái
+        });
+    }
+
     private void loadQuestion(int index) {
         if (index < questions.size()) {
             Question question = questions.get(index);
@@ -259,6 +278,7 @@ public class GrammarPick1QuestionActivity extends AppCompatActivity {
         startActivity(intent);
         finish();
     }
+
     private void updateProgressBar(LinearLayout progressBarSteps, int step) {
         if (step < progressBarSteps.getChildCount()) {
             final View currentStepView = progressBarSteps.getChildAt(step);
