@@ -107,8 +107,9 @@ public class FlashcardManager extends BaseApiManager {
 
 
 
-    public void fetchFlashcardsInGroup(int groupId, FlashcardApiCallback callback) {
-        String url = BASE_URL + "/api/v1/flashcard-groups/" + groupId;
+    public void fetchFlashcardsInGroup(int groupId,int page,int size, FlashcardApiCallback callback) {
+        String url = BASE_URL + "/api/v1/flashcard-groups/" + groupId + "?page=" + page+ "&size=" + size;
+
         Request request = new Request.Builder()
                 .url(url)
                 .build();
