@@ -43,7 +43,7 @@ import okhttp3.Callback;
 import okhttp3.Response;
 
 public class ListeningQuestionActivity extends AppCompatActivity {
-    List<String> correctAnswers = new ArrayList<>();
+    String correctAnswers ;
     private MediaPlayer mediaPlayer;
     private EditText etAnswer;
     private List<Question> questions; // Danh sách câu hỏi
@@ -51,7 +51,7 @@ public class ListeningQuestionActivity extends AppCompatActivity {
     private List<String> userAnswers = new ArrayList<>();
     private int currentStep = 0; // Bước hiện tại (bắt đầu từ 0)
     private int totalSteps; // Tổng số bước trong thanh tiến trình
-    private int lessonID,courseID;
+    private int lessonID,courseID,enrollmentId;
     private int answerIds;
     private  String questype;
     ImageView btnListen;
@@ -78,6 +78,7 @@ public class ListeningQuestionActivity extends AppCompatActivity {
         questions = (List<Question>) getIntent().getSerializableExtra("questions");
         courseID = getIntent().getIntExtra("courseID",1);
         lessonID = getIntent().getIntExtra("lessonID",1);
+        enrollmentId = getIntent().getIntExtra("enrollmentId", 1);
 
 
         // Hiển thị câu hỏi hiện tại
@@ -112,13 +113,13 @@ public class ListeningQuestionActivity extends AppCompatActivity {
                 }
                 String answerContent = sb.toString();
                 // Lưu câu trả lời của người dùng
-                quesManager.saveUserAnswer(questions.get(currentQuestionIndex).getId(), answerContent,0,null, new ApiCallback() {
+                quesManager.saveUserAnswer(questions.get(currentQuestionIndex).getId(), answerContent,0,null,enrollmentId, new ApiCallback() {
                     @Override
                     public void onSuccess() {
                         Log.e("ListeningQuestionActivity", "Câu trả lời đã được lưu: " + answerContent);
                         // Hiển thị popup
                         runOnUiThread(() -> {
-                            PopupHelper.showResultPopup(ListeningQuestionActivity.this, questype, userAnswers, correctAnswers, null, null, null, () -> {
+                            PopupHelper.showResultPopup(ListeningQuestionActivity.this, questype, answerContent, correctAnswers, null, null, null, () -> {
                                 currentQuestionIndex++; // Tăng currentStep
 
                                 // Kiểm tra nếu hoàn thành
@@ -132,6 +133,7 @@ public class ListeningQuestionActivity extends AppCompatActivity {
                                         intent.putExtra("questions", (Serializable) questions);
                                         intent.putExtra("courseID", courseID);
                                         intent.putExtra("lessonID", lessonID);
+                                        intent.putExtra("enrollmentId", enrollmentId);
                                         startActivity(intent);
                                         finish(); // Đóng Activity hiện tại
                                     }
@@ -275,10 +277,9 @@ public class ListeningQuestionActivity extends AppCompatActivity {
                         runOnUiThread(() -> {
                             tvQuestion.setText(question.getQuesContent());
                             List<QuestionChoice> choices = question.getQuestionChoices();
-                            correctAnswers.clear();
                             for (QuestionChoice choice : choices) {
                                 if (choice.isChoiceKey()) {
-                                    correctAnswers.add(choice.getChoiceContent());
+                                    correctAnswers=(choice.getChoiceContent());
                                 }
                             }
                         });

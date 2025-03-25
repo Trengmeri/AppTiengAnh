@@ -43,7 +43,7 @@ import okhttp3.Callback;
 import okhttp3.Response;
 
 public class ReadingTextActivity extends AppCompatActivity {
-    List<String> correctAnswers = new ArrayList<>();
+    String correctAnswers ;
     private List<String> userAnswers = new ArrayList<>();
     private int totalSteps; // Tổng số bước trong thanh tiến trình
     private Button btnCheckAnswer;
@@ -52,7 +52,7 @@ public class ReadingTextActivity extends AppCompatActivity {
     ResultManager resultManager = new ResultManager(this);
     TextView tvContent;
     private EditText etAnswer;
-    private int lessonID,courseID;
+    private int lessonID,courseID,enrollmentId;
     NetworkChangeReceiver networkReceiver;
     private int answerIds;
     private  String questype;
@@ -77,6 +77,8 @@ public class ReadingTextActivity extends AppCompatActivity {
         questions = (List<Question>) getIntent().getSerializableExtra("questions");
         courseID = getIntent().getIntExtra("courseID",1);
         lessonID = getIntent().getIntExtra("lessonID",1);
+
+        enrollmentId = getIntent().getIntExtra("enrollmentId", 1);
         Log.e("pick1","Lesson ID: "+ lessonID + "courseID: "+ courseID);
 
 
@@ -106,13 +108,13 @@ public class ReadingTextActivity extends AppCompatActivity {
                 }
                 String answerContent = sb.toString();
                 // Lưu câu trả lời của người dùng
-                quesManager.saveUserAnswer(questions.get(currentQuestionIndex).getId(), answerContent,0,null, new ApiCallback() {
+                quesManager.saveUserAnswer(questions.get(currentQuestionIndex).getId(), answerContent,0,null,enrollmentId, new ApiCallback() {
                     @Override
                     public void onSuccess() {
                         Log.e("ReadingTextActivity", "Câu trả lời đã được lưu: " + answerContent);
                         // Hiển thị popup
                         runOnUiThread(() -> {
-                            PopupHelper.showResultPopup(ReadingTextActivity.this, questype, userAnswers, correctAnswers, null, null, null, () -> {
+                            PopupHelper.showResultPopup(ReadingTextActivity.this, questype, answerContent, correctAnswers, null, null, null, () -> {
                                 currentQuestionIndex++; // Tăng currentStep
 
                                 // Kiểm tra nếu hoàn thành
@@ -126,6 +128,7 @@ public class ReadingTextActivity extends AppCompatActivity {
                                         intent.putExtra("questions", (Serializable) questions);
                                         intent.putExtra("courseID", courseID);
                                         intent.putExtra("lessonID", lessonID);
+                                        intent.putExtra("enrollmentId", enrollmentId);
                                         startActivity(intent);
                                         finish(); // Đóng Activity hiện tại
                                     } else if (nextQuestion.getQuesType().equals("MULTIPLE")) {
@@ -218,10 +221,9 @@ public class ReadingTextActivity extends AppCompatActivity {
                         if (choices != null && !choices.isEmpty()) {
                             runOnUiThread(() -> {
                                 tvContent.setText(questionContent);
-                                correctAnswers.clear();
                                 for (QuestionChoice choice : choices) {
                                     if (choice.isChoiceKey()) {
-                                        correctAnswers.add(choice.getChoiceContent());
+                                        correctAnswers=(choice.getChoiceContent());
                                     }
                                 }
                             });

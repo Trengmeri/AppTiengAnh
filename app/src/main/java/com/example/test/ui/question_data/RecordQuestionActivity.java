@@ -48,7 +48,7 @@ public class RecordQuestionActivity extends AppCompatActivity implements SpeechR
     private List<Question> questions;
     private int currentQuestionIndex;
     private int currentStep = 0;
-    private int lessonID, courseID;
+    private int lessonID, courseID, enrollmentId;
     private  String questype;
     private int totalSteps;
     QuestionManager quesManager = new QuestionManager(this);
@@ -78,6 +78,7 @@ public class RecordQuestionActivity extends AppCompatActivity implements SpeechR
         questions = (List<Question>) getIntent().getSerializableExtra("questions");
         courseID = getIntent().getIntExtra("courseID", 1);
         lessonID = getIntent().getIntExtra("lessonID", 1);
+        enrollmentId = getIntent().getIntExtra("enrollmentId", 1);
 
         loadQuestion(currentQuestionIndex);
 
@@ -122,7 +123,7 @@ public class RecordQuestionActivity extends AppCompatActivity implements SpeechR
 
 
                 // Lưu kết quả vào hệ thống
-                quesManager.saveUserAnswer(questions.get(currentStep).getId(), userAnswer, result.getPoint(), result.getimprovements(), new ApiCallback() {
+                quesManager.saveUserAnswer(questions.get(currentStep).getId(), userAnswer, result.getPoint(), result.getimprovements(),enrollmentId, new ApiCallback() {
                     @Override
                     public void onSuccess() {
                         Log.d("RecordQuestionActivity.this", "Lưu thành công!");

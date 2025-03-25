@@ -28,6 +28,7 @@ import com.example.test.model.Question;
 import com.example.test.model.QuestionChoice;
 import com.example.test.ui.question_data.GrammarPick1QuestionActivity;
 import com.example.test.ui.question_data.GrammarPickManyActivity;
+import com.example.test.ui.question_data.PointResultCourseActivity;
 import com.example.test.ui.question_data.PointResultLessonActivity;
 
 import java.io.IOException;
@@ -40,7 +41,7 @@ import okhttp3.Callback;
 import okhttp3.Response;
 
 public class TextReadingActivity extends AppCompatActivity {
-    List<String> correctAnswers = new ArrayList<>();
+    String correctAnswers;
     private List<String> userAnswers = new ArrayList<>();
     private int currentStep =0;
     private int totalSteps; // Tổng số bước trong thanh tiến trình
@@ -51,7 +52,7 @@ public class TextReadingActivity extends AppCompatActivity {
     ResultManager resultManager = new ResultManager(this);
     TextView tvContent;
     private EditText etAnswer;
-    private int lessonID,courseID;
+    private int lessonID,courseID,enrollmentId;
     NetworkChangeReceiver networkReceiver;
     private int answerIds;
     private  String questype;
@@ -73,35 +74,27 @@ public class TextReadingActivity extends AppCompatActivity {
 
         // Lấy lessonId từ intent hoặc một nguồn khác
         int lessonId = 1;
+        enrollmentId = getIntent().getIntExtra("enrollmentId", 1);
+        Log.d("TextReadingActivity", String.valueOf(enrollmentId));
         fetchLessonAndQuestions(lessonId); // Gọi phương thức để lấy bài học và câu hỏi
 
         btnCheckAnswer.setOnClickListener(v -> {
             String userAnswer = etAnswer.getText().toString().trim();
             // Xóa nội dung EditText ngay khi bấm "Check Answers"
             etAnswer.setText("");
-            userAnswers.clear(); // Xóa các câu trả lời trước đó
-            userAnswers.add(userAnswer); // Thêm câu trả lời mới vào danh sách
-            Log.d("TextReadingActivity", "User Answers: " + userAnswers);
-            if (userAnswers.isEmpty()) {
+            Log.d("TextReadingActivity", "User Answers: " + userAnswer);
+            if (userAnswer.isEmpty()) {
                 Toast.makeText(TextReadingActivity.this, "Vui lòng trả lời câu hỏi!", Toast.LENGTH_SHORT).show();
             } else {
-                StringBuilder sb = new StringBuilder();
-                for (int i = 0; i < userAnswers.size(); i++) {
-                    sb.append(userAnswers.get(i));
-                    if (i < userAnswers.size() - 1) {
-                        sb.append(", "); // Hoặc ký tự phân cách khác
-                    }
-                }
-                String answerContent = sb.toString();
+                String answerContent = userAnswer;
                 // Lưu câu trả lời của người dùng
-                quesManager.saveUserAnswer(questionIds.get(currentStep), answerContent, 0, null, new ApiCallback() {
-
+                quesManager.saveUserAnswer(questionIds.get(currentStep), answerContent, 0, null, enrollmentId, new ApiCallback() {
                     @Override
                     public void onSuccess() {
                         Log.e("TextReadingActivity", "Câu trả lời đã được lưu: " + answerContent);
                         // Hiển thị popup
                         runOnUiThread(() -> {
-                            PopupHelper.showResultPopup(TextReadingActivity.this, questype, userAnswers, correctAnswers, null, null, null, () -> {
+                            PopupHelper.showResultPopup(TextReadingActivity.this, questype, userAnswer, correctAnswers, null, null, null, () -> {
                                 currentStep++; // Tăng currentStep
 
                                 // Kiểm tra nếu hoàn thành
@@ -109,7 +102,9 @@ public class TextReadingActivity extends AppCompatActivity {
                                     fetchQuestion(questionIds.get(currentStep)); // Lấy câu hỏi tiếp theo
                                     createProgressBars(totalSteps, currentStep); // Cập nhật thanh tiến trình mỗi lần chuyển câu
                                 } else {
-                                    Intent intent = new Intent(TextReadingActivity.this, Pick1Activity.class);
+                                    Intent intent = new Intent(TextReadingActivity.this, PointResultCourseActivity.class);
+                                    intent.putExtra("status", "test");
+                                    intent.putExtra("enrollmentId", enrollmentId);
                                     startActivity(intent);
                                     finish();
                                 }
@@ -152,7 +147,7 @@ public class TextReadingActivity extends AppCompatActivity {
 
                             @Override
                             public void onFailure(String errorMessage) {
-
+                                Log.e("TextReadingActivity", errorMessage);
                             }
                         });
                     }
@@ -164,7 +159,7 @@ public class TextReadingActivity extends AppCompatActivity {
 
                     @Override
                     public void onFailure(String errorMessage) {
-
+                        Log.e("TextReadingActivity", errorMessage);
                     }
                 });
             }
@@ -217,10 +212,9 @@ public class TextReadingActivity extends AppCompatActivity {
                     String questionContent = question.getQuesContent();
                     runOnUiThread(() -> tvContent.setText(questionContent));
                     List<QuestionChoice> choices = question.getQuestionChoices();
-                    correctAnswers.clear();
                     for (QuestionChoice choice : choices) {
                         if (choice.isChoiceKey()) {
-                            correctAnswers.add(choice.getChoiceContent());
+                            correctAnswers= choice.getChoiceContent();
                         }
                     }
                 } else {

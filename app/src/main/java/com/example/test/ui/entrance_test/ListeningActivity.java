@@ -49,12 +49,12 @@ import okhttp3.Callback;
 import okhttp3.Response;
 
 public class ListeningActivity extends AppCompatActivity {
-    List<String> correctAnswers = new ArrayList<>();
+    String correctAnswer;
     private MediaPlayer mediaPlayer;
     private EditText etAnswer;
     private List<Integer> questionIds;
     private  String questype;
-    private List<String> userAnswers = new ArrayList<>();
+    private String userAnswer;
     private int currentStep = 0; // Bước hiện tại (bắt đầu từ 0)
     private int totalSteps; // Tổng số bước trong thanh tiến trình
     private int answerIds;
@@ -78,6 +78,7 @@ public class ListeningActivity extends AppCompatActivity {
         tvQuestion = findViewById(R.id.tvQuestion);
         etAnswer = findViewById(R.id.etAnswer);
         int lessonId = 4;
+        int enrollmentId = getIntent().getIntExtra("enrollmentId", 1);
         fetchLessonAndQuestions(lessonId);
 
         progressBar = findViewById(R.id.progressBar); // Ánh xạ ProgressBar
@@ -93,29 +94,20 @@ public class ListeningActivity extends AppCompatActivity {
             String userAnswer = etAnswer.getText().toString().trim();
             // Xóa nội dung EditText ngay khi bấm "Check Answers"
             etAnswer.setText("");
-            userAnswers.clear(); // Xóa các câu trả lời trước đó
-            userAnswers.add(userAnswer); // Thêm câu trả lời mới vào danh sách
-            Log.d("ListeningActivity", "User Answers: " + userAnswers);
-            if (userAnswers.isEmpty()) {
+            Log.d("ListeningActivity", "User Answers: " + userAnswer);
+            if (userAnswer.isEmpty()) {
                 Toast.makeText(ListeningActivity.this, "Vui lòng trả lời câu hỏi!", Toast.LENGTH_SHORT).show();
             } else {
-                StringBuilder sb = new StringBuilder();
-                for (int i = 0; i < userAnswers.size(); i++) {
-                    sb.append(userAnswers.get(i));
-                    if (i < userAnswers.size() - 1) {
-                        sb.append(", "); // Hoặc ký tự phân cách khác
-                    }
-                }
-                String answerContent = sb.toString();
+                String answerContent = userAnswer;
                 // Lưu câu trả lời của người dùng
-                quesManager.saveUserAnswer(questionIds.get(currentStep), answerContent, 0,null, new ApiCallback() {
+                quesManager.saveUserAnswer(questionIds.get(currentStep), answerContent, 0,null,enrollmentId, new ApiCallback() {
 
                     @Override
                     public void onSuccess() {
                         Log.e("ListeningActivity", "Câu trả lời đã được lưu: " + answerContent);
                         // Hiển thị popup
                         runOnUiThread(() -> {
-                            PopupHelper.showResultPopup(ListeningActivity.this, questype, userAnswers, correctAnswers, null, null, null, () -> {
+                            PopupHelper.showResultPopup(ListeningActivity.this, questype, userAnswer, correctAnswer, null, null, null, () -> {
                                 currentStep++; // Tăng currentStep
 
                                 // Kiểm tra nếu hoàn thành
@@ -124,6 +116,7 @@ public class ListeningActivity extends AppCompatActivity {
                                     createProgressBars(totalSteps, currentStep); // Tạo progress bar dựa trên số câu hỏi thực tế
                                 } else {
                                     Intent intent = new Intent(ListeningActivity.this, ListeningPick1Activity.class);
+                                    intent.putExtra("enrollmentId", enrollmentId);
                                     startActivity(intent);
                                     finish();
                                 }
@@ -231,10 +224,9 @@ public class ListeningActivity extends AppCompatActivity {
                     runOnUiThread(() -> {
                         tvQuestion.setText(question.getQuesContent());
                         List<QuestionChoice> choices = question.getQuestionChoices();
-                        correctAnswers.clear();
                         for (QuestionChoice choice : choices) {
                             if (choice.isChoiceKey()) {
-                                correctAnswers.add(choice.getChoiceContent());
+                                correctAnswer = choice.getChoiceContent();
                             }
                         }
                     });

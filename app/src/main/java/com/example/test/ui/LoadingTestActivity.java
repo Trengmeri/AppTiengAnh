@@ -19,21 +19,19 @@ public class LoadingTestActivity extends AppCompatActivity {
 
     TextView ldText;
     private int dotCount = 0;
+    int enrollmentId;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_loading_test);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
         startLoadingAnimation();
         ldText= findViewById(R.id.loadingText);
+        enrollmentId = getIntent().getIntExtra("enrollmentId", 1);
         new Handler().postDelayed(() -> {
             // Intent để chuyển màn hình
             Intent intent = new Intent(LoadingTestActivity.this, TextReadingActivity.class);
+            intent.putExtra("enrollmentId", enrollmentId);
             startActivity(intent);
             finish(); // Kết thúc màn hình hiện tại
         }, 3000);

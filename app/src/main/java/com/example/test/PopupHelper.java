@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 
 public class PopupHelper {
 
-    public static void showResultPopup(Activity activity, String questType, List<String> userAnswers, List<String> correctAnswers, Double score, String improvements, String evaluation, Runnable onNextQuestion) {
+    public static void showResultPopup(Activity activity, String questType, String userAnswers, String correctAnswers, Double score, String improvements, String evaluation, Runnable onNextQuestion) {
         Dialog dialog = new Dialog(activity);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         View popupView = LayoutInflater.from(activity).inflate(R.layout.popup_result, null);
@@ -46,15 +46,8 @@ public class PopupHelper {
         Button btnview = popupView.findViewById(R.id.btnview);
 
         if ("MULTIPLE".equals(questType) || "CHOICE".equals(questType) || "TEXT".equals(questType)) {
-            Set<String> userSet = userAnswers.stream()
-                    .map(String::toLowerCase)
-                    .collect(Collectors.toSet());
 
-            Set<String> correctSet = correctAnswers.stream()
-                    .map(String::toLowerCase)
-                    .collect(Collectors.toSet());
-
-            if (userSet.equals(correctSet)) {
+            if (userAnswers.toLowerCase().equals(correctAnswers.toLowerCase())) {
                 tvMessage.setText(String.format("%s\n%s", activity.getString(R.string.correct), activity.getString(R.string.ANS)));
                 tvMessage.setTextColor(activity.getResources().getColor(android.R.color.holo_green_dark));
                 tvDetail.setText(String.join(", ", correctAnswers));

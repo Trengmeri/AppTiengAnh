@@ -52,7 +52,7 @@ import okhttp3.Callback;
 import okhttp3.Response;
 
 public class ListeningPick1Activity extends AppCompatActivity {
-    List<String> correctAnswers = new ArrayList<>();
+    String correctAnswers;
     private MediaPlayer mediaPlayer;
     private EditText etAnswer;
     private List<Integer> questionIds;
@@ -93,6 +93,7 @@ public class ListeningPick1Activity extends AppCompatActivity {
         recyclerViewChoices.setLayoutManager(layoutManager);
         recyclerViewChoices.setHasFixedSize(true);
         int lessonId = 3;
+        int enrollmentId = getIntent().getIntExtra("enrollmentId", 1);
         fetchLessonAndQuestions(lessonId);
 
         progressBar = findViewById(R.id.progressBar); // Ánh xạ ProgressBar
@@ -119,14 +120,14 @@ public class ListeningPick1Activity extends AppCompatActivity {
                 }
                 String answerContent = sb.toString();
                 // Lưu câu trả lời của người dùng
-                quesManager.saveUserAnswer(questionIds.get(currentStep), answerContent, 0,null, new ApiCallback() {
+                quesManager.saveUserAnswer(questionIds.get(currentStep), answerContent, 0,null,enrollmentId, new ApiCallback() {
 
                     @Override
                     public void onSuccess() {
                         Log.e("ListeningPick1Activity", "Câu trả lời đã được lưu: " + answerContent);
                         // Hiển thị popup
                         runOnUiThread(() -> {
-                            PopupHelper.showResultPopup(ListeningPick1Activity.this, questype, userAnswers, correctAnswers, null, null, null, () -> {
+                            PopupHelper.showResultPopup(ListeningPick1Activity.this, questype, answerContent, correctAnswers, null, null, null, () -> {
                                 currentStep++; // Tăng currentStep
 
                                 // Kiểm tra nếu hoàn thành
@@ -135,7 +136,8 @@ public class ListeningPick1Activity extends AppCompatActivity {
                                     createProgressBars(totalSteps, currentStep); // Cập nhật thanh tiến trình mỗi lần chuyển câu
 
                                 } else {
-                                    Intent intent = new Intent(ListeningPick1Activity.this, WritingActivity.class);
+                                    Intent intent = new Intent(ListeningPick1Activity.this, SpeakingActivity.class);
+                                    intent.putExtra("enrollmentId", enrollmentId);
                                     startActivity(intent);
                                     finish();
                                 }
@@ -251,10 +253,9 @@ public class ListeningPick1Activity extends AppCompatActivity {
                             userAnswers.clear();
                             ChoiceAdapter choiceAdapter = new ChoiceAdapter(ListeningPick1Activity.this, choices, userAnswers);
                             recyclerViewChoices.setAdapter(choiceAdapter);
-                            correctAnswers.clear();
                             for (QuestionChoice choice : choices) {
                                 if (choice.isChoiceKey()) {
-                                    correctAnswers.add(choice.getChoiceContent());
+                                    correctAnswers=choice.getChoiceContent();
                                 }
                             }
                         });

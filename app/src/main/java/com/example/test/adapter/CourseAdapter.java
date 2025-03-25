@@ -28,6 +28,7 @@ import com.example.test.api.ApiCallback;
 import com.example.test.api.LessonManager;
 import com.example.test.api.ResultManager;
 import com.example.test.model.Course;
+import com.example.test.model.Enrollment;
 import com.example.test.model.Lesson;
 import com.example.test.model.Result;
 
@@ -104,25 +105,42 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseView
 
             // Xử lý sự kiện click để fetch dữ liệu và điều hướng
             textView.setOnClickListener(v -> {
-                lessonManager.fetchLessonById(lessonId, new ApiCallback<Lesson>() {
+                resultManager.getEnrollment(course.getId(), new ApiCallback<Enrollment>() {
                     @Override
                     public void onSuccess() {
 
                     }
 
                     @Override
-                    public void onSuccess(Lesson lesson) {
-                        Intent intent = new Intent(context, NevigateQuestion.class);
-                        intent.putExtra("courseId", course.getId());
-                        intent.putExtra("lessonId", lessonId);
-                        intent.putExtra("questionIds", new ArrayList<>(lesson.getQuestionIds()));
-                        context.startActivity(intent);
-                    }
+                    public void onSuccess(Enrollment enrollment) {
+                        int enrollmentId = enrollment.getId();
+                        lessonManager.fetchLessonById(lessonId, new ApiCallback<Lesson>() {
+                            @Override
+                            public void onSuccess() {
 
+                            }
+
+                            @Override
+                            public void onSuccess(Lesson lesson) {
+                                Intent intent = new Intent(context, NevigateQuestion.class);
+                                intent.putExtra("courseId", course.getId());
+                                intent.putExtra("enrollmentId", enrollmentId);
+                                intent.putExtra("lessonId", lessonId);
+                                intent.putExtra("questionIds", new ArrayList<>(lesson.getQuestionIds()));
+                                context.startActivity(intent);
+                            }
+
+
+                            @Override
+                            public void onFailure(String errorMessage) {
+                                Toast.makeText(context, "Lỗi tải dữ liệu: " + errorMessage, Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
 
                     @Override
                     public void onFailure(String errorMessage) {
-                        Toast.makeText(context, "Lỗi tải dữ liệu: " + errorMessage, Toast.LENGTH_SHORT).show();
+
                     }
                 });
             });

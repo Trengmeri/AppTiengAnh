@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.test.R;
+import com.example.test.api.ApiService;
 import com.example.test.model.Enrollment;
 import com.example.test.ui.home.HomeActivity;
 import com.example.test.api.ApiCallback;
@@ -42,9 +43,11 @@ public class PointResultCourseActivity extends AppCompatActivity {
     ImageView star1,star2,star3;
     QuestionManager quesManager = new QuestionManager(this);
     LessonManager lesManager = new LessonManager();
+    ApiService apiService = new ApiService(this);
     ResultManager resultManager = new ResultManager(this);
     private Set<Integer> addedResultIds = new HashSet<>();
     private int enrollmentId, courseID;
+    private String status;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +56,7 @@ public class PointResultCourseActivity extends AppCompatActivity {
 
         initializeViews();
         courseID = getIntent().getIntExtra("courseId",1);
+        status = getIntent().getStringExtra("status");
         fetchCourseData(courseID);
 
         btnReview.setOnClickListener(v -> {
@@ -228,34 +232,81 @@ public class PointResultCourseActivity extends AppCompatActivity {
     }
 
     private void updateUI(String skillType, double complete, int totalPoints, int resultId, int enrollmentId) {
-        resultManager.calculateEnrollment(enrollmentId, new ApiCallback<Enrollment>(){
+        if(status.equals("study")){
+            resultManager.calculateEnrollment(enrollmentId, new ApiCallback<Enrollment>(){
 
-            @Override
-            public void onSuccess() {}
+                @Override
+                public void onSuccess() {}
 
-            @Override
-            public void onSuccess(Enrollment enrollment) {
-                compCourse = enrollment.getComLevel();
-                coursePoint = enrollment.getTotalPoints();
-                runOnUiThread(() -> {
-                    if (compCourse > 90) {
-                        star3.setBackgroundTintList(getResources().getColorStateList(R.color.yellow));
-                    }
-                    if (compCourse > 60) {
-                        star2.setBackgroundTintList(getResources().getColorStateList(R.color.yellow));
-                    }
-                    if (compCourse > 30) {
-                        star1.setBackgroundTintList(getResources().getColorStateList(R.color.yellow));
-                    }
-                    pointTextView.setText(String.valueOf(coursePoint));
-                });
-            }
+                @Override
+                public void onSuccess(Enrollment enrollment) {
+                    compCourse = enrollment.getComLevel();
+                    coursePoint = enrollment.getTotalPoints();
+                    runOnUiThread(() -> {
+                        if (compCourse > 90) {
+                            star3.setBackgroundTintList(getResources().getColorStateList(R.color.yellow));
+                        }
+                        if (compCourse > 60) {
+                            star2.setBackgroundTintList(getResources().getColorStateList(R.color.yellow));
+                        }
+                        if (compCourse > 30) {
+                            star1.setBackgroundTintList(getResources().getColorStateList(R.color.yellow));
+                        }
+                        pointTextView.setText(String.valueOf(coursePoint));
+                    });
+                }
 
-            @Override
-            public void onFailure(String errorMessage) {
+                @Override
+                public void onFailure(String errorMessage) {
 
-            }
-        });
+                }
+            });
+        } else {
+            apiService.completeTest(enrollmentId, new ApiCallback() {
+                @Override
+                public void onSuccess() {
+                    resultManager.getEnrollment(courseID, new ApiCallback<Enrollment>() {
+                        @Override
+                        public void onSuccess() {
+
+                        }
+
+                        @Override
+                        public void onSuccess(Enrollment enrollment) {
+                            compCourse = enrollment.getComLevel();
+                            coursePoint = enrollment.getTotalPoints();
+                            runOnUiThread(() -> {
+                                if (compCourse > 90) {
+                                    star3.setBackgroundTintList(getResources().getColorStateList(R.color.yellow));
+                                }
+                                if (compCourse > 60) {
+                                    star2.setBackgroundTintList(getResources().getColorStateList(R.color.yellow));
+                                }
+                                if (compCourse > 30) {
+                                    star1.setBackgroundTintList(getResources().getColorStateList(R.color.yellow));
+                                }
+                                pointTextView.setText(String.valueOf(coursePoint));
+                            });
+                        }
+
+                        @Override
+                        public void onFailure(String errorMessage) {
+
+                        }
+                    });
+                }
+
+                @Override
+                public void onSuccess(Object result) {
+
+                }
+
+                @Override
+                public void onFailure(String errorMessage) {
+
+                }
+            });
+        }
         runOnUiThread(() -> {
             if (!addedResultIds.contains(resultId)) { // Kiểm tra resultId
                 addedResultIds.add(resultId); // Thêm resultId vào tập hợp

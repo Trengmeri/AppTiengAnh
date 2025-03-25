@@ -201,4 +201,42 @@ public class ApiService {
         });
     }
 
+    public void completeTest(int enrollmentId, ApiCallback callback) {
+        String token = SharedPreferencesManager.getInstance(context).getAccessToken();
+
+        RequestBody emptyBody = RequestBody.create("", MediaType.get("application/json; charset=utf-8"));
+
+        Request request = new Request.Builder()
+                .url(BASE_URL + "/api/v1/initial-assessment/enrollments/" +enrollmentId+ "/complete")
+                .addHeader("Authorization", "Bearer " + token)
+                .post(emptyBody)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.e("API_ERROR", "Complete Test Failed: " + e.getMessage());
+                callback.onFailure("Request error: " + e.getMessage());
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String responseBody = response.body().string();
+                Log.d("API_RESPONSE", "Complete Test Response: " + responseBody);
+
+                try {
+                    JSONObject responseObject = new JSONObject(responseBody);
+                    int statusCode = responseObject.optInt("statusCode", -1);
+
+                    if (statusCode == 200) {
+                        callback.onSuccess();
+                    } else {
+                        callback.onFailure("Failed with status: " + statusCode);
+                    }
+                } catch (Exception e) {
+                    callback.onFailure("JSON parsing error: " + e.getMessage());
+                }
+            }
+        });
+    }
 }

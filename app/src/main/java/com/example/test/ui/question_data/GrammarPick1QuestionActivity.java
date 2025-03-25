@@ -42,7 +42,7 @@ import okhttp3.Callback;
 import okhttp3.Response;
 
 public class GrammarPick1QuestionActivity extends AppCompatActivity {
-    List<String> correctAnswers = new ArrayList<>();
+    String correctAnswers ;
     private List<String> userAnswers = new ArrayList<>();
     private int totalSteps; // Tổng số bước trong thanh tiến trình
     private AppCompatButton selectedAnswer = null;
@@ -52,7 +52,7 @@ public class GrammarPick1QuestionActivity extends AppCompatActivity {
     LessonManager lesManager = new LessonManager();
     ResultManager resultManager = new ResultManager(this);
     TextView tvContent;
-    private int lessonID,courseID;
+    private int lessonID,courseID, enrollmentId;
     NetworkChangeReceiver networkReceiver;
     private int answerIds;
     private  String questype;
@@ -87,6 +87,7 @@ public class GrammarPick1QuestionActivity extends AppCompatActivity {
         questions = (List<Question>) getIntent().getSerializableExtra("questions");
         courseID = getIntent().getIntExtra("courseID",1);
         lessonID = getIntent().getIntExtra("lessonID",1);
+        enrollmentId = getIntent().getIntExtra("enrollmentId", 1);
         Log.e("pick1","Lesson ID: "+ lessonID + "courseID: "+ courseID);
 
 
@@ -111,14 +112,14 @@ public class GrammarPick1QuestionActivity extends AppCompatActivity {
                 }
                 String answerContent = sb.toString();
                 // Lưu câu trả lời của người dùng
-                quesManager.saveUserAnswer(questions.get(currentQuestionIndex).getId(), answerContent,0,null, new ApiCallback() {
+                quesManager.saveUserAnswer(questions.get(currentQuestionIndex).getId(), answerContent,0,null,enrollmentId, new ApiCallback() {
 
                     @Override
                     public void onSuccess() {
                         Log.e("GrammarPick1QuestionActivity", "Câu trả lời đã được lưu: " + answerContent);
                         // Hiển thị popup
                         runOnUiThread(() -> {
-                            PopupHelper.showResultPopup(GrammarPick1QuestionActivity.this,questype, userAnswers, correctAnswers, null, null, null, () -> {
+                            PopupHelper.showResultPopup(GrammarPick1QuestionActivity.this,questype, answerContent, correctAnswers, null, null, null, () -> {
                                 // Callback khi nhấn Next Question trên popup
                                 currentQuestionIndex++;
                                 if (currentQuestionIndex < questions.size()) {
@@ -131,6 +132,17 @@ public class GrammarPick1QuestionActivity extends AppCompatActivity {
                                         intent.putExtra("questions", (Serializable) questions);
                                         intent.putExtra("courseID",courseID);
                                         intent.putExtra("lessonID",lessonID);
+                                        intent.putExtra("enrollmentId", enrollmentId);
+                                        startActivity(intent);
+                                        finish(); // Đóng Activity hiện tại
+                                    } else if (nextQuestion.getQuesType().equals("TEXT")) {
+                                        Intent intent = new Intent(GrammarPick1QuestionActivity.this, ReadingTextActivity.class);
+                                        intent.putExtra("currentQuestionIndex", currentQuestionIndex);
+                                        Log.e("pick1","currentQuestionIndex");
+                                        intent.putExtra("questions", (Serializable) questions);
+                                        intent.putExtra("courseID",courseID);
+                                        intent.putExtra("lessonID",lessonID);
+                                        intent.putExtra("enrollmentId", enrollmentId);
                                         startActivity(intent);
                                         finish(); // Đóng Activity hiện tại
                                     } else {
@@ -212,10 +224,9 @@ public class GrammarPick1QuestionActivity extends AppCompatActivity {
                                 userAnswers.clear();
                                 ChoiceAdapter choiceAdapter = new ChoiceAdapter(GrammarPick1QuestionActivity.this, choices, userAnswers);
                                 recyclerViewChoices.setAdapter(choiceAdapter);
-                                correctAnswers.clear();
                                 for (QuestionChoice choice : choices) {
                                     if (choice.isChoiceKey()) {
-                                        correctAnswers.add(choice.getChoiceContent());
+                                        correctAnswers = (choice.getChoiceContent());
                                     }
                                 }
                             });
@@ -244,6 +255,7 @@ public class GrammarPick1QuestionActivity extends AppCompatActivity {
         Intent intent = new Intent(GrammarPick1QuestionActivity.this, PointResultLessonActivity.class);
         intent.putExtra("lessonId",lessonID);
         intent.putExtra("courseId",courseID);
+        intent.putExtra("enrollmentId", enrollmentId);
         startActivity(intent);
         finish();
     }

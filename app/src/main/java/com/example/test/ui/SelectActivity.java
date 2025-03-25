@@ -18,12 +18,16 @@ import androidx.core.view.WindowInsetsCompat;
 import com.example.test.R;
 import com.example.test.api.ApiCallback;
 import com.example.test.api.ApiService;
+import com.example.test.api.ResultManager;
+import com.example.test.model.Enrollment;
 import com.example.test.ui.home.HomeActivity;
 
 public class SelectActivity extends AppCompatActivity {
     Button btnTest, btnNew;
     TextView btnBack;
+    int enrollmentId;
     ApiService apiService = new ApiService(this);
+    ResultManager resultManager = new ResultManager(this);
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -46,13 +50,31 @@ public class SelectActivity extends AppCompatActivity {
             apiService.startTest(new ApiCallback() {
                 @Override
                 public void onSuccess() {
-                    Intent intent = new Intent(SelectActivity.this, LoadingTestActivity.class);
-                    startActivity(intent);
+                    resultManager.getEnrollment(1, new ApiCallback<Enrollment>() {
+                        @Override
+                        public void onSuccess() {
+
+                        }
+
+                        @Override
+                        public void onSuccess(Enrollment enrollment) {
+                            enrollmentId = enrollment.getId();
+                            Log.d("SelectActivity", String.valueOf(enrollmentId));
+                            Intent intent = new Intent(SelectActivity.this, LoadingTestActivity.class);
+                            intent.putExtra("enrollmentId", enrollmentId);
+                            startActivity(intent);
 //                 Lưu trạng thái đã chọn
 //                    editor.putBoolean("hasSelectedOption", true);
 //                    editor.putString("lastActivity", HomeActivity.class.getName()); // Chuyển đến HomeActivity
 //                    editor.apply();
-                    finish(); // Đóng SelectActivity
+                            finish(); // Đóng SelectActivity
+                        }
+
+                        @Override
+                        public void onFailure(String errorMessage) {
+
+                        }
+                    });
                 }
 
                 @Override
@@ -69,38 +91,30 @@ public class SelectActivity extends AppCompatActivity {
         });
 
         btnNew.setOnClickListener(view -> {
-            Intent intent = new Intent(SelectActivity.this, HomeActivity.class);
-            startActivity(intent);
-            // Lưu trạng thái đã chọn
-//            editor.putBoolean("hasSelectedOption", true);
-//            editor.putString("lastActivity", HomeActivity.class.getName()); // Chuyển đến HomeActivity
-//            editor.apply();
+            apiService.skipTest(new ApiCallback() {
+                @Override
+                public void onSuccess() {
+                    Intent intent = new Intent(SelectActivity.this, HomeActivity.class);
+                    startActivity(intent);
+                    // Lưu trạng thái đã chọn
+                editor.putBoolean("hasSelectedOption", true);
+                editor.putString("lastActivity", HomeActivity.class.getName()); // Chuyển đến HomeActivity
+                editor.apply();
 
-            finish(); // Đóng SelectActivity
-//            apiService.skipTest(new ApiCallback() {
-//                @Override
-//                public void onSuccess() {
-//                    Intent intent = new Intent(SelectActivity.this, HomeActivity.class);
-//                    startActivity(intent);
-//                    // Lưu trạng thái đã chọn
-//                editor.putBoolean("hasSelectedOption", true);
-//                editor.putString("lastActivity", HomeActivity.class.getName()); // Chuyển đến HomeActivity
-//                editor.apply();
-//
-//                    finish(); // Đóng SelectActivity
-//                }
-//
-//                @Override
-//                public void onSuccess(Object result) {
-//
-//                }
-//
-//                @Override
-//                public void onFailure(String errorMessage) {
-//                    Log.e("DEBUG", "API Failed: " + errorMessage);
-//
-//                }
-//            });
+                    finish(); // Đóng SelectActivity
+                }
+
+                @Override
+                public void onSuccess(Object result) {
+
+                }
+
+                @Override
+                public void onFailure(String errorMessage) {
+                    Log.e("DEBUG", "API Failed: " + errorMessage);
+
+                }
+            });
         });
         btnBack.setOnClickListener(view -> {
             Intent intent = new Intent(SelectActivity.this, ChooseFieldsActivity.class);

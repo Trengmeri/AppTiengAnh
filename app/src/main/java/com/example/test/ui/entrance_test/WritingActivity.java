@@ -55,6 +55,7 @@ public class WritingActivity extends AppCompatActivity {
         etAnswer = findViewById(R.id.etAnswer);
         btnCheckAnswers = findViewById(R.id.btnCheckAnswers);
         quesManager = new QuestionManager(this);
+        int enrollmentId = getIntent().getIntExtra("enrollmentId", 1);
         createProgressBars(totalSteps, currentStep); // Cập nhật thanh tiến trình mỗi lần chuyển câu
 
         fetchLessonAndQuestions(lessonId);
@@ -65,7 +66,7 @@ public class WritingActivity extends AppCompatActivity {
             if (userAnswer.isEmpty()) {
                 Toast.makeText(this, "Please enter an answer!", Toast.LENGTH_SHORT).show();
             } else {
-                checkAnswer(userAnswer);
+                checkAnswer(userAnswer,enrollmentId);
             }
         });
     }
@@ -130,7 +131,7 @@ public class WritingActivity extends AppCompatActivity {
         });
     }
 
-    private void checkAnswer(String userAnswer) {
+    private void checkAnswer(String userAnswer, int enrollmentId) {
         String questionContent = tvContent.getText().toString().trim();
         ApiService apiService = new ApiService(this);
 
@@ -156,7 +157,7 @@ public class WritingActivity extends AppCompatActivity {
                 SharedPreferences.Editor editor = sharedPreferences.edit();
 
                 // Lưu kết quả vào hệ thống
-                quesManager.saveUserAnswer(questionIds.get(currentStep), userAnswer, result.getPoint(), result.getimprovements(), new ApiCallback() {
+                quesManager.saveUserAnswer(questionIds.get(currentStep), userAnswer, result.getPoint(), result.getimprovements(),enrollmentId,new ApiCallback() {
                     @Override
                     public void onSuccess() {
                         Log.d("WritingActivity.this", "Lưu thành công!");
@@ -173,6 +174,8 @@ public class WritingActivity extends AppCompatActivity {
                                     createProgressBars(totalSteps, currentStep); // Cập nhật thanh tiến trình mỗi lần chuyển câu
                                 } else {
                                     Intent intent = new Intent(WritingActivity.this, PointResultCourseActivity.class);
+                                    intent.putExtra("status", "test");
+                                    intent.putExtra("enrollmentId", enrollmentId);
                                     startActivity(intent);
                                     finish();
                                 }

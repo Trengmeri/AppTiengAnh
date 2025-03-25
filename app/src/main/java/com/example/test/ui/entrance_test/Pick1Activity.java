@@ -48,7 +48,7 @@ import okhttp3.Callback;
 import okhttp3.Response;
 
 public class Pick1Activity extends AppCompatActivity {
-    List<String> correctAnswers = new ArrayList<>();
+    String correctAnswers ;
     private List<String> userAnswers = new ArrayList<>();
     private int currentStep = 0; // Bước hiện tại (bắt đầu từ 0)
     private  String questype;
@@ -90,6 +90,7 @@ public class Pick1Activity extends AppCompatActivity {
 
         // Lấy lessonId từ intent hoặc một nguồn khác
         int lessonId = 2;
+        int enrollmentId = getIntent().getIntExtra("enrollmentId", 1);
         fetchLessonAndQuestions(lessonId); // Gọi phương thức để lấy bài học và câu hỏi
 
         btnCheckAnswer.setOnClickListener(v -> {
@@ -106,14 +107,14 @@ public class Pick1Activity extends AppCompatActivity {
                 }
                 String answerContent = sb.toString();
                 // Lưu câu trả lời của người dùng
-                quesManager.saveUserAnswer(questionIds.get(currentStep), answerContent, 0,null, new ApiCallback() {
+                quesManager.saveUserAnswer(questionIds.get(currentStep), answerContent, 0,null,enrollmentId, new ApiCallback() {
 
                     @Override
                     public void onSuccess() {
                         Log.e("Pick1Activity", "Câu trả lời đã được lưu: " + answerContent);
                         // Hiển thị popup
                         runOnUiThread(() -> {
-                            PopupHelper.showResultPopup(Pick1Activity.this, questype, userAnswers, correctAnswers, null, null, null, () -> {
+                            PopupHelper.showResultPopup(Pick1Activity.this, questype, answerContent, correctAnswers, null, null, null, () -> {
 
                                 currentStep++; // Tăng currentStep
 
@@ -123,7 +124,8 @@ public class Pick1Activity extends AppCompatActivity {
                                     createProgressBars(totalSteps, currentStep); // Cập nhật thanh tiến trình mỗi lần chuyển câu
 
                                 } else {
-                                    Intent intent = new Intent(Pick1Activity.this, WritingActivity.class);
+                                    Intent intent = new Intent(Pick1Activity.this, ListeningActivity.class);
+                                    intent.putExtra("enrollmentId", enrollmentId);
                                     startActivity(intent);
                                     finish();
                                 }
@@ -236,10 +238,9 @@ public class Pick1Activity extends AppCompatActivity {
                             userAnswers.clear();
                             ChoiceAdapter choiceAdapter = new ChoiceAdapter(Pick1Activity.this, choices, userAnswers);
                             recyclerViewChoices.setAdapter(choiceAdapter);
-                            correctAnswers.clear();
                             for (QuestionChoice choice : choices) {
                                 if (choice.isChoiceKey()) {
-                                    correctAnswers.add(choice.getChoiceContent());
+                                    correctAnswers=choice.getChoiceContent();
                                 }
                             }
                         });

@@ -44,7 +44,7 @@ public class WrittingActivity extends AppCompatActivity {
     private ApiService apiService = new ApiService(this);
     private List<Question> questions; // Danh sách câu hỏi
     private int currentQuestionIndex;
-    private int lessonID,courseID;
+    private int lessonID,courseID,enrollmentId;
     private ProgressDialog progressDialog;
 
     @Override
@@ -62,6 +62,7 @@ public class WrittingActivity extends AppCompatActivity {
         questions = (List<Question>) getIntent().getSerializableExtra("questions");
         courseID = getIntent().getIntExtra("courseID",1);
         lessonID = getIntent().getIntExtra("lessonID",1);
+        enrollmentId = getIntent().getIntExtra("enrollmentId", 1);
 
 
         // Hiển thị câu hỏi hiện tại
@@ -135,7 +136,7 @@ public class WrittingActivity extends AppCompatActivity {
             @Override
             public void onSuccess(EvaluationResult result) {
                 // Lưu kết quả vào hệ thống
-                quesManager.saveUserAnswer(questions.get(currentStep).getId(), userAnswer, result.getPoint(), result.getimprovements(), new ApiCallback() {
+                quesManager.saveUserAnswer(questions.get(currentStep).getId(), userAnswer, result.getPoint(), result.getimprovements(),enrollmentId, new ApiCallback() {
                     @Override
                     public void onSuccess() {
                         Log.d("WrittingActivity.this", "Lưu thành công!");

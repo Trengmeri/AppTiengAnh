@@ -76,6 +76,7 @@ public class SpeakingActivity extends AppCompatActivity implements SpeechRecogni
         Button btnCheckResult = findViewById(R.id.btnCheckResult);
         tvQuestion = findViewById(R.id.tvQuestion);
         int lessonId = 5;
+        int enrollmentId = getIntent().getIntExtra("enrollmentId", 1);
         fetchLessonAndQuestions(lessonId);
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
@@ -96,12 +97,12 @@ public class SpeakingActivity extends AppCompatActivity implements SpeechRecogni
             if (userAnswers.isEmpty()) {
                 Toast.makeText(SpeakingActivity.this, "Vui lòng trả lời câu hỏi!", Toast.LENGTH_SHORT).show();
             } else {
-                checkAnswer(userAnswer);
+                checkAnswer(userAnswer, enrollmentId);
             }
         });
     }
 
-    private void checkAnswer(String userAnswer) {
+    private void checkAnswer(String userAnswer,int enrollmentId) {
         String questionContent = tvQuestion.getText().toString().trim();
         ApiService apiService = new ApiService(this);
         // Xóa nội dung EditText ngay khi bấm "Check Answers"
@@ -123,7 +124,7 @@ public class SpeakingActivity extends AppCompatActivity implements SpeechRecogni
 
 
                 // Lưu kết quả vào hệ thống
-                quesManager.saveUserAnswer(questionIds.get(currentStep), userAnswer, result.getPoint(), result.getimprovements(), new ApiCallback() {
+                quesManager.saveUserAnswer(questionIds.get(currentStep), userAnswer, result.getPoint(), result.getimprovements(),enrollmentId, new ApiCallback() {
                     @Override
                     public void onSuccess() {
                         Log.d("SpeakingActivity.this", "Lưu thành công!");
@@ -136,6 +137,7 @@ public class SpeakingActivity extends AppCompatActivity implements SpeechRecogni
                                     createProgressBars(totalSteps, currentStep); // Cập nhật thanh tiến trình mỗi lần chuyển câu
                                 } else {
                                     Intent intent = new Intent(SpeakingActivity.this, WritingActivity.class);
+                                    intent.putExtra("enrollmentId", enrollmentId);
                                     startActivity(intent);
                                     finish();
                                 }

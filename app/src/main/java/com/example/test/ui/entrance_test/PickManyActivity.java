@@ -37,7 +37,7 @@ import okhttp3.Callback;
 import okhttp3.Response;
 
 public class PickManyActivity extends AppCompatActivity {
-    private List<String> correctAnswers = new ArrayList<>();
+    String correctAnswers ;
     private List<String> userAnswers = new ArrayList<>();
     private int currentStep = 0;
     private int totalSteps;
@@ -80,14 +80,14 @@ public class PickManyActivity extends AppCompatActivity {
                 }
                 String answerContent = sb.toString();
                 // Lưu câu trả lời của người dùng
-                quesManager.saveUserAnswer(questionIds.get(currentStep), answerContent,0,null, new ApiCallback() {
+                quesManager.saveUserAnswer(questionIds.get(currentStep), answerContent,0,null,1, new ApiCallback() {
 
                     @Override
                     public void onSuccess() {
                         Log.e("PickManyActivity", "Câu trả lời đã được lưu: " + answerContent);
                         // Hiển thị popup
                         runOnUiThread(() -> {
-                            PopupHelper.showResultPopup(PickManyActivity.this, questype, userAnswers, correctAnswers, null, null, null, () -> {
+                            PopupHelper.showResultPopup(PickManyActivity.this, questype, answerContent, correctAnswers, null, null, null, () -> {
                                 // Callback khi nhấn Next Question trên popup
                                 currentStep++; // Tăng currentStep
 
@@ -205,10 +205,9 @@ public class PickManyActivity extends AppCompatActivity {
                             userAnswers.clear();
                             MultipleAdapter choiceAdapter = new MultipleAdapter(PickManyActivity.this, choices, userAnswers);
                             recyclerViewChoices.setAdapter(choiceAdapter);
-                            correctAnswers.clear();
                             for (QuestionChoice choice : choices) {
                                 if (choice.isChoiceKey()) {
-                                    correctAnswers.add(choice.getChoiceContent());
+                                    correctAnswers=(choice.getChoiceContent());
                                 }
                             }
                         });

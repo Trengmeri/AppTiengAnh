@@ -81,20 +81,21 @@ public class QuestionManager extends BaseApiManager {
         });
     }
 
-    public void saveUserAnswer(int questionId, String answerContent, double point, String improvement, ApiCallback callback) {
+    public void saveUserAnswer(int questionId, String answerContent, double point, String improvement, int enrollmentId, ApiCallback callback) {
         String userId = SharedPreferencesManager.getInstance(context).getID();
 
         try {
             // Chuyển answerContent thành List<String>
-            String[] answerParts = answerContent.split(", ");
-            List<String> answerList = new ArrayList<>(Arrays.asList(answerParts));
+//            String[] answerParts = answerContent.split(", ");
+//            List<String> answerList = new ArrayList<>(Arrays.asList(answerParts));
 
             // Tạo JSON object
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("questionId", questionId);
-            jsonObject.put("answerContent", new JSONArray(answerList)); // Đảm bảo là mảng JSON
+            jsonObject.put("answerContent", answerContent); // Đảm bảo là mảng JSON
             jsonObject.put("pointAchieved", point);
             jsonObject.put("improvement", improvement);
+            jsonObject.put("enrollmentId", enrollmentId);
 
             // Tạo RequestBody từ JSON
             RequestBody body = RequestBody.create(jsonObject.toString(), MediaType.get("application/json; charset=utf-8"));
@@ -116,6 +117,7 @@ public class QuestionManager extends BaseApiManager {
                         callback.onSuccess();
                     } else {
                         callback.onFailure("Lỗi: " + response.code() + " - " + response.message());
+                        Log.e("SaveAns", "Chi tiết lỗi: " + response.body().string()); // In nội dung lỗi
                     }
                 }
             });
