@@ -11,12 +11,14 @@ import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.PopupMenu;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -75,6 +77,7 @@ public class FlashcardActivity extends AppCompatActivity {
     //private final int pageSize = 4; // Mỗi trang hiển thị 5 nhóm flashcard
     private ImageView btnNext, btnPrevious;
     private FlashcardAdapter flashcardAdapter;
+    private Button btnSort;
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -96,6 +99,7 @@ public class FlashcardActivity extends AppCompatActivity {
         btnremove = findViewById(R.id.iconRemove);
         btnNext = findViewById(R.id.btnNext);
         btnPrevious = findViewById(R.id.btnPrevious);
+        btnSort= findViewById(R.id.btnSort);
         tvGroupName= findViewById(R.id.tvGroupName);
         btnNext.setAlpha(0.5f);
         btnNext.setEnabled(false);
@@ -137,6 +141,12 @@ public class FlashcardActivity extends AppCompatActivity {
 //                startActivity(intent);
 //                finish();
                 onBackPressed();
+            }
+        });
+        btnSort.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showSortMenu(v);
             }
         });
         btnAddFlash.setOnClickListener(view -> {
@@ -593,7 +603,7 @@ public class FlashcardActivity extends AppCompatActivity {
                         Log.d("DEBUG","Tong trang:"+ totalPages);
 
                         if (!flashcards.isEmpty()) {
-                            Collections.reverse(flashcards);
+                            //Collections.reverse(flashcards);
                             updateRecyclerView(flashcards);
                         } else {
                             Toast.makeText(FlashcardActivity.this, "Không có flashcard nào!", Toast.LENGTH_SHORT).show();
@@ -664,5 +674,20 @@ public class FlashcardActivity extends AppCompatActivity {
         }
         return indices;
     }
+    private void showSortMenu(View view) {
+        PopupMenu popupMenu = new PopupMenu(this, view);
+        popupMenu.getMenu().add("Sorted by Latest");
+        popupMenu.getMenu().add("Sorted by Oldest");
 
+        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem menuItem) {
+                Toast.makeText(FlashcardActivity.this, menuItem.getTitle(), Toast.LENGTH_SHORT).show();
+                return true;
+            }
+
+        });
+
+        popupMenu.show();
+    }
 }
