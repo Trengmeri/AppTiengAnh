@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 
+import com.example.test.SharedPreferencesManager;
 import com.example.test.response.ApiResponseFlashcard;
 import com.example.test.response.ApiResponseFlashcardGroup;
 import com.example.test.response.ApiResponseOneFlashcard;
@@ -467,23 +468,26 @@ public class FlashcardManager extends BaseApiManager {
         });
     }
 
-    public void markFlashcardAsLearned(int flashcardId, FlashcardApiCallback callback) {
-        Log.d("FlashcardManager", "Starting API call to mark flashcard as learned. ID: " + flashcardId);
+    public void markFlashcardAsLearned(Context context, int flashcardId, FlashcardApiCallback callback) {
+        Log.d("FlashcardManager", "Starting API call to mark as unlearned for flashcard ID: " + flashcardId);
 
         String url = BASE_URL + "/api/v1/flashcards/" + flashcardId + "/learned";
         Log.d("FlashcardManager", "API URL: " + url);
 
-        // Dữ liệu gửi lên (nếu API yêu cầu dữ liệu)
-//        RequestBody requestBody = RequestBody.create(
-//                "{\"status\":\"learned\"}",
-//                MediaType.parse("application/json")
-//        );
+        // Lấy token từ SharedPreferences
+        String accessToken = SharedPreferencesManager.getInstance(context).getAccessToken();
+        Log.d("FlashcardManager", "Access Token: " + accessToken);
+
+        if (accessToken == null || accessToken.isEmpty()) {
+            Log.e("FlashcardManager", "Access token is missing!");
+            callback.onFailure("Access token is missing!");
+            return;
+        }
 
         Request request = new Request.Builder()
                 .url(url)
-                .put(RequestBody.create(new byte[0], null))
-                .addHeader("Content-Type", "application/json")
-                .addHeader("Authorization", "Bearer YOUR_ACCESS_TOKEN") // Thay YOUR_ACCESS_TOKEN nếu cần
+                .put(RequestBody.create(null, new byte[0])) // Không có body
+                .addHeader("Authorization", "Bearer " + accessToken) // Thêm token vào request
                 .build();
 
         client.newCall(request).enqueue(new Callback() {
@@ -495,45 +499,53 @@ public class FlashcardManager extends BaseApiManager {
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                Log.d("FlashcardManager", "Received API response. Code: " + response.code());
+                String responseBody = response.body().string(); // Lấy nội dung phản hồi
+                Log.d("FlashcardManager", "Response Code: " + response.code());
+                Log.d("FlashcardManager", "Response Body: " + responseBody);
 
                 if (!response.isSuccessful()) {
-                    Log.e("FlashcardManager", "API error response: " + response.code());
-                    callback.onFailure("Server returned " + response.code());
+                    callback.onFailure("Server returned " + response.code() + ": " + responseBody);
                     return;
                 }
 
                 try {
-                    String jsonData = response.body().string();
-                    Log.d("FlashcardManager", "API response body: " + jsonData);
+                    // Phân tích JSON phản hồi
+                    JSONObject jsonResponse = new JSONObject(responseBody);
+                    int statusCode = jsonResponse.getInt("statusCode");
+                    String message = jsonResponse.getString("message");
 
-                    Gson gson = new Gson();
-                    ApiResponseOneFlashcard apiResponse = gson.fromJson(jsonData, ApiResponseOneFlashcard.class);
-
-                    if (apiResponse != null && apiResponse.getData() != null) {
-                        Log.d("FlashcardManager", "Successfully updated flashcard as learned");
-                        callback.onSuccess(apiResponse);
+                    if (statusCode == 200) {
+                        callback.onSuccess(message); // Thành công
                     } else {
-                        Log.e("FlashcardManager", "API response parsing error: response or data is null");
-                        callback.onFailure("Invalid response format");
+                        callback.onFailure("Unexpected response: " + message);
                     }
-                } catch (Exception e) {
-                    Log.e("FlashcardManager", "Error parsing API response", e);
+                } catch (JSONException e) {
+                    Log.e("FlashcardManager", "Error parsing JSON response", e);
                     callback.onFailure("Error parsing response: " + e.getMessage());
                 }
             }
         });
     }
-    public void markFlashcardAsUnlearned(int flashcardId, FlashcardApiCallback callback) {
-        Log.d("FlashcardManager", "Starting API call to mark flashcard as unlearned. ID: " + flashcardId);
+    public void markFlashcardAsUnlearned(Context context, int flashcardId, FlashcardApiCallback callback) {
+        Log.d("FlashcardManager", "Starting API call to mark as unlearned for flashcard ID: " + flashcardId);
 
         String url = BASE_URL + "/api/v1/flashcards/" + flashcardId + "/unlearned";
         Log.d("FlashcardManager", "API URL: " + url);
 
+        // Lấy token từ SharedPreferences
+        String accessToken = SharedPreferencesManager.getInstance(context).getAccessToken();
+        Log.d("FlashcardManager", "Access Token: " + accessToken);
+
+        if (accessToken == null || accessToken.isEmpty()) {
+            Log.e("FlashcardManager", "Access token is missing!");
+            callback.onFailure("Access token is missing!");
+            return;
+        }
+
         Request request = new Request.Builder()
                 .url(url)
-                .put(RequestBody.create(new byte[0], null)) // Gửi request PUT mà không có body
-                .addHeader("Authorization", "Bearer YOUR_ACCESS_TOKEN") // Thay YOUR_ACCESS_TOKEN nếu cần
+                .put(RequestBody.create(null, new byte[0])) // Không có body
+                .addHeader("Authorization", "Bearer " + accessToken) // Thêm token vào request
                 .build();
 
         client.newCall(request).enqueue(new Callback() {
@@ -545,20 +557,34 @@ public class FlashcardManager extends BaseApiManager {
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                Log.d("FlashcardManager", "Received API response. Code: " + response.code());
+                String responseBody = response.body().string(); // Lấy nội dung phản hồi
+                Log.d("FlashcardManager", "Response Code: " + response.code());
+                Log.d("FlashcardManager", "Response Body: " + responseBody);
 
                 if (!response.isSuccessful()) {
-                    Log.e("FlashcardManager", "API error response: " + response.code());
-                    callback.onFailure("Server returned " + response.code());
+                    callback.onFailure("Server returned " + response.code() + ": " + responseBody);
                     return;
                 }
 
-                String responseData = response.body() != null ? response.body().string() : "Success";
-                Log.d("FlashcardManager", "API response body: " + responseData);
-                callback.onSuccess(responseData);
+                try {
+                    // Phân tích JSON phản hồi
+                    JSONObject jsonResponse = new JSONObject(responseBody);
+                    int statusCode = jsonResponse.getInt("statusCode");
+                    String message = jsonResponse.getString("message");
+
+                    if (statusCode == 200) {
+                        callback.onSuccess(message); // Thành công
+                    } else {
+                        callback.onFailure("Unexpected response: " + message);
+                    }
+                } catch (JSONException e) {
+                    Log.e("FlashcardManager", "Error parsing JSON response", e);
+                    callback.onFailure("Error parsing response: " + e.getMessage());
+                }
             }
         });
     }
+
     // Phương thức phân tích JSON
     private String parseJson(String json) {
         try {

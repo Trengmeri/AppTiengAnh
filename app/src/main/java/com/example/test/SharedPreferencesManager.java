@@ -71,6 +71,7 @@ public class SharedPreferencesManager {
     public void saveAccessToken(String accessToken) {
         sharedPreferences.edit().putString("access_token", accessToken).apply();
     }
+    
     public void saveToken(String token) {
         sharedPreferences.edit().putString("TOKEN_KEY", token).apply();
     }

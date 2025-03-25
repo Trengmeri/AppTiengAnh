@@ -100,7 +100,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                    android:layout_marginLeft="12dp"
-                    android:layout_marginRight="12dp"
+                    android:layout_marginRight="16dp"
                     android:layout_marginTop="@dimen/dp_16"
                     android:background="@drawable/rounded_corner"
                     android:orientation="horizontal"
@@ -133,7 +133,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="12dp"
-            android:layout_marginRight="12dp"
+            android:layout_marginRight="16dp"
             android:layout_marginTop="@dimen/dp_16"
             android:background="@drawable/rounded_corner"
             android:orientation="horizontal"
@@ -191,7 +191,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginRight="12dp"
+        android:layout_marginRight="@dimen/dp_60"
         android:layout_marginLeft="12dp">
     <Button
         android:id="@+id/btnIn"

@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.example.test.R;
+import com.example.test.api.AnimationEndCallback;
 import com.example.test.response.ApiResponseFlashcard;
 import com.example.test.api.FlashcardManager;
 import com.example.test.api.FlashcardApiCallback;
@@ -108,80 +109,97 @@ public class FlashcardInformationActivity extends AppCompatActivity {
                         float deltaX = x2 - x1;
 
                         if (Math.abs(deltaX) > SWIPE_THRESHOLD) { // Kiểm tra khoảng cách vuốt
-                            //if (selectedFlashcard == null) return false;
-                           // int flashcardId = selectedFlashcard.getId();
+                            if (selectedFlashcard == null) {
+                                Log.e("FlashcardSwipe", "Error: selectedFlashcard is null");
+                                return true; // Dừng lại nếu không có flashcard nào được chọn
+                            }
+                            final int flashcardID = selectedFlashcard.getId();
                             if (deltaX > 0) {
-                                // Vuốt sang phải
-                                animateSwipe(flashcardContainer, 600, true);
-                                countGreen++;
-                                txtNumGreen.setText(String.valueOf(countGreen));
-//                                flashcardManager.markFlashcardAsLearned(flashcardId, new FlashcardApiCallback() {
-//                                    @Override
-//                                    public void onSuccess(Object response) {
-//                                        Log.d("FlashcardSwipe", "Marked as learned successfull. " );
-//                                    }
-//
-//                                    @Override
-//                                    public void onSuccess(ApiResponseFlashcardGroup response) {
-//
-//                                    }
-//
-//                                    @Override
-//                                    public void onSuccess(FlashcardGroupResponse response) {
-//
-//                                    }
-//
-//                                    @Override
-//                                    public void onSuccess(ApiResponseFlashcard response) {
-//
-//                                    }
-//
-//                                    @Override
-//                                    public void onSuccess(ApiResponseOneFlashcard response) {
-//
-//                                    }
-//
-//                                    @Override
-//                                    public void onFailure(String errorMessage) {
-//                                        Log.e("FlashcardSwipe", "Failed to mark as learned: " + errorMessage);
-//                                    }
-//                                });
+                                // Vuốt sang phải (Đánh dấu đã học)
+                                flashcardManager.markFlashcardAsLearned(getApplicationContext(), flashcardID, new FlashcardApiCallback() {
+                                    @Override
+                                    public void onSuccess(Object response) {
+                                        Log.d("FlashcardSwipe", "Marked as learned: " + flashcardID);
+
+                                        // Chỉ đổi flashcard sau khi API hoàn tất
+                                        animateSwipe(flashcardContainer, 600, true, new AnimationEndCallback() {
+                                            @Override
+                                            public void onAnimationEnd() {
+                                                countGreen++;
+                                                txtNumGreen.setText(String.valueOf(countGreen));
+                                            }
+                                        });
+                                    }
+
+                                    @Override
+                                    public void onSuccess(ApiResponseFlashcardGroup response) {
+
+                                    }
+
+                                    @Override
+                                    public void onSuccess(FlashcardGroupResponse response) {
+
+                                    }
+
+                                    @Override
+                                    public void onSuccess(ApiResponseFlashcard response) {
+
+                                    }
+
+                                    @Override
+                                    public void onSuccess(ApiResponseOneFlashcard response) {
+
+                                    }
+
+                                    @Override
+                                    public void onFailure(String errorMessage) {
+                                        Log.e("FlashcardSwipe", "Failed to mark as learned: " + errorMessage);
+                                    }
+                                });
+
                             } else {
-                                // Vuốt sang trái
-                                animateSwipe(flashcardContainer, 400, false);
-                                countRed++;
-                                txtNumRed.setText(String.valueOf(countRed));
-//                                flashcardManager.markFlashcardAsUnlearned(flashcardId, new FlashcardApiCallback() {
-//                                    @Override
-//                                    public void onSuccess(Object response) {
-//                                        Log.d("FlashcardSwipe", "Marked as unlearned succesfull ");
-//                                    }
-//
-//                                    @Override
-//                                    public void onSuccess(ApiResponseFlashcardGroup response) {
-//
-//                                    }
-//
-//                                    @Override
-//                                    public void onSuccess(FlashcardGroupResponse response) {
-//
-//                                    }
-//
-//                                    @Override
-//                                    public void onSuccess(ApiResponseFlashcard response) {
-//
-//                                    }
-//
-//                                    @Override
-//                                    public void onSuccess(ApiResponseOneFlashcard response) {
-//
-//                                    }
-//
-//                                    @Override
-//                                    public void onFailure(String errorMessage) {
-//                                        Log.e("FlashcardSwipe", "Failed to mark as unlearned: " + errorMessage);
-//                                    }
-//                                });
+                                // Vuốt sang trái (Đánh dấu chưa học)
+                                flashcardManager.markFlashcardAsUnlearned(getApplicationContext(), flashcardID, new FlashcardApiCallback() {
+                                    @Override
+                                    public void onSuccess(Object response) {
+                                        Log.d("FlashcardSwipe", "Marked as unlearned: " + flashcardID);
+
+                                        // Chỉ đổi flashcard sau khi API hoàn tất
+                                        animateSwipe(flashcardContainer, 400, false, new AnimationEndCallback() {
+                                            @Override
+                                            public void onAnimationEnd() {
+                                                countRed++;
+                                                txtNumRed.setText(String.valueOf(countRed));
+                                            }
+                                        });
+                                    }
+
+                                    @Override
+                                    public void onSuccess(ApiResponseFlashcardGroup response) {
+
+                                    }
+
+                                    @Override
+                                    public void onSuccess(FlashcardGroupResponse response) {
+
+                                    }
+
+                                    @Override
+                                    public void onSuccess(ApiResponseFlashcard response) {
+
+                                    }
+
+                                    @Override
+                                    public void onSuccess(ApiResponseOneFlashcard response) {
+
+                                    }
+
+                                    @Override
+                                    public void onFailure(String errorMessage) {
+                                        Log.e("FlashcardSwipe", "Failed to mark as unlearned: " + errorMessage);
+                                    }
+                                });
+
                             }
                         }
                         return true;
@@ -447,15 +465,19 @@ public class FlashcardInformationActivity extends AppCompatActivity {
             mediaPlayer = null;
         }
     }
-    private void animateSwipe(View view, int duration, boolean toRight) {
+    private void animateSwipe(View view, int duration, boolean toRight, AnimationEndCallback callback) {
         float translationX = toRight ? view.getWidth() : -view.getWidth();
         view.animate()
                 .translationX(translationX)
-                .setDuration(600)  // Giảm từ 800ms xuống 400ms
+                .setDuration(600)  // Giảm từ 800ms xuống 600ms
                 .withEndAction(() -> {
                     view.setTranslationX(0); // Đặt lại vị trí ban đầu
                     showNextFlashcard();  // Chuyển flashcard sau khi animation kết thúc
+                    if (callback != null) {
+                        callback.onAnimationEnd(); // Đảm bảo callback được gọi
+                    }
                 })
+
                 .start();
     }
 

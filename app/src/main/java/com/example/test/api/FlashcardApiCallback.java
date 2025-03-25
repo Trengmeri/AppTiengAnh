@@ -15,6 +15,6 @@ public interface FlashcardApiCallback {
     void onSuccess(ApiResponseFlashcard response);
 
     void onSuccess(ApiResponseOneFlashcard response);
-    
+
     void onFailure(String errorMessage);
 }
