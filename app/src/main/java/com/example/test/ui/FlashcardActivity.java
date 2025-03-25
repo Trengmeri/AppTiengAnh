@@ -74,6 +74,7 @@ public class FlashcardActivity extends AppCompatActivity {
     private int currentPage = 1; // Bắt đầu từ trang 0
     private int pageSize = 4;    // Số phần tử trên mỗi trang
     private int totalPages;  // Tổng số trang
+    private int groupId;
     //private final int pageSize = 4; // Mỗi trang hiển thị 5 nhóm flashcard
     private ImageView btnNext, btnPrevious;
     private FlashcardAdapter flashcardAdapter;
@@ -103,7 +104,7 @@ public class FlashcardActivity extends AppCompatActivity {
         tvGroupName= findViewById(R.id.tvGroupName);
         btnNext.setAlpha(0.5f);
         btnNext.setEnabled(false);
-        flashcardAdapter = new FlashcardAdapter(this, flashcards);
+        flashcardAdapter = new FlashcardAdapter(this, flashcards,currentPage, totalPages, groupId);
         @SuppressLint("CutPasteId") RecyclerView recyclerView = findViewById(R.id.recyclerViewFlashcards);
         recyclerView.setAdapter(flashcardAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -113,7 +114,7 @@ public class FlashcardActivity extends AppCompatActivity {
         btnPrevious.setEnabled(false);
 
         tvGroupName.setText(getIntent().getStringExtra("GROUP_NAME"));
-        int groupId = getIntent().getIntExtra("GROUP_ID", -1);
+        groupId = getIntent().getIntExtra("GROUP_ID", -1);
         if (groupId != -1) {
             fetchFlashcards(groupId,currentPage);
         }
@@ -529,12 +530,29 @@ public class FlashcardActivity extends AppCompatActivity {
                 Log.d("DEBUG", "Button text: " + btn.getText().toString());
             }
         } else {
-            definitionContainer.addView(new androidx.appcompat.widget.AppCompatTextView(FlashcardActivity.this) {
-                {
-                    setText("No definitions available");
-                }
-            });
+            // Tạo một nút "giả" để đánh dấu là đã chọn
+            AppCompatButton autoSelectedBtn = new AppCompatButton(FlashcardActivity.this);
+            autoSelectedBtn.setText("No phonetics available");
+            autoSelectedBtn.setLayoutParams(new LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+            ));
+            autoSelectedBtn.setBackgroundResource(R.drawable.btn_item_click);
+            autoSelectedBtn.setTextColor(ContextCompat.getColor(FlashcardActivity.this, R.color.black));
+            autoSelectedBtn.setTextSize(14);
+            autoSelectedBtn.setAllCaps(false);
+            autoSelectedBtn.setGravity(Gravity.CENTER);
+
+            autoSelectedBtn.setSelected(true); // Đánh dấu đã chọn
+            autoSelectedBtn.setVisibility(View.GONE); // Ẩn nút này khỏi giao diện
+
+            phoneticButtons.add(autoSelectedBtn); // Thêm vào danh sách để hệ thống nhận diện
+            definitionContainer.addView(new AppCompatTextView(FlashcardActivity.this) {{
+                setText("No phonetics available");
+                setTextColor(ContextCompat.getColor(FlashcardActivity.this, R.color.black));
+            }});
         }
+        checkEnableDone(phoneticButtons, definitionButtons, speechButtons, btnDone);
     }
 
     // Hàm kiểm tra và cập nhật trạng thái của nút Done
@@ -600,6 +618,7 @@ public class FlashcardActivity extends AppCompatActivity {
                     if (response.getData() != null && response.getData().getContent() != null) {
                         List<Flashcard> flashcards = response.getData().getContent();
                         totalPages = response.getData().getTotalPages(); // Cập nhật số trang từ API
+
                         Log.d("DEBUG","Tong trang:"+ totalPages);
 
                         if (!flashcards.isEmpty()) {
@@ -633,7 +652,7 @@ public class FlashcardActivity extends AppCompatActivity {
     @SuppressLint("NotifyDataSetChanged")
     private void updateRecyclerView(List<Flashcard> flashcards) {
         if (recyclerViewFlashcards != null) {
-            FlashcardAdapter adapter = new FlashcardAdapter(this, flashcards);
+            FlashcardAdapter adapter = new FlashcardAdapter(this, flashcards,currentPage, totalPages, groupId);
             recyclerViewFlashcards.setLayoutManager(new LinearLayoutManager(this));
             recyclerViewFlashcards.setAdapter(adapter);
             adapter.notifyDataSetChanged();

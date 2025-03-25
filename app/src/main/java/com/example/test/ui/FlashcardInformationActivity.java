@@ -67,6 +67,9 @@ public class FlashcardInformationActivity extends AppCompatActivity {
     private Flashcard selectedFlashcard;
     private int flashcardIndex ; // Bắt đầu từ flashcard đầu tiên
     FlashcardManager flashcardManager = new FlashcardManager();
+    private int currentPage;
+    private int totalPages;
+    private int groupId;
 
     @SuppressLint({"ResourceType", "MissingInflatedId", "ClickableViewAccessibility"})
     @Override
@@ -88,6 +91,9 @@ public class FlashcardInformationActivity extends AppCompatActivity {
         // Nhận chỉ mục flashcard từ Intent, mặc định là 0 nếu không có
         flashcardIndex = getIntent().getIntExtra("FLASHCARD_INDEX", 0);
         int flashcardId = getIntent().getIntExtra("FLASHCARD_ID", -1);
+        currentPage = getIntent().getIntExtra("CURRENT_PAGE", 1);
+        totalPages = getIntent().getIntExtra("TOTAL_PAGES", 1);
+        groupId = getIntent().getIntExtra("GROUP_ID", -1);
         if (flashcardId != -1) {
             Log.d("FlashcardInfo", "Starting to fetch flashcard with ID: " + flashcardId);
             fetchFlashcardData(flashcardId);
@@ -508,16 +514,63 @@ public class FlashcardInformationActivity extends AppCompatActivity {
     private void showNextFlashcard() {
         if (flashcardList != null && !flashcardList.isEmpty()) {
             if (flashcardIndex < flashcardList.size() - 1) {
-                flashcardIndex++; // Chỉ tăng index nếu chưa đến flashcard cuối cùng
-                selectedFlashcard = flashcardList.get(flashcardIndex);
-                new Handler(Looper.getMainLooper()).post(() -> updateUI(selectedFlashcard));
+                flashcardIndex++;
+                updateUI(flashcardList.get(flashcardIndex));
             } else {
-                // Nếu đã đến flashcard cuối, hiển thị thông báo và không vượt qua nữa
-                Toast.makeText(this, "Bạn đã xem hết flashcard!", Toast.LENGTH_SHORT).show();
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    loadNextPage(); // Gọi API để tải trang tiếp theo
+                } else {
+                    Toast.makeText(this, "Bạn đã xem hết flashcard!", Toast.LENGTH_SHORT).show();
+                }
             }
         } else {
             Toast.makeText(this, "Không có flashcard nào để hiển thị!", Toast.LENGTH_SHORT).show();
-            finish(); // Đóng activity nếu danh sách rỗng
+            finish();
         }
     }
+    private void loadNextPage() {
+        FlashcardManager flashcardManager = new FlashcardManager();
+        flashcardManager.fetchFlashcardsInGroup(groupId, currentPage, 4, new FlashcardApiCallback() {
+            @Override
+            public void onSuccess(Object response) {
+
+            }
+
+            @Override
+            public void onSuccess(ApiResponseFlashcardGroup response) {
+
+            }
+
+            @Override
+            public void onSuccess(FlashcardGroupResponse response) {
+
+            }
+
+            @Override
+            public void onSuccess(ApiResponseFlashcard response) {
+                runOnUiThread(() -> {
+                    if (response.getData() != null && !response.getData().getContent().isEmpty()) {
+                        flashcardList.addAll(response.getData().getContent());
+                        flashcardIndex++;
+                        updateUI(flashcardList.get(flashcardIndex));
+                    } else {
+                        Toast.makeText(FlashcardInformationActivity.this, "Không có flashcard mới!", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+
+            @Override
+            public void onSuccess(ApiResponseOneFlashcard response) {
+
+            }
+
+            @Override
+            public void onFailure(String errorMessage) {
+                Toast.makeText(FlashcardInformationActivity.this, "Lỗi tải flashcard: " + errorMessage, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+
 }

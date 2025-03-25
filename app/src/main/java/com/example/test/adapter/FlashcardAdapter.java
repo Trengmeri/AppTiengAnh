@@ -33,9 +33,15 @@ import java.util.List;
 public class FlashcardAdapter extends RecyclerView.Adapter<FlashcardAdapter.FlashcardViewHolder> {
     private Context context;
     private List<Flashcard> flashcards;
-    public FlashcardAdapter(Context context, List<Flashcard> flashcards) {
+    private int currentPage;
+    private int totalPages;
+    private int groupId;
+    public FlashcardAdapter(Context context, List<Flashcard> flashcards,int currentPage, int totalPages, int groupId) {
         this.context = context;
         this.flashcards = flashcards;
+        this.currentPage = currentPage;
+        this.totalPages = totalPages;
+        this.groupId = groupId;
     }
     @NonNull
     @Override
@@ -71,6 +77,9 @@ public class FlashcardAdapter extends RecyclerView.Adapter<FlashcardAdapter.Flas
             intent.putParcelableArrayListExtra("FLASHCARD_LIST", new ArrayList<>(flashcards)); // Gửi danh sách flashcards
             intent.putExtra("FLASHCARD_ID", flashcard.getId()); // Gửi ID flashcard đến FlashcardInformationActivity
             intent.putExtra("FLASHCARD_INDEX", selectedIndex);
+            intent.putExtra("CURRENT_PAGE", currentPage); // Truyền currentPage
+            intent.putExtra("TOTAL_PAGES", totalPages); // Truyền totalPages
+            intent.putExtra("GROUP_ID", groupId); // Truyền groupId để gọi API khi cần
             context.startActivity(intent); // Khởi động activity thông tin flashcard
         });
         // Sự kiện click vào iconRemove để hiển thị dialog xác nhận
