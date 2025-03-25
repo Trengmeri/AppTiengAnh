@@ -75,7 +75,7 @@ public class SpeakingActivity extends AppCompatActivity implements SpeechRecogni
         tvTranscription = findViewById(R.id.tvTranscription);
         Button btnCheckResult = findViewById(R.id.btnCheckResult);
         tvQuestion = findViewById(R.id.tvQuestion);
-        int lessonId = 5;
+        int lessonId = 6;
         int enrollmentId = getIntent().getIntExtra("enrollmentId", 1);
         fetchLessonAndQuestions(lessonId);
 

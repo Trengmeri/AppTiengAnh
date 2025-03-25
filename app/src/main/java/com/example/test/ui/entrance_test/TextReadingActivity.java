@@ -102,7 +102,7 @@ public class TextReadingActivity extends AppCompatActivity {
                                     fetchQuestion(questionIds.get(currentStep)); // Lấy câu hỏi tiếp theo
                                     createProgressBars(totalSteps, currentStep); // Cập nhật thanh tiến trình mỗi lần chuyển câu
                                 } else {
-                                    Intent intent = new Intent(TextReadingActivity.this, PointResultCourseActivity.class);
+                                    Intent intent = new Intent(TextReadingActivity.this, Pick1Activity.class);
                                     intent.putExtra("status", "test");
                                     intent.putExtra("enrollmentId", enrollmentId);
                                     startActivity(intent);

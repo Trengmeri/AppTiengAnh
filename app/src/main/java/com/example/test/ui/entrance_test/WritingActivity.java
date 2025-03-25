@@ -38,7 +38,7 @@ public class WritingActivity extends AppCompatActivity {
     private QuestionManager quesManager;
     private LessonManager lessonManager = new LessonManager();
     private  String questype;
-    int lessonId = 6;
+    int lessonId = 5;
     private List<Integer> questionIds;
     private int currentStep = 0;
     private int totalSteps;

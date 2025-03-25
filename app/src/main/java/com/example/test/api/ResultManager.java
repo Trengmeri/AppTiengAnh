@@ -7,6 +7,7 @@ import com.example.test.SharedPreferencesManager;
 import com.example.test.model.Answer;
 import com.example.test.model.Enrollment;
 import com.example.test.model.Result;
+import com.example.test.response.ApiResponseAnswer;
 import com.example.test.response.ApiResponseEnrollment;
 import com.example.test.response.ApiResponseResult;
 import com.google.gson.Gson;
@@ -78,7 +79,8 @@ public class ResultManager extends BaseApiManager {
                     Log.d("ResultManager", "Phản hồi từ server: " + responseBody);
 
                     Gson gson = new Gson();
-                    Answer answer = gson.fromJson(responseBody, Answer.class); // Thay đổi ở đây
+                    ApiResponseAnswer apiResponse = gson.fromJson(responseBody, ApiResponseAnswer.class);
+                    Answer answer = apiResponse.getData();
 
                     if (answer != null) {
                         Log.d("ResultManager", "Answer ID: " + answer.getId() + "Cau tra loi: "+ answer.getAnswerContent() +", Điểm đạt được: " + answer.getPointAchieved() + ", Session ID: " + answer.getSessionId());
