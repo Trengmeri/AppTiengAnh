@@ -119,6 +119,7 @@ public class FlashcardInformationActivity extends AppCompatActivity {
                                 flashcardManager.markFlashcardAsLearned(getApplicationContext(), flashcardID, new FlashcardApiCallback() {
                                     @Override
                                     public void onSuccess(Object response) {
+                                        runOnUiThread(() -> {
                                         Log.d("FlashcardSwipe", "Marked as learned: " + flashcardID);
 
                                         // Chỉ đổi flashcard sau khi API hoàn tất
@@ -128,6 +129,7 @@ public class FlashcardInformationActivity extends AppCompatActivity {
                                                 countGreen++;
                                                 txtNumGreen.setText(String.valueOf(countGreen));
                                             }
+                                        });
                                         });
                                     }
 
@@ -162,6 +164,7 @@ public class FlashcardInformationActivity extends AppCompatActivity {
                                 flashcardManager.markFlashcardAsUnlearned(getApplicationContext(), flashcardID, new FlashcardApiCallback() {
                                     @Override
                                     public void onSuccess(Object response) {
+                                        runOnUiThread(() -> {
                                         Log.d("FlashcardSwipe", "Marked as unlearned: " + flashcardID);
 
                                         // Chỉ đổi flashcard sau khi API hoàn tất
@@ -171,6 +174,7 @@ public class FlashcardInformationActivity extends AppCompatActivity {
                                                 countRed++;
                                                 txtNumRed.setText(String.valueOf(countRed));
                                             }
+                                        });
                                         });
                                     }
 
@@ -250,10 +254,11 @@ public class FlashcardInformationActivity extends AppCompatActivity {
             public void onSuccess(ApiResponseOneFlashcard response) {
                 Log.d("FlashcardInfo", "API call successful");
                 if (response != null && response.getData() != null) {
-                    Flashcard flashcard = response.getData();
-                    Log.d("FlashcardInfo", "Received flashcard: " + flashcard.toString());
+                    //Flashcard flashcard = response.getData();
+                    selectedFlashcard = response.getData();
+                    Log.d("FlashcardInfo", "Received flashcard: " + selectedFlashcard.toString());
                     runOnUiThread(() -> {
-                            updateUI(flashcard);
+                            updateUI(selectedFlashcard);
                     });
                 } else {
                     Log.e("FlashcardInfo", "Response or data is null");
@@ -350,58 +355,60 @@ public class FlashcardInformationActivity extends AppCompatActivity {
     private void flipCard(String definition, String example) {
         Log.d("FlashcardInfo", "Flipping card with definition: " + definition + ", example: " + example);
 
-        if (isFrontVisible) {
-           // flipOut.setTarget(frontSide);
-            flipIn.setTarget(backSide);
-            flipOut.start();
-            flipOut.addListener(new android.animation.Animator.AnimatorListener() {
-                @Override
-                public void onAnimationEnd(android.animation.Animator animation) {
-                    frontSide.setVisibility(View.GONE);
-                    backSide.setVisibility(View.VISIBLE);
-                    tvDefinition.setText("Definition: "+definition);
-                    tvExamples.setText("Example: "+example);
-                    flipIn.start();
-                }
+        runOnUiThread(() -> {
+            if (isFrontVisible) {
+                // flipOut.setTarget(frontSide);
+                flipIn.setTarget(backSide);
+                flipOut.start();
+                flipOut.addListener(new android.animation.Animator.AnimatorListener() {
+                    @Override
+                    public void onAnimationEnd(android.animation.Animator animation) {
+                        frontSide.setVisibility(View.GONE);
+                        backSide.setVisibility(View.VISIBLE);
+                        tvDefinition.setText("Definition: " + definition);
+                        tvExamples.setText("Example: " + example);
+                        flipIn.start();
+                    }
 
-                @Override
-                public void onAnimationStart(android.animation.Animator animation) {
-                }
+                    @Override
+                    public void onAnimationStart(android.animation.Animator animation) {
+                    }
 
-                @Override
-                public void onAnimationCancel(android.animation.Animator animation) {
-                }
+                    @Override
+                    public void onAnimationCancel(android.animation.Animator animation) {
+                    }
 
-                @Override
-                public void onAnimationRepeat(android.animation.Animator animation) {
-                }
-            });
-        } else {
-            flipOut.setTarget(backSide);
-            flipIn.setTarget(frontSide);
-            flipOut.start();
-            flipOut.addListener(new android.animation.Animator.AnimatorListener() {
-                @Override
-                public void onAnimationEnd(android.animation.Animator animation) {
-                    backSide.setVisibility(View.GONE);
-                    frontSide.setVisibility(View.VISIBLE);
-                    flipIn.start();
-                }
+                    @Override
+                    public void onAnimationRepeat(android.animation.Animator animation) {
+                    }
+                });
+            } else {
+                flipOut.setTarget(backSide);
+                flipIn.setTarget(frontSide);
+                flipOut.start();
+                flipOut.addListener(new android.animation.Animator.AnimatorListener() {
+                    @Override
+                    public void onAnimationEnd(android.animation.Animator animation) {
+                        backSide.setVisibility(View.GONE);
+                        frontSide.setVisibility(View.VISIBLE);
+                        flipIn.start();
+                    }
 
-                @Override
-                public void onAnimationStart(android.animation.Animator animation) {
-                }
+                    @Override
+                    public void onAnimationStart(android.animation.Animator animation) {
+                    }
 
-                @Override
-                public void onAnimationCancel(android.animation.Animator animation) {
-                }
+                    @Override
+                    public void onAnimationCancel(android.animation.Animator animation) {
+                    }
 
-                @Override
-                public void onAnimationRepeat(android.animation.Animator animation) {
-                }
-            });
-        }
-        isFrontVisible = !isFrontVisible;
+                    @Override
+                    public void onAnimationRepeat(android.animation.Animator animation) {
+                    }
+                });
+            }
+            isFrontVisible = !isFrontVisible;
+        });
     }
 
     private void playAudio(String audioUrl) {
@@ -500,19 +507,17 @@ public class FlashcardInformationActivity extends AppCompatActivity {
     }
     private void showNextFlashcard() {
         if (flashcardList != null && !flashcardList.isEmpty()) {
-            flashcardIndex++; // Tăng index để lấy flashcard tiếp theo
-            if (flashcardIndex >= flashcardList.size()) {
-                flashcardIndex = 0; // Nếu hết flashcard thì quay lại đầu (hoặc có thể hiển thị thông báo)
+            if (flashcardIndex < flashcardList.size() - 1) {
+                flashcardIndex++; // Chỉ tăng index nếu chưa đến flashcard cuối cùng
+                selectedFlashcard = flashcardList.get(flashcardIndex);
+                new Handler(Looper.getMainLooper()).post(() -> updateUI(selectedFlashcard));
+            } else {
+                // Nếu đã đến flashcard cuối, hiển thị thông báo và không vượt qua nữa
+                Toast.makeText(this, "Bạn đã xem hết flashcard!", Toast.LENGTH_SHORT).show();
             }
-            selectedFlashcard = flashcardList.get(flashcardIndex);
-            new Handler(Looper.getMainLooper()).post(() -> updateUI(selectedFlashcard));
-
         } else {
-            Toast.makeText(this, "Hết flashcard để hiển thị!", Toast.LENGTH_SHORT).show();
-            finish(); // Đóng activity nếu không còn flashcard nào
+            Toast.makeText(this, "Không có flashcard nào để hiển thị!", Toast.LENGTH_SHORT).show();
+            finish(); // Đóng activity nếu danh sách rỗng
         }
     }
-
-
-
 }
