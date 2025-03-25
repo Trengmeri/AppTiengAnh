@@ -250,17 +250,6 @@ public class WritingActivity extends AppCompatActivity {
     }
     private void anHienAnh() {
         ImageView imgLessonMaterial = findViewById(R.id.imgLessonMaterial);
-        Button btnToggleImage = findViewById(R.id.btnToggleImage);
-        btnToggleImage.setOnClickListener(v -> {
-            if (isImageVisible) {
-                imgLessonMaterial.setVisibility(View.GONE); // Ẩn ảnh
-                btnToggleImage.setText("Hiện ảnh");
-            } else {
-                imgLessonMaterial.setVisibility(View.VISIBLE); // Hiện ảnh
-                btnToggleImage.setText("Ẩn ảnh");
-            }
-            isImageVisible = !isImageVisible; // Đảo trạng thái
-        });
     }
 
     private void createProgressBars(int totalQuestions, int currentProgress) {

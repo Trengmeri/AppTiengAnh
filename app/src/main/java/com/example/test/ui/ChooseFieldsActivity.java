@@ -59,13 +59,13 @@ public class ChooseFieldsActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-        btnMechan.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(ChooseFieldsActivity.this, CourseActivity.class);
-                startActivity(intent);
-            }
-        });
+//        btnMechan.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Intent intent = new Intent(ChooseFieldsActivity.this, CourseActivity.class);
+//                startActivity(intent);
+//            }
+//        });
 
     }
 

@@ -31,6 +31,7 @@ import com.example.test.model.Course;
 import com.example.test.model.Enrollment;
 import com.example.test.model.Lesson;
 import com.example.test.model.Result;
+import com.example.test.ui.CourseInformationActivity;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -70,8 +71,13 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseView
 //        holder.lessonContainer.removeAllViews(); // Sắp xếp lesson theo thứ tự tăng dần
 
         if(proStatus.equals("True")){
-            // Thêm từng Lesson ID vào layout
-            for (Integer lessonId : course.getLessonIds()) {
+            List<Integer> sortedLessonIds = new ArrayList<>(course.getLessonIds());
+            Collections.sort(sortedLessonIds);
+
+            // Xóa các bài học cũ trước khi thêm mới
+            holder.lessonContainer.removeAllViews();
+
+            for (Integer lessonId : sortedLessonIds) {
                 TextView textView = new TextView(context);
                 textView.setText(String.valueOf(lessonId));
                 textView.setTextSize(16);
@@ -153,6 +159,12 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseView
         }
         else {
             holder.itemView.setBackgroundTintList(ColorStateList.valueOf(Color.LTGRAY));
+            holder.itemView.setOnClickListener(v -> {
+                Intent intent = new Intent(context, CourseInformationActivity.class);
+                intent.putExtra("courseId", course.getId());
+                context.startActivity(intent);
+            });
+
         }
 
     }

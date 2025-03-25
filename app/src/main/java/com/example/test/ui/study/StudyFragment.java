@@ -74,7 +74,7 @@ public class StudyFragment extends Fragment {
         btnAbout= view.findViewById(R.id.btnAbout);
         btnLesson= view.findViewById(R.id.btnLesson);
         contentAbout = view.findViewById(R.id.mycourse);
-        contentLes = view.findViewById(R.id.contentLes);
+        contentLes = view.findViewById(R.id.allcourse);
 
         btnAbout.setOnClickListener(v -> {
             btnAbout.setBackground(ContextCompat.getDrawable(requireContext(), R.drawable.bg_about));

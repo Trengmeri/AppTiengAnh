@@ -78,9 +78,6 @@ public class Pick1Activity extends AppCompatActivity {
         imgLessonMaterial= findViewById(R.id.imgLessonMaterial);
 
         LinearLayout progressBar = findViewById(R.id.progressBar); // Ánh xạ ProgressBar
-        setupAnswerClickListeners();
-        updateProgressBar(progressBar, currentStep);
-        LinearLayout progressBar = findViewById(R.id.progressBar);
 
         recyclerViewChoices = findViewById(R.id.recyclerViewChoices);
         int columnCount = 2; // Số cột
