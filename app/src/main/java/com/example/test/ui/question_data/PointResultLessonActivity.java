@@ -114,7 +114,7 @@ public class PointResultLessonActivity extends AppCompatActivity {
                 if (course != null) {
                     Integer maxLessonId = course.getLessonIds().stream().max(Integer::compareTo).orElse(lessonId);
                     if (maxLessonId > lessonId) {
-                        btnNext.setText(getString(R.string.nextques));
+                        runOnUiThread(() -> btnNext.setText(getString(R.string.nextques)));
                         int lesid = lessonId +1;
                         lesManager.fetchLessonById(lesid, new ApiCallback<Lesson>(){
 
@@ -140,7 +140,8 @@ public class PointResultLessonActivity extends AppCompatActivity {
                         });
 
                     } else {
-                        btnNext.setText(getString(R.string.viewpointcourse));
+                        runOnUiThread(() -> btnNext.setText(getString(R.string.viewpointcourse)));
+
                         btnNext.setOnClickListener(view -> {
                             Intent intent = new Intent(PointResultLessonActivity.this, PointResultCourseActivity.class);
                             intent.putExtra("courseId", course.getId());

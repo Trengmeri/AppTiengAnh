@@ -190,45 +190,70 @@ public class PointResultCourseActivity extends AppCompatActivity {
     }
 
     private void createResultForLesson(int lessonId, int sessionId, int enrollmentId, String skillType) {
-        resultManager.createResult(lessonId, sessionId, enrollmentId, new ApiCallback() {
-            @Override
-            public void onSuccess() {
-                Log.d("PointResultActivity", "createResultForLesson: Gọi fetchResultByLesson"); // Log trước khi gọi fetchResultByLesson
-                resultManager.fetchResultByLesson(lessonId, new ApiCallback<Result>() {
-                    @Override
-                    public void onSuccess() {}
+        if(status.equals("study")){
+            resultManager.fetchResultByLesson(lessonId, new ApiCallback<Result>() {
+                @Override
+                public void onSuccess() {}
 
-                    @Override
-                    @SuppressLint("UseCompatLoadingForColorStateLists")
-                    public void onSuccess(Result result) {
-                        if (result!= null) {
-                            Log.d("PointResultActivity", "fetchResultByLesson: Lấy Result thành công");
-                            runOnUiThread(() -> {
-                                updateUI(skillType, result.getComLevel(), result.getTotalPoints(), result.getId(), enrollmentId);
-                            });
-                        } else {
-                            Log.e("PointResultActivity", "fetchResultByLesson: Kết quả không hợp lệ.");
+                @Override
+                @SuppressLint("UseCompatLoadingForColorStateLists")
+                public void onSuccess(Result result) {
+                    if (result!= null) {
+                        Log.d("PointResultActivity", "fetchResultByLesson: Lấy Result thành công");
+                        runOnUiThread(() -> {
+                            updateUI(skillType, result.getComLevel(), result.getTotalPoints(), result.getId(), enrollmentId);
+                        });
+                    } else {
+                        Log.e("PointResultActivity", "fetchResultByLesson: Kết quả không hợp lệ.");
+                    }
+                }
+
+                @Override
+                public void onFailure(String errorMessage) {
+                    Log.e("PointResultActivity", "fetchResultByLesson: " + errorMessage);
+                }
+            });
+        } else {
+            resultManager.createResult(lessonId, sessionId, enrollmentId, new ApiCallback() {
+                @Override
+                public void onSuccess() {
+                    Log.d("PointResultActivity", "createResultForLesson: Gọi fetchResultByLesson"); // Log trước khi gọi fetchResultByLesson
+                    resultManager.fetchResultByLesson(lessonId, new ApiCallback<Result>() {
+                        @Override
+                        public void onSuccess() {}
+
+                        @Override
+                        @SuppressLint("UseCompatLoadingForColorStateLists")
+                        public void onSuccess(Result result) {
+                            if (result!= null) {
+                                Log.d("PointResultActivity", "fetchResultByLesson: Lấy Result thành công");
+                                runOnUiThread(() -> {
+                                    updateUI(skillType, result.getComLevel(), result.getTotalPoints(), result.getId(), enrollmentId);
+                                });
+                            } else {
+                                Log.e("PointResultActivity", "fetchResultByLesson: Kết quả không hợp lệ.");
+                            }
                         }
-                    }
 
-                    @Override
-                    public void onFailure(String errorMessage) {
-                        Log.e("PointResultActivity", "fetchResultByLesson: " + errorMessage);
-                    }
-                });
-            }
+                        @Override
+                        public void onFailure(String errorMessage) {
+                            Log.e("PointResultActivity", "fetchResultByLesson: " + errorMessage);
+                        }
+                    });
+                }
 
-            @Override
-            public void onSuccess(Object result){}
-
-
-            @Override
-            public void onFailure(String errorMessage) {
-                Log.e("PointResultActivity",errorMessage);
-            }
+                @Override
+                public void onSuccess(Object result){}
 
 
-        });
+                @Override
+                public void onFailure(String errorMessage) {
+                    Log.e("PointResultActivity",errorMessage);
+                }
+
+
+            });
+        }
     }
 
     private void updateUI(String skillType, double complete, int totalPoints, int resultId, int enrollmentId) {
@@ -276,6 +301,7 @@ public class PointResultCourseActivity extends AppCompatActivity {
                             compCourse = enrollment.getComLevel();
                             coursePoint = enrollment.getTotalPoints();
                             runOnUiThread(() -> {
+                                btnReview.setVisibility(View.GONE);
                                 if (compCourse > 90) {
                                     star3.setBackgroundTintList(getResources().getColorStateList(R.color.yellow));
                                 }

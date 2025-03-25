@@ -160,7 +160,7 @@ public class RecordQuestionActivity extends AppCompatActivity implements SpeechR
             public void onFailure(String errorMessage) {
                 progressDialog.dismiss();
                 Log.e("WritingActivity", "Lỗi lưu câu trả lời: " + errorMessage);
-                showErrorDialog("Lỗi khi lưu câu trả lời. Vui lòng thử lại.");
+                showErrorDialog(getString(R.string.invalidans));
                 apiService.getSuggestionFromApi(questionContent, new ApiCallback<String>(){
 
                     @Override

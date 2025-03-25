@@ -63,6 +63,9 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseView
     public void onBindViewHolder(@NonNull CourseViewHolder holder, int position) {
         courseList.sort(Comparator.comparingInt(Course::getId));
         Course course = courseList.get(position);
+        if (course == null) {
+            return; // Tránh lỗi khi đối tượng bị null
+        }
         holder.tvCourseTitle.setText(course.getName());
         holder.tvCourseDescription.setText(course.getIntro());
 //        if()

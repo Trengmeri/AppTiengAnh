@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.View;
 import android.widget.*;
@@ -61,7 +62,7 @@ public class SpeakingActivity extends AppCompatActivity implements SpeechRecogni
     private  String questype;
     private Runnable updateSeekBar;
     private boolean isPlaying = false;
-    TextView tvQuestion;
+    TextView tvQuestion,key;
     private ProgressDialog progressDialog;
 
 
@@ -75,6 +76,7 @@ public class SpeakingActivity extends AppCompatActivity implements SpeechRecogni
         tvTranscription = findViewById(R.id.tvTranscription);
         Button btnCheckResult = findViewById(R.id.btnCheckResult);
         tvQuestion = findViewById(R.id.tvQuestion);
+        key = findViewById(R.id.key);
         int lessonId = 6;
         int enrollmentId = getIntent().getIntExtra("enrollmentId", 1);
         fetchLessonAndQuestions(lessonId);
@@ -163,7 +165,38 @@ public class SpeakingActivity extends AppCompatActivity implements SpeechRecogni
             public void onFailure(String errorMessage) {
                 progressDialog.dismiss();
                 Log.e("WritingActivity", "Lỗi lưu câu trả lời: " + errorMessage);
-                showErrorDialog("Lỗi khi lưu câu trả lời. Vui lòng thử lại.");
+                showErrorDialog(getString(R.string.invalidans));
+                apiService.getSuggestionFromApi(questionContent, new ApiCallback<String>(){
+
+                    @Override
+                    public void onSuccess() {
+
+                    }
+
+                    @Override
+                    public void onSuccess(String tip) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                key.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
+                                key.setMovementMethod(new ScrollingMovementMethod());
+
+                                String formattedTip = tip
+                                        .replaceAll("(?<!\\d)\\. ", ".\n")
+                                        .replaceAll(": ", ":\n");
+
+                                key.setText("Tip: \n" +formattedTip);
+                            }
+                        });
+                    }
+
+
+
+                    @Override
+                    public void onFailure(String errorMessage) {
+
+                    }
+                });
             }
         });
     }

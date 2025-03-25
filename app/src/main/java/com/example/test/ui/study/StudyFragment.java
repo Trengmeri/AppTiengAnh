@@ -145,6 +145,10 @@ public class StudyFragment extends Fragment {
 
                         @Override
                         public void onSuccess(Course course) {
+                            if (course == null) { // Kiểm tra tránh lỗi NullPointerException
+                                Log.e("StudyFragment", "❌ Course ID " + courseId + " không tồn tại!");
+                                return;
+                            }
                             Log.d("StudyFragment", "📌 Course ID: " + course.getId() + ", Lessons: " + course.getLessonIds());
 
                             if ("true".equalsIgnoreCase(prostatus)) {
