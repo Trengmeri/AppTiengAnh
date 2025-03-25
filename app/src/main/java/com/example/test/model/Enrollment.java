@@ -7,15 +7,15 @@ public class Enrollment {
     private int enrollmentId;
     private int userId;
     private int courseId;
-    private boolean proStatus;
+    private String proStatus;
     private int totalPoints;
     private double comLevel;
 
-    public boolean isProStatus() {
+    public String getProStatus() {
         return proStatus;
     }
 
-    public void setProStatus(boolean proStatus) {
+    public void setProStatus(String proStatus) {
         this.proStatus = proStatus;
     }
 

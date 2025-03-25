@@ -58,8 +58,8 @@
 
             <ImageView
                 android:id="@+id/btnListen"
-                android:layout_width="330dp"
-                android:layout_height="224dp"
+                android:layout_width="327dp"
+                android:layout_height="210dp"
                 android:layout_gravity="center"
                 android:layout_marginTop="25dp"
                 app:srcCompat="@drawable/listening" />
@@ -71,7 +71,7 @@
                 android:layout_marginTop="30dp"
                 android:layout_marginStart="@dimen/dp_16"
                 android:drawableLeft="@drawable/fe_question"
-                android:textSize="24sp"
+                android:textSize="20sp"
                 android:textStyle="bold" />
 
             <androidx.recyclerview.widget.RecyclerView
@@ -86,6 +86,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/check"
+                android:layout_marginBottom="20dp"
                 android:backgroundTint="#BC6136"
                 android:layout_gravity="center"/>
         </LinearLayout>

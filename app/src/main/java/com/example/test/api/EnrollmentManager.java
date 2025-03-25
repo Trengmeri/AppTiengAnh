@@ -28,15 +28,15 @@ public class EnrollmentManager extends BaseApiManager
         this.context = context;
     }
 
-    public void fetchAllEnrolledCourseIds(String prostatus, ApiCallback<List<Integer>> callback) {
+    public void fetchAllEnrolledCourseIds( ApiCallback<List<Integer>> callback) {
         List<Integer> allCourseIds = new ArrayList<>();
-        fetchEnrollmentsByPage(0, prostatus, allCourseIds, callback);
+        fetchEnrollmentsByPage(0, allCourseIds, callback);
     }
 
-    private void fetchEnrollmentsByPage(int page, String prostatus, List<Integer> allCourseIds, ApiCallback<List<Integer>> callback) {
+    private void fetchEnrollmentsByPage(int page, List<Integer> allCourseIds, ApiCallback<List<Integer>> callback) {
         String userId = SharedPreferencesManager.getInstance(context).getID();
         String token = SharedPreferencesManager.getInstance(context).getAccessToken();
-        String url = BASE_URL + "/api/v1/enrollments/user/" + userId +"?page=" + page + "&proStatus=" + prostatus;
+        String url = BASE_URL + "/api/v1/enrollments/user/" + userId +"?page=" + page ;
 
         Request request = new Request.Builder()
                 .url(url)
@@ -73,7 +73,7 @@ public class EnrollmentManager extends BaseApiManager
                     }
 
                     if (page + 1 < totalPages) {
-                        fetchEnrollmentsByPage(page + 1, prostatus, allCourseIds, callback);
+                        fetchEnrollmentsByPage(page + 1, allCourseIds, callback);
                     } else {
                         callback.onSuccess(allCourseIds);
                     }

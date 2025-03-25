@@ -23,20 +23,25 @@ import com.example.test.adapter.CourseAdapter;
 import com.example.test.api.ApiCallback;
 import com.example.test.api.EnrollmentManager;
 import com.example.test.api.LessonManager;
+import com.example.test.api.ResultManager;
 import com.example.test.model.Course;
+import com.example.test.model.Enrollment;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class StudyFragment extends Fragment {
-    private RecyclerView recyclerView1, recyclerView2;
-    private CourseAdapter adapter;
-    private List<Course> courseList;
+    private RecyclerView recyclerView1, recyclerView2,recyclerView3;
+    private CourseAdapter adapter1, adapter2, adapter3;
+    private List<Course> courseList1, courseList2, courseList3;
     private LessonManager lessonManager;
     private EnrollmentManager enrollmentManager;
+    private ResultManager resultManager;
     AppCompatButton btnAbout, btnLesson;
     LinearLayout contentAbout, contentLes;
-    String prostatus = "false";
+    private Set<Integer> processedCourseIds = new HashSet<>();
 
     public StudyFragment() {
     }
@@ -51,7 +56,8 @@ public class StudyFragment extends Fragment {
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
-        enrollmentManager = new EnrollmentManager(context); // Lấy context khi Fragment được gắn vào Activity
+        enrollmentManager = new EnrollmentManager(context);
+        resultManager = new ResultManager(context);
     }
 
     @SuppressLint("WrongViewCast")
@@ -60,10 +66,14 @@ public class StudyFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         recyclerView1 = view.findViewById(R.id.recyclerView1);
         recyclerView1.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerView2 = view.findViewById(R.id.recyclerView2);
+        recyclerView2.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerView3 = view.findViewById(R.id.recyclerView3);
+        recyclerView3.setLayoutManager(new LinearLayoutManager(getContext()));
 
         btnAbout= view.findViewById(R.id.btnAbout);
         btnLesson= view.findViewById(R.id.btnLesson);
-        contentAbout = view.findViewById(R.id.contentAbout);
+        contentAbout = view.findViewById(R.id.mycourse);
         contentLes = view.findViewById(R.id.contentLes);
 
         btnAbout.setOnClickListener(v -> {
@@ -80,15 +90,23 @@ public class StudyFragment extends Fragment {
             contentLes.setVisibility(View.VISIBLE);
         });
 
-        courseList = new ArrayList<>();
-        adapter = new CourseAdapter(getContext(), courseList);
-        recyclerView1.setAdapter(adapter);
+        courseList1 = new ArrayList<>();
+        adapter1 = new CourseAdapter("True", getContext(), courseList1);
+        recyclerView1.setAdapter(adapter1);
+
+        courseList2 = new ArrayList<>();
+        adapter2 = new CourseAdapter("False", getContext(), courseList2);
+        recyclerView2.setAdapter(adapter2);
+
+        courseList3 = new ArrayList<>();
+        adapter3 = new CourseAdapter("True", getContext(), courseList3);
+        recyclerView3.setAdapter(adapter3);
 
         lessonManager = new LessonManager();
         fetchCourses();
     }
     private void fetchCourses() {
-        enrollmentManager.fetchAllEnrolledCourseIds(prostatus, new ApiCallback<List<Integer>>() {
+        enrollmentManager.fetchAllEnrolledCourseIds( new ApiCallback<List<Integer>>() {
             @Override
             public void onSuccess() {}
 
@@ -107,22 +125,55 @@ public class StudyFragment extends Fragment {
 
     private void fetchLessonsForCourses(List<Integer> courseIds) {
         for (Integer courseId : courseIds) {
-            lessonManager.fetchCourseById(courseId, new ApiCallback<Course>() {
+            if (processedCourseIds.contains(courseId)) {
+                continue; // Bỏ qua nếu courseId đã được xử lý
+            }
+            processedCourseIds.add(courseId); // Đánh dấu đã xử lý
+
+            resultManager.getEnrollment(courseId, new ApiCallback<Enrollment>() {
                 @Override
                 public void onSuccess() {}
 
                 @Override
-                public void onSuccess(Course course) {
-                    Log.d("StudyFragment", "📌 Course ID: " + course.getId() + ", Lessons: " + course.getLessonIds());
-                    courseList.add(course);
+                public void onSuccess(Enrollment enrollment) {
+                    String prostatus = enrollment.getProStatus();
+                    int totalPoint = enrollment.getTotalPoints();
 
-                    // Cập nhật RecyclerView
-                    requireActivity().runOnUiThread(() -> adapter.notifyDataSetChanged());
+                    lessonManager.fetchCourseById(courseId, new ApiCallback<Course>() {
+                        @Override
+                        public void onSuccess() {}
+
+                        @Override
+                        public void onSuccess(Course course) {
+                            Log.d("StudyFragment", "📌 Course ID: " + course.getId() + ", Lessons: " + course.getLessonIds());
+
+                            if ("true".equalsIgnoreCase(prostatus)) {
+                                if (totalPoint != 0) {
+                                    courseList3.add(course);
+                                } else {
+                                    courseList1.add(course);
+                                }
+                            } else {
+                                courseList2.add(course);
+                            }
+
+                            requireActivity().runOnUiThread(() -> {
+                                adapter1.notifyDataSetChanged();
+                                adapter2.notifyDataSetChanged();
+                                adapter3.notifyDataSetChanged();
+                            });
+                        }
+
+                        @Override
+                        public void onFailure(String errorMessage) {
+                            Log.e("StudyFragment", "❌ Lỗi khi lấy khóa học ID " + courseId + ": " + errorMessage);
+                        }
+                    });
                 }
 
                 @Override
                 public void onFailure(String errorMessage) {
-                    Log.e("StudyFragment", "❌ Lỗi khi lấy khóa học ID " + courseId + ": " + errorMessage);
+                    Log.e("StudyFragment", "❌ Lỗi khi lấy Enrollment của Course ID " + courseId + ": " + errorMessage);
                 }
             });
         }

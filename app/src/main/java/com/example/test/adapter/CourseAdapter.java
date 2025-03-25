@@ -41,10 +41,12 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseView
 
     private Context context;
     private List<Course> courseList;
+    private String proStatus;
     private LessonManager lessonManager = new LessonManager();
     private ResultManager resultManager = new ResultManager(context);
 
-    public CourseAdapter(Context context, List<Course> courseList) {
+    public CourseAdapter(String proStatus, Context context, List<Course> courseList) {
+        this.proStatus = proStatus;
         this.context = context;
         this.courseList = courseList;
     }
@@ -66,88 +68,92 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseView
         // Xóa tất cả lesson trước khi thêm mới
         holder.lessonContainer.removeAllViews(); // Sắp xếp lesson theo thứ tự tăng dần
 
+        if(proStatus.equals("True")){
+            // Thêm từng Lesson ID vào layout
+            for (Integer lessonId : course.getLessonIds()) {
+                TextView textView = new TextView(context);
+                textView.setText(String.valueOf(lessonId));
+                textView.setTextSize(16);
+                textView.setTypeface(null, Typeface.BOLD); // Chữ in đậm
+                textView.setGravity(Gravity.CENTER);
 
-        // Thêm từng Lesson ID vào layout
-        for (Integer lessonId : course.getLessonIds()) {
-            TextView textView = new TextView(context);
-            textView.setText(String.valueOf(lessonId));
-            textView.setTextSize(16);
-            textView.setTypeface(null, Typeface.BOLD); // Chữ in đậm
-            textView.setGravity(Gravity.CENTER);
+                int size = 90;
+                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(size, size);
+                params.setMargins(10, 0, 10, 0); // Điều chỉnh khoảng cách giữa các lesson
+                textView.setLayoutParams(params);
 
-            int size = 100;
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(size, size);
-            params.setMargins(20, 0, 20, 0); // Điều chỉnh khoảng cách giữa các lesson
-            textView.setLayoutParams(params);
-
-            resultManager.fetchResultByLesson(lessonId, new ApiCallback<Result>() {
-                @Override
-                public void onSuccess() {
-
-                }
-
-                @Override
-                public void onSuccess(Result result) {
-                    new Handler(Looper.getMainLooper()).post(() -> {
-                        textView.setBackgroundResource(R.drawable.bg_lesson_cricle);
-                        textView.setBackgroundTintList(null);// Nếu có kết quả thì đặt bg_lesson
-                    });
-                }
-
-                @Override
-                public void onFailure(String errorMessage) {
-                    new Handler(Looper.getMainLooper()).post(() -> {
-                        textView.setBackgroundResource(R.drawable.bg_lesson_cricle); // Giữ nền mặc định
-                        textView.setBackgroundTintList(ColorStateList.valueOf(Color.GRAY)); // Áp màu xám
-                    });
-                }
-            });
-
-            // Xử lý sự kiện click để fetch dữ liệu và điều hướng
-            textView.setOnClickListener(v -> {
-                resultManager.getEnrollment(course.getId(), new ApiCallback<Enrollment>() {
+                resultManager.fetchResultByLesson(lessonId, new ApiCallback<Result>() {
                     @Override
                     public void onSuccess() {
 
                     }
 
                     @Override
-                    public void onSuccess(Enrollment enrollment) {
-                        int enrollmentId = enrollment.getId();
-                        lessonManager.fetchLessonById(lessonId, new ApiCallback<Lesson>() {
-                            @Override
-                            public void onSuccess() {
-
-                            }
-
-                            @Override
-                            public void onSuccess(Lesson lesson) {
-                                Intent intent = new Intent(context, NevigateQuestion.class);
-                                intent.putExtra("courseId", course.getId());
-                                intent.putExtra("enrollmentId", enrollmentId);
-                                intent.putExtra("lessonId", lessonId);
-                                intent.putExtra("questionIds", new ArrayList<>(lesson.getQuestionIds()));
-                                context.startActivity(intent);
-                            }
-
-
-                            @Override
-                            public void onFailure(String errorMessage) {
-                                Toast.makeText(context, "Lỗi tải dữ liệu: " + errorMessage, Toast.LENGTH_SHORT).show();
-                            }
+                    public void onSuccess(Result result) {
+                        new Handler(Looper.getMainLooper()).post(() -> {
+                            textView.setBackgroundResource(R.drawable.bg_lesson_cricle);
                         });
                     }
 
                     @Override
                     public void onFailure(String errorMessage) {
-
+                        new Handler(Looper.getMainLooper()).post(() -> {
+                            textView.setBackgroundResource(R.drawable.bg_lesson_cricle); // Giữ nền mặc định
+                            textView.setBackgroundTintList(ColorStateList.valueOf(Color.GRAY)); // Áp màu xám
+                        });
                     }
                 });
-            });
+
+                // Xử lý sự kiện click để fetch dữ liệu và điều hướng
+                textView.setOnClickListener(v -> {
+                    resultManager.getEnrollment(course.getId(), new ApiCallback<Enrollment>() {
+                        @Override
+                        public void onSuccess() {
+
+                        }
+
+                        @Override
+                        public void onSuccess(Enrollment enrollment) {
+                            int enrollmentId = enrollment.getId();
+                            lessonManager.fetchLessonById(lessonId, new ApiCallback<Lesson>() {
+                                @Override
+                                public void onSuccess() {
+
+                                }
+
+                                @Override
+                                public void onSuccess(Lesson lesson) {
+                                    Intent intent = new Intent(context, NevigateQuestion.class);
+                                    intent.putExtra("courseId", course.getId());
+                                    intent.putExtra("enrollmentId", enrollmentId);
+                                    intent.putExtra("lessonId", lessonId);
+                                    intent.putExtra("questionIds", new ArrayList<>(lesson.getQuestionIds()));
+                                    context.startActivity(intent);
+                                }
 
 
-            holder.lessonContainer.addView(textView);
+                                @Override
+                                public void onFailure(String errorMessage) {
+                                    Toast.makeText(context, "Lỗi tải dữ liệu: " + errorMessage, Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        }
+
+                        @Override
+                        public void onFailure(String errorMessage) {
+
+                        }
+                    });
+                });
+
+
+                holder.lessonContainer.addView(textView);
+            }
         }
+        else {
+            holder.itemView.setBackgroundTintList(ColorStateList.valueOf(Color.LTGRAY));
+        }
+
     }
 
 

@@ -3,6 +3,7 @@ package com.example.test.ui.englishlevel;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -30,7 +31,11 @@ public class EnglishLevelActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_english_level);
+        ImageView back = findViewById(R.id.btnBack);
 
+        back.setOnClickListener(view -> {
+            finish();
+        });
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 

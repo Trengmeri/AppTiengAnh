@@ -3,7 +3,7 @@
     <string name="back">Back</string>
     <string name="load">Loading...</string>
     <string name="mycourse">My course</string>
-    <string name="suggestcourse">Suggestion Course</string>
+    <string name="suggestcourse">All course</string>
     <string name="title_activity_login" translatable="false">LoginActivity</string>
     <string name="prompt_email" translatable="false">Email</string>
     <string name="prompt_password">Password</string>
@@ -56,6 +56,9 @@
     <string name="englishlevel">Choose your \nenglish level</string>
     <string name="levelintro">Choose a starting level\nthat matches your proficiency.</string>
     <string name="start">Start here</string>
+    <string name="course_cotinue">Ongoing Course</string>
+    <string name="course_suggest">Recommended Course</string>
+    <string name="course_comp">Completed Course</string>
     <string name="writeans">Write your answer....</string>
     <string name="VN">Vietnamese</string>
     <string name="Eng">English</string>

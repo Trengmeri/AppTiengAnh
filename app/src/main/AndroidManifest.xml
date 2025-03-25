@@ -85,7 +85,7 @@
             android:exported="false" />
         <activity
             android:name=".ui.entrance_test.SpeakingActivity"
-            android:exported="false" />
+            android:exported="true" />
         <activity
             android:name=".ui.question_data.PointResultLessonActivity"
             android:exported="false" />

@@ -66,9 +66,9 @@ public class SelectActivity extends AppCompatActivity {
                             intent.putExtra("enrollmentId", enrollmentId);
                             startActivity(intent);
 //                 Lưu trạng thái đã chọn
-//                    editor.putBoolean("hasSelectedOption", true);
-//                    editor.putString("lastActivity", HomeActivity.class.getName()); // Chuyển đến HomeActivity
-//                    editor.apply();
+                    editor.putBoolean("hasSelectedOption", true);
+                    editor.putString("lastActivity", HomeActivity.class.getName()); // Chuyển đến HomeActivity
+                    editor.apply();
                             finish(); // Đóng SelectActivity
                         }
 
