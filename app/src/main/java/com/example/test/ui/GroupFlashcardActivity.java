@@ -49,7 +49,7 @@ import java.util.ArrayList;
 
 public class GroupFlashcardActivity extends AppCompatActivity {
 
-    AppCompatButton groupFlcid;
+    //AppCompatButton groupFlcid;
     TextView backtoExplore;
     ImageView btnaddgroup, iconEdit;
     LinearLayout groupContainer;
@@ -71,7 +71,7 @@ public class GroupFlashcardActivity extends AppCompatActivity {
             return insets;
         });
 
-        groupFlcid = findViewById(R.id.groupFlcid);
+        //groupFlcid = findViewById(R.id.groupFlcid);
         backtoExplore = findViewById(R.id.flBacktoExplore);
         btnaddgroup = findViewById(R.id.btnAddGroup);
         groupContainer = findViewById(R.id.groupContainer);
@@ -99,14 +99,14 @@ public class GroupFlashcardActivity extends AppCompatActivity {
                 fetchFlashcardGroups(currentPage);
             }
         });
-        groupFlcid.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(GroupFlashcardActivity.this, FlashcardActivity.class);
-                startActivity(intent);
-                finish();
-            }
-        });
+//        groupFlcid.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Intent intent = new Intent(GroupFlashcardActivity.this, FlashcardActivity.class);
+//                startActivity(intent);
+//                finish();
+//            }
+//        });
         backtoExplore.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -347,7 +347,8 @@ public class GroupFlashcardActivity extends AppCompatActivity {
 
     private void fetchFlashcardGroups(int page) {
         //groupContainer.removeAllViews(); // Xóa danh sách cũ
-        flashcardManager.fetchFlashcardGroups(1, page, new FlashcardApiCallback() {
+        int userId = Integer.parseInt(SharedPreferencesManager.getInstance(getApplicationContext()).getID());
+        flashcardManager.fetchFlashcardGroups(userId, page, new FlashcardApiCallback() {
             @Override
             public void onSuccess(Object response) {
 
