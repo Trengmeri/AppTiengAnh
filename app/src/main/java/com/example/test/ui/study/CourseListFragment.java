@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 import com.example.test.R;
@@ -22,6 +23,7 @@ import com.example.test.api.ApiCallback;
 import com.example.test.api.EnrollmentManager;
 import com.example.test.api.ResultManager;
 import com.example.test.model.Course;
+import com.example.test.model.Enrollment;
 
 import java.io.Serializable;
 import java.util.Collections;
@@ -32,7 +34,7 @@ public class CourseListFragment extends Fragment {
     private RecyclerView recyclerView;
     private CourseAdapter adapter;
     private List<Course> courseList;
-    private ImageView join;
+    private FrameLayout join;
     private ResultManager resultManager;
 
     public static CourseListFragment newInstance(List<Course> courses) {
@@ -67,24 +69,49 @@ public class CourseListFragment extends Fragment {
             adapter = new CourseAdapter("None",getContext(), courseList);
             recyclerView.setAdapter(adapter);
             int minCourseId = Collections.min(courseList, Comparator.comparingInt(Course::getId)).getId();
-            join.setOnClickListener(v -> {
-                resultManager.createEnrollment(minCourseId, new ApiCallback() {
-                    @Override
-                    public void onSuccess() {
-                        ViewPager2 viewPager = requireActivity().findViewById(R.id.vpg_main);
-                        viewPager.setCurrentItem(0, true);
-                    }
+            resultManager.getEnrollment(minCourseId, new ApiCallback<Enrollment>() {
+                @Override
+                public void onSuccess() {
 
-                    @Override
-                    public void onSuccess(Object result) {
+                }
 
-                    }
+                @Override
+                public void onSuccess(Enrollment result) {
+                }
 
-                    @Override
-                    public void onFailure(String errorMessage) {
-                        Log.e("EnrollmentError", "Lỗi khi đăng ký khóa học: " + errorMessage);
-                    }
-                });
+
+                @Override
+                public void onFailure(String errorMessage) {
+                    getActivity().runOnUiThread(() -> {
+                        if (errorMessage.contains("404")) { // Chỉ hiển thị join nếu lỗi 404
+                            join.setVisibility(View.VISIBLE);
+                            join.setOnClickListener(v -> {
+                                resultManager.createEnrollment(minCourseId, new ApiCallback() {
+                                    @Override
+                                    public void onSuccess() {
+                                        getActivity().runOnUiThread(() -> {
+                                            ViewPager2 viewPager = requireActivity().findViewById(R.id.vpg_main);
+                                            viewPager.setCurrentItem(0, true);
+                                        });
+                                    }
+
+                                    @Override
+                                    public void onSuccess(Object result) {
+
+                                    }
+
+                                    @Override
+                                    public void onFailure(String errorMessage) {
+                                        Log.e("EnrollmentError", "Lỗi khi đăng ký khóa học: " + errorMessage);
+                                    }
+                                });
+                            });
+                        } else {
+                            Log.e("API_ERROR", "Lỗi khác: " + errorMessage);
+                        }
+                    });
+                }
+
             });
         }
     }
