@@ -1,5 +1,6 @@
 package com.example.test.ui.study;
 
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -7,22 +8,32 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager2.widget.ViewPager2;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import com.example.test.R;
 import com.example.test.adapter.CourseAdapter;
+import com.example.test.api.ApiCallback;
+import com.example.test.api.EnrollmentManager;
+import com.example.test.api.ResultManager;
 import com.example.test.model.Course;
 
 import java.io.Serializable;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class CourseListFragment extends Fragment {
     private RecyclerView recyclerView;
     private CourseAdapter adapter;
     private List<Course> courseList;
+    private ImageView join;
+    private ResultManager resultManager;
 
     public static CourseListFragment newInstance(List<Course> courses) {
         CourseListFragment fragment = new CourseListFragment();
@@ -39,15 +50,42 @@ public class CourseListFragment extends Fragment {
     }
 
     @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        resultManager = new ResultManager(context);
+    }
+
+    @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         recyclerView = view.findViewById(R.id.recyclerView);
+        join = view.findViewById(R.id.join);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         if (getArguments() != null) {
             courseList = (List<Course>) getArguments().getSerializable("courses");
             adapter = new CourseAdapter("None",getContext(), courseList);
             recyclerView.setAdapter(adapter);
+            int minCourseId = Collections.min(courseList, Comparator.comparingInt(Course::getId)).getId();
+            join.setOnClickListener(v -> {
+                resultManager.createEnrollment(minCourseId, new ApiCallback() {
+                    @Override
+                    public void onSuccess() {
+                        ViewPager2 viewPager = requireActivity().findViewById(R.id.vpg_main);
+                        viewPager.setCurrentItem(0, true);
+                    }
+
+                    @Override
+                    public void onSuccess(Object result) {
+
+                    }
+
+                    @Override
+                    public void onFailure(String errorMessage) {
+                        Log.e("EnrollmentError", "Lỗi khi đăng ký khóa học: " + errorMessage);
+                    }
+                });
+            });
         }
     }
 }

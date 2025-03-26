@@ -2,15 +2,26 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:layout_marginLeft="40dp"
+    android:layout_marginRight="40dp"
+    android:layout_marginTop="40dp">
 
-    <TextView
-        android:id="@+id/txtGroupName"
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="16sp"
-        style="@style/Button_Active_All"
-        android:backgroundTint="@color/color_selected"
-        android:textStyle="bold"
-        android:textColor="@android:color/black"/>
+        android:background="@drawable/shadow">
+            <TextView
+                android:id="@+id/txtGroupName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                android:background="@drawable/bg_group"
+                android:padding="40dp"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:textColor="@android:color/black"/>
+
+    </FrameLayout>
+
 </LinearLayout>

@@ -163,11 +163,17 @@ public class MyCourseFragment extends Fragment {
                                 courseList2.add(course);
                             }
 
-                            requireActivity().runOnUiThread(() -> {
-                                adapter1.notifyDataSetChanged();
-                                adapter2.notifyDataSetChanged();
-                                adapter3.notifyDataSetChanged();
-                            });
+                            Fragment parentFragment = getParentFragment(); // Lấy StudyFragment
+                            if (parentFragment != null && parentFragment.isAdded()) {
+                                parentFragment.requireActivity().runOnUiThread(() -> {
+                                    adapter1.notifyDataSetChanged();
+                                    adapter2.notifyDataSetChanged();
+                                    adapter3.notifyDataSetChanged();
+                                });
+                            } else {
+                                Log.e("MyCourseFragment", "⚠️ StudyFragment chưa được gắn vào Activity!");
+                            }
+
                         }
 
                         @Override

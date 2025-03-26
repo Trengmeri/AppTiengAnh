@@ -175,9 +175,7 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseView
                     ColorStateList.valueOf(ContextCompat.getColor(context, R.color.light_yellow))
             );
         } else if (proStatus.equals("None")) {
-            holder.itemView.setBackgroundTintList(
-                    ColorStateList.valueOf(ContextCompat.getColor(context, R.color.grayy))
-            );
+            holder.itemView.setBackgroundTintList(ColorStateList.valueOf(Color.LTGRAY));
         }
 
     }

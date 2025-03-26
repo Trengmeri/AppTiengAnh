@@ -55,29 +55,33 @@ public class HomeActivity extends AppCompatActivity {
                 updateIconColors(position);
             }
         });
-        icHome.setOnClickListener(v -> {
-            vpgMain.setCurrentItem(0);
-        });
-        btnstudy.setOnClickListener(v -> {
-            vpgMain.setCurrentItem(1);
-        });
-        btnexplore.setOnClickListener(v -> {
-            vpgMain.setCurrentItem(2);
-        });
-        btnprofile.setOnClickListener(v -> {
-            vpgMain.setCurrentItem(3);
-        });
+        icHome.setOnClickListener(v -> reloadFragment(0));
+        btnstudy.setOnClickListener(v -> reloadFragment(1));
+        btnexplore.setOnClickListener(v -> reloadFragment(2));
+        btnprofile.setOnClickListener(v -> reloadFragment(3));
+
 
         updateIconColors(0);
 
     }
 
-//    @Override
-//    protected void onDestroy() {
-//        super.onDestroy();
-//        // Unregister callbacks
-//        vpgMain.unregisterOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {});
-//    }
+    private void reloadFragment(int position) {
+        MainAdapter adapter = (MainAdapter) vpgMain.getAdapter();
+        if (adapter != null) {
+            // Xóa Fragment cũ
+            getSupportFragmentManager().beginTransaction()
+                    .remove(adapter.getFragment(position))
+                    .commit();
+
+            // Thông báo adapter cập nhật lại Fragment mới
+            adapter.notifyItemChanged(position);
+        }
+
+        // Chuyển đến trang tương ứng
+        vpgMain.setCurrentItem(position, false);
+    }
+
+
     private void updateIconColors(int position) {
         int selectedColor = ContextCompat.getColor(this, R.color.color_selected);
         int unselectedColor = ContextCompat.getColor(this, R.color.color_unselected);
