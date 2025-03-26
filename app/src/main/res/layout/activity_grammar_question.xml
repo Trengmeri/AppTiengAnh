@@ -26,8 +26,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_gravity="center"
-        android:layout_marginTop="8dp">
+        android:layout_gravity="center">
+        <LinearLayout
+            android:id="@+id/progressContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginTop="8dp"/>
     </LinearLayout>
 
     <!-- Nội dung cuộn được -->

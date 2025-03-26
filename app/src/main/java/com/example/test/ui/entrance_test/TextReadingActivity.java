@@ -52,6 +52,7 @@ public class TextReadingActivity extends AppCompatActivity {
     ResultManager resultManager = new ResultManager(this);
     TextView tvContent;
     private EditText etAnswer;
+    LinearLayout progressBar;
     private int lessonID,courseID,enrollmentId;
     NetworkChangeReceiver networkReceiver;
     private int answerIds;
@@ -68,7 +69,7 @@ public class TextReadingActivity extends AppCompatActivity {
         btnCheckAnswer = findViewById(R.id.btnCheckAnswer);
         tvContent = findViewById(R.id.tvContent);
         etAnswer = findViewById(R.id.etAnswer);
-        LinearLayout progressBar = findViewById(R.id.progressBar);
+         progressBar = findViewById(R.id.progressBar);
         createProgressBars(totalSteps, currentStep); // Cập nhật thanh tiến trình mỗi lần chuyển câu
         networkReceiver = new NetworkChangeReceiver();
 

@@ -10,6 +10,9 @@ import com.example.test.model.Course;
 import com.example.test.model.Enrollment;
 import com.example.test.response.ApiResponseCourse;
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 
 import org.json.JSONArray;
@@ -18,6 +21,8 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import okhttp3.Call;
@@ -112,6 +117,93 @@ public class CourseManager extends BaseApiManager{
         });
     }
 
+    public void fetchGroupCourses(ApiCallback<List<String>> callback) {
+        String url = BASE_URL + "/api/v1/courses/groups";
 
+        Request request = new Request.Builder()
+                .url(url)
+                .get()
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                callback.onFailure("Connection error: " + e.getMessage());
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    String jsonResponse = response.body().string();
+                    Gson gson = new Gson();
+
+                    try {
+                        JsonObject jsonObject = gson.fromJson(jsonResponse, JsonObject.class);
+                        JsonArray contentArray = jsonObject.getAsJsonObject("data").getAsJsonArray("content");
+
+                        // Chuyển đổi JsonArray thành List<String>
+                        List<String> groupCourses = new ArrayList<>();
+                        for (JsonElement element : contentArray) {
+                            groupCourses.add(element.getAsString());
+                        }
+
+                        callback.onSuccess(groupCourses);
+                    } catch (Exception e) {
+                        callback.onFailure("Parsing error: " + e.getMessage());
+                    }
+                } else {
+                    callback.onFailure("Request failed: " + response.code());
+                }
+            }
+        });
+    }
+
+    public void fetchCoursesByGroupName(String name, ApiCallback<List<Course>> callback) {
+        String url = BASE_URL + "/api/v1/courses/group/" + name;
+
+        Request request = new Request.Builder()
+                .url(url)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                callback.onFailure("Lỗi kết nối: " + e.getMessage());
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (!response.isSuccessful()) {
+                    callback.onFailure("Lỗi từ server: Mã lỗi " + response.code());
+                    return;
+                }
+
+                String responseBody = response.body().string();
+                Log.d("CourseManager", "📌 Phản hồi từ server: " + responseBody);
+
+                Gson gson = new Gson();
+
+                try {
+                    JsonObject jsonResponse = gson.fromJson(responseBody, JsonObject.class);
+
+                    if (!jsonResponse.has("data") || jsonResponse.get("data").isJsonNull()) {
+                        callback.onFailure("Dữ liệu không hợp lệ từ server");
+                        return;
+                    }
+
+                    JsonObject dataObject = jsonResponse.getAsJsonObject("data");
+                    JsonArray contentArray = dataObject.getAsJsonArray("content");
+
+                    // Chuyển đổi JSON thành danh sách các khóa học
+                    Course[] coursesArray = gson.fromJson(contentArray, Course[].class);
+                    List<Course> courses = Arrays.asList(coursesArray);
+
+                    callback.onSuccess(courses);
+                } catch (Exception e) {
+                    callback.onFailure("Lỗi khi xử lý JSON: " + e.getMessage());
+                }
+            }
+        });
+    }
 
 }

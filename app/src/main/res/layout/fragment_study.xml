@@ -34,86 +34,9 @@
             android:background="@drawable/bg_lesson"/>
     </LinearLayout>
 
-    <androidx.core.widget.NestedScrollView
+    <FrameLayout
+        android:id="@+id/fragment_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fillViewport="true"
-        android:clipToPadding="false"
-        android:paddingBottom="16dp">
-
-        <LinearLayout
-            android:id="@+id/mycourse"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/course_cotinue"
-                android:textStyle="bold"
-                android:textSize="18sp"
-                android:layout_marginLeft="30dp"
-                android:layout_marginTop="20dp"/>
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerView1"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:nestedScrollingEnabled="false"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/course_suggest"
-                android:textStyle="bold"
-                android:textSize="18sp"
-                android:layout_marginLeft="30dp"/>
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerView2"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:nestedScrollingEnabled="false"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/course_comp"
-                android:textStyle="bold"
-                android:textSize="18sp"
-                android:layout_marginLeft="30dp"/>
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerView3"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:nestedScrollingEnabled="false"/>
-
-        </LinearLayout>
-
-    </androidx.core.widget.NestedScrollView>
-
-    <androidx.core.widget.NestedScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fillViewport="true"
-        android:clipToPadding="false"
-        android:paddingBottom="16dp">
-
-        <LinearLayout
-            android:id="@+id/allcourse"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerView4"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:nestedScrollingEnabled="false"/>
-
-        </LinearLayout>
-    </androidx.core.widget.NestedScrollView>
+        android:layout_height="match_parent"/>
 
 </LinearLayout>

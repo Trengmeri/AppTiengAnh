@@ -57,6 +57,7 @@ public class Pick1Activity extends AppCompatActivity {
     private int totalSteps; // Tổng số bước trong thanh tiến trình
     private AppCompatButton selectedAnswer = null;
     private Button btnCheckAnswer;
+    LinearLayout progressBar;
     private ImageView imgLessonMaterial;
     QuestionManager quesManager = new QuestionManager(this);
     LessonManager lesManager = new LessonManager();
@@ -77,7 +78,7 @@ public class Pick1Activity extends AppCompatActivity {
         tvContent = findViewById(R.id.tvContent);
         imgLessonMaterial= findViewById(R.id.imgLessonMaterial);
 
-        LinearLayout progressBar = findViewById(R.id.progressBar); // Ánh xạ ProgressBar
+        progressBar = findViewById(R.id.progressBar); // Ánh xạ ProgressBar
 
         recyclerViewChoices = findViewById(R.id.recyclerViewChoices);
         int columnCount = 2; // Số cột

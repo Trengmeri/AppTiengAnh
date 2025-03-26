@@ -109,7 +109,10 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseView
                     public void onFailure(String errorMessage) {
                         new Handler(Looper.getMainLooper()).post(() -> {
                             textView.setBackgroundResource(R.drawable.bg_lesson_cricle); // Giữ nền mặc định
-                            textView.setBackgroundTintList(ColorStateList.valueOf(Color.GRAY)); // Áp màu xám
+                            textView.setBackgroundTintList(
+                                    ColorStateList.valueOf(ContextCompat.getColor(context, R.color.light_gray))
+                            );
+
                         });
                     }
                 });
@@ -160,14 +163,21 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseView
                 holder.lessonContainer.addView(textView);
             }
         }
-        else {
+        else if (proStatus.equals("False")){
             holder.itemView.setBackgroundTintList(ColorStateList.valueOf(Color.LTGRAY));
             holder.itemView.setOnClickListener(v -> {
                 Intent intent = new Intent(context, CourseInformationActivity.class);
                 intent.putExtra("courseId", course.getId());
                 context.startActivity(intent);
             });
-
+        } else if (proStatus.equals("Done")) {
+            holder.itemView.setBackgroundTintList(
+                    ColorStateList.valueOf(ContextCompat.getColor(context, R.color.light_yellow))
+            );
+        } else if (proStatus.equals("None")) {
+            holder.itemView.setBackgroundTintList(
+                    ColorStateList.valueOf(ContextCompat.getColor(context, R.color.grayy))
+            );
         }
 
     }
