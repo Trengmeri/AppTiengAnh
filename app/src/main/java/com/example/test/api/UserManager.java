@@ -101,7 +101,7 @@ public class UserManager extends BaseApiManager {
             }
         });
     }
-    public void updateProfile(int userId, String name, String phone, String speciField, ApiCallback callback) {
+    public void updateProfile(int userId, String name, String phone, String speciField,String englishlevel, ApiCallback callback) {
         String token = SharedPreferencesManager.getInstance(context).getAccessToken();
 
         JSONObject jsonObject = new JSONObject();
@@ -110,7 +110,7 @@ public class UserManager extends BaseApiManager {
             jsonObject.put("name", name);
             jsonObject.put("phone", phone);
             jsonObject.put("speciField", speciField);
-
+            jsonObject.put("englishlevel", englishlevel);
         } catch (JSONException e) {
 
             callback.onFailure("Error creating JSON: " + e.getMessage());

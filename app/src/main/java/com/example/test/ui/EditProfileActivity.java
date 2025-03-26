@@ -8,8 +8,11 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -21,6 +24,7 @@ import android.widget.Toast;
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -54,6 +58,12 @@ public class EditProfileActivity extends AppCompatActivity {
      Spinner spnField;
      FrameLayout btnUpdate;
      UserManager userManager;
+     String initialName = "";
+     String initialPhone = "";
+     int initialPosition = -1;
+
+     Spinner spnLevel;
+     String initialLevel = "";
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,7 +76,9 @@ public class EditProfileActivity extends AppCompatActivity {
             return insets;
         });
         initViews();
-        setupSpinner();
+        spnLevel = findViewById(R.id.spnLevel);
+        setupSpinners();
+        enableUpdateButton(false);
 
         userManager = new UserManager(this);
         backtoProfile= findViewById(R.id.backtoProfile);
@@ -89,12 +101,71 @@ public class EditProfileActivity extends AppCompatActivity {
         spnField = findViewById(R.id.spnField);
         btnUpdate = findViewById(R.id.btnUpdate);
     }
+    private void setupChangeListeners() {
+        TextWatcher textWatcher = new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
-    private void setupSpinner() {
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                checkForChanges();
+            }
+        };
+
+        edtName.addTextChangedListener(textWatcher);
+        edtSdt.addTextChangedListener(textWatcher);
+
+        spnField.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                checkForChanges();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {}
+        });
+        spnLevel.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                checkForChanges();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {}
+        });
+    }
+
+    private void checkForChanges() {
+        boolean hasChanges = !edtName.getText().toString().equals(initialName) ||
+                !edtSdt.getText().toString().equals(initialPhone) ||
+                spnField.getSelectedItemPosition() != initialPosition ||
+                !spnLevel.getSelectedItem().toString().equals(initialLevel);
+        enableUpdateButton(hasChanges);
+    }
+    private void setupSpinners() {
+        ArrayAdapter<CharSequence> fieldAdapter = ArrayAdapter.createFromResource(this,
                 R.array.fields_array, android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spnField.setAdapter(adapter);
+        fieldAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spnField.setAdapter(fieldAdapter);
+
+        // Setup level spinner
+        ArrayAdapter<CharSequence> levelAdapter = ArrayAdapter.createFromResource(this,
+                R.array.english_levels, android.R.layout.simple_spinner_item);
+        levelAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spnLevel.setAdapter(levelAdapter);
+
+        // Thêm padding cho spinner
+        Drawable dropdownIcon = ContextCompat.getDrawable(this, R.drawable.icon_down);
+        spnField.setPadding(40, 25, 25, 25);
+        spnField.setBackground(ContextCompat.getDrawable(this, R.drawable.spinner_background));
+        spnField.setPopupBackgroundDrawable(ContextCompat.getDrawable(this, R.drawable.rounded_corner));
+
+        spnLevel.setPadding(40, 25, 25, 25);
+        spnLevel.setBackground(ContextCompat.getDrawable(this, R.drawable.spinner_background));
+        spnLevel.setPopupBackgroundDrawable(ContextCompat.getDrawable(this, R.drawable.rounded_corner));
     }
     private void loadUserProfile() {
         String userId = SharedPreferencesManager.getInstance(this).getID();
@@ -104,7 +175,9 @@ public class EditProfileActivity extends AppCompatActivity {
             public void onSuccess(JSONObject result) {
                 runOnUiThread(() -> {
                     try {
-                        edtName.setText(result.getString("name"));
+                        initialName = result.getString("name");
+                        edtName.setText(initialName);
+
                         String phoneNumber = "";
                         if (result.has("phone")) {
                             phoneNumber = result.getString("phone");
@@ -113,13 +186,14 @@ public class EditProfileActivity extends AppCompatActivity {
                         } else if (result.has("sdt")) {
                             phoneNumber = result.getString("sdt");
                         }
-                        edtSdt.setText(phoneNumber);
+                        initialPhone = phoneNumber;
+                        edtSdt.setText(initialPhone);
 
                         String speciField = result.getString("speciField");
                         ArrayAdapter adapter = (ArrayAdapter) spnField.getAdapter();
-                        int position = adapter.getPosition(speciField);
-                        if (position >= 0) {
-                            spnField.setSelection(position);
+                        initialPosition = adapter.getPosition(speciField);
+                        if (initialPosition >= 0) {
+                            spnField.setSelection(initialPosition);
                         }
 
                         // Replace IP address in avatar URL
@@ -151,6 +225,15 @@ public class EditProfileActivity extends AppCompatActivity {
                                     })
                                     .into(imgAvatar);
                         }
+                        String englishLevel = result.getString("englishlevel");
+                        initialLevel = englishLevel;
+                        ArrayAdapter levelAdapter = (ArrayAdapter) spnLevel.getAdapter();
+                        int levelPosition = levelAdapter.getPosition(englishLevel);
+                        if (levelPosition >= 0) {
+                            spnLevel.setSelection(levelPosition);
+                        }
+                        setupChangeListeners();
+                        enableUpdateButton(false);
                     } catch (JSONException e) {
                         Toast.makeText(EditProfileActivity.this,
                                 "Error loading profile data", Toast.LENGTH_SHORT).show();
@@ -172,6 +255,10 @@ public class EditProfileActivity extends AppCompatActivity {
                 });
             }
         });
+    }
+    private void enableUpdateButton(boolean enable) {
+        btnUpdate.setAlpha(enable ? 1.0f : 0.5f);
+        btnUpdate.setEnabled(enable);
     }
     private void selectImage() {
         Intent intent = new Intent();
@@ -300,6 +387,7 @@ public class EditProfileActivity extends AppCompatActivity {
         String name = edtName.getText().toString().trim();
         String phone = edtSdt.getText().toString().trim();
         String specialField = spnField.getSelectedItem().toString();
+        String level = spnLevel.getSelectedItem().toString();
 
         if (name.isEmpty()) {
             edtName.setError("Name is required");
@@ -309,14 +397,14 @@ public class EditProfileActivity extends AppCompatActivity {
         btnUpdate.setEnabled(false);
         Toast.makeText(this, "Updating profile...", Toast.LENGTH_SHORT).show();
 
-        userManager.updateProfile(Integer.parseInt(userId), name, phone, specialField, new ApiCallback<Object>() {
+        userManager.updateProfile(Integer.parseInt(userId), name, phone, specialField,level, new ApiCallback<Object>() {
             @Override
             public void onSuccess() {
                 runOnUiThread(() -> {
                     Toast.makeText(EditProfileActivity.this,
                             "Profile updated successfully", Toast.LENGTH_SHORT).show();
                     btnUpdate.setEnabled(true);
-
+                    setResult(RESULT_OK);
                     finish();
                 });
             }

@@ -28,6 +28,7 @@ public class HomeActivity extends AppCompatActivity {
     ViewPager2 vpgMain;
     GridLayout bottomBar;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         loadLocale();
@@ -40,6 +41,7 @@ public class HomeActivity extends AppCompatActivity {
         // Gán Adapter cho ViewPager2
         vpgMain.setAdapter(new MainAdapter(this));
         vpgMain.setCurrentItem(0);
+        vpgMain.setOffscreenPageLimit(3);
 
         icHome= bottomBar.findViewById(R.id.ic_home);
         btnexplore= bottomBar.findViewById(R.id.ic_explore);
@@ -69,6 +71,13 @@ public class HomeActivity extends AppCompatActivity {
         updateIconColors(0);
 
     }
+
+//    @Override
+//    protected void onDestroy() {
+//        super.onDestroy();
+//        // Unregister callbacks
+//        vpgMain.unregisterOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {});
+//    }
     private void updateIconColors(int position) {
         int selectedColor = ContextCompat.getColor(this, R.color.color_selected);
         int unselectedColor = ContextCompat.getColor(this, R.color.color_unselected);
@@ -88,4 +97,5 @@ public class HomeActivity extends AppCompatActivity {
         config.setLocale(locale);
         resources.updateConfiguration(config, resources.getDisplayMetrics());
     }
+
 }
