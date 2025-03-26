@@ -18,25 +18,33 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+
+import com.bumptech.glide.Glide;
 import com.example.test.NetworkChangeReceiver;
 import com.example.test.R;
 import com.example.test.SharedPreferencesManager;
 import com.example.test.api.ApiCallback;
 import com.example.test.api.AuthenticationManager;
+import com.example.test.api.UserManager;
 import com.example.test.model.User;
 import com.example.test.ui.EditProfileActivity;
 import com.example.test.ui.SignInActivity;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class ProfileFragment extends Fragment {
     TextView userName, userEmail;
     LinearLayout btnLogout,btnedit, term , language;
     NetworkChangeReceiver networkReceiver;
     AuthenticationManager apiManager;
-
+    private UserManager userManager;
+    private ImageView imgAvatar;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -47,54 +55,109 @@ public class ProfileFragment extends Fragment {
     @SuppressLint("WrongViewCast")
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
+            super.onViewCreated(view, savedInstanceState);
+        userManager = new UserManager(requireContext());
+        imgAvatar = view.findViewById(R.id.imgAvatar);
         userName = view.findViewById(R.id.userName);
-        userEmail = view.findViewById(R.id.userEmail);
+            userEmail = view.findViewById(R.id.userEmail);
 
-        User user = SharedPreferencesManager.getInstance(getContext()).getUser();
-        if (user != null) {
-            userName.setText(user.getName());
-            userEmail.setText(user.getEmail());
-        }
+//            User user = SharedPreferencesManager.getInstance(getContext()).getUser();
+//            Log.d("Userow", "abc: " + SharedPreferencesManager.getInstance(getContext()).getUser());
+//            if (user != null) {
+//                userName.setText(user.getName());
+//                userEmail.setText(user.getEmail());
+//            }
+        loadUserProfile();
+            btnLogout= view.findViewById(R.id.btnLogout);
+            btnedit= view.findViewById(R.id.btnEdit);
 
-        btnLogout= view.findViewById(R.id.btnLogout);
-        btnedit= view.findViewById(R.id.btnEdit);
+            term = view.findViewById(R.id.term);
+            language = view.findViewById(R.id.language);
 
-        term = view.findViewById(R.id.term);
-        language = view.findViewById(R.id.language);
-
-        language.setOnClickListener(v -> {
-            Intent intent = new Intent(getActivity(),LanguageActivity.class);
-            startActivity(intent);
-        });
-
-        term.setOnClickListener(v -> {
-            Intent intent = new Intent(getActivity(),TermActivity.class);
-            startActivity(intent);
-        });
-        // Tạo đối tượng NetworkChangeReceiver
-        networkReceiver = new NetworkChangeReceiver();
-        apiManager = new AuthenticationManager(requireContext());
-        btnLogout.setOnClickListener(v -> showLogoutDialog());
-        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("LoginPrefs", MODE_PRIVATE);
-        boolean isRemembered = sharedPreferences.getBoolean("rememberMe", false);
-        String savedEmail = sharedPreferences.getString("email", "");
-        String savedPassword = sharedPreferences.getString("password", "");
-
-        Log.d("ProfileFragment", "After Logout - Remember Me: " + isRemembered);
-        Log.d("ProfileFragment", "After Logout - Saved Email: " + savedEmail);
-        Log.d("ProfileFragment", "After Logout - Saved Password: " + savedPassword);
-
-        btnedit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getActivity(), EditProfileActivity.class);
+            language.setOnClickListener(v -> {
+                Intent intent = new Intent(getActivity(),LanguageActivity.class);
                 startActivity(intent);
-            }
-        });
+            });
+
+            term.setOnClickListener(v -> {
+                Intent intent = new Intent(getActivity(),TermActivity.class);
+                startActivity(intent);
+            });
+            // Tạo đối tượng NetworkChangeReceiver
+            networkReceiver = new NetworkChangeReceiver();
+            apiManager = new AuthenticationManager(requireContext());
+            btnLogout.setOnClickListener(v -> showLogoutDialog());
+            SharedPreferences sharedPreferences = getActivity().getSharedPreferences("LoginPrefs", MODE_PRIVATE);
+            boolean isRemembered = sharedPreferences.getBoolean("rememberMe", false);
+            String savedEmail = sharedPreferences.getString("email", "");
+            String savedPassword = sharedPreferences.getString("password", "");
+
+            Log.d("ProfileFragment", "After Logout - Remember Me: " + isRemembered);
+            Log.d("ProfileFragment", "After Logout - Saved Email: " + savedEmail);
+            Log.d("ProfileFragment", "After Logout - Saved Password: " + savedPassword);
+
+            btnedit.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(getActivity(), EditProfileActivity.class);
+                    startActivity(intent);
+                }
+            });
 
     }
+
+    private void loadUserProfile() {
+        String userId = SharedPreferencesManager.getInstance(requireContext()).getID();
+        if (userId == null) return;
+
+        userManager.fetchUserProfile(Integer.parseInt(userId), new ApiCallback<JSONObject>() {
+            @Override
+            public void onSuccess(JSONObject result) {
+                requireActivity().runOnUiThread(() -> {
+                    try {
+                        userName.setText(result.getString("name"));
+                        userEmail.setText(result.getString("email"));
+                        String avatarUrl = result.optString("avatar");
+                        if (avatarUrl != null && !avatarUrl.isEmpty()) {
+                            avatarUrl = avatarUrl.replace("0.0.0.0", "14.225.198.3");
+
+                            Glide.with(ProfileFragment.this)
+                                    .load(avatarUrl)
+                                    .placeholder(R.drawable.img_avt_profile)
+                                    .error(R.drawable.img_avt_profile)
+                                    .circleCrop()
+                                    .into(imgAvatar);
+                        }
+                    } catch (JSONException e) {
+
+                        Log.e("ProfileFragment", "Error parsing profile data: " + e.getMessage());
+                    }
+                });
+            }
+
+            @Override
+            public void onSuccess() {
+                // Not used
+            }
+
+            @Override
+            public void onFailure(String errorMessage) {
+                requireActivity().runOnUiThread(() ->
+                        Toast.makeText(requireContext(),
+                                "Failed to load profile: " + errorMessage,
+                                Toast.LENGTH_SHORT).show()
+                );
+            }
+        });
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        // Reload profile when returning from EditProfile
+        loadUserProfile();
+    }
+
     private void showLogoutDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
         builder.setTitle("Xác nhận đăng xuất");

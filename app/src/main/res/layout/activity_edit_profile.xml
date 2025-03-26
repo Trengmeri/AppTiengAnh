@@ -13,7 +13,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
-
         <TextView
             android:id="@+id/backtoProfile"
             android:layout_width="match_parent"
@@ -42,10 +41,13 @@
                 android:layout_marginTop="@dimen/dp_30">
 
                 <ImageView
+                    android:id="@+id/imgAvatar"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/img_avt_profile"></ImageView>
-
+                    android:scaleType="centerCrop"
+                    android:background="@drawable/img_avt_profile"
+                    android:clickable="true"
+                    android:focusable="true"/>
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -70,20 +72,29 @@
                     android:paddingStart="@dimen/dp_30"
                     android:background="@drawable/rounded_corner"
                     android:padding="14dp" />
-
-
-                <EditText
-                    android:id="@+id/edtEmail"
+                <Spinner
+                    android:id="@+id/spnField"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/dp_30"
                     android:layout_marginTop="@dimen/dp_16"
                     android:layout_marginEnd="@dimen/dp_30"
-                    android:paddingStart="@dimen/dp_30"
-                    android:hint="Email"
-                    android:background="@drawable/rounded_corner"
-                    android:padding="14dp" />
-
+                    android:padding="@dimen/dp_30"
+                    android:background="@drawable/spinner_background"
+                    android:spinnerMode="dropdown"
+                     />
+                <Spinner
+                    android:id="@+id/spnLevel"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/dp_30"
+                    android:layout_marginTop="@dimen/dp_16"
+                    android:layout_marginEnd="@dimen/dp_30"
+                    android:paddingStart="@dimen/dp_16"
+                    android:paddingEnd="@dimen/dp_16"
+                    android:background="@drawable/spinner_background"
+                    android:spinnerMode="dropdown"
+                    android:overlapAnchor="false" />
                 <FrameLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
@@ -118,16 +129,7 @@
                             android:background="@drawable/icon_down"/>
                     </LinearLayout>
                 </FrameLayout>
-                <Spinner
-                    android:id="@+id/spnGender"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/dp_30"
-                    android:layout_marginTop="@dimen/dp_16"
-                    android:layout_marginEnd="@dimen/dp_30"
-                    android:paddingStart="@dimen/dp_30"
-                    android:background="@drawable/rounded_corner"
-                    android:padding="14dp" />
+
             </LinearLayout>
         </LinearLayout>
         </androidx.core.widget.NestedScrollView>
@@ -140,15 +142,16 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/dp_16"
+        android:alpha="0.5"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
-        <ImageView
+
+    <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:saveEnabled="false"
-            android:alpha="0.5"
+
             android:background="@drawable/btn_joincourse" />
 
         <TextView

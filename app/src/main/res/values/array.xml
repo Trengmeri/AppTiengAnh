@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="fields_array">
+        <item>IT</item>
+        <item>CONSTRUCTION</item>
+        <item>ECONOMIC</item>
+        <item>ELECTRICITY</item>
+    </string-array>
+    <string-array name="english_levels">
+        <item>BEGINNER</item>
+        <item>ELEMENTARY</item>
+        <item>PRE_INTERMEDIATE</item>
+        <item>INTERMEDIATE</item>
+        <item>UPPER_INTERMEDIATE</item>
+        <item>ADVANCED</item>
+    </string-array>
+</resources>
