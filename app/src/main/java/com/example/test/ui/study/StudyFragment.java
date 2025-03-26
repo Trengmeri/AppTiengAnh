@@ -60,6 +60,13 @@ public class StudyFragment extends Fragment {
         resultManager = new ResultManager(context);
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        fetchCourses(); // Luôn tải lại dữ liệu khi quay lại Fragment
+    }
+
+
     @SuppressLint("WrongViewCast")
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {

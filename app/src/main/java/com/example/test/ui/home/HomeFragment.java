@@ -71,7 +71,7 @@ public class HomeFragment extends Fragment {
         });
 
         // Chạy tính điểm sau khi UI đã sẵn sàng
-//        view.post(() -> calculateTotalPoints());
+        view.post(() -> calculateTotalPoints());
     }
 
     private void calculateTotalPoints() {
