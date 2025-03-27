@@ -9,9 +9,9 @@
     <string-array name="english_levels">
         <item>Beginner</item>
         <item>Elementary</item>
-        <item>Pre_Intermediate</item>
+        <item>Pre-Intermediate</item>
         <item>Intermediate</item>
-        <item>Upper_Intermediate</item>
+        <item>Upper Intermediate</item>
         <item>Advanced</item>
     </string-array>
 </resources>

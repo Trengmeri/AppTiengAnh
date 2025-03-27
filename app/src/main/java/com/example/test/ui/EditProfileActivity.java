@@ -185,11 +185,11 @@ public class EditProfileActivity extends AppCompatActivity {
 
                         String phoneNumber = "";
                         if (result.has("phone")) {
-                            phoneNumber = result.getString("phone");
-                        } else if (result.has("phoneNumber")) {
-                            phoneNumber = result.getString("phoneNumber");
-                        } else if (result.has("sdt")) {
-                            phoneNumber = result.getString("sdt");
+                            if (result.getString("phone").equals("null")) {
+                                phoneNumber = "";
+                            } else{
+                                phoneNumber = result.getString("phone");
+                            }
                         }
                         initialPhone = phoneNumber;
                         edtSdt.setText(initialPhone);

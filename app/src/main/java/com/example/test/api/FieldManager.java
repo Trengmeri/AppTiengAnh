@@ -110,10 +110,7 @@ public class FieldManager extends BaseApiManager {
                         }
                         requestBody.addProperty("speciField", field);
                         // Lấy phone từ response
-                        if (responseObj.has("phone")) {
-                            String phone = responseObj.get("phone").getAsString();
-                            requestBody.addProperty("phone", phone);
-                        }
+
 
                         Log.d("FieldManager", "Update request body: " + requestBody);
                         updateUserData(urlUp, token, requestBody, callback); // Sử dụng URL với userId
