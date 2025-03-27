@@ -107,7 +107,7 @@
                         android:layout_marginEnd="@dimen/dp_30"
                         android:paddingStart="70dp"
                         android:inputType="number"
-                        android:hint="Number"
+                        android:hint="0123456789"
                         android:background="@drawable/rounded_corner"
                         android:padding="14dp" />
 
@@ -121,12 +121,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/dp40"
                             android:background="@drawable/icon_flag_vie"/>
-                        <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="5dp"
-                            android:layout_marginStart="5dp"
-                            android:background="@drawable/icon_down"/>
+
                     </LinearLayout>
                 </FrameLayout>
 
