@@ -24,6 +24,12 @@ public class StudyFragment extends Fragment {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        replaceFragment(new MyCourseFragment());
+    }
+
+    @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         btnAbout = view.findViewById(R.id.btnAbout);

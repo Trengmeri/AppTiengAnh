@@ -140,14 +140,16 @@ public class PointResultLessonActivity extends AppCompatActivity {
                         });
 
                     } else {
-                        runOnUiThread(() -> btnNext.setText(getString(R.string.viewpointcourse)));
-                        btnDone.setVisibility(View.GONE);
-                        btnNext.setOnClickListener(view -> {
-                            Intent intent = new Intent(PointResultLessonActivity.this, PointResultCourseActivity.class);
-                            intent.putExtra("courseId", course.getId());
-                            intent.putExtra("status", "study");
-                            startActivity(intent);
-                            finish();
+                        runOnUiThread(() -> {
+                            btnNext.setText(getString(R.string.viewpointcourse));
+                            btnDone.setVisibility(View.GONE);
+                            btnNext.setOnClickListener(view -> {
+                                Intent intent = new Intent(PointResultLessonActivity.this, PointResultCourseActivity.class);
+                                intent.putExtra("courseId", course.getId());
+                                intent.putExtra("status", "study");
+                                startActivity(intent);
+                                finish();
+                            });
                         });
                     }
                 }

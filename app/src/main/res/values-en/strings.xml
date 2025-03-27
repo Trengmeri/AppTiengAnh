@@ -25,7 +25,7 @@
     <string name="writeans">Write your answer....</string>
     <string name="invalidans">Invalid answer. Please try again.</string>
     <string name="starttest">Take a \n small test!</string>
-    <string name="fill_blank">Fill in the blank</string>
+    <string name="fill_blank">Read and answer the question.</string>
     <string name="listen_rewrite">Listen and rewrite the answer</string>
     <string name="ques_lis">What are they talking about ?</string>
     <string name="check">Check Result</string>
