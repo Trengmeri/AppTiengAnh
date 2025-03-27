@@ -140,6 +140,7 @@ public class WritingActivity extends AppCompatActivity {
 
         // Xóa nội dung EditText ngay khi bấm "Check Answers"
         etAnswer.setText("");
+        key.setText("");
 
         // Hiển thị ProgressDialog
         progressDialog = new ProgressDialog(this);

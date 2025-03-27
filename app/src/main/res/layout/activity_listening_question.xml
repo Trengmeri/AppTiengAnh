@@ -100,7 +100,7 @@
         android:layout_height="wrap_content"
         android:text="@string/check"
         android:backgroundTint="#BC6136"
-        android:layout_marginTop="26dp"
+        android:layout_marginTop="10dp"
         android:layout_gravity="center"/>
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

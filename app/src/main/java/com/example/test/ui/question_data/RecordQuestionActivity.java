@@ -105,6 +105,7 @@ public class RecordQuestionActivity extends AppCompatActivity implements SpeechR
         ApiService apiService = new ApiService(this);
         // Xóa nội dung EditText ngay khi bấm "Check Answers"
         tvTranscription.setText("");
+        key.setText("");
 
         // Hiển thị ProgressDialog
         progressDialog = new ProgressDialog(this);
