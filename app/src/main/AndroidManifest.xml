@@ -54,7 +54,7 @@
             android:name=".ui.profile.TermActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.EditProfileActivity"
+            android:name=".ui.profile.EditProfileActivity"
             android:exported="false" />
         <activity
             android:name=".ui.DiscussionActivity"

@@ -24,9 +24,9 @@ import okhttp3.Response;
 public class ApiService {
     private final Context context;
     private final OkHttpClient client  = new OkHttpClient.Builder()
-            .connectTimeout(60, TimeUnit.SECONDS)  // Thời gian kết nối tối đa
-            .readTimeout(60, TimeUnit.SECONDS)     // Thời gian đọc dữ liệu tối đa
-            .writeTimeout(60, TimeUnit.SECONDS)    // Thời gian ghi dữ liệu tối đa
+            .connectTimeout(90, TimeUnit.SECONDS)  // Thời gian kết nối tối đa
+            .readTimeout(90, TimeUnit.SECONDS)     // Thời gian đọc dữ liệu tối đa
+            .writeTimeout(90, TimeUnit.SECONDS)    // Thời gian ghi dữ liệu tối đa
             .build();
 
 
@@ -201,10 +201,18 @@ public class ApiService {
         });
     }
 
-    public void completeTest(int enrollmentId, double comp, int point, ApiCallback callback) {
+    public void completeTest(int enrollmentId, double comp, int point, int r, int l, int s, int w, ApiCallback callback) {
         String token = SharedPreferencesManager.getInstance(context).getAccessToken();
 
-        String json = "{ \"comLevel\":" + comp + ", \"totalPoints\":" + point + ", \"enrollmentId\":" + enrollmentId + "}";
+        String json = "{ " +
+                "\"comLevel\":" + comp
+                + ", \"totalPoints\":" + point
+                + ", \"enrollmentId\":" + enrollmentId
+                + ", \"readingTotalPoints\":" + r
+                + ", \"listeningTotalPoints\":" + l
+                + ", \"speakingTotalPoints\":" + s
+                + ", \"writingTotalPoints\":" + w
+                + "}";
         RequestBody body = RequestBody.create(json, MediaType.get("application/json; charset=utf-8"));
 
         Request request = new Request.Builder()

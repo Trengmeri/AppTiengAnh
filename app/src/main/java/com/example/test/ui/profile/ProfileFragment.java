@@ -2,8 +2,6 @@ package com.example.test.ui.profile;
 
 import static android.content.Context.MODE_PRIVATE;
 
-import static androidx.core.app.ActivityCompat.finishAffinity;
-
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Intent;
@@ -31,8 +29,6 @@ import com.example.test.SharedPreferencesManager;
 import com.example.test.api.ApiCallback;
 import com.example.test.api.AuthenticationManager;
 import com.example.test.api.UserManager;
-import com.example.test.model.User;
-import com.example.test.ui.EditProfileActivity;
 import com.example.test.ui.SignInActivity;
 
 import org.json.JSONException;

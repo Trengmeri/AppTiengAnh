@@ -1,4 +1,4 @@
-package com.example.test.ui;
+package com.example.test.ui.profile;
 
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
@@ -28,7 +28,6 @@ import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
-import androidx.loader.content.CursorLoader;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
