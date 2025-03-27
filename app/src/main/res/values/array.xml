@@ -7,11 +7,11 @@
         <item>ELECTRICITY</item>
     </string-array>
     <string-array name="english_levels">
-        <item>BEGINNER</item>
-        <item>ELEMENTARY</item>
-        <item>PRE_INTERMEDIATE</item>
-        <item>INTERMEDIATE</item>
-        <item>UPPER_INTERMEDIATE</item>
-        <item>ADVANCED</item>
+        <item>Beginner</item>
+        <item>Elementary</item>
+        <item>Pre_Intermediate</item>
+        <item>Intermediate</item>
+        <item>Upper_Intermediate</item>
+        <item>Advanced</item>
     </string-array>
 </resources>

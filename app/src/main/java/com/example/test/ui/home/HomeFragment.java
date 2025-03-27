@@ -32,6 +32,7 @@ import com.example.test.model.Result;
 import com.example.test.ui.NotificationActivity;
 import com.example.test.ui.profile.ProfileFragment;
 import com.example.test.ui.study.StudyFragment;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import org.json.JSONException;
@@ -103,148 +104,87 @@ public class HomeFragment extends Fragment {
 
             @Override
             public void onSuccess(JsonObject enrollment) {
-                if (getActivity() == null || !isAdded()) return;
-
                 try {
-                    int courseId = enrollment.get("courseId").getAsInt();
-                    learningProgressManager.fetchCourseDetails(courseId, new ApiCallback<String>() {
-                        @Override
-                        public void onSuccess() {
-                            // Empty implementation required
-                        }
+                    Log.d("HomeFragment", "Raw enrollment response: " + enrollment.toString());
 
-                        @Override
-                        public void onSuccess(String courseName) {
-                            requireActivity().runOnUiThread(() -> {
-                                    courseNumber.setText("Course " + courseId);
-                                    courseTitle.setText(courseName);
-                            });
-                        }
+                    JsonObject data = enrollment.getAsJsonObject("data");
+                    Log.d("HomeFragment", "Data object: " + data.toString());
 
-                        @Override
-                        public void onFailure(String error) {
-                            Log.e("HomeFragment", "Error fetching course: " + error);
+                    JsonArray content = data.getAsJsonArray("content");
+                    Log.d("HomeFragment", "Content array size: " + content.size());
+
+                    if (content.size() == 0) {
+                        Log.d("HomeFragment", "No enrollments found");
+                        showNoCourseMessage();
+                        return;
+                    }
+
+                    JsonObject latestEnrollment = content.get(content.size() - 1).getAsJsonObject();
+                    Log.d("HomeFragment", "Latest enrollment: " + latestEnrollment.toString());
+
+                    boolean proStatus = latestEnrollment.get("proStatus").getAsBoolean();
+                    double totalPoints = latestEnrollment.get("totalPoints").getAsDouble();
+                    double comLevel = latestEnrollment.get("comLevel").getAsDouble();
+
+                    Log.d("HomeFragment", String.format(
+                            "Status check - proStatus: %b, totalPoints: %.1f, comLevel: %.1f",
+                            proStatus, totalPoints, comLevel
+                    ));
+
+                    requireActivity().runOnUiThread(() -> {
+                        if (content.size() == 0) {
+                            showNoCourseMessage();
+                        } else if (proStatus && totalPoints == 0 && comLevel == 0.0) {
+                            Log.d("HomeFragment", "Showing current course (new enrollment)");
+                            int courseId = latestEnrollment.get("courseId").getAsInt();
+                            fetchAndShowCourseDetails(courseId);
+                            continueButton.setVisibility(View.VISIBLE);
                         }
                     });
                 } catch (Exception e) {
-                    Log.e("HomeFragment", "Error parsing enrollment: " + e.getMessage());
+                    Log.e("HomeFragment", "Error parsing enrollment data: " + e.getMessage());
+                    e.printStackTrace();
                 }
             }
 
             @Override
             public void onFailure(String error) {
-                Log.e("HomeFragment", "Error fetching enrollment: " + error);
+                Log.e("HomeFragment", "API call failed: " + error);
             }
         });
+    }
 
-        learningProgressManager.fetchLearningResults(new ApiCallback<JsonObject>() {
+    private void showNoCourseMessage() {
+        requireActivity().runOnUiThread(() -> {
+            courseNumber.setText("No course");
+            courseTitle.setText("No course to show");
+            continueButton.setVisibility(View.GONE);
+        });
+    }
+
+
+
+    private void fetchAndShowCourseDetails(int courseId) {
+        learningProgressManager.fetchCourseDetails(courseId, new ApiCallback<String>() {
             @Override
             public void onSuccess() {
                 // Empty implementation required
             }
 
             @Override
-            public void onSuccess(JsonObject results) {
-                if (getActivity() == null || !isAdded()) return;
-
+            public void onSuccess(String courseName) {
                 requireActivity().runOnUiThread(() -> {
-                    try {
-                        if (totalPoints != null) totalPoints.setText(results.get("overallScore").getAsString());
-                        if (readingPoints != null) readingPoints.setText(results.get("readingScore").getAsString());
-                        if (listeningPoints != null) listeningPoints.setText(results.get("listeningScore").getAsString());
-                        if (speakingPoints != null) speakingPoints.setText(results.get("speakingScore").getAsString());
-                        if (writingpoint != null) writingpoint.setText(results.get("writingScore").getAsString());
-                    } catch (Exception e) {
-                        Log.e("HomeFragment", "Error updating UI: " + e.getMessage());
-                    }
+                    courseNumber.setText("Course " + courseId);
+                    courseTitle.setText(courseName);
                 });
             }
 
             @Override
             public void onFailure(String error) {
-                Log.e("HomeFragment", "Error fetching results: " + error);
+                Log.e("HomeFragment", "Error fetching course: " + error);
             }
         });
     }
-//    private void calculateTotalPoints() {
-//        if (totalPoints == null) {
-//            Log.e("HomeFragment", "❌ Không thể cập nhật điểm: `totalPoints` là null!");
-//            return;
-//        }
-//        lessonManager.fetchAllLessonIds(new ApiCallback<List<Integer>>() { // Lấy danh sách ID bài học
-//            @Override
-//            public void onSuccess() {}
-//            @Override
-//            public void onSuccess(List<Integer> lessonIds) {
-//                Log.d("LessonManager", "📌 Tổng số bài học: " + lessonIds.size());
-//
-//                AtomicInteger total = new AtomicInteger(0);
-//                AtomicInteger reading = new AtomicInteger(0);
-//                AtomicInteger listening = new AtomicInteger(0);
-//                AtomicInteger speaking = new AtomicInteger(0);
-//                AtomicInteger writing = new AtomicInteger(0);
-//
-//                AtomicInteger completedRequests = new AtomicInteger(0);
-//                int totalLessons = lessonIds.size();
-//
-//                for (int lessonId : lessonIds) {
-//                    lessonManager.fetchLessonById(lessonId, new ApiCallback<Lesson>() { // Lấy chi tiết từng bài học
-//                        @Override
-//                        public void onSuccess() {}
-//                        @Override
-//                        public void onSuccess(Lesson lesson) {
-//                            String skillType = lesson.getSkillType(); // Lấy skill từ lesson
-//
-//                            resultManager.fetchResultByLesson(lessonId, new ApiCallback<Result>() { // Lấy điểm
-//                                @Override
-//                                public void onSuccess() {}
-//
-//                                @Override
-//                                public void onSuccess(Result result) {
-//                                    int points = result.getTotalPoints();
-//                                    total.addAndGet(points);
-//
-//                                    // Cộng điểm vào skill tương ứng
-//                                    switch (skillType) {
-//                                        case "READING": reading.addAndGet(points); break;
-//                                        case "LISTENING": listening.addAndGet(points); break;
-//                                        case "SPEAKING": speaking.addAndGet(points); break;
-//                                        case "WRITING": writing.addAndGet(points); break;
-//                                    }
-//
-//                                    // Tăng completedRequests và kiểm tra nếu đủ request thì cập nhật UI
-//                                    if (completedRequests.incrementAndGet() == totalLessons) {
-//                                        updateUI(total.get(), reading.get(), listening.get(), speaking.get(), writing.get());
-//                                    }
-//                                }
-//
-//                                @Override
-//                                public void onFailure(String errorMessage) {
-//                                    Log.e("ResultManager", "⚠️ Lỗi lấy điểm từ lesson " + lessonId + ": " + errorMessage);
-//                                    if (completedRequests.incrementAndGet() == totalLessons) {
-//                                        updateUI(total.get(), reading.get(), listening.get(), speaking.get(), writing.get());
-//                                    }
-//                                }
-//
-//                            });
-//                        }
-//
-//                        @Override
-//                        public void onFailure(String errorMessage) {
-//                            Log.e("LessonManager", "⚠️ Không thể lấy chi tiết bài học " + lessonId + ": " + errorMessage);
-//                            completedRequests.incrementAndGet();
-//                            Log.d("Home", String.valueOf(completedRequests));
-//                        }
-//                    });
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(String errorMessage) {
-//                Log.e("LessonManager", "❌ Lỗi khi lấy danh sách lessonId: " + errorMessage);
-//            }
-//        });
-//    }
 
     private void loadUserProfile() {
         String userId = SharedPreferencesManager.getInstance(requireContext()).getID();
@@ -283,14 +223,11 @@ public class HomeFragment extends Fragment {
             }
         });
     }
-    private void updateUI(int total, int reading, int listening, int speaking, int writing) {
-        requireActivity().runOnUiThread(() -> {
-            totalPoints.setText(total + "đ");
-            readingPoints.setText(reading + "đ");
-            listeningPoints.setText(listening + "đ");
-            speakingPoints.setText(speaking + "đ");
-            writingpoint.setText(writing + "đ");
-        });
-    }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        // Reload profile when returning from EditProfile
+        loadUserProfile();
+    }
 }

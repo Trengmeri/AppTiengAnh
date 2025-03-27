@@ -61,7 +61,7 @@ public class EditProfileActivity extends AppCompatActivity {
      String initialName = "";
      String initialPhone = "";
      int initialPosition = -1;
-
+    String initialAvatarUrl = "";
      Spinner spnLevel;
      String initialLevel = "";
     @SuppressLint("MissingInflatedId")
@@ -102,6 +102,7 @@ public class EditProfileActivity extends AppCompatActivity {
         btnUpdate = findViewById(R.id.btnUpdate);
     }
     private void setupChangeListeners() {
+        initialAvatarUrl = currentAvatarUrl;
         TextWatcher textWatcher = new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
@@ -139,10 +140,14 @@ public class EditProfileActivity extends AppCompatActivity {
     }
 
     private void checkForChanges() {
+        Log.d("EditProfile", "Initial Avatar URL: " + initialAvatarUrl);
+        Log.d("EditProfile", "Current Avatar URL: " + currentAvatarUrl);
         boolean hasChanges = !edtName.getText().toString().equals(initialName) ||
                 !edtSdt.getText().toString().equals(initialPhone) ||
                 spnField.getSelectedItemPosition() != initialPosition ||
-                !spnLevel.getSelectedItem().toString().equals(initialLevel);
+                !spnLevel.getSelectedItem().toString().equals(initialLevel) ||
+                !currentAvatarUrl.equals(initialAvatarUrl);
+        Log.d("EditProfile", "Has Changes: " + hasChanges);
         enableUpdateButton(hasChanges);
     }
     private void setupSpinners() {
@@ -226,12 +231,22 @@ public class EditProfileActivity extends AppCompatActivity {
                                     .into(imgAvatar);
                         }
                         String englishLevel = result.getString("englishlevel");
+                        Log.d("EditProfile", "English level: " + englishLevel);
                         initialLevel = englishLevel;
                         ArrayAdapter levelAdapter = (ArrayAdapter) spnLevel.getAdapter();
                         int levelPosition = levelAdapter.getPosition(englishLevel);
+                        Log.d("EditProfile", "Level position: " + englishLevel);
+                        Log.d("EditProfile", "Available levels: " + (levelAdapter));
+
                         if (levelPosition >= 0) {
                             spnLevel.setSelection(levelPosition);
+                            Log.d("EditProfile", "Selected level: " + spnLevel.getSelectedItem().toString());
                         }
+                        else {
+                            Log.d("EditProfile", "Level not found in spinner items");
+                            spnLevel.setSelection(0);
+                        }
+
                         setupChangeListeners();
                         enableUpdateButton(false);
                     } catch (JSONException e) {
@@ -347,13 +362,15 @@ public class EditProfileActivity extends AppCompatActivity {
                         progressDialog.dismiss();
                         if (newAvatarUrl != null && !newAvatarUrl.isEmpty()) {
                             String modifiedUrl = newAvatarUrl.replace("0.0.0.0", "14.225.198.3");
+                            currentAvatarUrl = modifiedUrl;
                             Glide.with(EditProfileActivity.this)
                                     .load(modifiedUrl)
                                     .placeholder(R.drawable.img_avt_profile)
                                     .error(R.drawable.img_avt_profile)
                                     .circleCrop()
                                     .into(imgAvatar);
-
+                            checkForChanges();
+                            setResult(RESULT_OK);
                             Toast.makeText(EditProfileActivity.this,
                                     "Avatar updated successfully", Toast.LENGTH_SHORT).show();
                         }
