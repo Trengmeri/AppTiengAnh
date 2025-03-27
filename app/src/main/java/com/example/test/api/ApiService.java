@@ -24,9 +24,9 @@ import okhttp3.Response;
 public class ApiService {
     private final Context context;
     private final OkHttpClient client  = new OkHttpClient.Builder()
-            .connectTimeout(30, TimeUnit.SECONDS)  // Thời gian kết nối tối đa
-            .readTimeout(30, TimeUnit.SECONDS)     // Thời gian đọc dữ liệu tối đa
-            .writeTimeout(30, TimeUnit.SECONDS)    // Thời gian ghi dữ liệu tối đa
+            .connectTimeout(60, TimeUnit.SECONDS)  // Thời gian kết nối tối đa
+            .readTimeout(60, TimeUnit.SECONDS)     // Thời gian đọc dữ liệu tối đa
+            .writeTimeout(60, TimeUnit.SECONDS)    // Thời gian ghi dữ liệu tối đa
             .build();
 
 
@@ -201,15 +201,16 @@ public class ApiService {
         });
     }
 
-    public void completeTest(int enrollmentId, ApiCallback callback) {
+    public void completeTest(int enrollmentId, double comp, int point, ApiCallback callback) {
         String token = SharedPreferencesManager.getInstance(context).getAccessToken();
 
-        RequestBody emptyBody = RequestBody.create("", MediaType.get("application/json; charset=utf-8"));
+        String json = "{ \"comLevel\":" + comp + ", \"totalPoints\":" + point + ", \"enrollmentId\":" + enrollmentId + "}";
+        RequestBody body = RequestBody.create(json, MediaType.get("application/json; charset=utf-8"));
 
         Request request = new Request.Builder()
-                .url(BASE_URL + "/api/v1/initial-assessment/enrollments/" +enrollmentId+ "/complete")
+                .url(BASE_URL + "/api/v1/initial-assessment/complete")
                 .addHeader("Authorization", "Bearer " + token)
-                .post(emptyBody)
+                .post(body)
                 .build();
 
         client.newCall(request).enqueue(new Callback() {
