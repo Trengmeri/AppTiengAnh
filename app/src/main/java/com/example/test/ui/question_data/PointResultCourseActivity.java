@@ -51,7 +51,7 @@ public class PointResultCourseActivity extends AppCompatActivity {
     private String status;
     private Handler handler = new Handler();
     private Runnable callApiRunnable;
-    private static final int DELAY_MILLIS = 5000; // 5 giây
+    private static final int DELAY_MILLIS = 2500; // 5 giây
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
