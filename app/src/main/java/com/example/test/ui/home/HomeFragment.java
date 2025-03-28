@@ -106,60 +106,116 @@ public class HomeFragment extends Fragment {
             public void onSuccess(JsonObject enrollment) {
                 try {
                     Log.d("HomeFragment", "Raw enrollment response: " + enrollment.toString());
-
                     JsonObject data = enrollment.getAsJsonObject("data");
-                    Log.d("HomeFragment", "Data object: " + data.toString());
-
                     JsonArray content = data.getAsJsonArray("content");
                     Log.d("HomeFragment", "Content array size: " + content.size());
 
                     if (content.size() == 0) {
-                        Log.d("HomeFragment", "No enrollments found");
-                        showNoCourseMessage();
+                        getActivity().runOnUiThread(() -> showNoCourseMessage());
                         return;
                     }
 
-                    JsonObject latestEnrollment = content.get(content.size() - 1).getAsJsonObject();
-                    Log.d("HomeFragment", "Latest enrollment: " + latestEnrollment.toString());
+                    JsonObject activeEnrollment = null;
+                    for (int i = content.size() - 1; i >= 0; i--) {
+                        JsonObject current = content.get(i).getAsJsonObject();
+                        if (current.get("proStatus").getAsBoolean()) {
+                            activeEnrollment = current;
+                            break;
+                        }
+                    }
 
-                    boolean proStatus = latestEnrollment.get("proStatus").getAsBoolean();
-                    double totalPoints = latestEnrollment.get("totalPoints").getAsDouble();
-                    double comLevel = latestEnrollment.get("comLevel").getAsDouble();
+                    if (activeEnrollment == null) {
+                        Log.d("HomeFragment", "No active enrollment found");
+                        getActivity().runOnUiThread(() -> showNoCourseMessage());
+                        return;
+                    }
 
-                    Log.d("HomeFragment", String.format(
-                            "Status check - proStatus: %b, totalPoints: %.1f, comLevel: %.1f",
-                            proStatus, totalPoints, comLevel
-                    ));
+                    double totalPoints = activeEnrollment.get("totalPoints").getAsDouble();
+                    double comLevel = activeEnrollment.get("comLevel").getAsDouble();
+                    int courseId = activeEnrollment.get("courseId").getAsInt();
 
-                    requireActivity().runOnUiThread(() -> {
-                        if (content.size() == 0) {
-                            showNoCourseMessage();
-                        } else if (proStatus && totalPoints == 0 && comLevel == 0.0) {
-                            Log.d("HomeFragment", "Showing current course (new enrollment)");
-                            int courseId = latestEnrollment.get("courseId").getAsInt();
+                    final JsonObject finalEnrollment = activeEnrollment;
+                    getActivity().runOnUiThread(() -> {
+                        if (totalPoints == 0 && comLevel == 0) {
                             fetchAndShowCourseDetails(courseId);
-                            continueButton.setVisibility(View.VISIBLE);
+                            if (continueButton != null) {
+                                continueButton.setVisibility(View.VISIBLE);
+                            }
+                        } else {
+                            showCompletedMessage();
                         }
                     });
+
                 } catch (Exception e) {
-                    Log.e("HomeFragment", "Error parsing enrollment data: " + e.getMessage());
-                    e.printStackTrace();
+                    Log.e("HomeFragment", "Error parsing enrollment", e);
+                    if (getActivity() != null) {
+                        getActivity().runOnUiThread(() -> showNoCourseMessage());
+                    }
                 }
             }
 
             @Override
             public void onFailure(String error) {
                 Log.e("HomeFragment", "API call failed: " + error);
+                if (getActivity() != null) {
+                    getActivity().runOnUiThread(() -> showNoCourseMessage());
+                }
+            }
+        });
+
+        learningProgressManager.fetchLearningResults(new ApiCallback<JsonObject>() {
+            @Override
+            public void onSuccess(JsonObject result) {
+                if (getActivity() == null) return;
+
+                try {
+                    double listeningScore = result.get("listeningScore").getAsDouble();
+                    double speakingScore = result.get("speakingScore").getAsDouble();
+                    double readingScore = result.get("readingScore").getAsDouble();
+                    double writingScore = result.get("writingScore").getAsDouble();
+                    double overallScore = result.get("overallScore").getAsDouble();
+
+                    getActivity().runOnUiThread(() -> {
+                        // Update UI with scores
+                        totalPoints.setText(String.format("%.1f", overallScore));
+                        listeningPoints.setText(String.format("%.1f", listeningScore));
+                        speakingPoints.setText(String.format("%.1f", speakingScore));
+                        readingPoints.setText(String.format("%.1f", readingScore));
+                        writingpoint.setText(String.format("%.1f", writingScore));
+                    });
+
+                    Log.d("HomeFragment", String.format(
+                            "Scores loaded - overall: %.1f, listening: %.1f, speaking: %.1f, reading: %.1f, writing: %.1f",
+                            overallScore, listeningScore, speakingScore, readingScore, writingScore
+                    ));
+
+                } catch (Exception e) {
+                    Log.e("HomeFragment", "Error parsing learning results", e);
+                }
+            }
+
+            @Override
+            public void onSuccess() {
+                // Not used
+            }
+
+            @Override
+            public void onFailure(String error) {
+                Log.e("HomeFragment", "Failed to load learning results: " + error);
             }
         });
     }
 
-    private void showNoCourseMessage() {
-        requireActivity().runOnUiThread(() -> {
-            courseNumber.setText("No course");
-            courseTitle.setText("No course to show");
-            continueButton.setVisibility(View.GONE);
-        });
+    private void showCompletedMessage() {
+        if (courseNumber != null) courseNumber.setText("Thông báo");
+        if (courseTitle != null) courseTitle.setText("Bạn đã hoàn thành các khóa học trước");
+        if (continueButton != null) continueButton.setVisibility(View.GONE);
+    }
+
+    public void showNoCourseMessage() {
+        if (courseNumber != null) courseNumber.setText("Thông báo");
+        if (courseTitle != null) courseTitle.setText("Bạn chưa tham gia khóa học nào");
+        if (continueButton != null) continueButton.setVisibility(View.GONE);
     }
 
 
