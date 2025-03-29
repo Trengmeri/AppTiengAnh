@@ -119,21 +119,23 @@ public class FlashcardInformationActivity extends AppCompatActivity {
                                 Log.e("FlashcardSwipe", "Error: selectedFlashcard is null");
                                 return true; // Dừng lại nếu không có flashcard nào được chọn
                             }
-                            final int flashcardID = selectedFlashcard.getId();
+                            //int flashcardID = selectedFlashcard.getId();
+
                             if (deltaX > 0) {
                                 // Vuốt sang phải (Đánh dấu đã học)
-                                flashcardManager.markFlashcardAsLearned(getApplicationContext(), flashcardID, new FlashcardApiCallback() {
+                                flashcardManager.markFlashcardAsLearned(getApplicationContext(), selectedFlashcard.getId(), new FlashcardApiCallback() {
                                     @Override
                                     public void onSuccess(Object response) {
                                         runOnUiThread(() -> {
-                                        Log.d("FlashcardSwipe", "Marked as learned: " + flashcardID);
+                                        Log.d("FlashcardSwipe", "Marked as learned: " + selectedFlashcard.getId());
 
-                                        // Chỉ đổi flashcard sau khi API hoàn tất
+                                            // Chỉ đổi flashcard sau khi API hoàn tất
                                         animateSwipe(flashcardContainer, 600, true, new AnimationEndCallback() {
                                             @Override
                                             public void onAnimationEnd() {
                                                 countGreen++;
                                                 txtNumGreen.setText(String.valueOf(countGreen));
+
                                             }
                                         });
                                         });
@@ -167,18 +169,19 @@ public class FlashcardInformationActivity extends AppCompatActivity {
 
                             } else {
                                 // Vuốt sang trái (Đánh dấu chưa học)
-                                flashcardManager.markFlashcardAsUnlearned(getApplicationContext(), flashcardID, new FlashcardApiCallback() {
+                                flashcardManager.markFlashcardAsUnlearned(getApplicationContext(), selectedFlashcard.getId(), new FlashcardApiCallback() {
                                     @Override
                                     public void onSuccess(Object response) {
                                         runOnUiThread(() -> {
-                                        Log.d("FlashcardSwipe", "Marked as unlearned: " + flashcardID);
+                                        Log.d("FlashcardSwipe", "Marked as unlearned: " + selectedFlashcard.getId());
 
-                                        // Chỉ đổi flashcard sau khi API hoàn tất
+                                            // Chỉ đổi flashcard sau khi API hoàn tất
                                         animateSwipe(flashcardContainer, 400, false, new AnimationEndCallback() {
                                             @Override
                                             public void onAnimationEnd() {
                                                 countRed++;
                                                 txtNumRed.setText(String.valueOf(countRed));
+
                                             }
                                         });
                                         });
@@ -302,6 +305,7 @@ public class FlashcardInformationActivity extends AppCompatActivity {
     }
 
     private void updateUI(Flashcard flashcard){
+        selectedFlashcard= flashcard;
         if (flashcard != null) {
             Log.d("FlashcardInfo", "Updating UI with flashcard data");
             tvWord.setText(flashcard.getWord());
@@ -529,6 +533,7 @@ public class FlashcardInformationActivity extends AppCompatActivity {
             finish();
         }
     }
+
     private void loadNextPage() {
         FlashcardManager flashcardManager = new FlashcardManager();
         flashcardManager.fetchFlashcardsInGroup(groupId, currentPage, 4, new FlashcardApiCallback() {

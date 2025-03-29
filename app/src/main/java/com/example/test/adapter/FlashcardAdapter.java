@@ -58,6 +58,7 @@ public class FlashcardAdapter extends RecyclerView.Adapter<FlashcardAdapter.Flas
         String lastRv= flashcard.getLastReviewed();
         //holder.tvLastReviewed.setText("Last reviewed: "+flashcard.timeAgo(lastRv));
         String timeAgo = flashcard.timeAgo(lastRv);
+        boolean tvLearnedStatus= flashcard.isLearnedStatus();
         if (timeAgo == null || timeAgo.equals("Lỗi thời gian")) {
             holder.tvLastReviewed.setText("Không có thời gian");
         } else {
@@ -69,7 +70,13 @@ public class FlashcardAdapter extends RecyclerView.Adapter<FlashcardAdapter.Flas
         } else {
             Log.d("FlashcardAdapter", "iconRemove found at position " + position);
         }
-
+        if (tvLearnedStatus) {
+            holder.tvStatus.setText("● learned");
+            holder.tvStatus.setTextColor(holder.itemView.getContext().getResources().getColor(android.R.color.holo_green_dark));
+        } else {
+            holder.tvStatus.setText("● unlearned");
+            holder.tvStatus.setTextColor(holder.itemView.getContext().getResources().getColor(android.R.color.holo_red_dark));
+        }
         // Thêm sự kiện click cho item flashcard
         holder.itemView.setOnClickListener(v -> {
             int selectedIndex = holder.getAdapterPosition();
@@ -97,6 +104,7 @@ public class FlashcardAdapter extends RecyclerView.Adapter<FlashcardAdapter.Flas
     public static class FlashcardViewHolder extends RecyclerView.ViewHolder {
         TextView wordTextView;
         TextView tvLastReviewed;
+        TextView tvStatus;
         ImageView iconRemove;
 
         public FlashcardViewHolder(@NonNull View itemView) {
@@ -104,7 +112,7 @@ public class FlashcardAdapter extends RecyclerView.Adapter<FlashcardAdapter.Flas
             wordTextView = itemView.findViewById(R.id.wordTextView);
             tvLastReviewed = itemView.findViewById(R.id.tvLastReviewed);
             iconRemove = itemView.findViewById(R.id.iconRemove);
-
+            tvStatus= itemView.findViewById(R.id.tvlearned);
         }
     }
     private void showRemoveDialog(int position) {

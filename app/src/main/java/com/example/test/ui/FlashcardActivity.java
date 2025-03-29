@@ -2,6 +2,7 @@ package com.example.test.ui;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -79,7 +80,7 @@ public class FlashcardActivity extends AppCompatActivity {
     private ImageView btnNext, btnPrevious;
     private FlashcardAdapter flashcardAdapter;
     private Button btnSort;
-
+    private String selectedPhoneticsText = null;
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -263,19 +264,46 @@ public class FlashcardActivity extends AppCompatActivity {
                                 }
                                 btn.setSelected(true);
                                 btn.setBackgroundResource(R.drawable.btn_item_click);
-                                checkEnableDone(phoneticButtons, definitionButtons, speechButtons, btnDone);
+                                selectedPhoneticsText = phonetic.getText() != null ? phonetic.getText() : "No phonetics available";
+                                checkEnableDone(phoneticButtons, definitionButtons, speechButtons, btnDone,true);
                             });
 
                             phoneticButtons.add(btn);
                             phoneticContainer.addView(btn);
                         }
                     } else {
-                        phoneticContainer
-                                .addView(new AppCompatTextView(FlashcardActivity.this) {
-                                    {
-                                        setText("No phonetics available");
-                                    }
-                                });
+                        // Nếu không có phonetic, tạo một nút "giả"
+                        AppCompatButton autoSelectedBtn = new AppCompatButton(FlashcardActivity.this);
+                        autoSelectedBtn.setText("No phonetics available");
+                        autoSelectedBtn.setLayoutParams(new LinearLayout.LayoutParams(
+                                ViewGroup.LayoutParams.WRAP_CONTENT,
+                                ViewGroup.LayoutParams.WRAP_CONTENT
+                        ));
+                        autoSelectedBtn.setBackgroundResource(R.drawable.btn_item_click);
+                        autoSelectedBtn.setTextColor(ContextCompat.getColor(FlashcardActivity.this, R.color.black));
+                        autoSelectedBtn.setTextSize(14);
+                        autoSelectedBtn.setAllCaps(false);
+                        autoSelectedBtn.setGravity(Gravity.CENTER);
+
+                        // Đánh dấu là đã chọn
+                        autoSelectedBtn.setSelected(true);
+                        autoSelectedBtn.setTag(true); // Đánh dấu nút này hợp lệ
+                        autoSelectedBtn.setVisibility(View.GONE); // Ẩn nút nhưng vẫn giữ trong danh sách xử lý
+
+                        // Thêm vào danh sách phoneticButtons để tránh lỗi null
+                        phoneticButtons.add(autoSelectedBtn);
+                        phoneticContainer.addView(autoSelectedBtn);
+
+                        // Thêm dòng text thông báo
+                        AppCompatTextView noPhoneticText = new AppCompatTextView(FlashcardActivity.this);
+                        noPhoneticText.setText("No phonetics available");
+                        noPhoneticText.setTextColor(ContextCompat.getColor(FlashcardActivity.this, R.color.black));
+                        noPhoneticText.setTextSize(14);
+                        noPhoneticText.setGravity(Gravity.CENTER);
+
+                        phoneticContainer.addView(noPhoneticText);
+                        selectedPhoneticsText = "No phonetics";
+                        checkEnableDone(phoneticButtons, definitionButtons, speechButtons, btnDone,false);
                     }
 
                     // Hiển thị Part of Speech
@@ -312,7 +340,7 @@ public class FlashcardActivity extends AppCompatActivity {
                                     }
                                     btn.setSelected(true);
                                     btn.setBackgroundResource(R.drawable.btn_item_click);
-                                    checkEnableDone(phoneticButtons, definitionButtons, speechButtons, btnDone);
+                                    checkEnableDone(phoneticButtons, definitionButtons, speechButtons, btnDone,true);
                                     // Hiển thị definitions cho part of speech đã chọn
                                     updateDefinitions(definitionContainer, meaning, dialogView,
                                             phoneticButtons, definitionButtons, speechButtons, btnDone);
@@ -373,9 +401,13 @@ public class FlashcardActivity extends AppCompatActivity {
 //                                            //flashcardAdapter.notifyItemInserted(0);
 //                                            recyclerViewFlashcards.scrollToPosition(0);
                                             flashcards.add(0, newFlashcard);
-                                            flashcardAdapter.notifyItemInserted(0);
+                                            updatePagination();
+                                            if (currentPage == 1) {
+                                                flashcardAdapter.notifyItemInserted(0);
+                                                recyclerViewFlashcards.scrollToPosition(0);
+                                            }
                                             flashcardAdapter.notifyItemRangeChanged(0, flashcards.size()); // Cập nhật lại tất cả item
-                                            recyclerViewFlashcards.scrollToPosition(0);
+                                            //recyclerViewFlashcards.scrollToPosition(0);
 
                                             Toast.makeText(FlashcardActivity.this, "Thêm flashcard thành công!", Toast.LENGTH_SHORT).show();
                                             if (!isFinishing() && dialog != null && dialog.isShowing()) {
@@ -403,7 +435,6 @@ public class FlashcardActivity extends AppCompatActivity {
 
                             @Override
                             public void onSuccess() {
-
                             }
 
                             @Override
@@ -519,7 +550,7 @@ public class FlashcardActivity extends AppCompatActivity {
                     }
                     btn.setSelected(true);
                     btn.setBackgroundResource(R.drawable.btn_item_def_click);
-                    checkEnableDone(phoneticButtons, definitionButtons, speechButtons, btnDone);
+                    checkEnableDone(phoneticButtons, definitionButtons, speechButtons, btnDone, true);
                 });
                 definitionButtons.add(btn);
                 definitionContainer.addView(btn);
@@ -530,45 +561,30 @@ public class FlashcardActivity extends AppCompatActivity {
                 Log.d("DEBUG", "Button text: " + btn.getText().toString());
             }
         } else {
-            // Tạo một nút "giả" để đánh dấu là đã chọn
-            AppCompatButton autoSelectedBtn = new AppCompatButton(FlashcardActivity.this);
-            autoSelectedBtn.setText("No phonetics available");
-            autoSelectedBtn.setLayoutParams(new LinearLayout.LayoutParams(
-                    ViewGroup.LayoutParams.WRAP_CONTENT,
-                    ViewGroup.LayoutParams.WRAP_CONTENT
-            ));
-            autoSelectedBtn.setBackgroundResource(R.drawable.btn_item_click);
-            autoSelectedBtn.setTextColor(ContextCompat.getColor(FlashcardActivity.this, R.color.black));
-            autoSelectedBtn.setTextSize(14);
-            autoSelectedBtn.setAllCaps(false);
-            autoSelectedBtn.setGravity(Gravity.CENTER);
-
-            autoSelectedBtn.setSelected(true); // Đánh dấu đã chọn
-            autoSelectedBtn.setVisibility(View.GONE); // Ẩn nút này khỏi giao diện
-
-            phoneticButtons.add(autoSelectedBtn); // Thêm vào danh sách để hệ thống nhận diện
-            definitionContainer.addView(new AppCompatTextView(FlashcardActivity.this) {{
-                setText("No phonetics available");
-                setTextColor(ContextCompat.getColor(FlashcardActivity.this, R.color.black));
-            }});
+            definitionContainer.addView(new androidx.appcompat.widget.AppCompatTextView(FlashcardActivity.this) {
+                {
+                    setText("No definitions available");
+                }
+            });
         }
-        checkEnableDone(phoneticButtons, definitionButtons, speechButtons, btnDone);
     }
 
     // Hàm kiểm tra và cập nhật trạng thái của nút Done
     private void checkEnableDone(List<AppCompatButton> phoneticButtons,
                                  List<AppCompatButton> speechButtons,
                                  List<AppCompatButton> definitionButtons,
-                                 Button btnDone) {
+                                 Button btnDone,boolean hasPhonetics) {
         boolean isPhoneticSelected = false;
         boolean isSpeechSelected = false;
         boolean isDefinitionSelected = false;
 
         // Kiểm tra xem có ít nhất một nút được chọn trong mỗi nhóm không
-        for (AppCompatButton btn : phoneticButtons) {
-            if (btn.isSelected()) {
-                isPhoneticSelected = true;
-                break;
+        if (hasPhonetics) {
+            for (AppCompatButton btn : phoneticButtons) {
+                if (btn.isSelected()) {
+                    isPhoneticSelected = true;
+                    break;
+                }
             }
         }
         for (AppCompatButton btn : speechButtons) {
@@ -662,8 +678,8 @@ public class FlashcardActivity extends AppCompatActivity {
     }
     private void updateButtonState() {
         if (totalPages > 1) {
-            btnPrevious.setEnabled(currentPage > 0);
-            btnPrevious.setAlpha(currentPage > 0  ? 1.0f : 0.5f);
+            btnPrevious.setEnabled(currentPage > 1);
+            btnPrevious.setAlpha(currentPage > 1  ? 1.0f : 0.5f);
 
             btnNext.setEnabled(currentPage < totalPages);
             btnNext.setAlpha(currentPage < totalPages? 1.0f : 0.5f);
@@ -697,6 +713,9 @@ public class FlashcardActivity extends AppCompatActivity {
         PopupMenu popupMenu = new PopupMenu(this, view);
         popupMenu.getMenu().add("Sorted by Latest");
         popupMenu.getMenu().add("Sorted by Oldest");
+        popupMenu.getMenu().add("Sorted by learned");
+        popupMenu.getMenu().add("Sorted by unlearned");
+
 
         popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
@@ -709,4 +728,15 @@ public class FlashcardActivity extends AppCompatActivity {
 
         popupMenu.show();
     }
+    private void updatePagination() {
+        totalPages = (int) Math.ceil((double) flashcards.size() / 4);
+        currentPage = 0; // Luôn hiển thị trang đầu tiên khi thêm mới
+        updateButtonState();
+    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        fetchFlashcards(groupId, currentPage);
+    }
+
 }
