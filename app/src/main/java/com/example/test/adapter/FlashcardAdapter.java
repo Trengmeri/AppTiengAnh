@@ -133,27 +133,21 @@ public class FlashcardAdapter extends RecyclerView.Adapter<FlashcardAdapter.Flas
         FlashcardManager flashcardManager = new FlashcardManager();
         btnRemove.setOnClickListener(v -> {
             int flashcardId = flashcards.get(position).getId(); // Lấy ID của flashcard cần xóa
-
             flashcardManager.deleteFlashcardById(flashcardId, new FlashcardApiCallback() {
                 @Override
                 public void onSuccess(Object response) {
-                    // Xóa flashcard khỏi danh sách và cập nhật RecyclerView
-                    Log.d("FlashcardAdapter", "Flashcard deleted successfully");
                 }
 
                 @Override
                 public void onSuccess(ApiResponseFlashcardGroup response) {
-
                 }
 
                 @Override
                 public void onSuccess(FlashcardGroupResponse response) {
-
                 }
 
                 @Override
                 public void onSuccess(ApiResponseFlashcard response) {
-
                 }
 
                 @Override
@@ -169,13 +163,20 @@ public class FlashcardAdapter extends RecyclerView.Adapter<FlashcardAdapter.Flas
             flashcards.remove(position);
             notifyItemRemoved(position);
             notifyItemRangeChanged(position, flashcards.size()); // Cập nhật lại các vị trí item còn lại
+            Log.d("FlashcardAdapter", "Flashcard deleted successfully ");
+
+            // Nếu xoá hết flashcard của trang hiện tại, lùi về trang trước đó
+            if (flashcards.isEmpty() && currentPage > 1) {
+                currentPage--;
+            }
+            new android.os.Handler().postDelayed(() -> {
+                ((FlashcardActivity) context).fetchFlashcards(groupId, currentPage);
+                ((FlashcardActivity) context).updateButtonState(); // Cập nhật nút phân trang
+            }, 300); // Độ trễ 300ms
+
             bottomSheetDialog.dismiss(); // Đóng dialog
         });
         bottomSheetDialog.show();
-    }
-    public void setFlashcards(List<Flashcard> newFlashcards) {
-        this.flashcards = newFlashcards;
-        notifyDataSetChanged();
     }
 
 }

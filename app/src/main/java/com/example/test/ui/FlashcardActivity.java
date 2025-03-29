@@ -76,7 +76,7 @@ public class FlashcardActivity extends AppCompatActivity {
     private int pageSize = 4;    // Số phần tử trên mỗi trang
     private int totalPages;  // Tổng số trang
     private int groupId;
-    private int totalFlashcard;
+    public int totalFlashcard;
     //private final int pageSize = 4; // Mỗi trang hiển thị 5 nhóm flashcard
     private ImageView btnNext, btnPrevious;
     private FlashcardAdapter flashcardAdapter;
@@ -111,6 +111,7 @@ public class FlashcardActivity extends AppCompatActivity {
         recyclerView.setAdapter(flashcardAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
+        recyclerViewFlashcards.setItemAnimator(new androidx.recyclerview.widget.DefaultItemAnimator());
 
         btnPrevious.setAlpha(0.5f);
         btnPrevious.setEnabled(false);
@@ -606,7 +607,7 @@ public class FlashcardActivity extends AppCompatActivity {
     }
 
 
-    private void fetchFlashcards(int groupId,int page) {
+    public void fetchFlashcards(int groupId,int page) {
         flashcardManager.fetchFlashcardsInGroup(groupId,page,pageSize, new FlashcardApiCallback() {
             @Override
             public void onSuccess(Object response) {
@@ -672,7 +673,7 @@ public class FlashcardActivity extends AppCompatActivity {
             Log.e("FlashcardActivity", "RecyclerView is null");
         }
     }
-    private void updateButtonState() {
+    public void updateButtonState() {
         if (totalPages > 1) {
             btnPrevious.setEnabled(currentPage > 1);
             btnPrevious.setAlpha(currentPage > 1  ? 1.0f : 0.5f);

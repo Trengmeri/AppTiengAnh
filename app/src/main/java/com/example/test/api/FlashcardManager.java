@@ -37,8 +37,8 @@ public class FlashcardManager extends BaseApiManager {
         gson = new Gson();
     }
 
-    public void fetchFlashcardGroups(int userId, int page, FlashcardApiCallback callback) {
-        String url = BASE_URL + "/api/v1/flashcard-groups/user/" + userId + "?page=" + page + "&size=6";
+    public void fetchFlashcardGroups(int userId, int page,int size, FlashcardApiCallback callback) {
+        String url = BASE_URL + "/api/v1/flashcard-groups/user/" + userId + "?page=" + page+ "&size=" + size;
         Request request = new Request.Builder()
                 .url(url)
                 .build();
