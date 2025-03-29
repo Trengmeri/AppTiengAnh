@@ -18,15 +18,18 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:layout_marginTop="8dp"
+            android:layout_marginStart="5dp">
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@drawable/jam_write"/>
-        <EditText
+            <EditText
             android:id="@+id/edtGroupName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
             android:hint="Enter group name"
             android:padding="10dp"/>
     </LinearLayout>
@@ -34,7 +37,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginTop="@dimen/dp_30">
+            android:layout_marginTop="20dp">
 
             <Button
                 android:id="@+id/btnCancel"

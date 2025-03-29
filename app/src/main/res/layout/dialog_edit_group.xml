@@ -2,11 +2,11 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
+    android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:padding="20dp"
-    android:background="@drawable/bg_remove_flash">
+    android:background="@drawable/bg_edit_group">
     <ImageView
         android:id="@+id/btnclose"
         android:layout_width="wrap_content"
@@ -16,10 +16,9 @@
     <LinearLayout
         android:id="@+id/flcid"
         android:layout_width="wrap_content"
-        android:layout_height="120dp"
-        android:layout_marginLeft="20dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginRight="20dp"
+        android:layout_height="110dp"
+        android:layout_marginTop="10dp"
+        android:layout_gravity="center"
         android:background="@drawable/item_flashcard"
         android:orientation="vertical">
 
@@ -34,8 +33,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginStart="@dimen/dp_16"
-                android:layout_marginTop="8dp"
-                android:background="@drawable/jam_write" />
+                android:background="@drawable/write_groupname" />
 
             <EditText
                 android:id="@+id/edtGroupName"
@@ -45,7 +43,8 @@
                 android:layout_marginStart="@dimen/dp_16"
                 android:hint="Enter new group name"
                 android:textColor="@color/black"
-                android:textSize="22sp"
+                android:background="@android:color/transparent"
+                android:textSize="20sp"
                 android:textStyle="bold" />
         </LinearLayout>
 
@@ -55,7 +54,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="10dp"
         android:gravity="center">
 
         <Button
@@ -68,8 +67,7 @@
             android:paddingLeft="@dimen/dp_30"
             android:paddingRight="@dimen/dp_30"
             android:textColor="@color/black"
-            android:backgroundTint="#E8F1FF"/>
-
+            android:backgroundTint="#C7D8F2"/>
         <Button
             android:id="@+id/btnEdit"
             android:layout_width="wrap_content"
@@ -81,6 +79,8 @@
             android:paddingTop="20dp"
             android:paddingBottom="20dp"
             android:paddingLeft="@dimen/dp_30"
-            android:paddingRight="@dimen/dp_30"/>
+            android:paddingRight="@dimen/dp_30"
+            android:enabled="false"
+            android:alpha="0.3"/>
     </LinearLayout>
 </LinearLayout>

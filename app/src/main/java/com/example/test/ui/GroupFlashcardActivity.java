@@ -150,6 +150,7 @@ public class GroupFlashcardActivity extends AppCompatActivity {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 btnEdit.setEnabled(
                         !s.toString().trim().isEmpty() && !s.toString().equals(groupTextView.getText().toString()));
+                btnEdit.setAlpha(1.0f);
             }
 
             @Override

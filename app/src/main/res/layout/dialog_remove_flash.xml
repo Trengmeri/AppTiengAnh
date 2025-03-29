@@ -62,7 +62,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="@dimen/dp_16"
         android:gravity="center">
 
         <Button
@@ -85,6 +85,6 @@
             android:drawableEnd="@drawable/circle__1_"
             android:backgroundTint="#A95D40"
             android:textColor="@color/white"
-            android:layout_marginStart="10dp"/>
+            android:layout_marginStart="@dimen/dp_30"/>
     </LinearLayout>
 </LinearLayout>
