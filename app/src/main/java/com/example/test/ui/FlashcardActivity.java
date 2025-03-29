@@ -76,6 +76,7 @@ public class FlashcardActivity extends AppCompatActivity {
     private int pageSize = 4;    // Số phần tử trên mỗi trang
     private int totalPages;  // Tổng số trang
     private int groupId;
+    private int totalFlashcard;
     //private final int pageSize = 4; // Mỗi trang hiển thị 5 nhóm flashcard
     private ImageView btnNext, btnPrevious;
     private FlashcardAdapter flashcardAdapter;
@@ -393,23 +394,17 @@ public class FlashcardActivity extends AppCompatActivity {
                                     @Override
                                     public void onSuccess(String result) {
                                         runOnUiThread(() -> {
-                                            Log.d("DEBUG", "Flashcard added to group");
-                                            // Cập nhật UI
-                                            Flashcard newFlashcard = new Flashcard(Integer.parseInt(flashcardId), wordflash, definitionIndices, partOfSpeechIndex);
-//                                            flashcards.add(0,newFlashcard);
-//                                            flashcardAdapter.notifyDataSetChanged();
-//                                            //flashcardAdapter.notifyItemInserted(0);
-//                                            recyclerViewFlashcards.scrollToPosition(0);
-                                            flashcards.add(0, newFlashcard);
-                                            updatePagination();
-                                            if (currentPage == 1) {
-                                                flashcardAdapter.notifyItemInserted(0);
-                                                recyclerViewFlashcards.scrollToPosition(0);
-                                            }
-                                            flashcardAdapter.notifyItemRangeChanged(0, flashcards.size()); // Cập nhật lại tất cả item
-                                            //recyclerViewFlashcards.scrollToPosition(0);
+                                            // Tính toán trang chứa flashcard mới
+                                            //int newTotalFlashcards = totalFlashcard;
+                                            int newTotalPages = (int) Math.ceil((double) totalFlashcard / pageSize);
+                                            int newPage = newTotalPages; // Flashcard mới nằm ở trang cuối
 
-                                            Toast.makeText(FlashcardActivity.this, "Thêm flashcard thành công!", Toast.LENGTH_SHORT).show();
+                                            // Chuyển đến trang mới chứa flashcard
+                                            currentPage = newPage;
+                                            fetchFlashcards(groupId, currentPage);
+                                            updateButtonState(); // Cập nhật trạng thái nút
+
+                                            //Toast.makeText(FlashcardActivity.this, "Thêm flashcard thành công!", Toast.LENGTH_SHORT).show();
                                             if (!isFinishing() && dialog != null && dialog.isShowing()) {
                                                 dialog.dismiss();
                                             }
@@ -634,6 +629,7 @@ public class FlashcardActivity extends AppCompatActivity {
                     if (response.getData() != null && response.getData().getContent() != null) {
                         List<Flashcard> flashcards = response.getData().getContent();
                         totalPages = response.getData().getTotalPages(); // Cập nhật số trang từ API
+                        totalFlashcard= response.getData().getTotalElements();
 
                         Log.d("DEBUG","Tong trang:"+ totalPages);
 
@@ -728,11 +724,7 @@ public class FlashcardActivity extends AppCompatActivity {
 
         popupMenu.show();
     }
-    private void updatePagination() {
-        totalPages = (int) Math.ceil((double) flashcards.size() / 4);
-        currentPage = 0; // Luôn hiển thị trang đầu tiên khi thêm mới
-        updateButtonState();
-    }
+
     @Override
     protected void onResume() {
         super.onResume();
