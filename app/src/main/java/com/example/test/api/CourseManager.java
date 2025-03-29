@@ -27,7 +27,9 @@ import java.util.List;
 
 import okhttp3.Call;
 import okhttp3.Callback;
+import okhttp3.MediaType;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class CourseManager extends BaseApiManager{
@@ -158,6 +160,7 @@ public class CourseManager extends BaseApiManager{
         });
     }
 
+
     public void fetchCoursesByGroupName(String name, ApiCallback<List<Course>> callback) {
         String url = BASE_URL + "/api/v1/courses/group/" + name;
 
@@ -205,5 +208,38 @@ public class CourseManager extends BaseApiManager{
             }
         });
     }
+
+    public void joinCourse(int courserId, ApiCallback callback) {
+            String token = SharedPreferencesManager.getInstance(context).getAccessToken();
+            String url = BASE_URL + "/api/v1/enrollments/" + courserId + "/join";
+            RequestBody body = RequestBody.create("", MediaType.get("application/json"));
+            Request request = new Request.Builder()
+                    .url(url)
+                    .addHeader("Authorization", "Bearer " + token)
+                    .addHeader("Content-Type", "application/json")
+                    .put(body) // Đúng cú pháp put(body)
+                    .build();
+
+            client.newCall(request).enqueue(new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    callback.onFailure("Connection error: " + e.getMessage());
+                }
+
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    String responseBody = response.body() != null ? response.body().string() : "No response body";
+                    if (response.isSuccessful()) {
+                        callback.onSuccess(null);
+                    } else {
+                        callback.onFailure("Request failed: " + response.code() + " - " + responseBody);
+                    }
+                }
+
+            });
+        }
+
+
+
 
 }

@@ -13,6 +13,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.test.R;
+import com.example.test.ui.entrance_test.Pick1Activity;
 
 public class ChooseFieldsActivity extends AppCompatActivity {
     Button btnEco,btnConstruct,btnIT, btnMechan, btnOther;
@@ -47,7 +48,7 @@ public class ChooseFieldsActivity extends AppCompatActivity {
         btnEco.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(ChooseFieldsActivity.this, CourseInformationActivity.class);
+                Intent intent = new Intent(ChooseFieldsActivity.this, TestActivity.class);
                 startActivity(intent);
             }
         });

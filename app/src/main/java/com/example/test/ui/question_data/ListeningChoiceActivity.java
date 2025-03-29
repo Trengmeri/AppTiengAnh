@@ -29,6 +29,7 @@ import com.example.test.PopupHelper;
 import com.example.test.R;
 import com.example.test.adapter.ChoiceAdapter;
 import com.example.test.api.ApiCallback;
+import com.example.test.api.LearningMaterialsManager;
 import com.example.test.api.LessonManager;
 import com.example.test.api.MediaManager;
 import com.example.test.api.QuestionManager;
@@ -59,7 +60,7 @@ public class ListeningChoiceActivity extends AppCompatActivity {
     private int lessonID,courseID,enrollmentId;
     private int answerIds;
     private  String questype;
-    ImageView btnListen;
+    ImageView btnListen, imgLessonMaterial;
     TextView tvQuestion;
     Button btnCheckResult;
 
@@ -67,6 +68,7 @@ public class ListeningChoiceActivity extends AppCompatActivity {
     LessonManager lesManager = new LessonManager();
     ResultManager resultManager = new ResultManager(this);
     MediaManager mediaManager = new MediaManager(this);
+    LearningMaterialsManager materialsManager = new LearningMaterialsManager(this);
     private RecyclerView recyclerViewChoices;
 
     @Override
@@ -79,6 +81,7 @@ public class ListeningChoiceActivity extends AppCompatActivity {
         tvQuestion = findViewById(R.id.tvQuestion);
         btnCheckResult = findViewById(R.id.btnCheckResult);
         recyclerViewChoices = findViewById(R.id.recyclerViewChoices);
+        imgLessonMaterial = findViewById(R.id.imgLessonMaterial);
         int columnCount = 2; // Số cột
         GridLayoutManager layoutManager = new GridLayoutManager(this, columnCount);
         layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
@@ -101,7 +104,31 @@ public class ListeningChoiceActivity extends AppCompatActivity {
 
         // Hiển thị câu hỏi hiện tại
         loadQuestion(currentQuestionIndex);
-        fetchAudioUrl(questions.get(currentQuestionIndex).getId());
+        materialsManager.fetchAndLoadImageByLesId(lessonID, imgLessonMaterial);
+        materialsManager.fetchAudioByLesId(lessonID,  new ApiCallback<String>() {
+
+            @Override
+            public void onSuccess() {
+
+            }
+
+            @Override
+            public void onSuccess(String result) {
+                runOnUiThread(() -> { // Sử dụng runOnUiThread ở đây
+                    if (result!= null) {
+                        btnListen.setOnClickListener(v -> {
+                            playAudio(result);
+                        });
+
+                    }
+                });
+            }
+
+            @Override
+            public void onFailure(String errorMessage) {
+
+            }
+        });
 
         btnCheckResult.setOnClickListener(v -> {
             if (mediaPlayer != null && mediaPlayer.isPlaying()) {

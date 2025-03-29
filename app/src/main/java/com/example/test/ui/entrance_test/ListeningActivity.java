@@ -24,6 +24,7 @@ import com.example.test.PopupHelper;
 import com.example.test.R;
 import com.example.test.api.ApiCallback;
 import com.example.test.api.ApiService;
+import com.example.test.api.LearningMaterialsManager;
 import com.example.test.api.LessonManager;
 import com.example.test.api.MediaManager;
 import com.example.test.api.QuestionManager;
@@ -62,11 +63,13 @@ public class ListeningActivity extends AppCompatActivity {
     TextView tvQuestion;
     LinearLayout progressBar;
     Button btnCheckResult;
+    ImageView imgLessonMaterial;
 
     QuestionManager quesManager = new QuestionManager(this);
     LessonManager lesManager = new LessonManager();
     ResultManager resultManager = new ResultManager(this);
     MediaManager mediaManager = new MediaManager(this);
+    LearningMaterialsManager materialsManager = new LearningMaterialsManager(this);
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -77,6 +80,7 @@ public class ListeningActivity extends AppCompatActivity {
         btnCheckResult = findViewById(R.id.btnCheckResult);
         tvQuestion = findViewById(R.id.tvQuestion);
         etAnswer = findViewById(R.id.etAnswer);
+        imgLessonMaterial = findViewById(R.id.imgLessonMaterial);
         int lessonId = 4;
         int enrollmentId = getIntent().getIntExtra("enrollmentId", 1);
         fetchLessonAndQuestions(lessonId);
@@ -190,8 +194,32 @@ public class ListeningActivity extends AppCompatActivity {
                         createProgressBars(totalSteps, currentStep); // Tạo progress bar dựa trên số câu hỏi thực tế
                     });
                     if (questionIds != null && !questionIds.isEmpty()) {
-                        fetchQuestion(questionIds.get(currentStep)); // Lấy câu hỏi đầu tiên
-                        fetchAudioUrl(questionIds.get(currentStep));
+                        fetchQuestion(questionIds.get(currentStep));
+                        materialsManager.fetchAudioByLesId(lessonId, new ApiCallback<String>() {
+                            @Override
+                            public void onSuccess() {
+
+                            }
+
+                            @Override
+                            public void onSuccess(String result) {
+                                runOnUiThread(() -> { // Sử dụng runOnUiThread ở đây
+                                    if (result!= null) {
+                                        btnListen.setOnClickListener(v -> {
+                                            playAudio(result);
+                                        });
+
+                                    }
+                                });
+                            }
+
+                            @Override
+                            public void onFailure(String errorMessage) {
+
+                            }
+                        });
+                        materialsManager.fetchAndLoadImageByLesId(lessonId, imgLessonMaterial);
+//                        fetchAudioUrl(questionIds.get(currentStep));
                     } else {
                         Log.e("Pick1Activity", "Bài học không có câu hỏi.");
                     }
@@ -223,6 +251,7 @@ public class ListeningActivity extends AppCompatActivity {
                     questype = question.getQuesType();
                     runOnUiThread(() -> {
                         tvQuestion.setText(question.getQuesContent());
+                        materialsManager.fetchAndLoadImage(questionId, imgLessonMaterial);
                         List<QuestionChoice> choices = question.getQuestionChoices();
                         for (QuestionChoice choice : choices) {
                             if (choice.isChoiceKey()) {

@@ -25,6 +25,7 @@ import com.example.test.R;
 import com.example.test.adapter.ChoiceAdapter;
 import com.example.test.adapter.MultipleAdapter;
 import com.example.test.api.ApiCallback;
+import com.example.test.api.LearningMaterialsManager;
 import com.example.test.api.LessonManager;
 import com.example.test.api.QuestionManager;
 import com.example.test.api.ResultManager;
@@ -51,11 +52,14 @@ public class GrammarPick1QuestionActivity extends AppCompatActivity {
     private RecyclerView recyclerViewChoices;
     private boolean isImageVisible = true; // Trạng thái ban đầu: ảnh hiển thị
     QuestionManager quesManager = new QuestionManager(this);
+    ImageView imgLessonMaterial;
     LessonManager lesManager = new LessonManager();
     ResultManager resultManager = new ResultManager(this);
     TextView tvContent;
     private int lessonID,courseID, enrollmentId;
     NetworkChangeReceiver networkReceiver;
+    LearningMaterialsManager materialsManager = new LearningMaterialsManager(this);
+
     private int answerIds;
     private  String questype;
     private List<Question> questions; // Danh sách câu hỏi
@@ -70,6 +74,7 @@ public class GrammarPick1QuestionActivity extends AppCompatActivity {
         btnCheckAnswer = findViewById(R.id.btnCheckAnswer);
         tvContent = findViewById(R.id.tvContent);
         recyclerViewChoices = findViewById(R.id.recyclerViewChoices);
+        imgLessonMaterial = findViewById(R.id.imgLessonMaterial);
         int columnCount = 2; // Số cột
         GridLayoutManager layoutManager = new GridLayoutManager(this, columnCount);
 //        layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
@@ -83,7 +88,6 @@ public class GrammarPick1QuestionActivity extends AppCompatActivity {
         LinearLayout progressBar = findViewById(R.id.progressBar);
         updateProgressBar(progressBar, currentQuestionIndex);
         networkReceiver = new NetworkChangeReceiver();
-        anHienAnh();
 
         // Nhận dữ liệu từ Intent
         currentQuestionIndex = getIntent().getIntExtra("currentQuestionIndex", 0);
@@ -96,6 +100,7 @@ public class GrammarPick1QuestionActivity extends AppCompatActivity {
 
         // Hiển thị câu hỏi hiện tại
         loadQuestion(currentQuestionIndex);
+
 
 //        // Lấy lessonId từ intent hoặc một nguồn khác
 //        int lessonId = 1;
@@ -209,9 +214,7 @@ public class GrammarPick1QuestionActivity extends AppCompatActivity {
         });
     }
 
-    private void anHienAnh() {
-        ImageView imgLessonMaterial = findViewById(R.id.imgLessonMaterial);
-    }
+
 
     private void loadQuestion(int index) {
         if (index < questions.size()) {
@@ -223,6 +226,7 @@ public class GrammarPick1QuestionActivity extends AppCompatActivity {
                     if (question != null) {
                         // Lấy nội dung câu hỏi
                         String questionContent = question.getQuesContent();
+                        materialsManager.fetchAndLoadImage(question.getId(), imgLessonMaterial);
                         Log.d("GrammarPick1QuestionActivity", "Câu hỏi: " + questionContent);
 
                         List<QuestionChoice> choices = question.getQuestionChoices();

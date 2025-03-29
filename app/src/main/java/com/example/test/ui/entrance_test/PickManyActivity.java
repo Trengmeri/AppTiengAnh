@@ -21,6 +21,7 @@ import com.example.test.PopupHelper;
 import com.example.test.R;
 import com.example.test.adapter.MultipleAdapter;
 import com.example.test.api.ApiCallback;
+import com.example.test.api.LearningMaterialsManager;
 import com.example.test.api.LessonManager;
 import com.example.test.api.QuestionManager;
 import com.example.test.api.ResultManager;
@@ -46,12 +47,14 @@ public class PickManyActivity extends AppCompatActivity {
     private int answerIds;// Danh sách questionIds
     private TextView tvContent;
     private  String questype;
+    private ImageView imgLessonMaterial;
     private boolean isImageVisible = true;
     private RecyclerView recyclerViewChoices;
     private LinearLayout progressBar;
     QuestionManager quesManager = new QuestionManager(this);
     LessonManager lesManager = new LessonManager();
     ResultManager resultManager = new ResultManager(this);
+    LearningMaterialsManager materialsManager = new LearningMaterialsManager(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +63,7 @@ public class PickManyActivity extends AppCompatActivity {
 
         recyclerViewChoices = findViewById(R.id.recyclerViewChoices);
         recyclerViewChoices.setLayoutManager(new LinearLayoutManager(this));
+        imgLessonMaterial = findViewById(R.id.imgLessonMaterial);
         tvContent = findViewById(R.id.tvContent);
         Button btnCheckAnswers = findViewById(R.id.btnCheckAnswers);
         progressBar = findViewById(R.id.progressBar);
@@ -205,6 +209,7 @@ public class PickManyActivity extends AppCompatActivity {
                     if (choices != null && !choices.isEmpty()) {
                         runOnUiThread(() -> {
                             tvContent.setText(questionContent);
+                            materialsManager.fetchAndLoadImage(questionId, imgLessonMaterial);
                             userAnswers.clear();
                             MultipleAdapter choiceAdapter = new MultipleAdapter(PickManyActivity.this, choices, userAnswers);
                             recyclerViewChoices.setAdapter(choiceAdapter);
