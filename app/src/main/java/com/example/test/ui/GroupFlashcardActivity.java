@@ -259,7 +259,8 @@ public class GroupFlashcardActivity extends AppCompatActivity {
                 }
             });
         });
-
+        dialog.setCancelable(false);
+        dialog.setCanceledOnTouchOutside(false);
         dialog.show();
     }
 
@@ -270,6 +271,7 @@ public class GroupFlashcardActivity extends AppCompatActivity {
         builder.setView(dialogView);
 
         AlertDialog dialog = builder.create();
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         @SuppressLint({"MissingInflatedId", "LocalSuppress"})
         EditText edtGroupName = dialogView.findViewById(R.id.edtGroupName);
         Button btnAdd = dialogView.findViewById(R.id.btnAdd);
@@ -355,7 +357,8 @@ public class GroupFlashcardActivity extends AppCompatActivity {
                 });
             }
         });
-
+        dialog.setCancelable(false);
+        dialog.setCanceledOnTouchOutside(false);
         dialog.show();
     }
 

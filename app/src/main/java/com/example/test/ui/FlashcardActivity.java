@@ -161,6 +161,9 @@ public class FlashcardActivity extends AppCompatActivity {
             builder.setView(dialogView);
 
             AlertDialog dialog = builder.create();
+            dialog.setCancelable(false);
+            dialog.setCanceledOnTouchOutside(false);
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
             dialog.show();
 
             // Ánh xạ các view trong dialog
@@ -362,10 +365,11 @@ public class FlashcardActivity extends AppCompatActivity {
                     AlertDialog.Builder builder = new AlertDialog.Builder(FlashcardActivity.this);
                     builder.setView(dialogView);
                     AlertDialog dialog = builder.create();
+                    dialog.setCancelable(false);
                     dialog.setCanceledOnTouchOutside(false);
                     btnDone.setOnClickListener(v -> {
                         String wordflash = word.trim();
-                        int partOfSpeechIndex = getSelectedIndex(speechButtons);; // Chỉ mục loại từ được chọn
+                        int partOfSpeechIndex = getSelectedIndex(speechButtons); // Chỉ mục loại từ được chọn
                         List<Integer> definitionIndices = getSelectedDefinitionIndices(definitionButtons);; // Danh sách các chỉ mục định nghĩa
 
                         if (wordflash.isEmpty()) {
