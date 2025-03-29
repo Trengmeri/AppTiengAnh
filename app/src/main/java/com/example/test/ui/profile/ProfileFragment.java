@@ -109,7 +109,8 @@ public class ProfileFragment extends Fragment {
         userManager.fetchUserProfile(Integer.parseInt(userId), new ApiCallback<JSONObject>() {
             @Override
             public void onSuccess(JSONObject result) {
-                requireActivity().runOnUiThread(() -> {
+                if (getActivity() == null) return; // Ngăn lỗi khi Fragment đã bị tách khỏi Activity
+                getActivity().runOnUiThread(() -> {
                     try {
                         userName.setText(result.getString("name"));
                         userEmail.setText(result.getString("email"));
@@ -138,7 +139,8 @@ public class ProfileFragment extends Fragment {
 
             @Override
             public void onFailure(String errorMessage) {
-                requireActivity().runOnUiThread(() ->
+                if (getActivity() == null) return; // Ngăn lỗi khi Fragment đã bị tách khỏi Activity
+                getActivity().runOnUiThread(() ->
                         Toast.makeText(requireContext(),
                                 "Failed to load profile: " + errorMessage,
                                 Toast.LENGTH_SHORT).show()
