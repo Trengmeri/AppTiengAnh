@@ -256,7 +256,7 @@ public class HomeFragment extends Fragment {
                     if (avatarUrl != null && !avatarUrl.isEmpty()) {
                         avatarUrl = avatarUrl.replace("0.0.0.0", "14.225.198.3");
 
-                        Glide.with(HomeFragment.this)
+                        Glide.with(requireActivity())
                                 .load(avatarUrl)
                                 .placeholder(R.drawable.img_avt_profile)
                                 .error(R.drawable.img_avt_profile)

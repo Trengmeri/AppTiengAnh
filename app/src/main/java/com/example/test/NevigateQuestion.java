@@ -27,7 +27,7 @@ import java.util.List;
 
 public class NevigateQuestion extends AppCompatActivity {
     private String skill;
-    private int lessonID,courseID;
+    private int lessonID,courseID,enrollmentId;
     private int currentQuestionIndex; // Vị trí câu hỏi hiện tại
     private List<Integer> questionIds = new ArrayList<>();
     private List<Question> questions = new ArrayList<>();
@@ -43,6 +43,7 @@ public class NevigateQuestion extends AppCompatActivity {
         if (intent != null) {
             courseID = intent.getIntExtra("courseId",1);
             lessonID = intent.getIntExtra("lessonId",1);
+            enrollmentId = intent.getIntExtra("enrollmentId",1);
             questionIds = (List<Integer>) intent.getSerializableExtra("questionIds");
         }
 
@@ -126,6 +127,7 @@ public class NevigateQuestion extends AppCompatActivity {
             intent.putExtra("currentQuestionIndex", currentQuestionIndex);
             intent.putExtra("courseID",courseID);
             intent.putExtra("lessonID",lessonID);
+            intent.putExtra("enrollmentId", enrollmentId);
             Log.e("nevigate","Lesson ID: "+ lessonID + "courseID: "+ courseID);
             if (questions == null || questions.isEmpty()) {
                 Log.e("NevigateQuestion", "Danh sách câu hỏi bị null hoặc rỗng trước khi gửi!");

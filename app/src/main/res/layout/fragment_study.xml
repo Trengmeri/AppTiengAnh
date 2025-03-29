@@ -5,6 +5,7 @@
     android:orientation="vertical"
     android:padding="16dp">
 
+    <!-- Hàng chứa hai button -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -34,9 +35,11 @@
             android:background="@drawable/bg_lesson"/>
     </LinearLayout>
 
-    <FrameLayout
-        android:id="@+id/fragment_container"
+    <!-- ViewPager2 để hiển thị Fragment -->
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/viewPager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
+
 
 </LinearLayout>

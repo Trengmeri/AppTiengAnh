@@ -1,5 +1,6 @@
 package com.example.test.ui.home;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
@@ -63,6 +64,16 @@ public class HomeActivity extends AppCompatActivity {
 
         updateIconColors(0);
 
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent); // Cập nhật Intent mới
+
+        int targetPage = intent.getIntExtra("targetPage", 0);
+        ViewPager2 viewPager = findViewById(R.id.vpg_main);
+        viewPager.setCurrentItem(targetPage, true);
     }
 
     private void reloadFragment(int position) {

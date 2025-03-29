@@ -44,12 +44,13 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseView
     private List<Course> courseList;
     private String proStatus;
     private LessonManager lessonManager = new LessonManager();
-    private ResultManager resultManager = new ResultManager(context);
+    private ResultManager resultManager;
 
     public CourseAdapter(String proStatus, Context context, List<Course> courseList) {
         this.proStatus = proStatus;
         this.context = context;
         this.courseList = courseList;
+        this.resultManager = new ResultManager(context);
     }
 
     @NonNull

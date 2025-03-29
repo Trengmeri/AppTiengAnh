@@ -29,6 +29,7 @@ import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.test.NevigateQuestion;
 import com.example.test.R;
@@ -83,9 +84,12 @@ public class PointResultLessonActivity extends AppCompatActivity {
         fetchLessonData(lessonID);
         makepoint(courseID,lessonID);
         btnDone.setOnClickListener(v -> {
-                Intent intent = new Intent(PointResultLessonActivity.this, HomeActivity.class);
-                startActivity(intent);
+            Intent intent = new Intent(PointResultLessonActivity.this, HomeActivity.class);
+            intent.putExtra("targetPage", 0);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            startActivity(intent);
         });
+
         btnDiscuss.setOnClickListener(v -> {
             Intent intent = new Intent(PointResultLessonActivity.this, DiscussionActivity.class);
             intent.putExtra("lessonId", lessonID);
