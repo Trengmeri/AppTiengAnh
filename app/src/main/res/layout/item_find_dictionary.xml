@@ -12,7 +12,7 @@
             android:id="@+id/phoneticLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Phonetic:"
+            android:text="@string/Phonetic"
             android:textSize="16sp"
             android:textStyle="bold"/>
 
@@ -35,7 +35,7 @@
             android:id="@+id/partOfSpeechLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Part of Speech:"
+            android:text="@string/PartofSpeech"
             android:textSize="16sp"
             android:textStyle="bold"/>
 
@@ -58,7 +58,7 @@
             android:id="@+id/definitionLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Definition:"
+            android:text="@string/Definition"
             android:textSize="16sp"
             android:textStyle="bold"/>
 
@@ -82,7 +82,7 @@
             android:id="@+id/vietnameseMeaningLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Vietnamese Meaning:"
+            android:text="@string/VietnameseMeaning"
             android:textSize="16sp"
             android:textStyle="bold"/>
 

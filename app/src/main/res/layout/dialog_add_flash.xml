@@ -28,7 +28,7 @@
                 android:id="@+id/edtFlashName"
                 android:layout_width="230dp"
                 android:layout_height="wrap_content"
-                android:hint="Enter word"
+                android:hint="@string/EnterWord"
                 android:padding="10dp"/>
 <!--            <ImageView-->
 <!--                android:id="@+id/btnSearch"-->
@@ -119,7 +119,7 @@
                 android:layout_height="wrap_content"
 
                 android:backgroundTint="#FFE7A56F"
-                android:text="Cancel" />
+                android:text="@string/Cancel" />
 
             <Button
                 android:id="@+id/btnAdd"
@@ -127,7 +127,7 @@
                 android:layout_height="wrap_content"
                 android:backgroundTint="#FFE7A56F"
                 android:layout_marginLeft="@dimen/dp40"
-                android:text="Add"
+                android:text="@string/Add"
                 android:enabled="false"
                 android:alpha="0.5"/>
         </LinearLayout>

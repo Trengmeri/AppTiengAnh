@@ -135,7 +135,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Overall Points"
+                android:text="@string/OverallPoints"
                 android:textSize="20sp"
                 android:textStyle="bold"
                 android:textColor="@color/btncolor"
@@ -163,7 +163,7 @@
                 android:columnOrderPreserved="false">
 
                 <TextView
-                    android:text="Listening: "
+                    android:text="@string/Listening"
                     android:textSize="18sp"
                     android:textStyle="bold"
                     android:layout_marginBottom="8dp"/>
@@ -174,7 +174,7 @@
                     android:layout_marginBottom="8dp"/>
 
                 <TextView
-                    android:text="Speaking: "
+                    android:text="@string/Speaking"
                     android:textSize="18sp"
                     android:textStyle="bold"
                     android:layout_marginBottom="8dp"/>
@@ -185,7 +185,7 @@
                     android:layout_marginBottom="8dp"/>
 
                 <TextView
-                    android:text="Reading: "
+                    android:text="@string/Reading"
                     android:textSize="18sp"
                     android:textStyle="bold"
                     android:layout_marginBottom="8dp"/>
@@ -196,9 +196,10 @@
                     android:layout_marginBottom="8dp"/>
 
                 <TextView
-                    android:text="Writing: "
+                    android:layout_height="wrap_content"
+                    android:text="@string/Writing"
                     android:textSize="18sp"
-                    android:textStyle="bold"/>
+                    android:textStyle="bold" />
                 <TextView
                     android:id="@+id/writingpoint"
                     android:textSize="18sp"

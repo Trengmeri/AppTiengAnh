@@ -54,7 +54,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/dp_16"
                     android:textSize="15sp"
-                    android:text="Edit profile"
+                    android:text="@string/Editprofile"
                     android:drawableEnd="@drawable/muiten_right"
                     android:textColor="@color/black"
                     android:textStyle="bold"/>
@@ -77,7 +77,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/dp_16"
                     android:textSize="15sp"
-                    android:text="Language"
+                    android:text="@string/Language2"
                     android:drawableEnd="@drawable/muiten_right"
                     android:textColor="@color/black"
                     android:textStyle="bold"/>
@@ -100,7 +100,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/dp_16"
                     android:textSize="15sp"
-                    android:text="Terms &amp; Conditions"
+                    android:text="@string/TermsAndConditions"
                     android:drawableEnd="@drawable/muiten_right"
                     android:textColor="@color/black"
                     android:textStyle="bold"/>
@@ -124,7 +124,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/dp_16"
                 android:textSize="15sp"
-                android:text="Logout"
+                android:text="@string/Logout"
                 android:drawableEnd="@drawable/muiten_right"
                 android:textColor="@color/black"
                 android:textStyle="bold"/>

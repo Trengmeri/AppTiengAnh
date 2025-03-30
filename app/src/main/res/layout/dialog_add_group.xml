@@ -27,7 +27,7 @@
             android:id="@+id/edtGroupName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Enter group name"
+            android:hint="@string/EnterName"
             android:padding="10dp"/>
     </LinearLayout>
         <LinearLayout
@@ -42,7 +42,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/dp_16"
                 android:backgroundTint="#FFE7A56F"
-                android:text="Cancel" />
+                android:text="@string/Cancel" />
 
             <Button
                 android:id="@+id/btnAdd"
@@ -50,7 +50,7 @@
                 android:layout_height="wrap_content"
                 android:backgroundTint="#FFE7A56F"
                 android:layout_marginLeft="@dimen/dp40"
-                android:text="Add"
+                android:text="@string/Add"
                 android:enabled="false"
                 android:alpha="0.5"/>
         </LinearLayout>
