@@ -3,11 +3,9 @@ package com.example.test.ui.profile;
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -287,45 +285,6 @@ public class EditProfileActivity extends AppCompatActivity {
             Uri imageUri = data.getData();
             uploadAvatar(imageUri);
         }
-    }
-    private String getRealPathFromURI(Uri uri) {
-        // For API 19 and above (MediaStore documents)
-        if (uri.getAuthority().equals("com.android.providers.media.documents")) {
-            final String docId = uri.getLastPathSegment().split(":")[1];
-            final String selection = MediaStore.Images.Media._ID + "=" + docId;
-
-            try (Cursor cursor = getContentResolver().query(
-                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                    new String[]{MediaStore.Images.Media.DATA},
-                    selection,
-                    null,
-                    null)) {
-
-                if (cursor != null && cursor.moveToFirst()) {
-                    final int columnIndex = cursor.getColumnIndex(MediaStore.Images.Media.DATA);
-                    return cursor.getString(columnIndex);
-                }
-            } catch (Exception e) {
-                Log.e("EditProfile", "Error getting path: " + e.getMessage());
-            }
-        }
-        // Fallback to old method for other URIs
-        else {
-            try {
-                String[] projection = {MediaStore.Images.Media.DATA};
-                Cursor cursor = getContentResolver().query(uri, projection, null, null, null);
-                if (cursor != null) {
-                    int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-                    cursor.moveToFirst();
-                    String path = cursor.getString(column_index);
-                    cursor.close();
-                    return path;
-                }
-            } catch (Exception e) {
-                Log.e("EditProfile", "Error getting path: " + e.getMessage());
-            }
-        }
-        return null;
     }
     private void uploadAvatar(Uri imageUri) {
         if (imageUri == null) {

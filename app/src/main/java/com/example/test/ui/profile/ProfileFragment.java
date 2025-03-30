@@ -36,6 +36,7 @@ import org.json.JSONObject;
 
 public class ProfileFragment extends Fragment {
     TextView userName, userEmail;
+    private static final int EDIT_PROFILE_REQUEST = 100;
     LinearLayout btnLogout,btnedit, term , language;
     NetworkChangeReceiver networkReceiver;
     AuthenticationManager apiManager;
@@ -96,12 +97,19 @@ public class ProfileFragment extends Fragment {
                 @Override
                 public void onClick(View view) {
                     Intent intent = new Intent(getActivity(), EditProfileActivity.class);
-                    startActivity(intent);
+                    startActivityForResult(intent,EDIT_PROFILE_REQUEST);
                 }
             });
 
-    }
 
+    }
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == EDIT_PROFILE_REQUEST) {
+            loadUserProfile(); // Load ngay khi quay lại từ EditProfile
+        }
+    }
     private void loadUserProfile() {
         String userId = SharedPreferencesManager.getInstance(requireContext()).getID();
         if (userId == null) return;
@@ -109,8 +117,11 @@ public class ProfileFragment extends Fragment {
         userManager.fetchUserProfile(Integer.parseInt(userId), new ApiCallback<JSONObject>() {
             @Override
             public void onSuccess(JSONObject result) {
-                if (getActivity() == null) return; // Ngăn lỗi khi Fragment đã bị tách khỏi Activity
+                if (getActivity() == null || !isAdded()) return;
+
                 getActivity().runOnUiThread(() -> {
+                    if (!isAdded()) return;
+
                     try {
                         userName.setText(result.getString("name"));
                         userEmail.setText(result.getString("email"));
@@ -118,15 +129,16 @@ public class ProfileFragment extends Fragment {
                         if (avatarUrl != null && !avatarUrl.isEmpty()) {
                             avatarUrl = avatarUrl.replace("0.0.0.0", "14.225.198.3");
 
-                            Glide.with(ProfileFragment.this)
-                                    .load(avatarUrl)
-                                    .placeholder(R.drawable.img_avt_profile)
-                                    .error(R.drawable.img_avt_profile)
-                                    .circleCrop()
-                                    .into(imgAvatar);
+                            if (isAdded()) {
+                                Glide.with(ProfileFragment.this)
+                                        .load(avatarUrl)
+                                        .placeholder(R.drawable.img_avt_profile)
+                                        .error(R.drawable.img_avt_profile)
+                                        .circleCrop()
+                                        .into(imgAvatar);
+                            }
                         }
                     } catch (JSONException e) {
-
                         Log.e("ProfileFragment", "Error parsing profile data: " + e.getMessage());
                     }
                 });
@@ -139,12 +151,14 @@ public class ProfileFragment extends Fragment {
 
             @Override
             public void onFailure(String errorMessage) {
-                if (getActivity() == null) return; // Ngăn lỗi khi Fragment đã bị tách khỏi Activity
-                getActivity().runOnUiThread(() ->
-                        Toast.makeText(requireContext(),
-                                "Failed to load profile: " + errorMessage,
-                                Toast.LENGTH_SHORT).show()
-                );
+                if (getActivity() == null || !isAdded()) return;
+
+                getActivity().runOnUiThread(() -> {
+                    if (!isAdded()) return;
+                    Toast.makeText(requireContext(),
+                            "Failed to load profile: " + errorMessage,
+                            Toast.LENGTH_SHORT).show();
+                });
             }
         });
     }

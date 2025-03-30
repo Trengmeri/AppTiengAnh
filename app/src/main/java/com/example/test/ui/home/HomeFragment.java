@@ -229,8 +229,7 @@ public class HomeFragment extends Fragment {
 
             @Override
             public void onSuccess(String courseName) {
-                if (getActivity() == null) return; // Ngăn lỗi khi Fragment đã bị tách khỏi Activity
-                getActivity().runOnUiThread(() -> {
+                requireActivity().runOnUiThread(() -> {
                     courseNumber.setText("Course " + courseId);
                     courseTitle.setText(courseName);
                 });
@@ -250,18 +249,23 @@ public class HomeFragment extends Fragment {
         userManager.fetchUserProfile(Integer.parseInt(userId), new ApiCallback<JSONObject>() {
             @Override
             public void onSuccess(JSONObject result) {
-                if (getActivity() == null) return; // Ngăn lỗi khi Fragment đã bị tách khỏi Activity
+                if (getActivity() == null || !isAdded()) return;
+
                 getActivity().runOnUiThread(() -> {
+                    if (!isAdded()) return;
+
                     String avatarUrl = result.optString("avatar");
                     if (avatarUrl != null && !avatarUrl.isEmpty()) {
                         avatarUrl = avatarUrl.replace("0.0.0.0", "14.225.198.3");
 
-                        Glide.with(requireActivity())
-                                .load(avatarUrl)
-                                .placeholder(R.drawable.img_avt_profile)
-                                .error(R.drawable.img_avt_profile)
-                                .circleCrop()
-                                .into(btnProfile);
+                        if (isAdded()) { // Check before using Glide
+                            Glide.with(HomeFragment.this)
+                                    .load(avatarUrl)
+                                    .placeholder(R.drawable.img_avt_profile)
+                                    .error(R.drawable.img_avt_profile)
+                                    .circleCrop()
+                                    .into(btnProfile);
+                        }
                     }
                 });
             }
@@ -273,12 +277,14 @@ public class HomeFragment extends Fragment {
 
             @Override
             public void onFailure(String errorMessage) {
-                if (getActivity() == null) return; // Ngăn lỗi khi Fragment đã bị tách khỏi Activity
-                getActivity().runOnUiThread(() ->
-                        Toast.makeText(requireContext(),
-                                "Failed to load profile: " + errorMessage,
-                                Toast.LENGTH_SHORT).show()
-                );
+                if (getActivity() == null || !isAdded()) return;
+
+                getActivity().runOnUiThread(() -> {
+                    if (!isAdded()) return;
+                    Toast.makeText(requireContext(),
+                            "Failed to load profile: " + errorMessage,
+                            Toast.LENGTH_SHORT).show();
+                });
             }
         });
     }
