@@ -305,6 +305,7 @@ public class ListeningQuestionActivity extends AppCompatActivity {
         Intent intent = new Intent(ListeningQuestionActivity.this, PointResultLessonActivity.class);
         intent.putExtra("lessonId",lessonID);
         intent.putExtra("courseId",courseID);
+        intent.putExtra("enrollmentId", enrollmentId);
         startActivity(intent);
         finish();
     }

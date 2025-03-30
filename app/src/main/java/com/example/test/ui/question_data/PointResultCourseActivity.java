@@ -71,6 +71,8 @@ public class PointResultCourseActivity extends AppCompatActivity {
 
         btnNext.setOnClickListener(v -> {
             Intent intent = new Intent(PointResultCourseActivity.this, HomeActivity.class);
+            intent.putExtra("targetPage", 0);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
             startActivity(intent);
         });
     }

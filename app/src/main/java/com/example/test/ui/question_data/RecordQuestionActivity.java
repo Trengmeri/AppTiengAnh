@@ -300,6 +300,7 @@ public class RecordQuestionActivity extends AppCompatActivity implements SpeechR
         Intent intent = new Intent(RecordQuestionActivity.this, PointResultLessonActivity.class);
         intent.putExtra("lessonId", lessonID);
         intent.putExtra("courseId", courseID);
+        intent.putExtra("enrollmentId", enrollmentId);
         startActivity(intent);
         finish();
     }

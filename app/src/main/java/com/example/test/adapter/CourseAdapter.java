@@ -93,30 +93,92 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseView
                 params.setMargins(10, 0, 10, 0); // Điều chỉnh khoảng cách giữa các lesson
                 textView.setLayoutParams(params);
 
-                resultManager.fetchResultByLesson(lessonId, new ApiCallback<Result>() {
-                    @Override
-                    public void onSuccess() {
+                // Lấy ID bài học trước đó (nếu có)
+                int previousLessonId = lessonId - 1; // Giả sử bài học có ID liên tiếp
 
-                    }
+                if (lessonId == sortedLessonIds.get(0)) {
+                    // Kiểm tra nếu bài học đầu tiên đã hoàn thành hay chưa
+                    resultManager.fetchResultByLesson(lessonId, new ApiCallback<Result>() {
+                        @Override
+                        public void onSuccess() { }
 
-                    @Override
-                    public void onSuccess(Result result) {
-                        new Handler(Looper.getMainLooper()).post(() -> {
-                            textView.setBackgroundResource(R.drawable.bg_lesson_cricle);
-                        });
-                    }
+                        @Override
+                        public void onSuccess(Result result) {
+                            new Handler(Looper.getMainLooper()).post(() -> {
+                                // Nếu có điểm → nền vàng (hoàn thành)
+                                textView.setBackgroundResource(R.drawable.bg_lesson_cricle);
+                                textView.setBackgroundTintList(
+                                        ColorStateList.valueOf(ContextCompat.getColor(context, R.color.light_yellow))
+                                );
+                                textView.setEnabled(true);
+                            });
+                        }
 
-                    @Override
-                    public void onFailure(String errorMessage) {
-                        new Handler(Looper.getMainLooper()).post(() -> {
-                            textView.setBackgroundResource(R.drawable.bg_lesson_cricle); // Giữ nền mặc định
-                            textView.setBackgroundTintList(
-                                    ColorStateList.valueOf(ContextCompat.getColor(context, R.color.light_gray))
-                            );
+                        @Override
+                        public void onFailure(String errorMessage) {
+                            new Handler(Looper.getMainLooper()).post(() -> {
+                                // Nếu chưa có điểm, nhưng là bài học đầu tiên → mở khóa với màu trắng
+                                textView.setBackgroundResource(R.drawable.bg_lesson_cricle);
+                                textView.setBackgroundTintList(
+                                        ColorStateList.valueOf(ContextCompat.getColor(context, R.color.white))
+                                );
+                                textView.setEnabled(true);
+                            });
+                        }
+                    });
+                }
 
-                        });
-                    }
-                });
+                else{
+                    resultManager.fetchResultByLesson(lessonId, new ApiCallback<Result>() {
+                        @Override
+                        public void onSuccess() { }
+
+                        @Override
+                        public void onSuccess(Result result) {
+                            new Handler(Looper.getMainLooper()).post(() -> {
+                                // Nếu có điểm → nền vàng (hoàn thành)
+                                textView.setBackgroundResource(R.drawable.bg_lesson_cricle); // Màu vàng
+                                textView.setBackgroundTintList(
+                                        ColorStateList.valueOf(ContextCompat.getColor(context, R.color.light_yellow))
+                                );
+                                textView.setEnabled(true);
+                            });
+                        }
+
+                        @Override
+                        public void onFailure(String errorMessage) {
+                            // Nếu chưa có điểm → Kiểm tra bài học trước
+                            resultManager.fetchResultByLesson(previousLessonId, new ApiCallback<Result>() {
+                                @Override
+                                public void onSuccess() { }
+
+                                @Override
+                                public void onSuccess(Result result) {
+                                    new Handler(Looper.getMainLooper()).post(() -> {
+                                        // Nếu bài học trước có điểm → Bật bài học này (chưa hoàn thành nhưng có thể làm)
+                                        textView.setBackgroundResource(R.drawable.bg_lesson_cricle); // Màu mặc định
+                                        textView.setBackgroundTintList(
+                                                ColorStateList.valueOf(ContextCompat.getColor(context, R.color.white))
+                                        );
+                                        textView.setEnabled(true);
+                                    });
+                                }
+
+                                @Override
+                                public void onFailure(String errorMessage) {
+                                    new Handler(Looper.getMainLooper()).post(() -> {
+                                        // Nếu bài học trước chưa có điểm → Khóa bài học hiện tại (xám)
+                                        textView.setBackgroundResource(R.drawable.bg_lesson_cricle); // Màu xám
+                                        textView.setBackgroundTintList(
+                                                ColorStateList.valueOf(ContextCompat.getColor(context, R.color.light_gray))
+                                        );
+                                        textView.setEnabled(false);
+                                    });
+                                }
+                            });
+                        }
+                    });
+                }
 
                 // Xử lý sự kiện click để fetch dữ liệu và điều hướng
                 textView.setOnClickListener(v -> {

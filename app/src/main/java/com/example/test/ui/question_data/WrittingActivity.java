@@ -112,6 +112,7 @@ public class WrittingActivity extends AppCompatActivity {
         Intent intent = new Intent(WrittingActivity.this, PointResultLessonActivity.class);
         intent.putExtra("lessonId",lessonID);
         intent.putExtra("courseId",courseID);
+        intent.putExtra("enrollmentId", enrollmentId);
         startActivity(intent);
         finish();
     }
