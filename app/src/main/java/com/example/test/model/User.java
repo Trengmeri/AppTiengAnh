@@ -4,6 +4,7 @@ public class User {
     private int id;
     private String name;
     private String email;
+    private  String avatar;
 
     // Getters and Setters
     public int getId() {
@@ -28,5 +29,8 @@ public class User {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+    public String getAvt() {
+        return avatar;
     }
 }

@@ -248,17 +248,6 @@
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toTopOf="parent"/>
 
-<!--                            <TextView-->
-<!--                                android:layout_width="wrap_content"-->
-<!--                                android:layout_height="wrap_content"-->
-<!--                                android:text="SEE ALL"-->
-<!--                                android:textColor="#0961F5"-->
-<!--                                android:textSize="14sp"-->
-<!--                                android:textStyle="bold"-->
-<!--                                android:layout_marginEnd="@dimen/dp_30"-->
-<!--                                app:layout_constraintEnd_toEndOf="parent"-->
-<!--                                app:layout_constraintTop_toTopOf="parent"/>-->
-
                         </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <androidx.recyclerview.widget.RecyclerView

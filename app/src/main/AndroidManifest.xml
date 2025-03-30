@@ -95,10 +95,9 @@
         <activity
             android:name=".ui.CourseInformationActivity"
             android:exported="true" />
-<!--        <activity-->
-<!--            android:name=".ui.CourseActivity"-->
-<!--            android:exported="true" />-->
-        <activity android:name=".ui.TestActivity" />
+        <activity
+            android:name=".ui.ReviewActivity"
+            android:exported="true" />
 
         <activity
             android:name=".ui.GroupFlashcardActivity"

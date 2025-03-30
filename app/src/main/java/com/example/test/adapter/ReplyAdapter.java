@@ -14,6 +14,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.test.R;
 import com.example.test.SharedPreferencesManager;
 import com.example.test.api.ApiCallback;
@@ -61,7 +62,20 @@ public class ReplyAdapter extends RecyclerView.Adapter<ReplyAdapter.ViewHolder> 
 
             @Override
             public void onSuccess(User user) {
-                new Handler(Looper.getMainLooper()).post(() -> holder.txtUser.setText(user.getName()));
+                String avatar = user.getAvt();
+                String uri;
+                if (avatar == null) return;
+                uri = avatar.replace("0.0.0.0", "14.225.198.3");
+                new Handler(Looper.getMainLooper()).post(() -> {
+                    holder.txtUser.setText(user.getName());
+                    Glide.with(context)
+                            .load(uri)
+                            .placeholder(R.drawable.icon_lesson) // Ảnh mặc định
+                            .error(R.drawable.icon_lesson)// Ảnh lỗi
+                            .circleCrop()                        // Luôn hiển thị hình tròn
+                            .override(200, 200)
+                            .into(holder.imgAvatar);
+                });
             }
 
             @Override
@@ -170,13 +184,14 @@ public class ReplyAdapter extends RecyclerView.Adapter<ReplyAdapter.ViewHolder> 
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         TextView txtUser, txtContent, txtCreatedAt, txtLikeCount;
-        ImageView btnLike;
+        ImageView btnLike, imgAvatar;
 
         public ViewHolder(View itemView) {
             super(itemView);
             txtUser = itemView.findViewById(R.id.txtUser);
             txtContent = itemView.findViewById(R.id.txtContent);
             txtLikeCount= itemView.findViewById(R.id.txtLikeCount);
+            imgAvatar = itemView.findViewById(R.id.imgAvatar);
             btnLike= itemView.findViewById(R.id.btnLike);
 //            txtCreatedAt = itemView.findViewById(R.id.txtCreatedAt);
         }

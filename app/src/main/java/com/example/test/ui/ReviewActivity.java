@@ -4,7 +4,9 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.RatingBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -24,8 +26,9 @@ import com.example.test.model.Review;
 import java.util.List;
 
 public class ReviewActivity extends AppCompatActivity {
-    Button btnSendReview;
+    ImageView btnSendReview;
     EditText edtReview;
+    TextView back;
     private ReviewManager reviewManager = new ReviewManager(this);
     private ReviewAdapter reviewAdapter;
     Course curCourse;
@@ -41,10 +44,16 @@ public class ReviewActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.review_activity);
         btnSendReview = findViewById(R.id.btnSendReview);
+        back = findViewById(R.id.back);
         ratingBar= findViewById(R.id.ratingBar);
+        loadReviews();
+
         // Sự kiện gửi Review
         btnSendReview.setOnClickListener(v -> {
             sendReview();
+        });
+        back.setOnClickListener(v -> {
+           finish();
         });
 
     }

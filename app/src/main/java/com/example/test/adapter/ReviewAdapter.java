@@ -15,6 +15,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.test.R;
 import com.example.test.SharedPreferencesManager;
 import com.example.test.api.ApiCallback;
@@ -76,7 +77,20 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ViewHolder
 
             @Override
             public void onSuccess(User user) {
-                new Handler(Looper.getMainLooper()).post(() -> holder.txtUser.setText(user.getName()));
+                String avatar = user.getAvt();
+                String uri;
+                if (avatar == null) return;
+                uri = avatar.replace("0.0.0.0", "14.225.198.3");
+                new Handler(Looper.getMainLooper()).post(() -> {
+                    holder.txtUser.setText(user.getName());
+                    Glide.with(context)
+                            .load(uri)
+                            .placeholder(R.drawable.icon_lesson) // Ảnh mặc định
+                            .error(R.drawable.icon_lesson)// Ảnh lỗi
+                            .circleCrop()                        // Luôn hiển thị hình tròn
+                            .override(200, 200)
+                            .into(holder.imgAvatar);
+                });
             }
 
             @Override
@@ -204,7 +218,7 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ViewHolder
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         TextView txtUser, txtLikeCount , txtReContent, txtNumStar;
-        ImageView btnLike;
+        ImageView btnLike,imgAvatar;
         RatingBar ratingBar;
 
 
@@ -217,6 +231,7 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ViewHolder
             btnLike = itemView.findViewById(R.id.btnLike);
             ratingBar = itemView.findViewById(R.id.ratingBarReview);
             txtNumStar = itemView.findViewById(R.id.txtNumStar);
+            imgAvatar = itemView.findViewById(R.id.imgAvatar);
         }
     }
 }
