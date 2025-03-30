@@ -101,7 +101,17 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="8dp"
-            android:background="#F6F1F1"
+            android:background="@drawable/rounded_textview"
             android:layout_marginBottom="16dp"/>
+        <Button
+            android:id="@+id/btnAdd"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="#BC6136"
+            android:text="Add to my flashcards"
+            android:textColor="#FFFFFF"
+            android:textColorLink="#9E3A00"
+            android:layout_margin="20dp"
+            android:visibility="gone"/>
     </LinearLayout>
 </ScrollView>

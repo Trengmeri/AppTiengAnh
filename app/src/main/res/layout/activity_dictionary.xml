@@ -7,10 +7,6 @@
     android:layout_height="match_parent"
     android:background="@drawable/bg_dictionary"
     tools:context=".ui.DictionaryActivity">
-<ScrollView
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:ignore="MissingConstraints">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -56,17 +52,5 @@
                 android:orientation="horizontal">
             </LinearLayout>
 
-        <Button
-            android:id="@+id/btnAdd"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:backgroundTint="#BC6136"
-            android:text="Add to my flashcards"
-            android:textColor="#FFFFFF"
-            android:textColorLink="#9E3A00"
-            android:layout_margin="20dp"
-            android:visibility="invisible"/>
-
     </LinearLayout>
-</ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>
