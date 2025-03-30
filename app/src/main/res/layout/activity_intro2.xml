@@ -27,7 +27,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
         android:backgroundTint="@android:color/transparent"
-        android:text="Skip"
+        android:text="@string/skip"
         android:textColor="@color/black"
         android:textSize="20sp"
         android:textStyle="bold"

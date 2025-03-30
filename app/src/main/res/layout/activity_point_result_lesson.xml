@@ -133,17 +133,17 @@
 
             <TableRow android:background="@color/white">
                 <TextView
-                    android:text="Question"
+                    android:text="@string/question"
                     android:textStyle="bold"
                     android:layout_weight="1"
                     android:padding="10dp"/>
                 <TextView
-                    android:text="Your answer"
+                    android:text="@string/yans"
                     android:layout_weight="1"
                     android:textStyle="bold"
                     android:padding="10dp" />
                 <TextView
-                    android:text="Point"
+                    android:text="@string/point"
                     android:layout_weight="1"
                     android:gravity="center"
                     android:textStyle="bold"

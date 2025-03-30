@@ -79,7 +79,7 @@
             android:background="@android:color/transparent"
             android:textColor="#BC5738"
             android:textSize="18sp"
-            android:text="Sort ▼"/>
+            android:text="@string/sort"/>
         <LinearLayout
             android:id="@+id/flashContainer"
             android:layout_width="match_parent"

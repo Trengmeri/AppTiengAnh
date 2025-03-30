@@ -29,7 +29,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp"
             android:layout_marginLeft="10dp"
-            android:text="Create New PassWord"
+            android:text="@string/newpass"
             android:textColor="@color/black"
             android:textSize="20sp"
             android:textStyle="bold" />
@@ -71,7 +71,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="20dp"
-                android:text="Create Your New Password"
+                android:text="@string/txt_newpass"
                 android:textSize="20sp"
                 android:textStyle="bold"/>
             <LinearLayout
@@ -89,7 +89,7 @@
                     android:layout_height="wrap_content"
                     android:padding="8dp"
                     android:ems="10"
-                    android:hint="Password"
+                    android:hint="@string/hint_pass"
                     android:inputType="text"
                     android:background="@android:color/transparent"
                     android:drawableStart="@drawable/icon_pass"
@@ -129,7 +129,7 @@
                     android:layout_height="wrap_content"
                     android:padding="8dp"
                     android:ems="10"
-                    android:hint="Re-enter password"
+                    android:hint="@string/hint_repass"
                     android:inputType="text"
                     android:background="@android:color/transparent"
                     android:drawableStart="@drawable/icon_pass"
@@ -151,7 +151,7 @@
                 android:layout_height="match_parent"
                 android:layout_margin="20dp"
                 android:backgroundTint="#8B3000"
-                android:text="Countine"
+                android:text="@string/Continue"
                 android:textColor="@color/white"
                 android:enabled="false"
                 android:alpha="0.3"/>

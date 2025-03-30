@@ -149,7 +149,7 @@ public class DictionaryActivity extends AppCompatActivity {
                     List<AppCompatButton> speechButtons = new ArrayList<>();
                     List<AppCompatButton> definitionButtons = new ArrayList<>();
                     wordLabel.setVisibility(View.VISIBLE);
-                    wordLabel.setText("Word: " + wordData.getWord());
+                    wordLabel.setText(getString(R.string.word) + ": " + wordData.getWord());
                     // Hiển thị phonetics
                     if (mergedWordData.getPhonetics() != null && !mergedWordData.getPhonetics().isEmpty()) {
                         phoneticButtons.clear();

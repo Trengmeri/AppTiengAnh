@@ -88,7 +88,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/dp_30"
                 android:layout_marginBottom="@dimen/dp_16"
-                android:text="Tools and features"
+                android:text="@string/txt_explore"
                 android:textSize="22sp"
                 android:textStyle="bold"/>
 
@@ -162,7 +162,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Dictionary"
+                            android:text="@string/dictionary"
                             android:textSize="16sp"
                             android:layout_gravity="center"
                             android:layout_marginStart="10dp"/>
@@ -185,7 +185,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Flashcards"
+                            android:text="@string/flashcard"
                             android:textSize="16sp"
                             android:layout_gravity="center"
                             android:layout_marginStart="10dp"/>
@@ -208,7 +208,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Schedule"
+                            android:text="@string/schedule"
                             android:textSize="16sp"
                             android:layout_gravity="center"
                             android:layout_marginStart="10dp"/>

@@ -45,7 +45,7 @@
                     android:layout_marginStart="@dimen/dp_16"
                     android:textColor="@color/black"
                     android:drawableStart="@drawable/icon_back"
-                    android:text=" Flashcard groups"
+                    android:text="@string/flash_group"
                     android:textSize="24sp"
                     android:textStyle="bold" />
 
