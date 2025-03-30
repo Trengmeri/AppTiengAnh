@@ -61,6 +61,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class FlashcardActivity extends AppCompatActivity {
 
@@ -84,6 +85,7 @@ public class FlashcardActivity extends AppCompatActivity {
     private String selectedPhoneticsText = null;
     private List<Flashcard> allFlashcards = new ArrayList<>(); // Lưu trữ tất cả flashcard khi sort
     private boolean isSorted = false; // Trạng thái sort
+    private List<Flashcard> filteredFlashcards = new ArrayList<>(); // Danh sách đã lọc theo learned/unlearned
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -612,61 +614,6 @@ public class FlashcardActivity extends AppCompatActivity {
     }
 
 
-//    public void fetchFlashcards(int groupId,int page) {
-//        flashcardManager.fetchFlashcardsInGroup(groupId,page,pageSize, new FlashcardApiCallback() {
-//            @Override
-//            public void onSuccess(Object response) {
-//
-//            }
-//
-//            @Override
-//            public void onSuccess(ApiResponseFlashcardGroup response) {
-//
-//            }
-//
-//            @Override
-//            public void onSuccess(FlashcardGroupResponse response) {
-//
-//            }
-//
-//            @Override
-//            public void onSuccess(ApiResponseFlashcard response) {
-//                runOnUiThread(() -> {
-//                    if (response.getData() != null && response.getData().getContent() != null) {
-//                        List<Flashcard> flashcards = response.getData().getContent();
-//                        totalPages = response.getData().getTotalPages(); // Cập nhật số trang từ API
-//                        totalFlashcard= response.getData().getTotalElements();
-//
-//                        Log.d("DEBUG","Tong trang:"+ totalPages);
-//
-//                        if (!flashcards.isEmpty()) {
-//                            //Collections.reverse(flashcards);
-//                            updateRecyclerView(flashcards);
-//                        } else {
-//                            Toast.makeText(FlashcardActivity.this, "Không có flashcard nào!", Toast.LENGTH_SHORT).show();
-//                        }
-//
-//                        updateButtonState();
-//                    }
-//                });
-//            }
-//
-//            @Override
-//            public void onSuccess(ApiResponseOneFlashcard response) {
-//
-//            }
-//
-//            @Override
-//            public void onFailure(String errorMessage) {
-//                Log.e("FlashcardActivity", "Error fetching flashcards: " + errorMessage);
-//                runOnUiThread(() -> {
-//                    Toast.makeText(FlashcardActivity.this, "Error fetching flashcards: " + errorMessage,
-//                            Toast.LENGTH_LONG).show();
-//                });
-//            }
-//        });
-//    }
-
     @SuppressLint("NotifyDataSetChanged")
     private void updateRecyclerView(List<Flashcard> flashcards) {
         if (recyclerViewFlashcards != null) {
@@ -734,6 +681,7 @@ public class FlashcardActivity extends AppCompatActivity {
     }
     private void fetchAllFlashcards(int groupId, String sortType) {
         allFlashcards.clear();
+        filteredFlashcards.clear();
         // Lấy tất cả các trang
         flashcardManager.fetchFlashcardsInGroup(groupId, 1, Integer.MAX_VALUE, new FlashcardApiCallback() {
             @Override
@@ -741,7 +689,7 @@ public class FlashcardActivity extends AppCompatActivity {
                 runOnUiThread(() -> {
                     if (response.getData() != null && response.getData().getContent() != null) {
                         allFlashcards.addAll(response.getData().getContent());
-                        sortFlashcards(sortType);
+                        sortAndFilterFlashcards(sortType);
                         isSorted = true;
                         currentPage = 1;
                         updateSortedFlashcards();
@@ -764,36 +712,49 @@ public class FlashcardActivity extends AppCompatActivity {
             @Override public void onSuccess(ApiResponseOneFlashcard response) {}
         });
     }
-    private void sortFlashcards(String sortType) {
+    private void sortAndFilterFlashcards(String sortType) {
+        // Sao chép danh sách gốc
+        filteredFlashcards = new ArrayList<>(allFlashcards);
+
         switch (sortType) {
             case "Sorted by Latest":
-                Collections.sort(allFlashcards, (f1, f2) ->
-                        f2.getAddedDate().compareTo(f1.getAddedDate())); // Giả sử Flashcard có getCreationDate()
+                Collections.sort(filteredFlashcards, (f1, f2) ->
+                        f2.getAddedDate().compareTo(f1.getAddedDate()));
                 break;
             case "Sorted by Oldest":
-                Collections.sort(allFlashcards, (f1, f2) ->
+                Collections.sort(filteredFlashcards, (f1, f2) ->
                         f1.getAddedDate().compareTo(f2.getAddedDate()));
                 break;
             case "Sorted by learned":
-                Collections.sort(allFlashcards, (f1, f2) ->
-                        Boolean.compare(f2.isLearnedStatus(), f1.isLearnedStatus())); // Giả sử Flashcard có isLearned()
+                // Lọc chỉ giữ flashcard đã học và sắp xếp
+                filteredFlashcards = filteredFlashcards.stream()
+                        .filter(Flashcard::isLearnedStatus)
+                        .sorted((f1, f2) -> Boolean.compare(f2.isLearnedStatus(), f1.isLearnedStatus()))
+                        .collect(Collectors.toList());
                 break;
             case "Sorted by unlearned":
-                Collections.sort(allFlashcards, (f1, f2) ->
-                        Boolean.compare(f1.isLearnedStatus(), f2.isLearnedStatus()));
+                // Lọc chỉ giữ flashcard chưa học và sắp xếp
+                filteredFlashcards = filteredFlashcards.stream()
+                        .filter(f -> !f.isLearnedStatus())
+                        .sorted((f1, f2) -> Boolean.compare(f1.isLearnedStatus(), f2.isLearnedStatus()))
+                        .collect(Collectors.toList());
                 break;
         }
-        totalPages = (int) Math.ceil((double) allFlashcards.size() / 4);
+
+        totalPages = (int) Math.ceil((double) filteredFlashcards.size() / 4);
         Toast.makeText(this, "Sorted by: " + sortType, Toast.LENGTH_SHORT).show();
     }
     private void updateSortedFlashcards() {
         int startIndex = (currentPage - 1) * 4;
-        int endIndex = Math.min(startIndex + 4, allFlashcards.size());
+        int endIndex = Math.min(startIndex + 4, filteredFlashcards.size());
 
-        if (startIndex < allFlashcards.size()) {
-            List<Flashcard> pageFlashcards = allFlashcards.subList(startIndex, endIndex);
+        if (startIndex < filteredFlashcards.size()) {
+            List<Flashcard> pageFlashcards = filteredFlashcards.subList(startIndex, endIndex);
             updateRecyclerView(new ArrayList<>(pageFlashcards));
             updateButtonState();
+        } else if (filteredFlashcards.isEmpty()) {
+            updateRecyclerView(new ArrayList<>());
+            Toast.makeText(this, "Không có flashcard nào phù hợp!", Toast.LENGTH_SHORT).show();
         }
     }
     public void fetchFlashcards(int groupId, int page) {
