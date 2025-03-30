@@ -102,6 +102,6 @@
     <string name="dailygoal">Mục tiêu hằng ngày!</string>
     <string name="remindat">Nhắc nhở tôi lúc:</string>
     <string name="ontheday">Vào những ngày:</string>
-    <string name="smalltestintro">Nhận chương trình học cá nhân hóa sau khi hoàn thành</string>
-    <string name="newprogramintro">Khám phá chương trình có sẵn và bắt đầu học</string>
+    <string name="smalltestintro">Nhận chương trình\n học cá nhân hóa\n sau khi hoàn thành</string>
+    <string name="newprogramintro">Khám phá chương\n trình có sẵn và\n bắt đầu học</string>
 </resources>
