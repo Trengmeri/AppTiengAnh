@@ -196,10 +196,15 @@
                         android:padding="@dimen/dp40"
                         android:visibility="invisible"
                         >
-                        <LinearLayout
-                            android:id="@+id/tvBackContent"
+                        <androidx.core.widget.NestedScrollView
                             android:layout_width="200dp"
                             android:layout_height="280dp"
+                            android:fillViewport="true">
+
+                        <LinearLayout
+                            android:id="@+id/tvBackContent"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
                             android:orientation="vertical">
                             <TextView
                                 android:id="@+id/tvDefinition"
@@ -216,6 +221,7 @@
                                 android:textSize="16sp"
                                 android:layout_marginTop="10dp"/>
                         </LinearLayout>
+                        </androidx.core.widget.NestedScrollView>
                     </LinearLayout>
                 </FrameLayout>
 

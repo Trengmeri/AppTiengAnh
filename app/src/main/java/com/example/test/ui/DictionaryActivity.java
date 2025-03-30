@@ -62,6 +62,7 @@ public class DictionaryActivity extends AppCompatActivity {
     Button btnAdd;
     private FlashcardManager flashcardManager;
     private String selectedPhoneticsText = null;
+    int page=1;
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,10 +75,10 @@ public class DictionaryActivity extends AppCompatActivity {
             return insets;
         });
 
-        edtWord=findViewById(R.id.edtWord);
-        btnFind=findViewById(R.id.btnFind);
-        wordContainer=findViewById(R.id.WordContainer);
-        dicBacktoExplore= findViewById(R.id.dicBacktoExplore);
+        edtWord = findViewById(R.id.edtWord);
+        btnFind = findViewById(R.id.btnFind);
+        wordContainer = findViewById(R.id.WordContainer);
+        dicBacktoExplore = findViewById(R.id.dicBacktoExplore);
         flashcardManager = new FlashcardManager();
 
         btnFind.setOnClickListener(view -> {
@@ -117,6 +118,7 @@ public class DictionaryActivity extends AppCompatActivity {
             }
         });
     }
+
     private void showDefinition(String word) {
         //btnAdd.setVisibility(View.GONE);
         flashcardManager.fetchWordDefinition(word, new AddFlashCardApiCallback<WordData>() {
@@ -141,8 +143,8 @@ public class DictionaryActivity extends AppCompatActivity {
                     @SuppressLint({"MissingInflatedId", "LocalSuppress"}) LinearLayout phoneticContainer = contentView.findViewById(R.id.phoneticContainer);
                     @SuppressLint({"MissingInflatedId", "LocalSuppress"}) LinearLayout definitionContainer = contentView.findViewById(R.id.definitionContainer);
                     @SuppressLint({"MissingInflatedId", "LocalSuppress"}) LinearLayout partOfSpeechContainer = contentView.findViewById(R.id.partOfSpeechContainer);
-                    btnAdd= contentView.findViewById(R.id.btnAdd);
-                    TextView wordLabel= contentView.findViewById(R.id.wordLabel);
+                    btnAdd = contentView.findViewById(R.id.btnAdd);
+                    TextView wordLabel = contentView.findViewById(R.id.wordLabel);
                     List<AppCompatButton> phoneticButtons = new ArrayList<>();
                     List<AppCompatButton> speechButtons = new ArrayList<>();
                     List<AppCompatButton> definitionButtons = new ArrayList<>();
@@ -177,7 +179,7 @@ public class DictionaryActivity extends AppCompatActivity {
                                 btn.setSelected(true);
                                 btn.setBackgroundResource(R.drawable.btn_item_click);
                                 selectedPhoneticsText = phonetic.getText() != null ? phonetic.getText() : "No phonetics available";
-                                checkEnableAdd(phoneticButtons, definitionButtons, speechButtons, btnAdd,true);
+                                checkEnableAdd(phoneticButtons, definitionButtons, speechButtons, btnAdd, true);
                             });
 
                             phoneticButtons.add(btn);
@@ -215,7 +217,7 @@ public class DictionaryActivity extends AppCompatActivity {
 
                         phoneticContainer.addView(noPhoneticText);
                         selectedPhoneticsText = "No phonetics";
-                        checkEnableAdd(phoneticButtons, definitionButtons, speechButtons, btnAdd,false);
+                        checkEnableAdd(phoneticButtons, definitionButtons, speechButtons, btnAdd, false);
                     }
 
                     // Hiển thị Part of Speech
@@ -252,7 +254,7 @@ public class DictionaryActivity extends AppCompatActivity {
                                     }
                                     btn.setSelected(true);
                                     btn.setBackgroundResource(R.drawable.btn_item_click);
-                                    checkEnableAdd(phoneticButtons, definitionButtons, speechButtons, btnAdd,true);
+                                    checkEnableAdd(phoneticButtons, definitionButtons, speechButtons, btnAdd, true);
                                     // Hiển thị definitions cho part of speech đã chọn
                                     updateDefinitions(definitionContainer, meaning, contentView,
                                             phoneticButtons, definitionButtons, speechButtons);
@@ -271,12 +273,48 @@ public class DictionaryActivity extends AppCompatActivity {
 
                     wordContainer.addView(contentView); // Hiển thị toàn bộ layout thay vì dialog
                     btnAdd.setOnClickListener(v -> {
-                        //List<String> groupNames = getGroupsFromSharedPreferences(this);
-                        int userId = Integer.parseInt(SharedPreferencesManager.getInstance(getApplicationContext()).getID());
-                        fetchFlashcardGroupNames(userId, 1, 4, new ArrayList<>());
+                        String wordflash = word.trim();
+                        int partOfSpeechIndex = getSelectedIndex(speechButtons); // Chỉ mục loại từ
+                        List<Integer> definitionIndices = getSelectedDefinitionIndices(definitionButtons); // Danh sách định nghĩa
 
-                        //showGroupSelectionDialog(groupNames); // Nếu có dữ liệu, hiển thị luôn
+                        if (wordflash.isEmpty()) {
+                            Toast.makeText(DictionaryActivity.this, "Vui lòng nhập từ vựng!", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
+                        int userId = Integer.parseInt(SharedPreferencesManager.getInstance(getApplicationContext()).getID());
+                        Log.d("DEBUG", "wordflash: " + wordflash);
+                        Log.d("DEBUG", "speech: " + partOfSpeechIndex);
+                        Log.d("DEBUG", "definition: " + definitionIndices);
+                        Log.d("DEBUG", "userid: " + userId);
+
+                        flashcardManager.createFlashcard(getApplicationContext(), wordflash, definitionIndices, partOfSpeechIndex, userId, new AddFlashCardApiCallback<String>() {
+                            @Override
+                            public void onSuccess(String flashcardId) { // Lấy ID của flashcard vừa tạo
+                                if (flashcardId == null) {
+                                    runOnUiThread(() -> Toast.makeText(DictionaryActivity.this, "Lỗi tạo flashcard!", Toast.LENGTH_SHORT).show());
+                                    return;
+                                }
+
+                                Log.d("DEBUG", "Flashcard created with ID: " + flashcardId);
+                                List<FlashcardGroup> allGroups = new ArrayList<>();
+                                fetchFlashcardGroupNames(userId, 1, allGroups, Integer.parseInt(flashcardId));
+                            }
+
+                            @Override
+                            public void onSuccess() {
+                            }
+
+                            @Override
+                            public void onFailure(String errorMessage) {
+                                runOnUiThread(() -> {
+                                    Log.e("DEBUG", "API Error: " + errorMessage);
+                                    Toast.makeText(DictionaryActivity.this, "Lỗi tạo flashcard: " + errorMessage, Toast.LENGTH_SHORT).show();
+                                });
+                            }
+                        });
                     });
+
                 });
             }
 
@@ -380,10 +418,11 @@ public class DictionaryActivity extends AppCompatActivity {
             });
         }
     }
+
     private void checkEnableAdd(List<AppCompatButton> phoneticButtons,
-                                 List<AppCompatButton> speechButtons,
-                                 List<AppCompatButton> definitionButtons,
-                                 Button btnAdd,boolean hasPhonetics) {
+                                List<AppCompatButton> speechButtons,
+                                List<AppCompatButton> definitionButtons,
+                                Button btnAdd, boolean hasPhonetics) {
         boolean isPhoneticSelected = false;
         boolean isSpeechSelected = false;
         boolean isDefinitionSelected = false;
@@ -417,41 +456,55 @@ public class DictionaryActivity extends AppCompatActivity {
             btnAdd.setVisibility(View.GONE);
         }
     }
+
     private boolean isVietnamese(String text) {
         return text.matches(".*[aàáảãạăắằẳẵặâấầẩẫậeèéẻẽẹêếềểễệiìíỉĩịoòóỏõọôốồổỗộơớờởỡợuùúủũụưứừửữựyỳýỷỹỵđ].*");
     }
+
     private List<String> getGroupsFromSharedPreferences(Context context) {
         SharedPreferences sharedPreferences = context.getSharedPreferences("FlashcardPrefs", Context.MODE_PRIVATE);
         String json = sharedPreferences.getString("group_list", null);
 
         if (json != null) {
             Gson gson = new Gson();
-            Type type = new TypeToken<List<String>>() {}.getType();
+            Type type = new TypeToken<List<String>>() {
+            }.getType();
             return gson.fromJson(json, type); // Chuyển JSON thành danh sách
         }
         return new ArrayList<>(); // Trả về danh sách rỗng nếu không có dữ liệu
     }
-    private void showGroupSelectionDialog(List<String> groupNames) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Chọn nhóm flashcard: ");
 
-        String[] items = groupNames.toArray(new String[0]);
+    private void showGroupSelectionDialog(List<FlashcardGroup> groups, int flashcardId) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Chọn nhóm flashcard:");
+
+        String[] items = new String[groups.size()];
+        for (int i = 0; i < groups.size(); i++) {
+            items[i] = groups.get(i).getName();
+        }
+
         builder.setItems(items, (dialog, which) -> {
-            String selectedGroup = groupNames.get(which);
-            Toast.makeText(this, "Đã chọn nhóm: " + selectedGroup, Toast.LENGTH_SHORT).show();
+            FlashcardGroup selectedGroup = groups.get(which);
+            int groupId = selectedGroup.getId(); // Lấy ID nhóm
+
+            addFlashcardToGroup(flashcardId, groupId); // Thêm flashcard vào nhóm
         });
 
         builder.setNegativeButton("Hủy", (dialog, which) -> dialog.dismiss());
         builder.show();
     }
-//    private void fetchAllFlashcardGroups() {
+
+    //    private void fetchAllFlashcardGroups() {
 //        int userId = Integer.parseInt(SharedPreferencesManager.getInstance(getApplicationContext()).getID());
 //        List<FlashcardGroup> allGroups = new ArrayList<>();
 //        fetchFlashcardGroupNames(userId, 1, 4, allGroups);
 //    }
+    private void fetchFlashcardGroupNames(int userId, int page, List<FlashcardGroup> allGroups, int flashcardId) {
+        //userId = Integer.parseInt(SharedPreferencesManager.getInstance(getApplicationContext()).getID());
+        Log.d("API_CALL", "Fetching groups: userId=" + userId + ", page=" + page); // Kiểm tra API có bị gọi sai không
 
-    private void fetchFlashcardGroupNames(int userId, int page, int size, List<String> allGroupNames) {
-        flashcardManager.fetchFlashcardGroups(this, userId, page, size, new FlashcardApiCallback() {
+        Log.d("DEBUG", "UserID khi gọi API: " + userId);
+        flashcardManager.fetchFlashcardGroups(getApplicationContext(), userId, page, 4, new FlashcardApiCallback() {
             @Override
             public void onSuccess(Object response) {
 
@@ -464,19 +517,20 @@ public class DictionaryActivity extends AppCompatActivity {
 
             @Override
             public void onSuccess(FlashcardGroupResponse response) {
-                if (response != null && response.getData() != null && response.getData().getContent() != null) {
-                    List<FlashcardGroup> groups = response.getData().getContent();
-                    for (FlashcardGroup group : groups) {
-                        allGroupNames.add(group.getName());
-                    }
+                if (response == null || response.getData() == null || response.getData().getContent() == null) {
+                    Log.e("API_ERROR", "Response is null or invalid");
+                    return;
+                }
 
-                    // Kiểm tra xem còn trang tiếp theo không
-                    if (groups.size() == size) {
-                        fetchFlashcardGroupNames(userId, page + 1, size, allGroupNames);
-                    } else {
-                        // Khi lấy xong toàn bộ dữ liệu, hiển thị dialog trên UI thread
-                        runOnUiThread(() -> showGroupSelectionDialog(allGroupNames));
-                    }
+                List<FlashcardGroup> groups = response.getData().getContent();
+                allGroups.addAll(groups);
+                Log.d("API_RESPONSE", "Page " + page + " returned " + groups.size() + " groups");
+
+                if (groups.size() == 4) {
+                    fetchFlashcardGroupNames(userId, page + 1, allGroups, flashcardId); // Gọi trang tiếp theo
+                } else {
+                    Log.d("API_RESPONSE", "Fetched all groups: " + allGroups.size());
+                    runOnUiThread(() -> showGroupSelectionDialog(allGroups, flashcardId));
                 }
             }
 
@@ -492,10 +546,51 @@ public class DictionaryActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(String errorMessage) {
-                Log.e("FlashcardGroups", "Lỗi khi lấy danh sách nhóm: " + errorMessage);
+                runOnUiThread(() -> {
+                    Log.e("API_ERROR", "Lỗi khi lấy danh sách nhóm: " + errorMessage);
+                    Toast.makeText(DictionaryActivity.this, "Lỗi lấy nhóm: " + errorMessage, Toast.LENGTH_LONG).show();
+                });
             }
         });
     }
 
+    private int getSelectedIndex(List<AppCompatButton> buttons) {
+        for (int i = 0; i < buttons.size(); i++) {
+            if (buttons.get(i).isSelected()) {
+                return i;
+            }
+        }
+        return -1; // Không có nút nào được chọn
+    }
+    private List<Integer> getSelectedDefinitionIndices(List<AppCompatButton> buttons) {
+        List<Integer> indices = new ArrayList<>();
+        for (int i = 0; i < buttons.size(); i++) {
+            if (buttons.get(i).isSelected()) {
+                indices.add(i);
+            }
+        }
+        return indices;
+    }
+    private void addFlashcardToGroup(int flashcardId, int groupId) {
+        flashcardManager.addFlashcardToGroup(flashcardId, groupId, new AddFlashCardApiCallback<String>() {
+            @Override
+            public void onSuccess(String result) {
+                runOnUiThread(() -> {
+                    Toast.makeText(DictionaryActivity.this, "Thêm flashcard vào nhóm thành công!", Toast.LENGTH_SHORT).show();
+                });
+            }
+
+            @Override
+            public void onSuccess() {}
+
+            @Override
+            public void onFailure(String errorMessage) {
+                runOnUiThread(() -> {
+                    Log.e("DEBUG", "API Error: " + errorMessage);
+                    Toast.makeText(DictionaryActivity.this, "Lỗi thêm vào nhóm: " + errorMessage, Toast.LENGTH_SHORT).show();
+                });
+            }
+        });
+    }
 
 }

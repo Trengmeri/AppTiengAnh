@@ -390,7 +390,6 @@ public class FlashcardActivity extends AppCompatActivity {
                                 }
 
                                 Log.d("DEBUG", "Flashcard created with ID: " + flashcardId);
-                                //int groupID = Integer.parseInt(SharedPreferencesManager.getInstance(getApplicationContext()).getID());
                                 int groupId = getIntent().getIntExtra("GROUP_ID", -1);
                                 Log.d("GroupID:", "Group ID duoc goi :"+ groupId);
                                 //  Gọi API để thêm flashcard vào nhóm

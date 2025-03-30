@@ -107,7 +107,7 @@
             android:id="@+id/btnAdd"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:backgroundTint="#BC6136"
+            android:backgroundTint="#BC725F"
             android:text="Add to my flashcards"
             android:textColor="#FFFFFF"
             android:textColorLink="#9E3A00"
