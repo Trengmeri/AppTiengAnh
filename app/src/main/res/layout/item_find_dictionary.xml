@@ -7,14 +7,21 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:padding="16dp">
-
+        <TextView
+            android:id="@+id/wordLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="@color/black" />
         <TextView
             android:id="@+id/phoneticLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Phonetic:"
             android:textSize="16sp"
-            android:textStyle="bold"/>
+            android:textStyle="bold"
+            android:textColor="@color/black"/>
 
         <HorizontalScrollView
             android:layout_width="match_parent"
@@ -37,7 +44,8 @@
             android:layout_height="wrap_content"
             android:text="Part of Speech:"
             android:textSize="16sp"
-            android:textStyle="bold"/>
+            android:textStyle="bold"
+            android:textColor="@color/black"/>
 
         <HorizontalScrollView
             android:layout_width="match_parent"
@@ -60,9 +68,10 @@
             android:layout_height="wrap_content"
             android:text="Definition:"
             android:textSize="16sp"
-            android:textStyle="bold"/>
+            android:textStyle="bold"
+            android:textColor="@color/black"/>
 
-        <ScrollView
+        <androidx.core.widget.NestedScrollView
             android:id="@+id/definitionScrollView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -76,7 +85,7 @@
                 android:orientation="vertical"
                 android:padding="8dp"
                 android:layout_marginBottom="8dp"/>
-        </ScrollView>
+        </androidx.core.widget.NestedScrollView>
 
         <TextView
             android:id="@+id/vietnameseMeaningLabel"
@@ -84,13 +93,15 @@
             android:layout_height="wrap_content"
             android:text="Vietnamese Meaning:"
             android:textSize="16sp"
-            android:textStyle="bold"/>
+            android:textStyle="bold"
+            android:textColor="@color/black"/>
 
         <TextView
             android:id="@+id/vietnameseMeaningTextView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="8dp"
+            android:background="#F6F1F1"
             android:layout_marginBottom="16dp"/>
     </LinearLayout>
 </ScrollView>

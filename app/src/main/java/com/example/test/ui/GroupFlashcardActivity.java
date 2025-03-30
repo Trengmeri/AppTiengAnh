@@ -365,7 +365,7 @@ public class GroupFlashcardActivity extends AppCompatActivity {
     private void fetchFlashcardGroups(int page) {
         //groupContainer.removeAllViews(); // Xóa danh sách cũ
         int userId = Integer.parseInt(SharedPreferencesManager.getInstance(getApplicationContext()).getID());
-        flashcardManager.fetchFlashcardGroups(userId, page,4, new FlashcardApiCallback() {
+        flashcardManager.fetchFlashcardGroups(this,userId, page,4, new FlashcardApiCallback() {
             @Override
             public void onSuccess(Object response) {
 

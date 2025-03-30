@@ -1,6 +1,9 @@
 package com.example.test.ui;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.TypedValue;
@@ -24,16 +27,26 @@ import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.core.widget.NestedScrollView;
 
 import com.example.test.R;
+import com.example.test.SharedPreferencesManager;
 import com.example.test.api.AddFlashCardApiCallback;
+import com.example.test.api.FlashcardApiCallback;
 import com.example.test.api.FlashcardManager;
 import com.example.test.model.Definition;
 import com.example.test.model.Meaning;
 import com.example.test.model.Phonetic;
 import com.example.test.model.WordData;
+import com.example.test.response.ApiResponseFlashcard;
+import com.example.test.response.ApiResponseFlashcardGroup;
+import com.example.test.response.ApiResponseOneFlashcard;
+import com.example.test.response.FlashcardGroupResponse;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,6 +56,7 @@ public class DictionaryActivity extends AppCompatActivity {
     ImageView btnFind;
     LinearLayout wordContainer;
     TextView dicBacktoExplore;
+    Button btnAdd;
     private FlashcardManager flashcardManager;
     @SuppressLint("MissingInflatedId")
     @Override
@@ -60,15 +74,42 @@ public class DictionaryActivity extends AppCompatActivity {
         btnFind=findViewById(R.id.btnFind);
         wordContainer=findViewById(R.id.WordContainer);
         dicBacktoExplore= findViewById(R.id.dicBacktoExplore);
+        btnAdd= findViewById(R.id.btnAdd);
         flashcardManager = new FlashcardManager();
+        btnAdd.setOnClickListener(v -> {
+            List<String> groupNames = getGroupsFromSharedPreferences(this);
+            showGroupSelectionDialog(groupNames); // Nếu có dữ liệu, hiển thị luôn
+        });
 
-        btnFind.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String word = edtWord.getText().toString().trim();
+        btnFind.setOnClickListener(view -> {
+            String word = edtWord.getText().toString().trim();
+
+            if (isVietnamese(word)) {
+                flashcardManager.translateToEnglish(word, new AddFlashCardApiCallback<String>() {
+                    @Override
+                    public void onSuccess() {
+
+                    }
+
+                    @Override
+                    public void onSuccess(String translatedWord) {
+                        runOnUiThread(() -> {
+                            showDefinition(translatedWord); // Tìm kiếm nghĩa tiếng Anh
+                        });
+                    }
+
+                    @Override
+                    public void onFailure(String errorMessage) {
+                        runOnUiThread(() ->
+                                Toast.makeText(DictionaryActivity.this, "Dịch lỗi: " + errorMessage, Toast.LENGTH_SHORT).show()
+                        );
+                    }
+                });
+            } else {
                 showDefinition(word);
             }
         });
+
 
         dicBacktoExplore.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -78,6 +119,7 @@ public class DictionaryActivity extends AppCompatActivity {
         });
     }
     private void showDefinition(String word) {
+        btnAdd.setVisibility(View.GONE);
         flashcardManager.fetchWordDefinition(word, new AddFlashCardApiCallback<WordData>() {
             @Override
             public void onSuccess() {
@@ -95,11 +137,12 @@ public class DictionaryActivity extends AppCompatActivity {
                     @SuppressLint({"MissingInflatedId", "LocalSuppress"}) LinearLayout phoneticContainer = contentView.findViewById(R.id.phoneticContainer);
                     @SuppressLint({"MissingInflatedId", "LocalSuppress"}) LinearLayout definitionContainer = contentView.findViewById(R.id.definitionContainer);
                     @SuppressLint({"MissingInflatedId", "LocalSuppress"}) LinearLayout partOfSpeechContainer = contentView.findViewById(R.id.partOfSpeechContainer);
-
+                    TextView wordLabel= contentView.findViewById(R.id.wordLabel);
                     List<AppCompatButton> phoneticButtons = new ArrayList<>();
                     List<AppCompatButton> speechButtons = new ArrayList<>();
                     List<AppCompatButton> definitionButtons = new ArrayList<>();
-
+                    wordLabel.setVisibility(View.VISIBLE);
+                    wordLabel.setText("Word: " + wordData.getWord());
                     // Hiển thị phonetics
                     if (wordData.getPhonetics() != null && !wordData.getPhonetics().isEmpty()) {
                         for (Phonetic phonetic : wordData.getPhonetics()) {
@@ -126,6 +169,7 @@ public class DictionaryActivity extends AppCompatActivity {
                                 }
                                 btn.setSelected(true);
                                 btn.setBackgroundResource(R.drawable.btn_item_click);
+                                checkEnableAdd(phoneticButtons, definitionButtons, speechButtons, btnAdd,true);
                             });
 
                             phoneticButtons.add(btn);
@@ -169,6 +213,7 @@ public class DictionaryActivity extends AppCompatActivity {
                                     }
                                     btn.setSelected(true);
                                     btn.setBackgroundResource(R.drawable.btn_item_click);
+                                    checkEnableAdd(phoneticButtons, definitionButtons, speechButtons, btnAdd,true);
                                     // Hiển thị definitions cho part of speech đã chọn
                                     updateDefinitions(definitionContainer, meaning, contentView,
                                             phoneticButtons, definitionButtons, speechButtons);
@@ -203,7 +248,7 @@ public class DictionaryActivity extends AppCompatActivity {
                                    List<AppCompatButton> speechButtons) {
 
         definitionContainer.removeAllViews();
-        ScrollView definitionScrollView = dialogView.findViewById(R.id.definitionScrollView);
+        NestedScrollView definitionScrollView = dialogView.findViewById(R.id.definitionScrollView);
 
         int numberOfButtons = 0;
         if (meaning.getDefinitions() != null) {
@@ -275,6 +320,7 @@ public class DictionaryActivity extends AppCompatActivity {
                     }
                     btn.setSelected(true);
                     btn.setBackgroundResource(R.drawable.btn_item_def_click);
+                    checkEnableAdd(phoneticButtons, definitionButtons, speechButtons, btnAdd, true);
                 });
                 definitionButtons.add(btn);
                 definitionContainer.addView(btn);
@@ -287,4 +333,69 @@ public class DictionaryActivity extends AppCompatActivity {
             });
         }
     }
+    private void checkEnableAdd(List<AppCompatButton> phoneticButtons,
+                                 List<AppCompatButton> speechButtons,
+                                 List<AppCompatButton> definitionButtons,
+                                 Button btnAdd,boolean hasPhonetics) {
+        boolean isPhoneticSelected = false;
+        boolean isSpeechSelected = false;
+        boolean isDefinitionSelected = false;
+
+        // Kiểm tra xem có ít nhất một nút được chọn trong mỗi nhóm không
+        if (hasPhonetics) {
+            for (AppCompatButton btn : phoneticButtons) {
+                if (btn.isSelected()) {
+                    isPhoneticSelected = true;
+                    break;
+                }
+            }
+        }
+        for (AppCompatButton btn : speechButtons) {
+            if (btn.isSelected()) {
+                isSpeechSelected = true;
+                break;
+            }
+        }
+        for (AppCompatButton btn : definitionButtons) {
+            if (btn.isSelected()) {
+                isDefinitionSelected = true;
+                break;
+            }
+        }
+
+        // Nếu cả 3 nhóm đều có nút được chọn, kích hoạt nút Done
+        if (isPhoneticSelected && isSpeechSelected && isDefinitionSelected) {
+            btnAdd.setVisibility(View.VISIBLE);
+        } else {
+            btnAdd.setVisibility(View.GONE);
+        }
+    }
+    private boolean isVietnamese(String text) {
+        return text.matches(".*[aàáảãạăắằẳẵặâấầẩẫậeèéẻẽẹêếềểễệiìíỉĩịoòóỏõọôốồổỗộơớờởỡợuùúủũụưứừửữựyỳýỷỹỵđ].*");
+    }
+    private List<String> getGroupsFromSharedPreferences(Context context) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences("FlashcardPrefs", Context.MODE_PRIVATE);
+        String json = sharedPreferences.getString("group_list", null);
+
+        if (json != null) {
+            Gson gson = new Gson();
+            Type type = new TypeToken<List<String>>() {}.getType();
+            return gson.fromJson(json, type); // Chuyển JSON thành danh sách
+        }
+        return new ArrayList<>(); // Trả về danh sách rỗng nếu không có dữ liệu
+    }
+    private void showGroupSelectionDialog(List<String> groupNames) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Chọn nhóm flashcard: ");
+
+        String[] items = groupNames.toArray(new String[0]);
+        builder.setItems(items, (dialog, which) -> {
+            String selectedGroup = groupNames.get(which);
+            Toast.makeText(this, "Đã chọn nhóm: " + selectedGroup, Toast.LENGTH_SHORT).show();
+        });
+
+        builder.setNegativeButton("Hủy", (dialog, which) -> dialog.dismiss());
+        builder.show();
+    }
+
 }

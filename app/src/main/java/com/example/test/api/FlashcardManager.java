@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.example.test.SharedPreferencesManager;
+import com.example.test.model.FlashcardGroup;
 import com.example.test.response.ApiResponseFlashcard;
 import com.example.test.response.ApiResponseFlashcardGroup;
 import com.example.test.response.ApiResponseOneFlashcard;
@@ -21,6 +22,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -37,7 +39,7 @@ public class FlashcardManager extends BaseApiManager {
         gson = new Gson();
     }
 
-    public void fetchFlashcardGroups(int userId, int page,int size, FlashcardApiCallback callback) {
+    public void fetchFlashcardGroups(Context context,int userId, int page,int size, FlashcardApiCallback callback) {
         String url = BASE_URL + "/api/v1/flashcard-groups/user/" + userId + "?page=" + page+ "&size=" + size;
         Request request = new Request.Builder()
                 .url(url)
@@ -50,6 +52,20 @@ public class FlashcardManager extends BaseApiManager {
                     String responseBody = response.body().string();
                     FlashcardGroupResponse apiResponse = gson.fromJson(responseBody, FlashcardGroupResponse.class);
                     callback.onSuccess(apiResponse);
+                    // Trích xuất danh sách tên nhóm và gọi phương thức mới
+                    List<String> groupNames = new ArrayList<>();
+                    if (apiResponse != null && apiResponse.getData() != null) {
+                        for (FlashcardGroup group : apiResponse.getData().getContent()) {
+                            groupNames.add(group.getName());
+                        }
+                    }
+                    SharedPreferences sharedPreferences = context.getSharedPreferences("FlashcardPrefs", Context.MODE_PRIVATE);
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+
+                    Gson gson = new Gson();
+                    String json = gson.toJson(groupNames); // Chuyển danh sách thành chuỗi JSON
+                    editor.putString("group_list", json);
+                    editor.apply();
                 } else {
                     callback.onFailure("Error: " + response.code());
                 }
@@ -582,6 +598,45 @@ public class FlashcardManager extends BaseApiManager {
                     Log.e("FlashcardManager", "Error parsing JSON response", e);
                     callback.onFailure("Error parsing response: " + e.getMessage());
                 }
+            }
+        });
+    }
+
+    public void translateToEnglish(String vietnameseWord, AddFlashCardApiCallback<String> callback) {
+        String url = BASE_URL + "/api/v1/dictionary/translate/en/" + vietnameseWord;
+
+        Request request = new Request.Builder()
+                .url(url)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onResponse(Call call, Response response) {
+                try {
+                    if (response.isSuccessful() && response.body() != null) {
+                        String responseBody = response.body().string();
+                        Log.d("API_RESPONSE", "Response JSON: " + responseBody);
+
+                        JSONObject jsonObject = new JSONObject(responseBody);
+                        if (jsonObject.has("data")) {
+                            String translatedWord = jsonObject.getString("data").trim();
+                            callback.onSuccess(translatedWord);
+                        } else {
+                            callback.onFailure("Invalid response format");
+                        }
+                    } else {
+                        callback.onFailure("Error: " + response.code() + " - " + response.message());
+                    }
+                } catch (IOException | JSONException e) {
+                    callback.onFailure("Parsing error: " + e.getMessage());
+                } finally {
+                    response.close();
+                }
+            }
+
+            @Override
+            public void onFailure(Call call, IOException e) {
+                callback.onFailure("Network error: " + e.getMessage());
             }
         });
     }
