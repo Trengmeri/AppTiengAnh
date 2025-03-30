@@ -86,6 +86,7 @@ public class FlashcardActivity extends AppCompatActivity {
     private List<Flashcard> allFlashcards = new ArrayList<>(); // Lưu trữ tất cả flashcard khi sort
     private boolean isSorted = false; // Trạng thái sort
     private List<Flashcard> filteredFlashcards = new ArrayList<>(); // Danh sách đã lọc theo learned/unlearned
+    private String currentSortType = "";
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -404,12 +405,17 @@ public class FlashcardActivity extends AppCompatActivity {
                                         runOnUiThread(() -> {
                                             // Tính toán trang chứa flashcard mới
                                             //int newTotalFlashcards = totalFlashcard;
+                                            if (isSorted) {
+                                                // Nếu đang sort, làm mới toàn bộ danh sách từ API
+                                                fetchAllFlashcards(groupId, currentSortType);
+                                            }else{
                                             int newTotalPages = (int) Math.ceil((double) totalFlashcard / pageSize);
                                             int newPage = newTotalPages; // Flashcard mới nằm ở trang cuối
 
                                             // Chuyển đến trang mới chứa flashcard
                                             currentPage = newPage;
                                             fetchFlashcards(groupId, currentPage);
+                                            }
                                             updateButtonState(); // Cập nhật trạng thái nút
 
                                             //Toast.makeText(FlashcardActivity.this, "Thêm flashcard thành công!", Toast.LENGTH_SHORT).show();
@@ -668,7 +674,8 @@ public class FlashcardActivity extends AppCompatActivity {
 
         popupMenu.setOnMenuItemClickListener(item -> {
             // Khi chọn sort, lấy tất cả flashcard trước
-            fetchAllFlashcards(groupId, item.getTitle().toString());
+            currentSortType = item.getTitle().toString();
+            fetchAllFlashcards(groupId, currentSortType);
             return true;
         });
 
@@ -689,6 +696,7 @@ public class FlashcardActivity extends AppCompatActivity {
                 runOnUiThread(() -> {
                     if (response.getData() != null && response.getData().getContent() != null) {
                         allFlashcards.addAll(response.getData().getContent());
+                        totalFlashcard = allFlashcards.size(); // Cập nhật tổng số flashcard
                         sortAndFilterFlashcards(sortType);
                         isSorted = true;
                         currentPage = 1;
