@@ -35,6 +35,7 @@ import com.example.test.api.AddFlashCardApiCallback;
 import com.example.test.api.FlashcardApiCallback;
 import com.example.test.api.FlashcardManager;
 import com.example.test.model.Definition;
+import com.example.test.model.FlashcardGroup;
 import com.example.test.model.Meaning;
 import com.example.test.model.Phonetic;
 import com.example.test.model.WordData;
@@ -77,8 +78,11 @@ public class DictionaryActivity extends AppCompatActivity {
         btnAdd= findViewById(R.id.btnAdd);
         flashcardManager = new FlashcardManager();
         btnAdd.setOnClickListener(v -> {
-            List<String> groupNames = getGroupsFromSharedPreferences(this);
-            showGroupSelectionDialog(groupNames); // Nếu có dữ liệu, hiển thị luôn
+            //List<String> groupNames = getGroupsFromSharedPreferences(this);
+            int userId = Integer.parseInt(SharedPreferencesManager.getInstance(getApplicationContext()).getID());
+            fetchFlashcardGroupNames(userId, 1, 4, new ArrayList<>());
+
+            //showGroupSelectionDialog(groupNames); // Nếu có dữ liệu, hiển thị luôn
         });
 
         btnFind.setOnClickListener(view -> {
@@ -397,5 +401,58 @@ public class DictionaryActivity extends AppCompatActivity {
         builder.setNegativeButton("Hủy", (dialog, which) -> dialog.dismiss());
         builder.show();
     }
+//    private void fetchAllFlashcardGroups() {
+//        int userId = Integer.parseInt(SharedPreferencesManager.getInstance(getApplicationContext()).getID());
+//        List<FlashcardGroup> allGroups = new ArrayList<>();
+//        fetchFlashcardGroupNames(userId, 1, 4, allGroups);
+//    }
+
+    private void fetchFlashcardGroupNames(int userId, int page, int size, List<String> allGroupNames) {
+        flashcardManager.fetchFlashcardGroups(this, userId, page, size, new FlashcardApiCallback() {
+            @Override
+            public void onSuccess(Object response) {
+
+            }
+
+            @Override
+            public void onSuccess(ApiResponseFlashcardGroup response) {
+
+            }
+
+            @Override
+            public void onSuccess(FlashcardGroupResponse response) {
+                if (response != null && response.getData() != null && response.getData().getContent() != null) {
+                    List<FlashcardGroup> groups = response.getData().getContent();
+                    for (FlashcardGroup group : groups) {
+                        allGroupNames.add(group.getName());
+                    }
+
+                    // Kiểm tra xem còn trang tiếp theo không
+                    if (groups.size() == size) {
+                        fetchFlashcardGroupNames(userId, page + 1, size, allGroupNames);
+                    } else {
+                        // Khi lấy xong toàn bộ dữ liệu, hiển thị dialog trên UI thread
+                        runOnUiThread(() -> showGroupSelectionDialog(allGroupNames));
+                    }
+                }
+            }
+
+            @Override
+            public void onSuccess(ApiResponseFlashcard response) {
+
+            }
+
+            @Override
+            public void onSuccess(ApiResponseOneFlashcard response) {
+
+            }
+
+            @Override
+            public void onFailure(String errorMessage) {
+                Log.e("FlashcardGroups", "Lỗi khi lấy danh sách nhóm: " + errorMessage);
+            }
+        });
+    }
+
 
 }
