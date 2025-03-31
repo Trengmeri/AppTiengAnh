@@ -2,6 +2,7 @@ package com.example.test.api;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.text.Html;
 import android.util.Log;
 
 import com.example.test.SharedPreferencesManager;
@@ -287,9 +288,19 @@ public class FlashcardManager extends BaseApiManager {
     // Phương thức để dịch nghĩa
     public void translateDefinition(String definition, AddFlashCardApiCallback<String> callback) throws UnsupportedEncodingException {
         try {
-        String sanitizedDefinition = definition.replace(";", " ");
-        String encodedText = URLEncoder.encode(sanitizedDefinition, StandardCharsets.UTF_8.toString());
-        String url = BASE_URL + "/api/v1/dictionary/translate/vi/" + encodedText;
+            if (definition == null || definition.trim().isEmpty()) {
+                callback.onFailure("Definition is null or empty");
+                return;
+            }
+
+            String sanitizedDefinition = definition
+                    .replace(";", " ") // Thay dấu chấm phẩy bằng khoảng trắng
+                    .replaceAll("[\\n\\r\\t]", " ") // Thay ký tự xuống dòng, tab bằng khoảng trắng
+                    .trim(); // Xóa khoảng trắng thừa
+
+            // Mã hóa chuỗi để gửi qua URL
+            String encodedText = URLEncoder.encode(sanitizedDefinition, StandardCharsets.UTF_8.toString());
+            String url = BASE_URL + "/api/v1/dictionary/translate/vi/" + encodedText;
 
             Request request = new Request.Builder()
                     .url(url)
@@ -302,10 +313,22 @@ public class FlashcardManager extends BaseApiManager {
                         if (response.isSuccessful() && response.body() != null) {
                             String responseBody = response.body().string();
                             Log.d("API_RESPONSE", "Response JSON: " + responseBody);
-                            String vietnameseMeaning = parseJson(responseBody)
-                                    .replaceAll("\\+\\+", ",") // Thay "++" bằng ","
+
+                            String vietnameseMeaning = parseJson(responseBody);
+
+                            vietnameseMeaning = Html.fromHtml(vietnameseMeaning).toString();
+
+                            vietnameseMeaning = vietnameseMeaning
+                                    .replaceAll("\\+\\+", ",") // Thay "++" bằng dấu phẩy
                                     .replaceAll("\\+\\s*", " ") // Thay "+" còn lại bằng khoảng trắng
-                                    .trim();
+                                    .replaceAll("[\\n\\r\\t]", " ") // Thay ký tự xuống dòng, tab bằng khoảng trắng
+                                    .replaceAll("\\s+", " ") // Thay nhiều khoảng trắng bằng một khoảng trắng
+                                    .trim(); // Xóa khoảng trắng thừa
+
+                            if (vietnameseMeaning.contains("hoặc") && !vietnameseMeaning.contains("hoặc một")) {
+                                vietnameseMeaning = vietnameseMeaning.replace("hoặc", "hoặc một");
+                            }
+
                             callback.onSuccess(vietnameseMeaning);
                         } else {
                             callback.onFailure("Error: " + response.code() + " - " + response.message());
@@ -316,14 +339,16 @@ public class FlashcardManager extends BaseApiManager {
                         response.close(); // Đóng Response để tránh rò rỉ bộ nhớ
                     }
                 }
+
                 @Override
                 public void onFailure(Call call, IOException e) {
                     callback.onFailure("Network error: " + e.getMessage());
-                    e.printStackTrace(); // In lỗi ra console để debug
+                    e.printStackTrace();
                 }
             });
         } catch (Exception e) {
             callback.onFailure("Encoding error: " + e.getMessage());
+            e.printStackTrace();
         }
     }
     public void createFlashcard(Context context,String word, List<Integer> definitionIndices, int partOfSpeechIndex, int userId, AddFlashCardApiCallback<String> callback) {
