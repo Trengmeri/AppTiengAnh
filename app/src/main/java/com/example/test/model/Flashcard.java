@@ -1,5 +1,7 @@
 package com.example.test.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -10,7 +12,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-public class Flashcard {
+public class Flashcard implements Parcelable {
     private int id;
     private String word;
     private String definitions;
@@ -112,8 +114,18 @@ public class Flashcard {
     public String getLastReviewed() {
         return lastReviewed;
     }
-    public static String timeAgo(String lastReviewed) {
-        Instant lastTime = Instant.parse(lastReviewed);
+    public String timeAgo(String lastReviewed) {
+        if (lastReviewed == null || lastReviewed.isEmpty()) {
+            return "Just now";
+        }
+        Instant lastTime;
+        try {
+            lastTime = Instant.parse(lastReviewed);
+            // Tiếp tục xử lý thời gian
+        } catch (Exception e) {
+            Log.e("DEBUG", "Lỗi parse timestamp: " + e.getMessage());
+            return "Lỗi thời gian";
+        }
         Instant now = Instant.now();
         Duration duration = Duration.between(lastTime, now);
         long minutesAgo = duration.toMinutes();
@@ -158,4 +170,51 @@ public class Flashcard {
     public void setVietNameseMeaning(String vietNameseMeaning) {
         this.vietNameseMeaning = vietNameseMeaning;
     }
+
+    // ** Parcelable Implementation **
+    protected Flashcard(Parcel in) {
+        id = in.readInt();
+        word = in.readString();
+        definitions = in.readString();
+        partOfSpeech = in.readString();
+        phoneticText = in.readString();
+        phoneticAudio = in.readString();
+        addedDate = in.readString();
+        lastReviewed = in.readString();
+        examples = in.readString();
+        learnedStatus = in.readByte() != 0;
+        vietNameseMeaning = in.readString();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(id);
+        dest.writeString(word);
+        dest.writeString(definitions);
+        dest.writeString(partOfSpeech);
+        dest.writeString(phoneticText);
+        dest.writeString(phoneticAudio);
+        dest.writeString(addedDate);
+        dest.writeString(lastReviewed);
+        dest.writeString(examples);
+        dest.writeByte((byte) (learnedStatus ? 1 : 0));
+        dest.writeString(vietNameseMeaning);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Creator<Flashcard> CREATOR = new Creator<Flashcard>() {
+        @Override
+        public Flashcard createFromParcel(Parcel in) {
+            return new Flashcard(in);
+        }
+
+        @Override
+        public Flashcard[] newArray(int size) {
+            return new Flashcard[size];
+        }
+    };
 }

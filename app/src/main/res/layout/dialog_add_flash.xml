@@ -5,8 +5,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_gravity="center"
     android:background="@android:color/transparent"
-    app:cardCornerRadius="22dp"
-    app:cardElevation="8dp">
+    app:cardCornerRadius="22dp">
 
     <LinearLayout
         android:layout_width="340dp"
@@ -28,6 +27,7 @@
                 android:id="@+id/edtFlashName"
                 android:layout_width="230dp"
                 android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
                 android:hint="@string/EnterWord"
                 android:padding="10dp"/>
 <!--            <ImageView-->
@@ -37,74 +37,6 @@
 <!--                android:background="@drawable/icon_search"-->
 <!--                android:layout_gravity="center"/>-->
         </LinearLayout>
-<!--        &lt;!&ndash;Phat am&ndash;&gt;-->
-<!--        <LinearLayout-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:orientation="horizontal"-->
-<!--            android:layout_marginTop="8dp"-->
-<!--            >-->
-
-<!--            <TextView-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:text="Phonetic: "-->
-<!--                android:textColor="@color/black"-->
-<!--                android:textSize="18sp"-->
-<!--                android:layout_gravity="center"/>-->
-<!--            <Spinner-->
-<!--                android:id="@+id/spinner_phonetic"-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                />-->
-<!--        </LinearLayout>-->
-<!--&lt;!&ndash;        Định nghĩa TA&ndash;&gt;-->
-<!--        <LinearLayout-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:orientation="horizontal"-->
-<!--            android:layout_marginTop="8dp"-->
-<!--            >-->
-
-<!--            <TextView-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:text="Definition: "-->
-<!--                android:textColor="@color/black"-->
-<!--                android:textSize="18sp"-->
-<!--                android:layout_gravity="center"/>-->
-<!--            <Spinner-->
-<!--                android:id="@+id/spinner_def"-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                />-->
-
-
-<!--        </LinearLayout>-->
-<!--        &lt;!&ndash;        Định nghĩa TV&ndash;&gt;-->
-<!--        <LinearLayout-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:orientation="horizontal"-->
-<!--            android:layout_marginTop="8dp"-->
-<!--            >-->
-<!--            <TextView-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:text="Meaning: "-->
-<!--                android:textColor="@color/black"-->
-<!--                android:textSize="18sp"-->
-<!--                android:layout_gravity="center"/>-->
-<!--            <Spinner-->
-<!--                android:id="@+id/spinner_meaning"-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                />-->
-<!--        </LinearLayout>-->
-
-
-
-
 
         <LinearLayout
             android:layout_width="wrap_content"

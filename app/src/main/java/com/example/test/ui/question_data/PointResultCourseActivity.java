@@ -3,6 +3,7 @@ package com.example.test.ui.question_data;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -48,6 +49,9 @@ public class PointResultCourseActivity extends AppCompatActivity {
     private Set<Integer> addedResultIds = new HashSet<>();
     private int enrollmentId, courseID;
     private String status;
+    private Handler handler = new Handler();
+    private Runnable callApiRunnable;
+    private static final int DELAY_MILLIS = 2500; // 5 giây
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +71,8 @@ public class PointResultCourseActivity extends AppCompatActivity {
 
         btnNext.setOnClickListener(v -> {
             Intent intent = new Intent(PointResultCourseActivity.this, HomeActivity.class);
+            intent.putExtra("targetPage", 0);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
             startActivity(intent);
         });
     }
@@ -257,85 +263,9 @@ public class PointResultCourseActivity extends AppCompatActivity {
     }
 
     private void updateUI(String skillType, double complete, int totalPoints, int resultId, int enrollmentId) {
-        if(status.equals("study")){
-            resultManager.calculateEnrollment(enrollmentId, new ApiCallback<Enrollment>(){
-
-                @Override
-                public void onSuccess() {}
-
-                @Override
-                public void onSuccess(Enrollment enrollment) {
-                    compCourse = enrollment.getComLevel();
-                    coursePoint = enrollment.getTotalPoints();
-                    runOnUiThread(() -> {
-                        if (compCourse > 90) {
-                            star3.setBackgroundTintList(getResources().getColorStateList(R.color.yellow));
-                        }
-                        if (compCourse > 60) {
-                            star2.setBackgroundTintList(getResources().getColorStateList(R.color.yellow));
-                        }
-                        if (compCourse > 30) {
-                            star1.setBackgroundTintList(getResources().getColorStateList(R.color.yellow));
-                        }
-                        pointTextView.setText(String.valueOf(coursePoint));
-                    });
-                }
-
-                @Override
-                public void onFailure(String errorMessage) {
-
-                }
-            });
-        } else {
-            apiService.completeTest(enrollmentId, new ApiCallback() {
-                @Override
-                public void onSuccess() {
-                    resultManager.getEnrollment(courseID, new ApiCallback<Enrollment>() {
-                        @Override
-                        public void onSuccess() {
-
-                        }
-
-                        @Override
-                        public void onSuccess(Enrollment enrollment) {
-                            compCourse = enrollment.getComLevel();
-                            coursePoint = enrollment.getTotalPoints();
-                            runOnUiThread(() -> {
-                                btnReview.setVisibility(View.GONE);
-                                if (compCourse > 90) {
-                                    star3.setBackgroundTintList(getResources().getColorStateList(R.color.yellow));
-                                }
-                                if (compCourse > 60) {
-                                    star2.setBackgroundTintList(getResources().getColorStateList(R.color.yellow));
-                                }
-                                if (compCourse > 30) {
-                                    star1.setBackgroundTintList(getResources().getColorStateList(R.color.yellow));
-                                }
-                                pointTextView.setText(String.valueOf(coursePoint));
-                            });
-                        }
-
-                        @Override
-                        public void onFailure(String errorMessage) {
-
-                        }
-                    });
-                }
-
-                @Override
-                public void onSuccess(Object result) {
-
-                }
-
-                @Override
-                public void onFailure(String errorMessage) {
-
-                }
-            });
-        }
         runOnUiThread(() -> {
-            if (!addedResultIds.contains(resultId)) { // Kiểm tra resultId
-                addedResultIds.add(resultId); // Thêm resultId vào tập hợp
+            if (!addedResultIds.contains(resultId)) {
+                addedResultIds.add(resultId);
 
                 switch (skillType) {
                     case "READING":
@@ -368,15 +298,76 @@ public class PointResultCourseActivity extends AppCompatActivity {
             }
 
             correctRead.setText(getString(R.string.point) + totalPointR);
-            compRead.setText("Complete: " + String.format("%.1f",comR/r));
+            compRead.setText("Complete: " + String.format("%.1f", comR / r));
             correctLis.setText(getString(R.string.point) + totalPointL);
-            compLis.setText("Complete: " + String.format("%.1f",comL/l));
+            compLis.setText("Complete: " + String.format("%.1f", comL / l));
             correctSpeak.setText(getString(R.string.point) + totalPointS);
-            compSpeak.setText("Complete: " + String.format("%.1f",comS/s));
+            compSpeak.setText("Complete: " + String.format("%.1f", comS / s));
             correctWrite.setText(getString(R.string.point) + totalPointW);
-            compWrite.setText("Complete: " + String.format("%.1f",comW/w));
+            compWrite.setText("Complete: " + String.format("%.1f", comW / w));
 
+            // Hủy bất kỳ API call nào đang chờ trước đó
+            if (callApiRunnable != null) {
+                handler.removeCallbacks(callApiRunnable);
+            }
+
+            // Đặt lại thời gian chờ, nếu không có thêm dữ liệu trong 2 giây => gọi API
+            callApiRunnable = () -> {
+
+                    callCompleteTestApi(enrollmentId, totalPointR,totalPointL,totalPointS, totalPointW);
+
+            };
+            handler.postDelayed(callApiRunnable, DELAY_MILLIS);
         });
     }
 
+    private void callCompleteTestApi(int enrollmentId, int totalPointR,int totalPointL,int totalPointS,int totalPointW) {
+        resultManager.calculateEnrollment(enrollmentId, new ApiCallback<Enrollment>(){
+            @Override
+            public void onSuccess() {}
+
+            @Override
+            public void onSuccess(Enrollment enrollment) {
+                compCourse = enrollment.getComLevel();
+                coursePoint = enrollment.getTotalPoints();
+                runOnUiThread(() -> {
+                    if (compCourse > 90) {
+                        star3.setBackgroundTintList(getResources().getColorStateList(R.color.yellow));
+                    }
+                    if (compCourse > 60) {
+                        star2.setBackgroundTintList(getResources().getColorStateList(R.color.yellow));
+                    }
+                    if (compCourse > 30) {
+                        star1.setBackgroundTintList(getResources().getColorStateList(R.color.yellow));
+                    }
+                    pointTextView.setText(String.valueOf(coursePoint));
+                    if (status.equals("test")) {
+                        apiService.completeTest(enrollmentId, compCourse, coursePoint,
+                                totalPointR, totalPointL, totalPointS, totalPointW,
+                                new ApiCallback() {
+                                    @Override
+                                    public void onSuccess() {
+                                        Log.d("PointResultActivity", "Hoàn thành bài kiểm tra thành công");
+                                    }
+
+                                    @Override
+                                    public void onSuccess(Object result) {
+                                        Log.d("PointResultActivity", "Kết quả bài kiểm tra: " + result.toString());
+                                    }
+
+                                    @Override
+                                    public void onFailure(String errorMessage) {
+                                        Log.e("PointResultActivity", "Lỗi khi hoàn thành bài kiểm tra: " + errorMessage);
+                                    }
+                                });
+                    }
+                });
+            }
+
+            @Override
+            public void onFailure(String errorMessage) {
+
+            }
+        });
+    }
 }

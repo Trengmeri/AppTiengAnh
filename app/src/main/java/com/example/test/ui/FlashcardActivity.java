@@ -2,6 +2,7 @@ package com.example.test.ui;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -11,12 +12,14 @@ import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.PopupMenu;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -58,6 +61,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class FlashcardActivity extends AppCompatActivity {
 
@@ -69,12 +73,20 @@ public class FlashcardActivity extends AppCompatActivity {
     ImageView btnAddFlash, btnremove;
     private List<Flashcard> flashcards = new ArrayList<>();
     private EditText edtFlashName;
-    private int currentPage = 1;
-    private int totalPages = 1;
-    private final int pageSize = 4; // Mỗi trang hiển thị 5 nhóm flashcard
+    private int currentPage = 1; // Bắt đầu từ trang 0
+    private int pageSize = 4;    // Số phần tử trên mỗi trang
+    private int totalPages;  // Tổng số trang
+    private int groupId;
+    public int totalFlashcard;
+    //private final int pageSize = 4; // Mỗi trang hiển thị 5 nhóm flashcard
     private ImageView btnNext, btnPrevious;
     private FlashcardAdapter flashcardAdapter;
-
+    private Button btnSort;
+    private String selectedPhoneticsText = "No phonetics"; // Giá trị mặc định
+    private List<Flashcard> allFlashcards = new ArrayList<>(); // Lưu trữ tất cả flashcard khi sort
+    private boolean isSorted = false; // Trạng thái sort
+    private List<Flashcard> filteredFlashcards = new ArrayList<>(); // Danh sách đã lọc theo learned/unlearned
+    private String currentSortType = "";
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,34 +107,40 @@ public class FlashcardActivity extends AppCompatActivity {
         btnremove = findViewById(R.id.iconRemove);
         btnNext = findViewById(R.id.btnNext);
         btnPrevious = findViewById(R.id.btnPrevious);
+        btnSort= findViewById(R.id.btnSort);
         tvGroupName= findViewById(R.id.tvGroupName);
         btnNext.setAlpha(0.5f);
         btnNext.setEnabled(false);
-        flashcardAdapter = new FlashcardAdapter(this, flashcards);
+        flashcardAdapter = new FlashcardAdapter(this, flashcards,currentPage, totalPages, groupId);
         @SuppressLint("CutPasteId") RecyclerView recyclerView = findViewById(R.id.recyclerViewFlashcards);
         recyclerView.setAdapter(flashcardAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
+        recyclerViewFlashcards.setItemAnimator(new androidx.recyclerview.widget.DefaultItemAnimator());
 
         btnPrevious.setAlpha(0.5f);
         btnPrevious.setEnabled(false);
 
         tvGroupName.setText(getIntent().getStringExtra("GROUP_NAME"));
-        int groupId = getIntent().getIntExtra("GROUP_ID", -1);
+        groupId = getIntent().getIntExtra("GROUP_ID", -1);
         if (groupId != -1) {
             fetchFlashcards(groupId,currentPage);
         }
         btnNext.setOnClickListener(v -> {
             if (currentPage < totalPages) {
                 currentPage++;
-                fetchFlashcards(groupId,currentPage);
+                fetchFlashcards(groupId, currentPage);
+            } else {
+                Toast.makeText(this, "Đã đến trang cuối!", Toast.LENGTH_SHORT).show();
             }
         });
 
         btnPrevious.setOnClickListener(v -> {
             if (currentPage > 1) {
                 currentPage--;
-                fetchFlashcards(groupId,currentPage);
+                fetchFlashcards(groupId, currentPage);
+            } else {
+                Toast.makeText(this, "Đây là trang đầu tiên!", Toast.LENGTH_SHORT).show();
             }
         });
         flBack.setOnClickListener(new View.OnClickListener() {
@@ -134,6 +152,12 @@ public class FlashcardActivity extends AppCompatActivity {
                 onBackPressed();
             }
         });
+        btnSort.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showSortMenu(v);
+            }
+        });
         btnAddFlash.setOnClickListener(view -> {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             LayoutInflater inflater = getLayoutInflater();
@@ -142,6 +166,9 @@ public class FlashcardActivity extends AppCompatActivity {
             builder.setView(dialogView);
 
             AlertDialog dialog = builder.create();
+            dialog.setCancelable(false);
+            dialog.setCanceledOnTouchOutside(false);
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
             dialog.show();
 
             // Ánh xạ các view trong dialog
@@ -247,19 +274,43 @@ public class FlashcardActivity extends AppCompatActivity {
                                 }
                                 btn.setSelected(true);
                                 btn.setBackgroundResource(R.drawable.btn_item_click);
-                                checkEnableDone(phoneticButtons, definitionButtons, speechButtons, btnDone);
+                                selectedPhoneticsText = phonetic.getText() != null ? phonetic.getText() : "No phonetics available";
+                                checkEnableDone(phoneticButtons, definitionButtons, speechButtons, btnDone,true);
                             });
 
                             phoneticButtons.add(btn);
                             phoneticContainer.addView(btn);
                         }
                     } else {
-                        phoneticContainer
-                                .addView(new AppCompatTextView(FlashcardActivity.this) {
-                                    {
-                                        setText("No phonetics available");
-                                    }
-                                });
+                        // Nếu không có phonetic, tạo một nút "giả"
+                        AppCompatButton autoSelectedBtn = new AppCompatButton(FlashcardActivity.this);
+                        autoSelectedBtn.setText("No phonetics available");
+                        autoSelectedBtn.setLayoutParams(new LinearLayout.LayoutParams(
+                                ViewGroup.LayoutParams.WRAP_CONTENT,
+                                ViewGroup.LayoutParams.WRAP_CONTENT
+                        ));
+                        autoSelectedBtn.setBackgroundResource(R.drawable.btn_item_click);
+                        autoSelectedBtn.setTextColor(ContextCompat.getColor(FlashcardActivity.this, R.color.black));
+                        autoSelectedBtn.setTextSize(14);
+                        autoSelectedBtn.setAllCaps(false);
+                        autoSelectedBtn.setGravity(Gravity.CENTER);
+
+                        autoSelectedBtn.setSelected(true);
+                        autoSelectedBtn.setTag(true);
+                        autoSelectedBtn.setVisibility(View.GONE);
+
+                        phoneticButtons.add(autoSelectedBtn);
+                        phoneticContainer.addView(autoSelectedBtn);
+
+                        AppCompatTextView noPhoneticText = new AppCompatTextView(FlashcardActivity.this);
+                        noPhoneticText.setText("No phonetic available");
+                        noPhoneticText.setTextColor(ContextCompat.getColor(FlashcardActivity.this, R.color.black));
+                        noPhoneticText.setTextSize(14);
+                        noPhoneticText.setGravity(Gravity.CENTER);
+                        phoneticContainer.addView(noPhoneticText);
+
+                        selectedPhoneticsText = "No phonetics"; // Đảm bảo giá trị này không bị ghi đè
+                        checkEnableDone(phoneticButtons, definitionButtons, speechButtons, btnDone, false);
                     }
 
                     // Hiển thị Part of Speech
@@ -296,7 +347,7 @@ public class FlashcardActivity extends AppCompatActivity {
                                     }
                                     btn.setSelected(true);
                                     btn.setBackgroundResource(R.drawable.btn_item_click);
-                                    checkEnableDone(phoneticButtons, definitionButtons, speechButtons, btnDone);
+                                    checkEnableDone(phoneticButtons, definitionButtons, speechButtons, btnDone,true);
                                     // Hiển thị definitions cho part of speech đã chọn
                                     updateDefinitions(definitionContainer, meaning, dialogView,
                                             phoneticButtons, definitionButtons, speechButtons, btnDone);
@@ -316,10 +367,11 @@ public class FlashcardActivity extends AppCompatActivity {
                     AlertDialog.Builder builder = new AlertDialog.Builder(FlashcardActivity.this);
                     builder.setView(dialogView);
                     AlertDialog dialog = builder.create();
+                    //dialog.setCancelable(false);
                     dialog.setCanceledOnTouchOutside(false);
                     btnDone.setOnClickListener(v -> {
                         String wordflash = word.trim();
-                        int partOfSpeechIndex = getSelectedIndex(speechButtons);; // Chỉ mục loại từ được chọn
+                        int partOfSpeechIndex = getSelectedIndex(speechButtons); // Chỉ mục loại từ được chọn
                         List<Integer> definitionIndices = getSelectedDefinitionIndices(definitionButtons);; // Danh sách các chỉ mục định nghĩa
 
                         if (wordflash.isEmpty()) {
@@ -340,23 +392,35 @@ public class FlashcardActivity extends AppCompatActivity {
                                 }
 
                                 Log.d("DEBUG", "Flashcard created with ID: " + flashcardId);
-                                //int groupID = Integer.parseInt(SharedPreferencesManager.getInstance(getApplicationContext()).getID());
                                 int groupId = getIntent().getIntExtra("GROUP_ID", -1);
                                 Log.d("GroupID:", "Group ID duoc goi :"+ groupId);
                                 //  Gọi API để thêm flashcard vào nhóm
                                 flashcardManager.addFlashcardToGroup(Integer.parseInt(flashcardId), groupId, new AddFlashCardApiCallback<String>() {
+                                    @SuppressLint("NotifyDataSetChanged")
                                     @Override
                                     public void onSuccess(String result) {
                                         runOnUiThread(() -> {
-                                            Log.d("DEBUG", "Flashcard added to group");
-                                            // Cập nhật UI
-                                            Flashcard newFlashcard = new Flashcard(Integer.parseInt(flashcardId), wordflash, definitionIndices, partOfSpeechIndex);
-                                            flashcards.add(0, newFlashcard);
-                                            flashcardAdapter.setFlashcards(flashcards); // Nếu adapter có phương thức này
-                                            flashcardAdapter.notifyItemInserted(0);
-                                            recyclerViewFlashcards.scrollToPosition(0);
-                                            Toast.makeText(FlashcardActivity.this, "Thêm flashcard thành công!", Toast.LENGTH_SHORT).show();
-                                            dialog.dismiss();
+                                            // Tính toán trang chứa flashcard mới
+                                            //int newTotalFlashcards = totalFlashcard;
+                                            if (isSorted) {
+                                                // Nếu đang sort, làm mới toàn bộ danh sách từ API
+                                                fetchAllFlashcards(groupId, currentSortType);
+                                            }else{
+                                            int newTotalPages = (int) Math.ceil((double) totalFlashcard / pageSize);
+                                            int newPage = newTotalPages; // Flashcard mới nằm ở trang cuối
+
+                                            // Chuyển đến trang mới chứa flashcard
+                                            currentPage = newPage;
+                                            fetchFlashcards(groupId, currentPage);
+                                            }
+                                            updateButtonState(); // Cập nhật trạng thái nút
+
+                                            //Toast.makeText(FlashcardActivity.this, "Thêm flashcard thành công!", Toast.LENGTH_SHORT).show();
+                                            if (!isFinishing() && dialog != null && dialog.isShowing()) {
+                                                dialog.dismiss();
+                                            }
+
+
                                         });
                                     }
 
@@ -377,14 +441,16 @@ public class FlashcardActivity extends AppCompatActivity {
 
                             @Override
                             public void onSuccess() {
-
                             }
 
                             @Override
                             public void onFailure(String errorMessage) {
+                                // Ghi log lỗi chi tiết
+                                Log.e("DEBUG", "API createFlashcard failed: " + errorMessage);
                                 runOnUiThread(() -> {
-                                    Log.e("DEBUG", "API Error: " + errorMessage);
-                                    Toast.makeText(FlashcardActivity.this, "Lỗi tạo flashcard: " + errorMessage, Toast.LENGTH_SHORT).show();
+                                    // Kiểm tra null cho errorMessage
+                                    String displayMessage = (errorMessage != null && !errorMessage.isEmpty()) ? errorMessage : "Không có thông tin lỗi";
+                                    Toast.makeText(FlashcardActivity.this, "Lỗi tạo flashcard: " + displayMessage, Toast.LENGTH_SHORT).show();
                                 });
                             }
                         });
@@ -493,7 +559,7 @@ public class FlashcardActivity extends AppCompatActivity {
                     }
                     btn.setSelected(true);
                     btn.setBackgroundResource(R.drawable.btn_item_def_click);
-                    checkEnableDone(phoneticButtons, definitionButtons, speechButtons, btnDone);
+                    checkEnableDone(phoneticButtons, definitionButtons, speechButtons, btnDone, true);
                 });
                 definitionButtons.add(btn);
                 definitionContainer.addView(btn);
@@ -516,16 +582,18 @@ public class FlashcardActivity extends AppCompatActivity {
     private void checkEnableDone(List<AppCompatButton> phoneticButtons,
                                  List<AppCompatButton> speechButtons,
                                  List<AppCompatButton> definitionButtons,
-                                 Button btnDone) {
-        boolean isPhoneticSelected = false;
+                                 Button btnDone,boolean hasPhonetics) {
+        boolean isPhoneticSelected = !hasPhonetics;
         boolean isSpeechSelected = false;
         boolean isDefinitionSelected = false;
 
         // Kiểm tra xem có ít nhất một nút được chọn trong mỗi nhóm không
-        for (AppCompatButton btn : phoneticButtons) {
-            if (btn.isSelected()) {
-                isPhoneticSelected = true;
-                break;
+        if (hasPhonetics) {
+            for (AppCompatButton btn : phoneticButtons) {
+                if (btn.isSelected()) {
+                    isPhoneticSelected = true;
+                    break;
+                }
             }
         }
         for (AppCompatButton btn : speechButtons) {
@@ -552,56 +620,10 @@ public class FlashcardActivity extends AppCompatActivity {
     }
 
 
-    private void fetchFlashcards(int groupId,int page) {
-        flashcardManager.fetchFlashcardsInGroup(groupId, new FlashcardApiCallback() {
-            @Override
-            public void onSuccess(Object response) {
-
-            }
-
-            @Override
-            public void onSuccess(ApiResponseFlashcardGroup response) {
-
-            }
-
-            @Override
-            public void onSuccess(FlashcardGroupResponse response) {
-
-            }
-
-            @Override
-            public void onSuccess(ApiResponseFlashcard response) {
-                List<Flashcard> flashcards = response.getData().getContent();
-                if (flashcards != null && !flashcards.isEmpty()) {
-                    runOnUiThread(() -> {
-                        updateRecyclerView(flashcards);
-                    });
-                } else {
-                    Log.w("FlashcardActivity", "No flashcards found for group ID: " + groupId);
-                }
-                updateButtonState();
-            }
-
-            @Override
-            public void onSuccess(ApiResponseOneFlashcard response) {
-
-            }
-
-            @Override
-            public void onFailure(String errorMessage) {
-                Log.e("FlashcardActivity", "Error fetching flashcards: " + errorMessage);
-                runOnUiThread(() -> {
-                    Toast.makeText(FlashcardActivity.this, "Error fetching flashcards: " + errorMessage,
-                            Toast.LENGTH_LONG).show();
-                });
-            }
-        });
-    }
-
     @SuppressLint("NotifyDataSetChanged")
     private void updateRecyclerView(List<Flashcard> flashcards) {
         if (recyclerViewFlashcards != null) {
-            FlashcardAdapter adapter = new FlashcardAdapter(this, flashcards);
+            FlashcardAdapter adapter = new FlashcardAdapter(this, flashcards,currentPage, totalPages, groupId);
             recyclerViewFlashcards.setLayoutManager(new LinearLayoutManager(this));
             recyclerViewFlashcards.setAdapter(adapter);
             adapter.notifyDataSetChanged();
@@ -609,70 +631,13 @@ public class FlashcardActivity extends AppCompatActivity {
             Log.e("FlashcardActivity", "RecyclerView is null");
         }
     }
-
-//    private void addFlashcard(String word, List<AppCompatButton> phoneticButtons,
-//            List<AppCompatButton> definitionButtons, List<AppCompatButton> speechButtons,
-//            AlertDialog dialog) {
-//        String selectedPhonetic = null;
-//        for (AppCompatButton btn : phoneticButtons) {
-//            if ((boolean) btn.getTag()) {
-//                selectedPhonetic = btn.getText().toString();
-//                break;
-//            }
-//        }
-//
-//        String selectedDefinition = null;
-//        for (AppCompatButton btn : definitionButtons) {
-//            if ((boolean) btn.getTag()) {
-//                selectedDefinition = btn.getText().toString();
-//                break;
-//            }
-//        }
-//        String selectedSpeech = null;
-//        for (AppCompatButton btn : speechButtons) {
-//            if ((boolean) btn.getTag()) {
-//                selectedSpeech = btn.getText().toString();
-//                break;
-//            }
-//        }
-//        if (selectedPhonetic != null && selectedDefinition != null && selectedSpeech != null) {
-//            Flashcard newFlashcard = new Flashcard();
-//            newFlashcard.setWord(word);
-//            newFlashcard.setPhoneticText(selectedPhonetic);
-//            newFlashcard.setDefinitions(selectedDefinition);
-//            newFlashcard.setVietNameseMeaning(selectedSpeech);
-//            flashcards.add(newFlashcard);
-//            updateRecyclerView(flashcards);
-//            dialog.dismiss();
-//        } else {
-//            Toast.makeText(this, "Vui lòng chọn đầy đủ thông tin!", Toast.LENGTH_SHORT).show();
-//        }
-//    }
-
-    private void addFlashcardButton(Flashcard flashcard) {
-        MaterialButton flashcardButton = new MaterialButton(this);
-        flashcardButton.setText(flashcard.getWord());
-        flashcardButton.setLayoutParams(new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT));
-
-        // Sự kiện khi nhấn vào nút flashcard
-        flashcardButton.setOnClickListener(v -> {
-            Intent intent = new Intent(FlashcardActivity.this, FlashcardInformationActivity.class);
-            intent.putExtra("FLASHCARD_ID", flashcard.getId()); // Gửi ID flashcard đến FlashcardInfomationActivity
-            startActivity(intent); // Chuyển hướng đến FlashcardInfomationActivity
-        });
-        // Thêm nút vào layout
-        LinearLayout flashcardContainer = findViewById(R.id.flashContainer);
-        flashcardContainer.addView(flashcardButton);
-    }
-    private void updateButtonState() {
+    public void updateButtonState() {
         if (totalPages > 1) {
             btnPrevious.setEnabled(currentPage > 1);
-            btnPrevious.setAlpha(currentPage > 1 ? 1.0f : 0.5f);
+            btnPrevious.setAlpha(currentPage > 1  ? 1.0f : 0.5f);
 
             btnNext.setEnabled(currentPage < totalPages);
-            btnNext.setAlpha(currentPage < totalPages ? 1.0f : 0.5f);
+            btnNext.setAlpha(currentPage < totalPages? 1.0f : 0.5f);
         } else {
             // Nếu chỉ có 1 trang, làm mờ và vô hiệu hóa cả hai nút
             btnNext.setEnabled(false);
@@ -698,6 +663,163 @@ public class FlashcardActivity extends AppCompatActivity {
             }
         }
         return indices;
+    }
+
+    private void showSortMenu(View view) {
+        PopupMenu popupMenu = new PopupMenu(this, view);
+        popupMenu.getMenu().add("Sorted by Latest");
+        popupMenu.getMenu().add("Sorted by Oldest");
+        popupMenu.getMenu().add("Sorted by learned");
+        popupMenu.getMenu().add("Sorted by unlearned");
+
+        popupMenu.setOnMenuItemClickListener(item -> {
+            // Khi chọn sort, lấy tất cả flashcard trước
+            currentSortType = item.getTitle().toString();
+            fetchAllFlashcards(groupId, currentSortType);
+            return true;
+        });
+
+        popupMenu.show();
+    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        fetchFlashcards(groupId, currentPage);
+    }
+    private void fetchAllFlashcards(int groupId, String sortType) {
+        allFlashcards.clear();
+        filteredFlashcards.clear();
+        // Lấy tất cả các trang
+        flashcardManager.fetchFlashcardsInGroup(groupId, 1, Integer.MAX_VALUE, new FlashcardApiCallback() {
+            @Override
+            public void onSuccess(ApiResponseFlashcard response) {
+                runOnUiThread(() -> {
+                    if (response.getData() != null && response.getData().getContent() != null) {
+                        allFlashcards.addAll(response.getData().getContent());
+                        totalFlashcard = allFlashcards.size(); // Cập nhật tổng số flashcard
+                        sortAndFilterFlashcards(sortType);
+                        isSorted = true;
+                        currentPage = 1;
+                        updateSortedFlashcards();
+                    }
+                });
+            }
+
+            @Override
+            public void onFailure(String errorMessage) {
+                runOnUiThread(() -> {
+                    Toast.makeText(FlashcardActivity.this, "Error fetching all flashcards: " + errorMessage,
+                            Toast.LENGTH_LONG).show();
+                });
+            }
+
+            // Các method onSuccess khác giữ nguyên
+            @Override public void onSuccess(Object response) {}
+            @Override public void onSuccess(ApiResponseFlashcardGroup response) {}
+            @Override public void onSuccess(FlashcardGroupResponse response) {}
+            @Override public void onSuccess(ApiResponseOneFlashcard response) {}
+        });
+    }
+    private void sortAndFilterFlashcards(String sortType) {
+        // Sao chép danh sách gốc
+        filteredFlashcards = new ArrayList<>(allFlashcards);
+
+        switch (sortType) {
+            case "Sorted by Latest":
+                Collections.sort(filteredFlashcards, (f1, f2) ->
+                        f2.getAddedDate().compareTo(f1.getAddedDate()));
+                break;
+            case "Sorted by Oldest":
+                Collections.sort(filteredFlashcards, (f1, f2) ->
+                        f1.getAddedDate().compareTo(f2.getAddedDate()));
+                break;
+            case "Sorted by learned":
+                // Lọc chỉ giữ flashcard đã học và sắp xếp
+                filteredFlashcards = filteredFlashcards.stream()
+                        .filter(Flashcard::isLearnedStatus)
+                        .sorted((f1, f2) -> Boolean.compare(f2.isLearnedStatus(), f1.isLearnedStatus()))
+                        .collect(Collectors.toList());
+                break;
+            case "Sorted by unlearned":
+                // Lọc chỉ giữ flashcard chưa học và sắp xếp
+                filteredFlashcards = filteredFlashcards.stream()
+                        .filter(f -> !f.isLearnedStatus())
+                        .sorted((f1, f2) -> Boolean.compare(f1.isLearnedStatus(), f2.isLearnedStatus()))
+                        .collect(Collectors.toList());
+                break;
+        }
+
+        totalPages = (int) Math.ceil((double) filteredFlashcards.size() / 4);
+       // Toast.makeText(this, "Sorted by: " + sortType, Toast.LENGTH_SHORT).show();
+    }
+    private void updateSortedFlashcards() {
+        int startIndex = (currentPage - 1) * 4;
+        int endIndex = Math.min(startIndex + 4, filteredFlashcards.size());
+
+        if (startIndex < filteredFlashcards.size()) {
+            List<Flashcard> pageFlashcards = filteredFlashcards.subList(startIndex, endIndex);
+            updateRecyclerView(new ArrayList<>(pageFlashcards));
+            updateButtonState();
+        } else if (filteredFlashcards.isEmpty()) {
+            updateRecyclerView(new ArrayList<>());
+            Toast.makeText(this, "Không có flashcard nào phù hợp!", Toast.LENGTH_SHORT).show();
+        }
+    }
+    public void fetchFlashcards(int groupId, int page) {
+        if (isSorted) {
+            updateSortedFlashcards();
+        } else {
+            // Giữ nguyên code fetchFlashcards ban đầu của bạn
+            flashcardManager.fetchFlashcardsInGroup(groupId, page, pageSize, new FlashcardApiCallback() {
+                @Override
+                public void onSuccess(Object response) {
+
+                }
+
+                @Override
+                public void onSuccess(ApiResponseFlashcardGroup response) {
+
+                }
+
+                @Override
+                public void onSuccess(FlashcardGroupResponse response) {
+
+                }
+
+                @Override
+                public void onSuccess(ApiResponseFlashcard response) {
+                    runOnUiThread(() -> {
+                        if (response.getData() != null && response.getData().getContent() != null) {
+                            List<Flashcard> flashcards = response.getData().getContent();
+                            totalPages = response.getData().getTotalPages(); // Cập nhật số trang từ API
+                            totalFlashcard= response.getData().getTotalElements();
+
+                            Log.d("DEBUG","Tong trang:"+ totalPages);
+
+                            if (!flashcards.isEmpty()) {
+                                //Collections.reverse(flashcards);
+                                updateRecyclerView(flashcards);
+                            } else {
+                                Toast.makeText(FlashcardActivity.this, "Không có flashcard nào!", Toast.LENGTH_SHORT).show();
+                            }
+
+                            updateButtonState();
+                        }
+                    });
+                }
+
+                @Override
+                public void onSuccess(ApiResponseOneFlashcard response) {
+
+                }
+
+                @Override
+                public void onFailure(String errorMessage) {
+
+                }
+
+            });
+        }
     }
 
 }

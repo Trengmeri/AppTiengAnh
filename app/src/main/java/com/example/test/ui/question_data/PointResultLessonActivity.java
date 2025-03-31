@@ -29,6 +29,7 @@ import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.test.NevigateQuestion;
 import com.example.test.R;
@@ -56,7 +57,7 @@ import java.util.stream.Collectors;
 public class PointResultLessonActivity extends AppCompatActivity {
 
     Button btnDone,btnDiscuss, btnNext;
-    private int lessonID,courseID;
+    private int lessonID,courseID, enrollmentId;
     QuestionManager quesManager = new QuestionManager(this);
     LessonManager lesManager = new LessonManager();
     ResultManager resultManager = new ResultManager(this);
@@ -75,6 +76,7 @@ public class PointResultLessonActivity extends AppCompatActivity {
 
         courseID = getIntent().getIntExtra("courseId",1);
         lessonID = getIntent().getIntExtra("lessonId",1);
+        enrollmentId = getIntent().getIntExtra("enrollmentId", 1);
 
 
         Log.e("point","Lesson ID: "+ lessonID + "courseID: "+ courseID);
@@ -83,9 +85,12 @@ public class PointResultLessonActivity extends AppCompatActivity {
         fetchLessonData(lessonID);
         makepoint(courseID,lessonID);
         btnDone.setOnClickListener(v -> {
-                Intent intent = new Intent(PointResultLessonActivity.this, HomeActivity.class);
-                startActivity(intent);
+            Intent intent = new Intent(PointResultLessonActivity.this, HomeActivity.class);
+            intent.putExtra("targetPage", 0);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            startActivity(intent);
         });
+
         btnDiscuss.setOnClickListener(v -> {
             Intent intent = new Intent(PointResultLessonActivity.this, DiscussionActivity.class);
             intent.putExtra("lessonId", lessonID);
@@ -128,6 +133,7 @@ public class PointResultLessonActivity extends AppCompatActivity {
                                     Intent intent = new Intent(PointResultLessonActivity.this, NevigateQuestion.class);
                                     intent.putExtra("courseId", course.getId());
                                     intent.putExtra("lessonId", lesid);
+                                    intent.putExtra("enrollmentId", enrollmentId);
                                     intent.putExtra("questionIds", new ArrayList<>(lesson.getQuestionIds()));
                                     startActivity(intent);
                                     finish();

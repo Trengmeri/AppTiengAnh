@@ -24,9 +24,13 @@ public class LearningProgressManager extends BaseApiManager {
         this.gson = new Gson();
     }
 
+    // Trong LearningProgressManager.java
     public void fetchLatestEnrollment(ApiCallback<JsonObject> callback) {
         String userId = SharedPreferencesManager.getInstance(context).getID();
         String url = BASE_URL + "/api/v1/enrollments/user/" + userId + "?page=1&size=4";
+
+        Log.d("LearningProgressManager", "Fetching enrollments for user: " + userId);
+        Log.d("LearningProgressManager", "URL: " + url);
 
         Request request = new Request.Builder()
                 .url(url)
@@ -36,26 +40,25 @@ public class LearningProgressManager extends BaseApiManager {
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
+                Log.e("LearningProgressManager", "Network error", e);
                 callback.onFailure("Network error: " + e.getMessage());
             }
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                if (response.isSuccessful()) {
-                    String responseBody = response.body().string();
-                    JsonObject jsonResponse = gson.fromJson(responseBody, JsonObject.class);
-                    JsonArray content = jsonResponse.getAsJsonObject("data")
-                            .getAsJsonArray("content");
+                String responseBody = response.body().string();
+                Log.d("LearningProgressManager", "Response code: " + response.code());
+                Log.d("LearningProgressManager", "Response body: " + responseBody);
 
-                    if (content.size() > 0) {
-                        JsonObject latestEnrollment = content.get(content.size() - 1).getAsJsonObject();
-                        callback.onSuccess(latestEnrollment);
-                    } else {
-                        callback.onFailure("No enrollments found");
-                    }
-                } else {
-                    callback.onFailure("Server error: " + response.code());
+                if (response.isSuccessful()) {
+                    JsonObject jsonResponse = gson.fromJson(responseBody, JsonObject.class);
+
+
+                    callback.onSuccess(jsonResponse);
                 }
+                    else {
+                        callback.onFailure("Server error: " + response.code());
+                    }
             }
         });
     }

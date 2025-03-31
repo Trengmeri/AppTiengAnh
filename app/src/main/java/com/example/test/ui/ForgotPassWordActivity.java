@@ -179,10 +179,10 @@ public class ForgotPassWordActivity extends AppCompatActivity {
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
         // Kiểm tra nếu chưa chọn trong SelectActivity thì mới lưu
-        boolean hasSelectedOption = sharedPreferences.getBoolean("hasSelectedOption", false);
-        if (!hasSelectedOption) {
-            editor.putString("lastActivity", this.getClass().getName());
-            editor.apply();
-        }
+//        boolean hasSelectedOption = sharedPreferences.getBoolean("hasSelectedOption", false);
+//        if (!hasSelectedOption) {
+//            editor.putString("lastActivity", this.getClass().getName());
+//            editor.apply();
+//        }
     }
 }

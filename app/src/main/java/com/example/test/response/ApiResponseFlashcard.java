@@ -1,6 +1,8 @@
 package com.example.test.response;
 
 import com.example.test.model.Flashcard;
+import com.example.test.model.Pageable;
+import com.example.test.model.Sort;
 
 import java.util.List;
 
@@ -35,9 +37,16 @@ public class ApiResponseFlashcard {
 
     public static class FlashcardData {
         private List<Flashcard> content;
-        private int totalElements;
+        private Pageable pageable;
         private int totalPages;
+        private int totalElements;
         private boolean last;
+        private int size;
+        private int number;
+        private Sort sort;
+        private int numberOfElements;
+        private boolean first;
+        private boolean empty;
 
         public List<Flashcard> getContent() {
             return content;

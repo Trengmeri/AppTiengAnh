@@ -1,13 +1,11 @@
-package com.example.test.ui;
+package com.example.test.ui.profile;
 
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -28,7 +26,6 @@ import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
-import androidx.loader.content.CursorLoader;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
@@ -61,7 +58,7 @@ public class EditProfileActivity extends AppCompatActivity {
      String initialName = "";
      String initialPhone = "";
      int initialPosition = -1;
-
+    String initialAvatarUrl = "";
      Spinner spnLevel;
      String initialLevel = "";
     @SuppressLint("MissingInflatedId")
@@ -102,6 +99,7 @@ public class EditProfileActivity extends AppCompatActivity {
         btnUpdate = findViewById(R.id.btnUpdate);
     }
     private void setupChangeListeners() {
+        initialAvatarUrl = currentAvatarUrl;
         TextWatcher textWatcher = new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
@@ -139,10 +137,14 @@ public class EditProfileActivity extends AppCompatActivity {
     }
 
     private void checkForChanges() {
+        Log.d("EditProfile", "Initial Avatar URL: " + initialAvatarUrl);
+        Log.d("EditProfile", "Current Avatar URL: " + currentAvatarUrl);
         boolean hasChanges = !edtName.getText().toString().equals(initialName) ||
                 !edtSdt.getText().toString().equals(initialPhone) ||
                 spnField.getSelectedItemPosition() != initialPosition ||
-                !spnLevel.getSelectedItem().toString().equals(initialLevel);
+                !spnLevel.getSelectedItem().toString().equals(initialLevel) ||
+                !currentAvatarUrl.equals(initialAvatarUrl);
+        Log.d("EditProfile", "Has Changes: " + hasChanges);
         enableUpdateButton(hasChanges);
     }
     private void setupSpinners() {
@@ -180,11 +182,11 @@ public class EditProfileActivity extends AppCompatActivity {
 
                         String phoneNumber = "";
                         if (result.has("phone")) {
-                            phoneNumber = result.getString("phone");
-                        } else if (result.has("phoneNumber")) {
-                            phoneNumber = result.getString("phoneNumber");
-                        } else if (result.has("sdt")) {
-                            phoneNumber = result.getString("sdt");
+                            if (result.getString("phone").equals("null")) {
+                                phoneNumber = "";
+                            } else{
+                                phoneNumber = result.getString("phone");
+                            }
                         }
                         initialPhone = phoneNumber;
                         edtSdt.setText(initialPhone);
@@ -226,12 +228,22 @@ public class EditProfileActivity extends AppCompatActivity {
                                     .into(imgAvatar);
                         }
                         String englishLevel = result.getString("englishlevel");
+                        Log.d("EditProfile", "English level: " + englishLevel);
                         initialLevel = englishLevel;
                         ArrayAdapter levelAdapter = (ArrayAdapter) spnLevel.getAdapter();
                         int levelPosition = levelAdapter.getPosition(englishLevel);
+                        Log.d("EditProfile", "Level position: " + englishLevel);
+                        Log.d("EditProfile", "Available levels: " + (levelAdapter));
+
                         if (levelPosition >= 0) {
                             spnLevel.setSelection(levelPosition);
+                            Log.d("EditProfile", "Selected level: " + spnLevel.getSelectedItem().toString());
                         }
+                        else {
+                            Log.d("EditProfile", "Level not found in spinner items");
+                            spnLevel.setSelection(0);
+                        }
+
                         setupChangeListeners();
                         enableUpdateButton(false);
                     } catch (JSONException e) {
@@ -274,45 +286,6 @@ public class EditProfileActivity extends AppCompatActivity {
             uploadAvatar(imageUri);
         }
     }
-    private String getRealPathFromURI(Uri uri) {
-        // For API 19 and above (MediaStore documents)
-        if (uri.getAuthority().equals("com.android.providers.media.documents")) {
-            final String docId = uri.getLastPathSegment().split(":")[1];
-            final String selection = MediaStore.Images.Media._ID + "=" + docId;
-
-            try (Cursor cursor = getContentResolver().query(
-                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                    new String[]{MediaStore.Images.Media.DATA},
-                    selection,
-                    null,
-                    null)) {
-
-                if (cursor != null && cursor.moveToFirst()) {
-                    final int columnIndex = cursor.getColumnIndex(MediaStore.Images.Media.DATA);
-                    return cursor.getString(columnIndex);
-                }
-            } catch (Exception e) {
-                Log.e("EditProfile", "Error getting path: " + e.getMessage());
-            }
-        }
-        // Fallback to old method for other URIs
-        else {
-            try {
-                String[] projection = {MediaStore.Images.Media.DATA};
-                Cursor cursor = getContentResolver().query(uri, projection, null, null, null);
-                if (cursor != null) {
-                    int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-                    cursor.moveToFirst();
-                    String path = cursor.getString(column_index);
-                    cursor.close();
-                    return path;
-                }
-            } catch (Exception e) {
-                Log.e("EditProfile", "Error getting path: " + e.getMessage());
-            }
-        }
-        return null;
-    }
     private void uploadAvatar(Uri imageUri) {
         if (imageUri == null) {
             Toast.makeText(this, "No image selected", Toast.LENGTH_SHORT).show();
@@ -347,13 +320,15 @@ public class EditProfileActivity extends AppCompatActivity {
                         progressDialog.dismiss();
                         if (newAvatarUrl != null && !newAvatarUrl.isEmpty()) {
                             String modifiedUrl = newAvatarUrl.replace("0.0.0.0", "14.225.198.3");
+                            currentAvatarUrl = modifiedUrl;
                             Glide.with(EditProfileActivity.this)
                                     .load(modifiedUrl)
                                     .placeholder(R.drawable.img_avt_profile)
                                     .error(R.drawable.img_avt_profile)
                                     .circleCrop()
                                     .into(imgAvatar);
-
+                            checkForChanges();
+                            setResult(RESULT_OK);
                             Toast.makeText(EditProfileActivity.this,
                                     "Avatar updated successfully", Toast.LENGTH_SHORT).show();
                         }

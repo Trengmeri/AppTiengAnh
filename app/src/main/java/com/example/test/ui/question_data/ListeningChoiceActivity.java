@@ -348,6 +348,7 @@ public class ListeningChoiceActivity extends AppCompatActivity {
         Intent intent = new Intent(ListeningChoiceActivity.this, PointResultLessonActivity.class);
         intent.putExtra("lessonId",lessonID);
         intent.putExtra("courseId",courseID);
+        intent.putExtra("enrollmentId", enrollmentId);
         startActivity(intent);
         finish();
     }

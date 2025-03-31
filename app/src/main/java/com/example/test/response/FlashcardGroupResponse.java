@@ -19,6 +19,7 @@ public class FlashcardGroupResponse {
         @SerializedName("content")
         private List<FlashcardGroup> content;
         private int totalPages;
+        private int totalElements;
 
         public List<FlashcardGroup> getContent() {
             return content;
@@ -33,6 +34,13 @@ public class FlashcardGroupResponse {
 
         public void setTotalPages(int totalPages) {
             this.totalPages = totalPages;
+        }
+        public int getTotalElements() {
+            return totalElements;
+        }
+
+        public void setTotalElements(int totalElements) {
+            this.totalElements = totalElements;
         }
     }
 

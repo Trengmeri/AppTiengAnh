@@ -50,7 +50,7 @@
             android:layout_marginBottom="48dp"
             android:drawableLeft="@drawable/jam_write"
             android:drawablePadding="10dp"
-            android:text="Choose the correct answer"
+            android:text="@string/choose"
             android:textSize="24sp"
             android:textStyle="bold" />
 
@@ -91,7 +91,6 @@
             android:id="@+id/btnCheckAnswers"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
             android:layout_marginLeft="@dimen/dp_16"
             android:layout_marginRight="@dimen/dp_16"
             android:textColor="@color/black"

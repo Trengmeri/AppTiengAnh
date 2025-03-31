@@ -7,14 +7,21 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:padding="16dp">
-
+        <TextView
+            android:id="@+id/wordLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="@color/black" />
         <TextView
             android:id="@+id/phoneticLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/Phonetic"
             android:textSize="16sp"
-            android:textStyle="bold"/>
+            android:textStyle="bold"
+            android:textColor="@color/black"/>
 
         <HorizontalScrollView
             android:layout_width="match_parent"
@@ -37,7 +44,8 @@
             android:layout_height="wrap_content"
             android:text="@string/PartofSpeech"
             android:textSize="16sp"
-            android:textStyle="bold"/>
+            android:textStyle="bold"
+            android:textColor="@color/black"/>
 
         <HorizontalScrollView
             android:layout_width="match_parent"
@@ -60,9 +68,10 @@
             android:layout_height="wrap_content"
             android:text="@string/Definition"
             android:textSize="16sp"
-            android:textStyle="bold"/>
+            android:textStyle="bold"
+            android:textColor="@color/black"/>
 
-        <ScrollView
+        <androidx.core.widget.NestedScrollView
             android:id="@+id/definitionScrollView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -76,7 +85,7 @@
                 android:orientation="vertical"
                 android:padding="8dp"
                 android:layout_marginBottom="8dp"/>
-        </ScrollView>
+        </androidx.core.widget.NestedScrollView>
 
         <TextView
             android:id="@+id/vietnameseMeaningLabel"
@@ -84,13 +93,25 @@
             android:layout_height="wrap_content"
             android:text="@string/VietnameseMeaning"
             android:textSize="16sp"
-            android:textStyle="bold"/>
+            android:textStyle="bold"
+            android:textColor="@color/black"/>
 
         <TextView
             android:id="@+id/vietnameseMeaningTextView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="8dp"
+            android:background="@drawable/rounded_textview"
             android:layout_marginBottom="16dp"/>
+        <Button
+            android:id="@+id/btnAdd"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="#BC725F"
+            android:text="Add to my flashcards"
+            android:textColor="#FFFFFF"
+            android:textColorLink="#9E3A00"
+            android:layout_margin="20dp"
+            android:visibility="gone"/>
     </LinearLayout>
 </ScrollView>

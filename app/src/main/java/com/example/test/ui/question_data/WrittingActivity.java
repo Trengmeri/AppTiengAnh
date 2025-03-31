@@ -112,6 +112,7 @@ public class WrittingActivity extends AppCompatActivity {
         Intent intent = new Intent(WrittingActivity.this, PointResultLessonActivity.class);
         intent.putExtra("lessonId",lessonID);
         intent.putExtra("courseId",courseID);
+        intent.putExtra("enrollmentId", enrollmentId);
         startActivity(intent);
         finish();
     }
@@ -122,6 +123,7 @@ public class WrittingActivity extends AppCompatActivity {
 
         // Xóa nội dung EditText ngay khi bấm "Check Answers"
         etAnswer.setText("");
+        key.setText("");
 
         // Hiển thị ProgressDialog
         progressDialog = new ProgressDialog(this);

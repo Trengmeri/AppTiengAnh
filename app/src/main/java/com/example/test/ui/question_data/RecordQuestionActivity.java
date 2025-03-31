@@ -105,6 +105,7 @@ public class RecordQuestionActivity extends AppCompatActivity implements SpeechR
         ApiService apiService = new ApiService(this);
         // Xóa nội dung EditText ngay khi bấm "Check Answers"
         tvTranscription.setText("");
+        key.setText("");
 
         // Hiển thị ProgressDialog
         progressDialog = new ProgressDialog(this);
@@ -299,6 +300,7 @@ public class RecordQuestionActivity extends AppCompatActivity implements SpeechR
         Intent intent = new Intent(RecordQuestionActivity.this, PointResultLessonActivity.class);
         intent.putExtra("lessonId", lessonID);
         intent.putExtra("courseId", courseID);
+        intent.putExtra("enrollmentId", enrollmentId);
         startActivity(intent);
         finish();
     }

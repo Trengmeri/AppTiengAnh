@@ -20,6 +20,11 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:nestedScrollingEnabled="false" />
+        <FrameLayout
+            android:id="@+id/frameLayoutContainer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
 
     </LinearLayout>
+
 </androidx.core.widget.NestedScrollView>

@@ -72,12 +72,12 @@ public class PopupHelper {
                 });
 
                 // Đặt màu nền theo điểm
-                if (score < 33) {
+                if (score < 3) {
                     popupView.setBackgroundResource(R.drawable.popup_background_incorrect);
                     tvMessage.setTextColor(activity.getResources().getColor(android.R.color.holo_red_dark));
                     btnNext.setBackgroundColor(activity.getResources().getColor(android.R.color.holo_red_dark));
                     btnview.setBackgroundColor(activity.getResources().getColor(android.R.color.holo_red_light));
-                } else if (score < 66) {
+                } else if (score < 6) {
                     popupView.setBackgroundResource(R.drawable.popup_yellow);
                     tvMessage.setTextColor(activity.getResources().getColor(android.R.color.holo_orange_dark));
                     btnNext.setBackgroundColor(activity.getResources().getColor(android.R.color.holo_orange_dark));

@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -29,6 +30,7 @@ public class AllCourseFragment extends Fragment {
     private List<String> groupList;
     private GroupAdapter adapter;
     private CourseManager courseManager;
+
     public AllCourseFragment() {}
 
     @Nullable
@@ -36,6 +38,25 @@ public class AllCourseFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_all_course, container, false);
     }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        // Kiểm tra nếu RecyclerView đang bị ẩn thì hiển thị lại
+        recyclerView.setVisibility(View.VISIBLE);
+
+        // Xoá `CourseListFragment` nếu nó đang hiển thị
+        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+        Fragment courseListFragment = fragmentManager.findFragmentById(R.id.frameLayoutContainer);
+        if (courseListFragment != null) {
+            fragmentManager.beginTransaction()
+                    .remove(courseListFragment)
+                    .commit();
+            fragmentManager.popBackStack();
+        }
+    }
+
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -114,9 +135,8 @@ public class AllCourseFragment extends Fragment {
         CourseListFragment courseListFragment = CourseListFragment.newInstance(courses);
         getActivity().getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.fragment_container, courseListFragment)
+                .replace(R.id.frameLayoutContainer, courseListFragment)
                 .addToBackStack(null)
                 .commit();
     }
-
 }

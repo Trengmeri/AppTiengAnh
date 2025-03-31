@@ -25,8 +25,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="20dp">
-
-
                 <TextView
                     android:id="@+id/btnBack"
                     android:layout_width="wrap_content"
@@ -118,7 +116,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="15dp"
                                 android:lineSpacingExtra="5sp"
-                                android:text="Receive a personalized\n learning program\n upon completion"
+                                android:text="@string/smalltestintro"
                                 android:textAlignment="center"
                                 android:textColor="@color/white"
                                 android:textSize="18sp" />
@@ -151,7 +149,7 @@
                         <ImageView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:background="@drawable/hcn_to_nhat"
+                            android:background="@drawable/hcn_to_dam"
                             android:scaleType="fitCenter" />
                         <LinearLayout
                             android:layout_width="match_parent"
@@ -174,9 +172,9 @@
                                 android:layout_marginTop="30dp"
                                 android:text="@string/englishlevel"
                                 android:textAlignment="center"
-                                android:textColor="@color/black"
+                                android:textColor="@color/white"
                                 android:textSize="18sp"
-                                android:textStyle="bold" />
+                                />
 
                         </LinearLayout>
 
@@ -188,7 +186,7 @@
                         <ImageView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:background="@drawable/hcn_nho_dam" />
+                            android:background="@drawable/hcn_nho_nhat" />
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -202,8 +200,9 @@
                                 android:lineSpacingExtra="5sp"
                                 android:text="@string/levelintro"
                                 android:textAlignment="center"
-                                android:textColor="@color/white"
-                                android:textSize="18sp" />
+                                android:textColor="@color/black"
+                                android:textSize="18sp"
+                                android:textStyle="bold"/>
 
                             <Button
                                 android:id="@+id/btnpick"
@@ -233,7 +232,7 @@
                         <ImageView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:background="@drawable/hcn_to_dam"
+                            android:background="@drawable/hcn_to_nhat"
                             android:scaleType="fitCenter" />
                         <LinearLayout
                             android:layout_width="match_parent"
@@ -256,7 +255,7 @@
                                 android:layout_marginTop="30dp"
                                 android:text="@string/nonetest"
                                 android:textAlignment="center"
-                                android:textColor="@color/white"
+                                android:textColor="@color/black"
                                 android:textSize="18sp"
                                 android:textStyle="bold" />
 
@@ -270,7 +269,7 @@
                         <ImageView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:background="@drawable/hcn_nho_nhat" />
+                            android:background="@drawable/hcn_nho_dam" />
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -282,7 +281,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="15dp"
                                 android:lineSpacingExtra="5sp"
-                                android:text="Explore a pre-made\n program and start\n learning"
+                                android:text="@string/newprogramintro"
                                 android:textAlignment="center"
                                 android:textColor="@color/white"
                                 android:textSize="18sp" />
