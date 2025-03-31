@@ -70,6 +70,7 @@ public class FlashcardInformationActivity extends AppCompatActivity {
     private int currentPage;
     private int totalPages;
     private int groupId;
+    boolean isLastFlashcardSwiped;
 
     @SuppressLint({"ResourceType", "MissingInflatedId", "ClickableViewAccessibility"})
     @Override
@@ -120,7 +121,14 @@ public class FlashcardInformationActivity extends AppCompatActivity {
                                 return true; // Dừng lại nếu không có flashcard nào được chọn
                             }
                             //int flashcardID = selectedFlashcard.getId();
-
+                            if (flashcardIndex == flashcardList.size() - 1) {
+                                // Nếu đây là flashcard cuối cùng và đã vuốt một lần thì chặn vuốt tiếp
+                                if (isLastFlashcardSwiped) {
+                                    Log.d("FlashcardSwipe", "Không thể vuốt nữa, đã đến flashcard cuối cùng.");
+                                    return true;
+                                }
+                                isLastFlashcardSwiped = true; // Đánh dấu đã vuốt flashcard cuối cùng
+                            }
                             if (deltaX > 0) {
                                 // Vuốt sang phải (Đánh dấu đã học)
                                 flashcardManager.markFlashcardAsLearned(getApplicationContext(), selectedFlashcard.getId(), new FlashcardApiCallback() {

@@ -82,7 +82,7 @@ public class FlashcardActivity extends AppCompatActivity {
     private ImageView btnNext, btnPrevious;
     private FlashcardAdapter flashcardAdapter;
     private Button btnSort;
-    private String selectedPhoneticsText = null;
+    private String selectedPhoneticsText = "No phonetics"; // Giá trị mặc định
     private List<Flashcard> allFlashcards = new ArrayList<>(); // Lưu trữ tất cả flashcard khi sort
     private boolean isSorted = false; // Trạng thái sort
     private List<Flashcard> filteredFlashcards = new ArrayList<>(); // Danh sách đã lọc theo learned/unlearned
@@ -295,25 +295,22 @@ public class FlashcardActivity extends AppCompatActivity {
                         autoSelectedBtn.setAllCaps(false);
                         autoSelectedBtn.setGravity(Gravity.CENTER);
 
-                        // Đánh dấu là đã chọn
                         autoSelectedBtn.setSelected(true);
-                        autoSelectedBtn.setTag(true); // Đánh dấu nút này hợp lệ
-                        autoSelectedBtn.setVisibility(View.GONE); // Ẩn nút nhưng vẫn giữ trong danh sách xử lý
+                        autoSelectedBtn.setTag(true);
+                        autoSelectedBtn.setVisibility(View.GONE);
 
-                        // Thêm vào danh sách phoneticButtons để tránh lỗi null
                         phoneticButtons.add(autoSelectedBtn);
                         phoneticContainer.addView(autoSelectedBtn);
 
-                        // Thêm dòng text thông báo
                         AppCompatTextView noPhoneticText = new AppCompatTextView(FlashcardActivity.this);
-                        noPhoneticText.setText("No phonetics available");
+                        noPhoneticText.setText("No phonetic available");
                         noPhoneticText.setTextColor(ContextCompat.getColor(FlashcardActivity.this, R.color.black));
                         noPhoneticText.setTextSize(14);
                         noPhoneticText.setGravity(Gravity.CENTER);
-
                         phoneticContainer.addView(noPhoneticText);
-                        selectedPhoneticsText = "No phonetics";
-                        checkEnableDone(phoneticButtons, definitionButtons, speechButtons, btnDone,false);
+
+                        selectedPhoneticsText = "No phonetics"; // Đảm bảo giá trị này không bị ghi đè
+                        checkEnableDone(phoneticButtons, definitionButtons, speechButtons, btnDone, false);
                     }
 
                     // Hiển thị Part of Speech
@@ -370,7 +367,7 @@ public class FlashcardActivity extends AppCompatActivity {
                     AlertDialog.Builder builder = new AlertDialog.Builder(FlashcardActivity.this);
                     builder.setView(dialogView);
                     AlertDialog dialog = builder.create();
-                    dialog.setCancelable(false);
+                    //dialog.setCancelable(false);
                     dialog.setCanceledOnTouchOutside(false);
                     btnDone.setOnClickListener(v -> {
                         String wordflash = word.trim();
@@ -448,9 +445,12 @@ public class FlashcardActivity extends AppCompatActivity {
 
                             @Override
                             public void onFailure(String errorMessage) {
+                                // Ghi log lỗi chi tiết
+                                Log.e("DEBUG", "API createFlashcard failed: " + errorMessage);
                                 runOnUiThread(() -> {
-                                    Log.e("DEBUG", "API Error: " + errorMessage);
-                                    Toast.makeText(FlashcardActivity.this, "Lỗi tạo flashcard: " + errorMessage, Toast.LENGTH_SHORT).show();
+                                    // Kiểm tra null cho errorMessage
+                                    String displayMessage = (errorMessage != null && !errorMessage.isEmpty()) ? errorMessage : "Không có thông tin lỗi";
+                                    Toast.makeText(FlashcardActivity.this, "Lỗi tạo flashcard: " + displayMessage, Toast.LENGTH_SHORT).show();
                                 });
                             }
                         });
@@ -583,7 +583,7 @@ public class FlashcardActivity extends AppCompatActivity {
                                  List<AppCompatButton> speechButtons,
                                  List<AppCompatButton> definitionButtons,
                                  Button btnDone,boolean hasPhonetics) {
-        boolean isPhoneticSelected = false;
+        boolean isPhoneticSelected = !hasPhonetics;
         boolean isSpeechSelected = false;
         boolean isDefinitionSelected = false;
 
@@ -750,7 +750,7 @@ public class FlashcardActivity extends AppCompatActivity {
         }
 
         totalPages = (int) Math.ceil((double) filteredFlashcards.size() / 4);
-        Toast.makeText(this, "Sorted by: " + sortType, Toast.LENGTH_SHORT).show();
+       // Toast.makeText(this, "Sorted by: " + sortType, Toast.LENGTH_SHORT).show();
     }
     private void updateSortedFlashcards() {
         int startIndex = (currentPage - 1) * 4;
