@@ -1,20 +1,30 @@
 package com.example.test.ui;
 
+import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.animation.LinearInterpolator;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -44,6 +54,7 @@ import com.example.test.response.ApiResponseFlashcard;
 import com.example.test.response.ApiResponseFlashcardGroup;
 import com.example.test.response.ApiResponseOneFlashcard;
 import com.example.test.response.FlashcardGroupResponse;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -497,9 +508,40 @@ public class DictionaryActivity extends AppCompatActivity {
             FlashcardGroup selectedGroup = groups.get(which);
             int groupId = selectedGroup.getId(); // Lấy ID nhóm
 
-            addFlashcardToGroup(flashcardId, groupId); // Thêm flashcard vào nhóm
-        });
+            // Hiển thị dialog loading tùy chỉnh
+            Dialog loadingDialog = new Dialog(this);
+            loadingDialog.setContentView(R.layout.custom_toast_success);
+            loadingDialog.setCancelable(false);
+            loadingDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            Window window = loadingDialog.getWindow();
+            if (window != null) {
+                window.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#80000000"))); // Lớp phủ đen mờ
+                window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+            }
+            // Tìm các view trong dialog
+            ProgressBar progressBar = loadingDialog.findViewById(R.id.progressBar);
+            ImageView tickIcon = loadingDialog.findViewById(R.id.tickIcon);
 
+            // Bắt đầu animation cho ProgressBar
+            ObjectAnimator rotation = ObjectAnimator.ofFloat(progressBar, "rotation", 0f, 360f);
+            rotation.setDuration(2000); // 1 giây quay hết 1 vòng
+            rotation.setInterpolator(new LinearInterpolator()); // Quay đều
+            rotation.start();
+
+            loadingDialog.show();
+
+            // Giả lập hoặc thực hiện thêm flashcard vào nhóm
+            new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                addFlashcardToGroup(flashcardId, groupId); // Thêm flashcard vào nhóm
+
+                // Tắt ProgressBar, làm rõ dấu tick
+                progressBar.setVisibility(View.GONE);
+                tickIcon.setAlpha(1f); // Dấu tick rõ ràng
+
+                // Tự động đóng dialog sau 1 giây nữa
+                new Handler(Looper.getMainLooper()).postDelayed(loadingDialog::dismiss, 1500);
+            }, 2000); // Thời gian quay 1 vòng
+        });
         builder.setNegativeButton("Hủy", (dialog, which) -> dialog.dismiss());
         builder.show();
     }
@@ -586,7 +628,7 @@ public class DictionaryActivity extends AppCompatActivity {
             @Override
             public void onSuccess(String result) {
                 runOnUiThread(() -> {
-                    Toast.makeText(DictionaryActivity.this, "Thêm flashcard vào nhóm thành công!", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(DictionaryActivity.this, "Thêm flashcard vào nhóm thành công!", Toast.LENGTH_SHORT).show();
                 });
             }
 
@@ -602,5 +644,4 @@ public class DictionaryActivity extends AppCompatActivity {
             }
         });
     }
-
 }
