@@ -52,7 +52,7 @@
             android:layout_margin="15dp"
             android:drawableLeft="@drawable/jam_write"
             android:drawablePadding="10dp"
-            android:text="Write the answer follow the question"
+            android:text="@string/Writetheanswer"
             android:textSize="24sp"
             android:textStyle="bold" />
 
@@ -71,6 +71,7 @@
                     android:layout_height="200dp"
                     android:layout_marginTop="16dp"
                     android:scaleType="fitCenter"
+                    android:visibility="gone"
                     android:src="@drawable/lesson_placeholder"/> <!-- Ảnh mặc định -->
                 <TextView
                     android:id="@+id/tvContent"
@@ -85,7 +86,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="16dp"
-                    android:text="Answer:"
+                    android:text="@string/Answer"
                     android:textSize="18sp"
                     android:textStyle="bold"/>
                 <LinearLayout

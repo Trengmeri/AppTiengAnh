@@ -29,6 +29,7 @@ import com.example.test.api.DiscussionManager;
 import com.example.test.model.Course;
 import com.example.test.model.Discussion;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class DiscussionActivity extends AppCompatActivity implements DiscussionAdapter.OnReplyClickListener  {
@@ -58,6 +59,10 @@ public class DiscussionActivity extends AppCompatActivity implements DiscussionA
             return insets;
         });
         khaiBao();
+        // Khởi tạo adapter với danh sách rỗng ngay từ đầu
+        discussionAdapter = new DiscussionAdapter(DiscussionActivity.this, new ArrayList<>(), DiscussionActivity.this);
+        rv_discussions.setLayoutManager(new LinearLayoutManager(DiscussionActivity.this));
+        rv_discussions.setAdapter(discussionAdapter);
 
 
         rv_discussions.addOnScrollListener(new RecyclerView.OnScrollListener() {

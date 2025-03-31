@@ -17,6 +17,9 @@
     <color name="gold">#FFD700</color>
     <color name="red">#FF0000</color>
     <color name="light_gray">#D3D3D3</color>
+    <color name="textPrimary">#212121</color> <!-- Màu chữ chính (đen đậm) -->
+    <color name="textSecondary">#757575</color> <!-- Màu chữ phụ (xám nhạt) -->
+
 
 
 </resources>

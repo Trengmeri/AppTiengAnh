@@ -96,7 +96,7 @@ public class Pick1Activity extends AppCompatActivity {
         networkReceiver = new NetworkChangeReceiver();
         materialsManager = new LearningMaterialsManager(this);
 
-        materialsManager.fetchAndLoadImage(1, imgLessonMaterial);
+
 
         // Lấy lessonId từ intent hoặc một nguồn khác
         int lessonId = 2;
@@ -244,6 +244,7 @@ public class Pick1Activity extends AppCompatActivity {
                     List<QuestionChoice> choices = question.getQuestionChoices();
                     if (choices != null && !choices.isEmpty()) {
                         runOnUiThread(() -> {
+                            materialsManager.fetchAndLoadImage(questionId, imgLessonMaterial);
                             tvContent.setText(questionContent);
                             userAnswers.clear();
                             ChoiceAdapter choiceAdapter = new ChoiceAdapter(Pick1Activity.this, choices, userAnswers);

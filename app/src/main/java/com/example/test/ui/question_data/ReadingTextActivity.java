@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -25,6 +26,7 @@ import com.example.test.R;
 import com.example.test.adapter.ChoiceAdapter;
 import com.example.test.adapter.MultipleAdapter;
 import com.example.test.api.ApiCallback;
+import com.example.test.api.LearningMaterialsManager;
 import com.example.test.api.LessonManager;
 import com.example.test.api.QuestionManager;
 import com.example.test.api.ResultManager;
@@ -51,6 +53,8 @@ public class ReadingTextActivity extends AppCompatActivity {
     LessonManager lesManager = new LessonManager();
     ResultManager resultManager = new ResultManager(this);
     TextView tvContent;
+    ImageView imgLessonMaterial;
+    LearningMaterialsManager materialsManager = new LearningMaterialsManager(this);
     private EditText etAnswer;
     private int lessonID,courseID,enrollmentId;
     NetworkChangeReceiver networkReceiver;
@@ -215,6 +219,7 @@ public class ReadingTextActivity extends AppCompatActivity {
                     if (question != null) {
                         // Lấy nội dung câu hỏi
                         String questionContent = question.getQuesContent();
+                        materialsManager.fetchAndLoadImage(question.getId(), imgLessonMaterial);
                         Log.d("ReadingTextActivity", "Câu hỏi: " + questionContent);
 
                         List<QuestionChoice> choices = question.getQuestionChoices();

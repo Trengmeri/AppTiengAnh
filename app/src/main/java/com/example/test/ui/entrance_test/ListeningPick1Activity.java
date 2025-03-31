@@ -27,6 +27,7 @@ import com.example.test.R;
 import com.example.test.adapter.ChoiceAdapter;
 import com.example.test.api.ApiCallback;
 import com.example.test.api.ApiService;
+import com.example.test.api.LearningMaterialsManager;
 import com.example.test.api.LessonManager;
 import com.example.test.api.MediaManager;
 import com.example.test.api.QuestionManager;
@@ -61,10 +62,11 @@ public class ListeningPick1Activity extends AppCompatActivity {
     private int currentStep = 0; // Bước hiện tại (bắt đầu từ 0)
     private int totalSteps; // Tổng số bước trong thanh tiến trình
     private int answerIds;
-    ImageView btnListen;
+    ImageView btnListen, imgLessonMaterial;
     TextView tvQuestion;
     LinearLayout progressBar;
     Button btnCheckResult;
+    LearningMaterialsManager materialsManager = new LearningMaterialsManager(this);
 
     QuestionManager quesManager = new QuestionManager(this);
     LessonManager lesManager = new LessonManager();
@@ -82,6 +84,7 @@ public class ListeningPick1Activity extends AppCompatActivity {
         btnCheckResult = findViewById(R.id.btnCheckResult);
         tvQuestion = findViewById(R.id.tvQuestion);
         recyclerViewChoices = findViewById(R.id.recyclerViewChoices);
+        imgLessonMaterial = findViewById(R.id.imgLessonMaterial);
         int columnCount = 2; // Số cột
         GridLayoutManager layoutManager = new GridLayoutManager(this, columnCount);
         layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
@@ -212,7 +215,31 @@ public class ListeningPick1Activity extends AppCompatActivity {
                     });
                     if (questionIds != null && !questionIds.isEmpty()) {
                         fetchQuestion(questionIds.get(currentStep)); // Lấy câu hỏi đầu tiên
-                        fetchAudioUrl(questionIds.get(currentStep));
+                        materialsManager.fetchAudioByLesId(lessonId,  new ApiCallback<String>() {
+                            @Override
+                            public void onSuccess() {
+
+                            }
+
+                            @Override
+                            public void onSuccess(String result) {
+                                runOnUiThread(() -> { // Sử dụng runOnUiThread ở đây
+                                    if (result!= null) {
+                                        btnListen.setOnClickListener(v -> {
+                                            playAudio(result);
+                                        });
+
+                                    }
+                                });
+                            }
+
+                            @Override
+                            public void onFailure(String errorMessage) {
+
+                            }
+                        });
+
+                        materialsManager.fetchAndLoadImageByLesId(lessonId, imgLessonMaterial);
                     } else {
                         Log.e("ListeningPick1Activity", "Bài học không có câu hỏi.");
                     }

@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -20,6 +21,7 @@ import com.example.test.PopupHelper;
 import com.example.test.R;
 import com.example.test.adapter.MultipleAdapter;
 import com.example.test.api.ApiCallback;
+import com.example.test.api.LearningMaterialsManager;
 import com.example.test.api.LessonManager;
 import com.example.test.api.QuestionManager;
 import com.example.test.api.ResultManager;
@@ -45,7 +47,9 @@ public class GrammarPickManyActivity extends AppCompatActivity {
     private  String questype;
     private RecyclerView recyclerViewChoices;
     private LinearLayout progressBar;
+    private ImageView  imgLessonMaterial;
     QuestionManager quesManager = new QuestionManager(this);
+    LearningMaterialsManager materialsManager = new LearningMaterialsManager(this);
     LessonManager lesManager = new LessonManager();
     private int lessonID,courseID,enrollmentId;
     ResultManager resultManager = new ResultManager(this);
@@ -59,6 +63,7 @@ public class GrammarPickManyActivity extends AppCompatActivity {
 
         recyclerViewChoices = findViewById(R.id.recyclerViewChoices);
         recyclerViewChoices.setLayoutManager(new LinearLayoutManager(this));
+        imgLessonMaterial.findViewById(R.id.imgLessonMaterial);
         tvContent = findViewById(R.id.tvContent);
         Button btnCheckAnswers = findViewById(R.id.btnCheckAnswers);
         progressBar = findViewById(R.id.progressBar);
@@ -187,6 +192,7 @@ public class GrammarPickManyActivity extends AppCompatActivity {
                 public void onSuccess(Question question) {
                     if (question != null) {
                         questype = question.getQuesType();
+                        materialsManager.fetchAndLoadImage(lessonID, imgLessonMaterial);
                         String questionContent = question.getQuesContent();
                         Log.d("GrammarPickManyActivity", "Câu hỏi: " + questionContent);
 

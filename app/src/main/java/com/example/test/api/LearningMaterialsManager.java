@@ -1,15 +1,26 @@
 package com.example.test.api;
 
 import android.content.Context;
+import android.media.MediaPlayer;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 import com.bumptech.glide.Glide;
+import com.example.test.SharedPreferencesManager;
+import com.example.test.model.MediaFile;
+import com.example.test.response.ApiResponseMedia;
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 import java.io.IOException;
+import java.util.List;
+
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.OkHttpClient;
@@ -24,13 +35,63 @@ public class LearningMaterialsManager extends BaseApiManager {
     }
 
     public void fetchAndLoadImage(int questionId, ImageView imageView) {
-        String url = BASE_URL + "/questions/" + questionId;
+        String token = SharedPreferencesManager.getInstance(context).getAccessToken();
+        Request request = new Request.Builder()
+                .url(BASE_URL + "/api/v1/material/questions/" + questionId)
+                .addHeader("Authorization", "Bearer " + token)
+                .build();
         OkHttpClient client = new OkHttpClient();
 
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (response.isSuccessful() && response.body() != null) {
+                    String responseBody = response.body().string();
+                    Log.d("ImageAPI", "JSON trả về: " + responseBody);
+
+                    try {
+                        Gson gson = new Gson();
+                        ApiResponseMedia apiResponse = gson.fromJson(responseBody, ApiResponseMedia.class);
+                        List<MediaFile> mediaFiles = apiResponse.getData();
+
+                        if (mediaFiles != null && !mediaFiles.isEmpty()) {
+                            for (MediaFile media : mediaFiles) {
+                                String mediaUrl = media.getMaterLink().replace("0.0.0.0", "14.225.198.3");
+                                if (mediaUrl.matches(".*\\.(jpg|png|jpeg)$")) {  // Chỉ lấy ảnh
+                                    new Handler(Looper.getMainLooper()).post(() -> {
+                                        imageView.setVisibility(View.VISIBLE);
+                                        Glide.with(context).load(mediaUrl).into(imageView);
+                                    });
+                                    return;  // Dừng sau khi load ảnh đầu tiên
+                                }
+                            }
+                        }
+
+                        // Nếu không có ảnh => Ẩn ImageView
+                        new Handler(Looper.getMainLooper()).post(() -> imageView.setVisibility(View.GONE));
+
+                    } catch (JsonSyntaxException e) {
+                        Log.e("ImageAPI", "Lỗi khi parse JSON: " + e.getMessage());
+                    }
+                } else {
+                    Log.e("ImageAPI", "Lỗi từ server: Mã lỗi " + response.code()+ response.body());
+                }
+            }
+
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.e("ImageAPI", "Lỗi kết nối: " + e.getMessage());
+            }
+        });
+    }
+
+
+
+    public void fetchAudioByQuesId(int questionId, MediaPlayer mediaPlayer) {
+        String token = SharedPreferencesManager.getInstance(context).getAccessToken();
         Request request = new Request.Builder()
-                .url(url)
-                .addHeader("Content-Type", "application/json")
-                .get()
+                .url(BASE_URL + "/api/v1/material/questions/" + questionId)
+                .addHeader("Authorization", "Bearer " + token)
                 .build();
 
         client.newCall(request).enqueue(new Callback() {
@@ -38,40 +99,157 @@ public class LearningMaterialsManager extends BaseApiManager {
             public void onResponse(Call call, Response response) throws IOException {
                 if (response.isSuccessful() && response.body() != null) {
                     String responseBody = response.body().string();
-                    Log.d("API_RESPONSE", responseBody);
+                    Log.d("QuestionManager", "JSON trả về: " + responseBody);
 
                     try {
-                        JSONObject jsonResponse = new JSONObject(responseBody);
-                        JSONArray dataArray = jsonResponse.getJSONArray("data");
+                        Gson gson = new Gson();
+                        ApiResponseMedia apiResponse = gson.fromJson(responseBody, ApiResponseMedia.class);
+                        List<MediaFile> mediaFiles = apiResponse.getData();
 
-                        if (dataArray.length() > 0) {  // Kiểm tra có dữ liệu không
-                            JSONObject materialObject = dataArray.getJSONObject(0);
-                            String imageUrl = materialObject.getString("materLink");
-
-                            // Kiểm tra URL hợp lệ trước khi load ảnh
-                            if (imageUrl != null && !imageUrl.isEmpty() && imageUrl.startsWith("http")) {
-                                new Handler(Looper.getMainLooper()).post(() ->
-                                        Glide.with(context).load(imageUrl).into(imageView)
-                                );
-                            } else {
-                                Log.e("API_ERROR", "URL ảnh không hợp lệ");
+                        if (mediaFiles != null && !mediaFiles.isEmpty()) {
+                            for (MediaFile media : mediaFiles) {
+                                String mediaUrl = media.getMaterLink().replace("0.0.0.0", "14.225.198.3");
+                                if (mediaUrl.endsWith(".mp3")) {
+                                    new Handler(Looper.getMainLooper()).post(() -> {
+                                        try {
+                                            if (mediaPlayer.isPlaying()) {
+                                                mediaPlayer.stop();
+                                                mediaPlayer.reset();
+                                            }
+                                            mediaPlayer.setDataSource(mediaUrl);
+                                            mediaPlayer.prepareAsync();
+                                            mediaPlayer.setOnPreparedListener(MediaPlayer::start);
+                                        } catch (IOException e) {
+                                            Log.e("AudioError", "Lỗi khi phát nhạc: " + e.getMessage());
+                                        }
+                                    });
+                                    return; // Chỉ phát file MP3 đầu tiên tìm thấy
+                                }
                             }
-                        } else {
-                            Log.e("API_ERROR", "Không có dữ liệu tài liệu");
                         }
-
-                    } catch (Exception e) {
-                        Log.e("API_ERROR", "Lỗi JSON: " + e.getMessage());
+                    } catch (JsonSyntaxException e) {
+                        Log.e("QuestionManager", "Lỗi khi parse JSON: " + e.getMessage());
                     }
                 } else {
-                    Log.e("API_ERROR", "Không tìm thấy ảnh. Mã lỗi: " + response.code());
+                    Log.e("QuestionManager", "Lỗi từ server: Mã lỗi " + response.code());
                 }
             }
 
             @Override
             public void onFailure(Call call, IOException e) {
-                Log.e("API_ERROR", "Lỗi kết nối: " + e.getMessage());
+                Log.e("QuestionManager", "Lỗi kết nối: " + e.getMessage());
             }
         });
     }
+
+
+
+
+    public void fetchAndLoadImageByLesId(int lessonId, ImageView imageView) {
+        String token = SharedPreferencesManager.getInstance(context).getAccessToken();
+        Request request = new Request.Builder()
+                .url(BASE_URL + "/api/v1/material/lessons/" + lessonId)
+                .addHeader("Authorization", "Bearer " + token)
+                .build();
+        OkHttpClient client = new OkHttpClient();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (response.isSuccessful() && response.body() != null) {
+                    String responseBody = response.body().string();
+                    Log.d("ImageAPI", "JSON trả về: " + responseBody);
+
+                    try {
+                        Gson gson = new Gson();
+                        ApiResponseMedia apiResponse = gson.fromJson(responseBody, ApiResponseMedia.class);
+                        List<MediaFile> mediaFiles = apiResponse.getData();
+
+                        if (mediaFiles != null && !mediaFiles.isEmpty()) {
+                            for (MediaFile media : mediaFiles) {
+                                String mediaUrl = media.getMaterLink().replace("0.0.0.0", "14.225.198.3");
+                                if (mediaUrl.matches(".*\\.(jpg|png|jpeg)$")) {  // Chỉ lấy ảnh
+                                    new Handler(Looper.getMainLooper()).post(() -> {
+                                        imageView.setVisibility(View.VISIBLE);
+                                        Glide.with(context).load(mediaUrl).into(imageView);
+                                    });
+                                    return;  // Dừng sau khi load ảnh đầu tiên
+                                }
+                            }
+                        }
+
+                        // Nếu không có ảnh => Ẩn ImageView
+                        new Handler(Looper.getMainLooper()).post(() -> imageView.setVisibility(View.GONE));
+
+                    } catch (JsonSyntaxException e) {
+                        Log.e("ImageAPI", "Lỗi khi parse JSON: " + e.getMessage());
+                    }
+                } else {
+                    Log.e("ImageAPI", "Lỗi từ server: Mã lỗi " + response.code()+ response.body());
+                }
+            }
+
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.e("ImageAPI", "Lỗi kết nối: " + e.getMessage());
+            }
+        });
+    }
+
+
+
+    public void fetchAudioByLesId(int lessonId, ApiCallback callback) {
+        String token = SharedPreferencesManager.getInstance(context).getAccessToken();
+        Request request = new Request.Builder()
+                .url(BASE_URL + "/api/v1/material/lessons/" + lessonId)
+                .addHeader("Authorization", "Bearer " + token)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (response.isSuccessful() && response.body() != null) {
+                    String responseBody = response.body().string();
+                    Log.d("QuestionManager", "JSON trả về: " + responseBody);
+
+                    try {
+                        Gson gson = new Gson();
+                        ApiResponseMedia apiResponse = gson.fromJson(responseBody, ApiResponseMedia.class);
+                        List<MediaFile> mediaFiles = apiResponse.getData();
+
+                        if (mediaFiles != null && !mediaFiles.isEmpty()) {
+                            for (MediaFile media : mediaFiles) {
+                                Log.d("MediaFile", media.getFileType() + "   " + media.getMaterLink());
+                                String mediaUrl = media.getMaterLink().replace("0.0.0.0", "14.225.198.3");
+
+                                if (mediaUrl.endsWith(".mp3")) {  // So sánh đúng cách
+                                    callback.onSuccess(mediaUrl);
+                                    Log.d("AudioTest", "Gửi URL về callback: " + mediaUrl);
+                                    return; // Chỉ gửi URL của file đầu tiên và thoát khỏi vòng lặp
+                                }
+                            }
+                        }
+
+                        // Nếu không có file audio hợp lệ, gọi callback thất bại
+                        callback.onFailure("Không tìm thấy file audio phù hợp.");
+                        Log.e("AudioTest", "Không tìm thấy file audio phù hợp.");
+                    } catch (JsonSyntaxException e) {
+                        Log.e("QuestionManager", "Lỗi khi parse JSON: " + e.getMessage());
+                        callback.onFailure("Lỗi phân tích JSON");
+                    }
+                } else {
+                    Log.e("QuestionManager", "Lỗi từ server: Mã lỗi " + response.code());
+                    callback.onFailure("Lỗi từ server: " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.e("QuestionManager", "Lỗi kết nối: " + e.getMessage());
+                callback.onFailure("Lỗi kết nối: " + e.getMessage());
+            }
+        });
+    }
+
+
 }

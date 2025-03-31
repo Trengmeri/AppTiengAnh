@@ -1,5 +1,6 @@
 package com.example.test.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -18,14 +19,17 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.test.NevigateQuestion;
 import com.example.test.R;
 import com.example.test.adapter.LessonAdapter;
 import com.example.test.adapter.ReviewAdapter;
 import com.example.test.api.ApiCallback;
 import com.example.test.api.CourseManager;
 import com.example.test.api.LessonManager;
+import com.example.test.api.ResultManager;
 import com.example.test.api.ReviewManager;
 import com.example.test.model.Course;
+import com.example.test.model.Enrollment;
 import com.example.test.model.Lesson;
 import com.example.test.model.Review;
 
@@ -35,7 +39,7 @@ import java.util.List;
     public class CourseInformationActivity extends AppCompatActivity {
 
     AppCompatButton btnAbout, btnLesson;
-    ImageView btnSendReview, btnBackto;
+    ImageView btnSendReview, btnBackto, btnJoin;
     LinearLayout contentAbout, contentLes;
     TextView txtContentAbout, courseName, numLessons;
     Course curCourse;
@@ -50,6 +54,7 @@ import java.util.List;
     private ReviewManager reviewManager = new ReviewManager(this);
     private LessonManager lessonManager = new LessonManager();
     private CourseManager courseManager = new CourseManager(CourseInformationActivity.this);
+    private ResultManager resultManager = new ResultManager(CourseInformationActivity.this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,6 +84,14 @@ import java.util.List;
 
             @Override
             public void onSuccess(Course course) {
+                Runnable thread = new Runnable() {
+                    @Override
+                    public void run() {
+
+                    }
+                };
+
+
                 runOnUiThread(() -> {
                     curCourse = course;
                     courseName.setText(course.getName());
@@ -124,16 +137,55 @@ import java.util.List;
             contentAbout.setVisibility(View.GONE);
             recyclerViewLesson.setVisibility(View.VISIBLE);
         });
-
-
+        btnJoin.setOnClickListener(v -> {
+            joinCourse();
+        });
 
         btnBackto.setOnClickListener(v -> {
             finish();
         });
-
     }
 
-    private void khaiBao() {
+        private void joinCourse() {
+            resultManager.getEnrollment(courseID, new ApiCallback<Enrollment>() {
+                @Override
+                public void onSuccess() {
+
+                }
+                @Override
+                public void onSuccess(Enrollment result) {
+                    int id = result.getId();
+                    courseManager.joinCourse(id, new ApiCallback() {
+                        @Override
+                        public void onSuccess() {
+                            Log.d("CourseManager", "Course joined successfully");
+                        }
+
+                        @Override
+                        public void onSuccess(Object result) {
+                            Log.d("CourseManager", "Course joined");
+                            Intent intent = new Intent(CourseInformationActivity.this, NevigateQuestion.class);
+                            startActivity(intent);
+
+                        }
+                        @Override
+                        public void onFailure(String errorMessage) {
+                            Log.e("CourseManager", "Error joining course: " + errorMessage);
+//                    Toast.makeText(CourseInformationActivity.this, "Error joining course: " + errorMessage, Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+
+                @Override
+                public void onFailure(String errorMessage) {
+
+                }
+            });
+
+
+        }
+
+        private void khaiBao() {
         courseID = getIntent().getIntExtra("courseId",1);
         // Ánh xạ views
         btnAbout = findViewById(R.id.btnAbout);
@@ -145,9 +197,11 @@ import java.util.List;
         courseName = findViewById(R.id.courseName);
         txtContentAbout = findViewById(R.id.txtContentAbout);
         recyclerView = findViewById(R.id.recyclerViewDiscussion);
+        btnJoin = findViewById(R.id.btnJoin);
 
         contentAbout.setVisibility(View.VISIBLE);
         recyclerViewLesson.setVisibility(View.GONE);
+
     }
 
     public void getCourseInfo(int courseId, ApiCallback<Course> callback) {

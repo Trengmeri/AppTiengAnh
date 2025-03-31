@@ -22,6 +22,8 @@ public class ChooseFieldsActivity extends AppCompatActivity {
     private FieldManager fieldManager;
     private List<String> fields = new ArrayList<>();
 
+
+    @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -106,6 +108,7 @@ public class ChooseFieldsActivity extends AppCompatActivity {
                 });
             }
 
+
             @Override
             public void onSuccess(Object result) {
                 // Not used
@@ -119,4 +122,20 @@ public class ChooseFieldsActivity extends AppCompatActivity {
             }
         });
     }
+
+//    @Override
+//    protected void onStop() {
+//        super.onStop();
+//        SharedPreferences sharedPreferences = getSharedPreferences("LoginPrefs", MODE_PRIVATE);
+//        SharedPreferences.Editor editor = sharedPreferences.edit();
+//
+//        // Kiểm tra nếu chưa chọn trong SelectActivity thì mới lưu
+//        boolean hasSelectedOption = sharedPreferences.getBoolean("hasSelectedOption", false);
+//        if (!hasSelectedOption) {
+//            editor.putString("lastActivity", this.getClass().getName());
+//            editor.apply();
+//        }
+//    }
+
+
 }

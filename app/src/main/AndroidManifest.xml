@@ -96,8 +96,9 @@
             android:name=".ui.CourseInformationActivity"
             android:exported="true" />
         <activity
-            android:name=".ui.CourseActivity"
+            android:name=".ui.ReviewActivity"
             android:exported="true" />
+
         <activity
             android:name=".ui.GroupFlashcardActivity"
             android:exported="true" />

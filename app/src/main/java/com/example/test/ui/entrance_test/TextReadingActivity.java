@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -19,6 +20,7 @@ import com.example.test.NetworkChangeReceiver;
 import com.example.test.PopupHelper;
 import com.example.test.R;
 import com.example.test.api.ApiCallback;
+import com.example.test.api.LearningMaterialsManager;
 import com.example.test.api.LessonManager;
 import com.example.test.api.QuestionManager;
 import com.example.test.api.ResultManager;
@@ -47,6 +49,7 @@ public class TextReadingActivity extends AppCompatActivity {
     private int totalSteps; // Tổng số bước trong thanh tiến trình
     private List<Integer> questionIds;
     private Button btnCheckAnswer;
+    private ImageView imgLessonMaterial;
     QuestionManager quesManager = new QuestionManager(this);
     LessonManager lesManager = new LessonManager();
     ResultManager resultManager = new ResultManager(this);
@@ -55,6 +58,7 @@ public class TextReadingActivity extends AppCompatActivity {
     LinearLayout progressBar;
     private int lessonID,courseID,enrollmentId;
     NetworkChangeReceiver networkReceiver;
+    LearningMaterialsManager materialsManager = new LearningMaterialsManager(this);
     private int answerIds;
     private  String questype;
     private List<Question> questions; // Danh sách câu hỏi
@@ -70,6 +74,7 @@ public class TextReadingActivity extends AppCompatActivity {
         tvContent = findViewById(R.id.tvContent);
         etAnswer = findViewById(R.id.etAnswer);
          progressBar = findViewById(R.id.progressBar);
+         imgLessonMaterial = findViewById(R.id.imgLessonMaterial);
         createProgressBars(totalSteps, currentStep); // Cập nhật thanh tiến trình mỗi lần chuyển câu
         networkReceiver = new NetworkChangeReceiver();
 
@@ -179,6 +184,7 @@ public class TextReadingActivity extends AppCompatActivity {
                     });
 
                     if (questionIds != null && !questionIds.isEmpty()) {
+                        materialsManager.fetchAndLoadImageByLesId(lessonId, imgLessonMaterial);
                         fetchQuestion(questionIds.get(currentStep));
                     } else {
                         Log.e("Pick1Activity", "Bài học không có câu hỏi.");
@@ -210,6 +216,7 @@ public class TextReadingActivity extends AppCompatActivity {
                 if (question != null) {
                     // Lấy nội dung câu hỏi
                     questype = question.getQuesType();
+                    materialsManager.fetchAndLoadImage(questionId, imgLessonMaterial);
                     String questionContent = question.getQuesContent();
                     runOnUiThread(() -> tvContent.setText(questionContent));
                     List<QuestionChoice> choices = question.getQuestionChoices();
