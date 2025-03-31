@@ -67,6 +67,7 @@ public class GrammarPickManyActivity extends AppCompatActivity {
         tvContent = findViewById(R.id.tvContent);
         Button btnCheckAnswers = findViewById(R.id.btnCheckAnswers);
         progressBar = findViewById(R.id.progressBar);
+        createProgressBars(totalSteps, currentQuestionIndex); // Cập nhật thanh tiến trình mỗi lần chuyển câu
 // Nhận dữ liệu từ Intent
         currentQuestionIndex = getIntent().getIntExtra("currentQuestionIndex", 0);
         questions = (List<Question>) getIntent().getSerializableExtra("questions");
@@ -74,7 +75,8 @@ public class GrammarPickManyActivity extends AppCompatActivity {
         lessonID = getIntent().getIntExtra("lessonID",1);
         enrollmentId = getIntent().getIntExtra("enrollmentId", 1);
         Log.d("pickmany","Lesson ID: "+ lessonID + "courseID: "+ courseID);
-        createProgressBars(totalSteps, currentQuestionIndex);
+        totalSteps= questions.size();
+        createProgressBars(totalSteps, currentQuestionIndex); // Cập nhật thanh tiến trình mỗi lần chuyển câu
 
         // Hiển thị câu hỏi hiện tại
         loadQuestion(currentQuestionIndex);

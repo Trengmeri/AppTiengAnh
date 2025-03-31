@@ -72,14 +72,15 @@ public class RecordQuestionActivity extends AppCompatActivity implements SpeechR
         Button btnCheckResult = findViewById(R.id.btnCheckResult);
         tvQuestion = findViewById(R.id.tvQuestion);
         key = findViewById(R.id.key);
-
+        createProgressBars(totalSteps, currentQuestionIndex);
 
         currentQuestionIndex = getIntent().getIntExtra("currentQuestionIndex", 0);
         questions = (List<Question>) getIntent().getSerializableExtra("questions");
         courseID = getIntent().getIntExtra("courseID", 1);
         lessonID = getIntent().getIntExtra("lessonID", 1);
         enrollmentId = getIntent().getIntExtra("enrollmentId", 1);
-
+        totalSteps= questions.size();
+        createProgressBars(totalSteps, currentQuestionIndex);
         loadQuestion(currentQuestionIndex);
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
@@ -134,7 +135,7 @@ public class RecordQuestionActivity extends AppCompatActivity implements SpeechR
                                 currentStep++; // Tăng currentStep
                                 currentQuestionIndex++;
                                 if (currentQuestionIndex < questions.size()) {
-                                    updateProgressBar(findViewById(R.id.progressBar), currentStep);
+                                    createProgressBars(totalSteps, currentQuestionIndex);
                                     loadQuestion(currentQuestionIndex);
                                 } else {
                                     finishLesson();
@@ -305,18 +306,22 @@ public class RecordQuestionActivity extends AppCompatActivity implements SpeechR
         finish();
     }
 
-    private void updateProgressBar(LinearLayout progressBarSteps, int step) {
-        if (step < progressBarSteps.getChildCount()) {
-            final View currentStepView = progressBarSteps.getChildAt(step);
+    private void createProgressBars(int totalQuestions, int currentProgress) {
+        LinearLayout progressContainer = findViewById(R.id.progressContainer);
+        progressContainer.removeAllViews(); // Xóa thanh cũ nếu có
 
-            ObjectAnimator colorAnimator = ObjectAnimator.ofArgb(
-                    currentStepView,
-                    "backgroundColor",
-                    Color.parseColor("#E0E0E0"),
-                    Color.parseColor("#C4865E")
-            );
-            colorAnimator.setDuration(200);
-            colorAnimator.start();
+        for (int i = 0; i < totalQuestions; i++) {
+            View bar = new View(this);
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(32, 8); // Kích thước mỗi thanh
+            params.setMargins(4, 4, 4, 4); // Khoảng cách giữa các thanh
+            bar.setLayoutParams(params);
+
+            if (i < currentProgress) {
+                bar.setBackgroundColor(Color.parseColor("#C4865E")); // Màu đã hoàn thành
+            } else {
+                bar.setBackgroundColor(Color.parseColor("#E0E0E0")); // Màu chưa hoàn thành
+            }
+            progressContainer.addView(bar);
         }
     }
 }
