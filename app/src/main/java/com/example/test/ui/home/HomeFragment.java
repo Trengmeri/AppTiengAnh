@@ -229,7 +229,8 @@ public class HomeFragment extends Fragment {
 
             @Override
             public void onSuccess(String courseName) {
-                requireActivity().runOnUiThread(() -> {
+                if (getActivity() == null) return; // Ngăn lỗi khi Fragment đã bị tách khỏi Activity
+                getActivity().runOnUiThread(() -> {
                     courseNumber.setText("Course " + courseId);
                     courseTitle.setText(courseName);
                 });
@@ -259,7 +260,7 @@ public class HomeFragment extends Fragment {
                         avatarUrl = avatarUrl.replace("0.0.0.0", "14.225.198.3");
 
                         if (isAdded()) { // Check before using Glide
-                            Glide.with(HomeFragment.this)
+                            Glide.with(requireActivity())
                                     .load(avatarUrl)
                                     .placeholder(R.drawable.img_avt_profile)
                                     .error(R.drawable.img_avt_profile)
