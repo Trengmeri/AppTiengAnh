@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.test.R;
@@ -79,18 +80,18 @@ public class HomeActivity extends AppCompatActivity {
     private void reloadFragment(int position) {
         MainAdapter adapter = (MainAdapter) vpgMain.getAdapter();
         if (adapter != null) {
-            // Xóa Fragment cũ
-            getSupportFragmentManager().beginTransaction()
-                    .remove(adapter.getFragment(position))
-                    .commit();
-
-            // Thông báo adapter cập nhật lại Fragment mới
+            Fragment fragment = adapter.getFragment(position);
+            if (fragment != null && fragment.isAdded()) {
+                getSupportFragmentManager().beginTransaction()
+                        .remove(fragment)
+                        .commit();
+            }
             adapter.notifyItemChanged(position);
         }
 
-        // Chuyển đến trang tương ứng
         vpgMain.setCurrentItem(position, false);
     }
+
 
 
     private void updateIconColors(int position) {
