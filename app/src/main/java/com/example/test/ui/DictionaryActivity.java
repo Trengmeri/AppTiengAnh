@@ -58,7 +58,7 @@ public class DictionaryActivity extends AppCompatActivity {
     EditText edtWord;
     ImageView btnFind;
     LinearLayout wordContainer;
-    TextView dicBacktoExplore;
+    TextView dicBacktoExplore,tvNotfound;
     Button btnAdd;
     private FlashcardManager flashcardManager;
     private String selectedPhoneticsText = null;
@@ -79,6 +79,7 @@ public class DictionaryActivity extends AppCompatActivity {
         btnFind = findViewById(R.id.btnFind);
         wordContainer = findViewById(R.id.WordContainer);
         dicBacktoExplore = findViewById(R.id.dicBacktoExplore);
+        tvNotfound= findViewById(R.id.tvNotfound);
         flashcardManager = new FlashcardManager();
 
         btnFind.setOnClickListener(view -> {
@@ -105,7 +106,7 @@ public class DictionaryActivity extends AppCompatActivity {
                         );
                     }
                 });
-            } else {
+            } else{
                 showDefinition(word);
             }
         });
@@ -149,7 +150,7 @@ public class DictionaryActivity extends AppCompatActivity {
                     List<AppCompatButton> speechButtons = new ArrayList<>();
                     List<AppCompatButton> definitionButtons = new ArrayList<>();
                     wordLabel.setVisibility(View.VISIBLE);
-                    wordLabel.setText(getString(R.string.word) + ": " + wordData.getWord());
+                    wordLabel.setText(getString(R.string.word)  + wordData.getWord());
                     // Hiển thị phonetics
                     if (mergedWordData.getPhonetics() != null && !mergedWordData.getPhonetics().isEmpty()) {
                         phoneticButtons.clear();
@@ -323,7 +324,9 @@ public class DictionaryActivity extends AppCompatActivity {
             @Override
             public void onFailure(String errorMessage) {
                 runOnUiThread(() -> {
-                    Toast.makeText(DictionaryActivity.this, "Error: " + errorMessage, Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(DictionaryActivity.this, "Error: " + errorMessage, Toast.LENGTH_SHORT).show();
+                    tvNotfound.setVisibility(View.VISIBLE);
+                    tvNotfound.setText("Not found the word '" + word + "'.");
                 });
             }
         });

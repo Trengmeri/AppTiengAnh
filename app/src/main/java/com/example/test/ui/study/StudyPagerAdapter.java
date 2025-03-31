@@ -23,9 +23,6 @@ public class StudyPagerAdapter extends FragmentStateAdapter {
         allCourseFragment = new AllCourseFragment();
         myCourseFragment = new MyCourseFragment();
     }
-
-
-
     public void addFragment(Fragment fragment) {
         fragmentList.add(fragment);
     }

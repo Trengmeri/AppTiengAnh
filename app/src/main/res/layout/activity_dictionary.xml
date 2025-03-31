@@ -44,6 +44,15 @@
                 android:layout_height="wrap_content"
                 android:background="@drawable/icon_find"/>
         </LinearLayout>
+        <TextView
+            android:id="@+id/tvNotfound"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_marginStart="@dimen/dp_30"
+            android:textStyle="italic"
+            android:textSize="15sp"
+            android:visibility="gone"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
