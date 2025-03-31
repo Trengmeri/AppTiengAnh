@@ -82,6 +82,7 @@ public class ListeningChoiceActivity extends AppCompatActivity {
         btnCheckResult = findViewById(R.id.btnCheckResult);
         recyclerViewChoices = findViewById(R.id.recyclerViewChoices);
         imgLessonMaterial = findViewById(R.id.imgLessonMaterial);
+        createProgressBars(totalSteps, currentQuestionIndex);
         int columnCount = 2; // Số cột
         GridLayoutManager layoutManager = new GridLayoutManager(this, columnCount);
         layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
@@ -98,7 +99,8 @@ public class ListeningChoiceActivity extends AppCompatActivity {
         questions = (List<Question>) getIntent().getSerializableExtra("questions");
         courseID = getIntent().getIntExtra("courseID",1);
         lessonID = getIntent().getIntExtra("lessonID",1);
-
+        totalSteps= questions.size();
+        createProgressBars(totalSteps, currentQuestionIndex);
         enrollmentId = getIntent().getIntExtra("enrollmentId", 1);
 
 
@@ -161,7 +163,7 @@ public class ListeningChoiceActivity extends AppCompatActivity {
                                 currentQuestionIndex++;
                                 if (currentQuestionIndex < questions.size()) {
                                     Question nextQuestion = questions.get(currentQuestionIndex);
-                                    updateProgressBar(progressBar, currentQuestionIndex);
+                                    createProgressBars(totalSteps, currentQuestionIndex);
                                     if (nextQuestion.getQuesType().equals("TEXT")) {
                                         Intent intent = new Intent(ListeningChoiceActivity.this, ListeningQuestionActivity.class);
                                         intent.putExtra("currentQuestionIndex", currentQuestionIndex);
@@ -361,19 +363,22 @@ public class ListeningChoiceActivity extends AppCompatActivity {
             mediaPlayer = null;
         }
     }
-    private void updateProgressBar(LinearLayout progressBarSteps, int step) {
-        if (step < progressBarSteps.getChildCount()) {
-            final View currentStepView = progressBarSteps.getChildAt(step);
+    private void createProgressBars(int totalQuestions, int currentProgress) {
+        LinearLayout progressContainer = findViewById(R.id.progressContainer);
+        progressContainer.removeAllViews(); // Xóa thanh cũ nếu có
 
-            // Animation thay đổi màu
-            ObjectAnimator colorAnimator = ObjectAnimator.ofArgb(
-                    currentStepView,
-                    "backgroundColor",
-                    Color.parseColor("#E0E0E0"),  // Màu ban đầu
-                    Color.parseColor("#C4865E")   // Màu đã hoàn thành
-            );
-            colorAnimator.setDuration(200); // Thời gian chuyển đổi màu
-            colorAnimator.start();
+        for (int i = 0; i < totalQuestions; i++) {
+            View bar = new View(this);
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(32, 8); // Kích thước mỗi thanh
+            params.setMargins(4, 4, 4, 4); // Khoảng cách giữa các thanh
+            bar.setLayoutParams(params);
+
+            if (i < currentProgress) {
+                bar.setBackgroundColor(Color.parseColor("#C4865E")); // Màu đã hoàn thành
+            } else {
+                bar.setBackgroundColor(Color.parseColor("#E0E0E0")); // Màu chưa hoàn thành
+            }
+            progressContainer.addView(bar);
         }
     }
 }

@@ -57,13 +57,15 @@ public class WrittingActivity extends AppCompatActivity {
         etAnswer = findViewById(R.id.etAnswer);
         btnCheckAnswers = findViewById(R.id.btnCheckAnswers);
         quesManager = new QuestionManager(this);
+        createProgressBars(totalSteps, currentQuestionIndex);
 
         currentQuestionIndex = getIntent().getIntExtra("currentQuestionIndex", 0);
         questions = (List<Question>) getIntent().getSerializableExtra("questions");
         courseID = getIntent().getIntExtra("courseID",1);
         lessonID = getIntent().getIntExtra("lessonID",1);
         enrollmentId = getIntent().getIntExtra("enrollmentId", 1);
-
+        totalSteps= questions.size();
+        createProgressBars(totalSteps, currentQuestionIndex);
 
         // Hiển thị câu hỏi hiện tại
         loadQuestion(currentQuestionIndex);
@@ -148,7 +150,7 @@ public class WrittingActivity extends AppCompatActivity {
                                 currentStep++; // Tăng currentStep
                                 currentQuestionIndex++;
                                 if (currentQuestionIndex < questions.size()) {
-                                    updateProgressBar(findViewById(R.id.progressBar), currentStep);
+                                    createProgressBars(totalSteps, currentQuestionIndex);
                                     loadQuestion(currentQuestionIndex);
                                 } else {
                                     finishLesson();
@@ -220,19 +222,22 @@ public class WrittingActivity extends AppCompatActivity {
         });
     }
 
-    private void updateProgressBar(LinearLayout progressBarSteps, int step) {
-        if (step < progressBarSteps.getChildCount()) {
-            final View currentStepView = progressBarSteps.getChildAt(step);
+    private void createProgressBars(int totalQuestions, int currentProgress) {
+        LinearLayout progressContainer = findViewById(R.id.progressContainer);
+        progressContainer.removeAllViews(); // Xóa thanh cũ nếu có
 
-            // Animation thay đổi màu
-            ObjectAnimator colorAnimator = ObjectAnimator.ofArgb(
-                    currentStepView,
-                    "backgroundColor",
-                    Color.parseColor("#E0E0E0"),  // Màu ban đầu
-                    Color.parseColor("#C4865E")   // Màu đã hoàn thành
-            );
-            colorAnimator.setDuration(200); // Thời gian chuyển đổi màu
-            colorAnimator.start();
+        for (int i = 0; i < totalQuestions; i++) {
+            View bar = new View(this);
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(32, 8); // Kích thước mỗi thanh
+            params.setMargins(4, 4, 4, 4); // Khoảng cách giữa các thanh
+            bar.setLayoutParams(params);
+
+            if (i < currentProgress) {
+                bar.setBackgroundColor(Color.parseColor("#C4865E")); // Màu đã hoàn thành
+            } else {
+                bar.setBackgroundColor(Color.parseColor("#E0E0E0")); // Màu chưa hoàn thành
+            }
+            progressContainer.addView(bar);
         }
     }
 }

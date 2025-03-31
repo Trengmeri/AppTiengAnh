@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Handler;
 import android.os.Looper;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -69,6 +70,8 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseView
         }
         holder.tvCourseTitle.setText(course.getName());
         holder.tvCourseDescription.setText(course.getIntro());
+        holder.tvCourseDescription.setMaxLines(3);
+        holder.tvCourseDescription.setEllipsize(TextUtils.TruncateAt.END);
 //        if()
 //
 //        // Xóa tất cả lesson trước khi thêm mới
