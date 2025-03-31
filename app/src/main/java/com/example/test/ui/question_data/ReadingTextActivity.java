@@ -86,9 +86,10 @@ public class ReadingTextActivity extends AppCompatActivity {
         Log.e("pick1","Lesson ID: "+ lessonID + "courseID: "+ courseID);
 
 
+
         // Hiển thị câu hỏi hiện tại
         loadQuestion(currentQuestionIndex);
-
+        materialsManager.fetchAndLoadImageByLesId(lessonID, imgLessonMaterial);
 //        // Lấy lessonId từ intent hoặc một nguồn khác
 //        int lessonId = 1;
 //        fetchLessonAndQuestions(lessonId); // Gọi phương thức để lấy bài học và câu hỏi

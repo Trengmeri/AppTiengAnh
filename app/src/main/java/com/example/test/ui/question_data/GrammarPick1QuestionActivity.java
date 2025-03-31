@@ -100,6 +100,7 @@ public class GrammarPick1QuestionActivity extends AppCompatActivity {
 
         // Hiển thị câu hỏi hiện tại
         loadQuestion(currentQuestionIndex);
+        materialsManager.fetchAndLoadImageByLesId(lessonID, imgLessonMaterial);
 
 
 //        // Lấy lessonId từ intent hoặc một nguồn khác
