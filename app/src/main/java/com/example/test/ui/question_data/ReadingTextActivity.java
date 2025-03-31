@@ -72,6 +72,7 @@ public class ReadingTextActivity extends AppCompatActivity {
         btnCheckAnswer = findViewById(R.id.btnCheckAnswer);
         tvContent = findViewById(R.id.tvContent);
         etAnswer = findViewById(R.id.etAnswer);
+        imgLessonMaterial = findViewById(R.id.imgLessonMaterial);
         LinearLayout progressBar = findViewById(R.id.progressBar);
         updateProgressBar(progressBar, currentQuestionIndex);
         networkReceiver = new NetworkChangeReceiver();
