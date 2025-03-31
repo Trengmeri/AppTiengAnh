@@ -6,7 +6,10 @@ import android.content.Context;
 import android.util.Log;
 
 import com.example.test.SharedPreferencesManager;
+import com.example.test.model.Enrollment;
 import com.example.test.model.EvaluationResult;
+import com.example.test.response.ApiResponseEnrollment;
+import com.google.gson.Gson;
 
 import org.json.JSONObject;
 
@@ -232,6 +235,135 @@ public class ApiService {
             public void onResponse(Call call, Response response) throws IOException {
                 String responseBody = response.body().string();
                 Log.d("API_RESPONSE", "Complete Test Response: " + responseBody);
+
+                try {
+                    JSONObject responseObject = new JSONObject(responseBody);
+                    int statusCode = responseObject.optInt("statusCode", -1);
+
+                    if (statusCode == 200) {
+                        callback.onSuccess();
+                    } else {
+                        callback.onFailure("Failed with status: " + statusCode);
+                    }
+                } catch (Exception e) {
+                    callback.onFailure("JSON parsing error: " + e.getMessage());
+                }
+            }
+        });
+    }
+
+    public void saveEnrollment(int enrollmentId, ApiCallback callback) {
+        String token = SharedPreferencesManager.getInstance(context).getAccessToken();
+
+        RequestBody emptyBody = RequestBody.create("", MediaType.get("application/json; charset=utf-8"));
+
+        Request request = new Request.Builder()
+                .url(BASE_URL + "/api/v1/enrollments/"+ enrollmentId +"/save-completion")
+                .addHeader("Authorization", "Bearer " + token)
+                .post(emptyBody)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    String responseBody = response.body().string();
+                    Log.d("saveEnrollment", "Phản hồi từ server: " + responseBody);
+
+                    Gson gson = new Gson();
+
+                    ApiResponseEnrollment apiResponse = gson.fromJson(responseBody, ApiResponseEnrollment.class);
+
+                    if (apiResponse.getStatusCode() == 200) {
+                        Enrollment enrollment = apiResponse.getData(); // Lấy `data` trong JSON
+
+                        if (enrollment != null) {
+                            Log.d("saveEnrollment", "Enrollment ID: " + enrollment.getId() +
+                                    ", Point: " + enrollment.getTotalPoints() +
+                                    ", Comp: " + enrollment.getComLevel());
+                            callback.onSuccess(enrollment);
+                        } else {
+                            callback.onFailure("Không có dữ liệu Enrollment.");
+                        }
+                    } else {
+                        callback.onFailure("Lỗi từ server: " + apiResponse.getMessage());
+                    }
+                } else {
+                    Log.e("saveEnrollment", "Lỗi từ server: Mã lỗi " + response.code());
+                    callback.onFailure("Lỗi từ server: Mã lỗi " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.e("saveEnrollment", "Lỗi kết nối: " + e.getMessage());
+                callback.onFailure("Không thể kết nối tới API.");
+            }
+        });
+    }
+
+
+    public void recomment(int enrollmentId, ApiCallback callback) {
+        String token = SharedPreferencesManager.getInstance(context).getAccessToken();
+
+        RequestBody emptyBody = RequestBody.create("", MediaType.get("application/json; charset=utf-8"));
+
+        Request request = new Request.Builder()
+                .url(BASE_URL + "/api/v1/enrollments/"+ enrollmentId +"/recommendations")
+                .addHeader("Authorization", "Bearer " + token)
+                .post(emptyBody)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.e("API_ERROR", "Save Enrollment Failed: " + e.getMessage());
+                callback.onFailure("Request error: " + e.getMessage());
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String responseBody = response.body().string();
+                Log.d("API_RESPONSE", "Save Enrollment Response: " + responseBody);
+
+                try {
+                    JSONObject responseObject = new JSONObject(responseBody);
+                    int statusCode = responseObject.optInt("statusCode", -1);
+
+                    if (statusCode == 200) {
+                        callback.onSuccess();
+                    } else {
+                        callback.onFailure("Failed with status: " + statusCode);
+                    }
+                } catch (Exception e) {
+                    callback.onFailure("JSON parsing error: " + e.getMessage());
+                }
+            }
+        });
+    }
+
+    public void updateResult(int enrollmentId, ApiCallback callback) {
+        String token = SharedPreferencesManager.getInstance(context).getAccessToken();
+
+        RequestBody emptyBody = RequestBody.create("", MediaType.get("application/json; charset=utf-8"));
+
+        Request request = new Request.Builder()
+                .url(BASE_URL + "/api/v1/enrollments/"+ enrollmentId +"/update-learning")
+                .addHeader("Authorization", "Bearer " + token)
+                .post(emptyBody)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.e("API_ERROR", "Save Enrollment Failed: " + e.getMessage());
+                callback.onFailure("Request error: " + e.getMessage());
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String responseBody = response.body().string();
+                Log.d("API_RESPONSE", "Save Enrollment Response: " + responseBody);
 
                 try {
                     JSONObject responseObject = new JSONObject(responseBody);

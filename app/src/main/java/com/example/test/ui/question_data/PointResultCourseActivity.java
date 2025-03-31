@@ -51,7 +51,7 @@ public class PointResultCourseActivity extends AppCompatActivity {
     private String status;
     private Handler handler = new Handler();
     private Runnable callApiRunnable;
-    private static final int DELAY_MILLIS = 2500; // 5 giây
+    private static final int DELAY_MILLIS = 1500; // 1,5 giây
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -322,12 +322,13 @@ public class PointResultCourseActivity extends AppCompatActivity {
     }
 
     private void callCompleteTestApi(int enrollmentId, int totalPointR,int totalPointL,int totalPointS,int totalPointW) {
-        resultManager.calculateEnrollment(enrollmentId, new ApiCallback<Enrollment>(){
+        apiService.saveEnrollment(enrollmentId, new ApiCallback<Enrollment>(){
             @Override
             public void onSuccess() {}
 
             @Override
             public void onSuccess(Enrollment enrollment) {
+                Log.d("saveEnrollment", "save enrollment thanh cong");
                 compCourse = enrollment.getComLevel();
                 coursePoint = enrollment.getTotalPoints();
                 runOnUiThread(() -> {
@@ -360,14 +361,49 @@ public class PointResultCourseActivity extends AppCompatActivity {
                                         Log.e("PointResultActivity", "Lỗi khi hoàn thành bài kiểm tra: " + errorMessage);
                                     }
                                 });
+                    } else {
+                        apiService.updateResult(enrollmentId, new ApiCallback() {
+                            @Override
+                            public void onSuccess() {
+                                Log.d("update result", "update result thanh cong");
+                                apiService.recomment(enrollmentId, new ApiCallback() {
+                                    @Override
+                                    public void onSuccess() {
+                                        Log.d("recommnet", "recomment enrollment thanh cong");
+                                    }
+
+                                    @Override
+                                    public void onSuccess(Object result) {}
+
+                                    @Override
+                                    public void onFailure(String errorMessage) {
+                                        Log.d("recomment", errorMessage);
+                                    }
+                                });
+                            }
+
+                            @Override
+                            public void onSuccess(Object result) {
+
+                            }
+
+                            @Override
+                            public void onFailure(String errorMessage) {
+                                Log.d("update result", errorMessage);
+                            }
+                        });
                     }
+
+
                 });
             }
 
-            @Override
-            public void onFailure(String errorMessage) {
+                @Override
+                public void onFailure(String errorMessage) {
+                    Log.d("saveEnrollment", errorMessage);
+                }
 
-            }
+
         });
     }
 }
