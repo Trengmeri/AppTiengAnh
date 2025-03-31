@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.example.test.R;
+import com.example.test.api.AddFlashCardApiCallback;
 import com.example.test.api.AnimationEndCallback;
 import com.example.test.response.ApiResponseFlashcard;
 import com.example.test.api.FlashcardManager;
@@ -337,7 +338,38 @@ public class FlashcardInformationActivity extends AppCompatActivity {
             Log.d("DEBUG_DEFINITIONS", "Definitions: " + definitions);
             Log.d("DEBUG_EXAMPLES", "Examples: " + examples);
             // Thiết lập sự kiện click cho các nút với dữ liệu từ flashcard
+            TextView tvVietnameseMeaning = findViewById(R.id.tvVietnameseDef);
+            if (definitions != null && !definitions.isEmpty()) {
+                try {
+                    flashcardManager.translateDefinition(definitions,
+                            new AddFlashCardApiCallback<String>() {
+                                @Override
+                                public void onSuccess() {}
 
+                                @Override
+                                public void onSuccess(String vietnameseMeaning) {
+                                    runOnUiThread(() -> {
+                                        tvVietnameseMeaning.setText(vietnameseMeaning); // Hiển thị nghĩa tiếng Việt
+                                        Log.d("FlashcardInfo", "Nghĩa tiếng Việt: " + vietnameseMeaning);
+                                    });
+                                }
+
+                                @Override
+                                public void onFailure(String errorMessage) {
+                                    runOnUiThread(() -> {
+                                        Toast.makeText(FlashcardInformationActivity.this,
+                                                "Lỗi khi dịch: " + errorMessage,
+                                                Toast.LENGTH_SHORT).show();
+                                    });
+                                }
+                            });
+                } catch (UnsupportedEncodingException e) {
+                    Log.e("FlashcardInfo", "Lỗi mã hóa: " + e.getMessage());
+                    throw new RuntimeException(e);
+                }
+            } else {
+                tvVietnameseMeaning.setText("Không có định nghĩa để dịch");
+            }
             btnDefinition.setOnClickListener(v -> {
                 Log.d("FlashcardInfo", "BtnDef clicked: " + definitions + ", example: " + examples);
                 flipCard(definitions, examples);
