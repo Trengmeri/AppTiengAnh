@@ -59,10 +59,19 @@ public class ListeningChoiceActivity extends AppCompatActivity {
     private int totalSteps; // Tổng số bước trong thanh tiến trình
     private int lessonID,courseID,enrollmentId;
     private int answerIds;
-    private  String questype;
-    ImageView btnListen, imgLessonMaterial;
+    private  String questype,audioUrl;
+    private LinearLayout btnListen;
+    ImageView btnReplay, imgLessonMaterial;
     TextView tvQuestion;
     Button btnCheckResult;
+    // Thêm các View cho vòng tròn sóng âm
+    private View wave1, wave2, wave3;
+    private ObjectAnimator animator1ScaleX, animator1ScaleY, animator1Alpha;
+    private ObjectAnimator animator2ScaleX, animator2ScaleY, animator2Alpha;
+    private ObjectAnimator animator3ScaleX, animator3ScaleY, animator3Alpha;
+    private boolean isPlayingAnimation = false;
+    private int currentPosition = 0; // Lưu vị trí hiện tại của âm thanh
+    private boolean isPaused = false; // Trạng thái tạm dừng của âm thanh
 
     QuestionManager quesManager = new QuestionManager(this);
     LessonManager lesManager = new LessonManager();
@@ -82,6 +91,14 @@ public class ListeningChoiceActivity extends AppCompatActivity {
         btnCheckResult = findViewById(R.id.btnCheckResult);
         recyclerViewChoices = findViewById(R.id.recyclerViewChoices);
         imgLessonMaterial = findViewById(R.id.imgLessonMaterial);
+        btnReplay=findViewById(R.id.btnReplay);
+        // Ánh xạ các vòng tròn sóng âm
+        wave1 = findViewById(R.id.wave_1);
+        wave2 = findViewById(R.id.wave_2);
+        wave3 = findViewById(R.id.wave_3);
+
+        // Khởi tạo các animator nhưng không chạy ngay
+        setupWaveAnimators();
         createProgressBars(totalSteps, currentQuestionIndex);
         int columnCount = 2; // Số cột
         GridLayoutManager layoutManager = new GridLayoutManager(this, columnCount);
@@ -103,7 +120,9 @@ public class ListeningChoiceActivity extends AppCompatActivity {
         createProgressBars(totalSteps, currentQuestionIndex);
         enrollmentId = getIntent().getIntExtra("enrollmentId", 1);
 
-
+        btnReplay.setOnClickListener(v -> {
+            replayAudio();
+        });
         // Hiển thị câu hỏi hiện tại
         loadQuestion(currentQuestionIndex);
         materialsManager.fetchAndLoadImageByLesId(lessonID, imgLessonMaterial);
@@ -118,8 +137,10 @@ public class ListeningChoiceActivity extends AppCompatActivity {
             public void onSuccess(String result) {
                 runOnUiThread(() -> { // Sử dụng runOnUiThread ở đây
                     if (result!= null) {
+                        audioUrl = result;
                         btnListen.setOnClickListener(v -> {
-                            playAudio(result);
+                            Log.d("AudioTest", "Đã click vào nút nghe");
+                            toggleAudioAndAnimation();
                         });
 
                     }
@@ -132,11 +153,16 @@ public class ListeningChoiceActivity extends AppCompatActivity {
             }
         });
 
+
         btnCheckResult.setOnClickListener(v -> {
             if (mediaPlayer != null && mediaPlayer.isPlaying()) {
-                mediaPlayer.stop();  // Dừng âm thanh nếu đang phát
-                mediaPlayer.release();
-                mediaPlayer = null;
+                mediaPlayer.pause();  // Dừng âm thanh nếu đang phát
+                currentPosition = mediaPlayer.getCurrentPosition();
+                isPaused = true;
+                // mediaPlayer.release();
+                //mediaPlayer = null;
+                stopWaves(); // Dừng hoạt hình khi dừng âm thanh
+                isPlayingAnimation = false;
             }
             Log.d("ListeningChoiceActivity", "User Answers: " + userAnswers);
             if (userAnswers.isEmpty()) {
@@ -273,27 +299,34 @@ public class ListeningChoiceActivity extends AppCompatActivity {
         }
 
         try {
-            if (mediaPlayer != null && mediaPlayer.isPlaying()) {
-                mediaPlayer.stop();  // Dừng âm thanh nếu đang phát
-                mediaPlayer.release();
-                mediaPlayer = null;
-            }
+            if (mediaPlayer == null) {
+                mediaPlayer = new MediaPlayer();
+                mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                mediaPlayer.setDataSource(audioUrl);
+                mediaPlayer.setOnPreparedListener(mp -> {
+                    if (isPaused) {
+                        mediaPlayer.seekTo(currentPosition); // Tiếp tục từ vị trí đã dừng
+                    }
+                    mediaPlayer.start();
+                    btnCheckResult.setEnabled(true);  // Kích hoạt lại nút CheckResult
+                });
 
-            mediaPlayer = new MediaPlayer();
-            mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-            mediaPlayer.setDataSource(audioUrl);
-
-            mediaPlayer.setOnPreparedListener(mp -> {
+                mediaPlayer.setOnErrorListener((mp, what, extra) -> {
+                    Log.e("MediaPlayerError", "Error occurred: what=" + what + ", extra=" + extra);
+                    return true;
+                });
+                mediaPlayer.setOnCompletionListener(mp -> {
+                    stopWaves();
+                    isPlayingAnimation = false;
+                    currentPosition = 0; // Đặt lại vị trí khi âm thanh kết thúc
+                    isPaused = false;
+                });
+                mediaPlayer.prepareAsync();
+            } else if (isPaused) {
+                mediaPlayer.seekTo(currentPosition); // Tiếp tục từ vị trí đã dừng
                 mediaPlayer.start();
-                btnCheckResult.setEnabled(true);  // Kích hoạt lại nút CheckResult
-            });
-
-            mediaPlayer.setOnErrorListener((mp, what, extra) -> {
-                Log.e("MediaPlayerError", "Error occurred: what=" + what + ", extra=" + extra);
-                return true;
-            });
-
-            mediaPlayer.prepareAsync();
+                isPaused = false;
+            }
         } catch (IOException | IllegalArgumentException e) {
             Log.e("MediaPlayerError", e.getMessage());
         }
@@ -362,6 +395,16 @@ public class ListeningChoiceActivity extends AppCompatActivity {
             mediaPlayer.release();
             mediaPlayer = null;
         }
+        // Hủy các animator để tránh rò rỉ bộ nhớ
+        if (animator1ScaleX != null) animator1ScaleX.cancel();
+        if (animator1ScaleY != null) animator1ScaleY.cancel();
+        if (animator1Alpha != null) animator1Alpha.cancel();
+        if (animator2ScaleX != null) animator2ScaleX.cancel();
+        if (animator2ScaleY != null) animator2ScaleY.cancel();
+        if (animator2Alpha != null) animator2Alpha.cancel();
+        if (animator3ScaleX != null) animator3ScaleX.cancel();
+        if (animator3ScaleY != null) animator3ScaleY.cancel();
+        if (animator3Alpha != null) animator3Alpha.cancel();
     }
     private void createProgressBars(int totalQuestions, int currentProgress) {
         LinearLayout progressContainer = findViewById(R.id.progressContainer);
@@ -379,6 +422,157 @@ public class ListeningChoiceActivity extends AppCompatActivity {
                 bar.setBackgroundColor(Color.parseColor("#E0E0E0")); // Màu chưa hoàn thành
             }
             progressContainer.addView(bar);
+        }
+    }
+    private void setupWaveAnimators() {
+        // Animator cho wave 1
+        animator1ScaleX = ObjectAnimator.ofFloat(wave1, "scaleX", 1f, 1.5f);
+        animator1ScaleX.setDuration(1500);
+        animator1ScaleX.setStartDelay(0);
+        animator1ScaleX.setRepeatCount(ObjectAnimator.INFINITE);
+
+        animator1ScaleY = ObjectAnimator.ofFloat(wave1, "scaleY", 1f, 1.5f);
+        animator1ScaleY.setDuration(1500);
+        animator1ScaleY.setStartDelay(0);
+        animator1ScaleY.setRepeatCount(ObjectAnimator.INFINITE);
+
+        animator1Alpha = ObjectAnimator.ofFloat(wave1, "alpha", 0.5f, 0f);
+        animator1Alpha.setDuration(1500);
+        animator1Alpha.setStartDelay(0);
+        animator1Alpha.setRepeatCount(ObjectAnimator.INFINITE);
+
+        // Animator cho wave 2
+        animator2ScaleX = ObjectAnimator.ofFloat(wave2, "scaleX", 1f, 1.5f);
+        animator2ScaleX.setDuration(1500);
+        animator2ScaleX.setStartDelay(200);
+        animator2ScaleX.setRepeatCount(ObjectAnimator.INFINITE);
+
+        animator2ScaleY = ObjectAnimator.ofFloat(wave2, "scaleY", 1f, 1.5f);
+        animator2ScaleY.setDuration(1500);
+        animator2ScaleY.setStartDelay(200);
+        animator2ScaleY.setRepeatCount(ObjectAnimator.INFINITE);
+
+        animator2Alpha = ObjectAnimator.ofFloat(wave2, "alpha", 0.3f, 0f);
+        animator2Alpha.setDuration(1500);
+        animator2Alpha.setStartDelay(200);
+        animator2Alpha.setRepeatCount(ObjectAnimator.INFINITE);
+
+        // Animator cho wave 3
+        animator3ScaleX = ObjectAnimator.ofFloat(wave3, "scaleX", 1f, 1.5f);
+        animator3ScaleX.setDuration(1500);
+        animator3ScaleX.setStartDelay(400);
+        animator3ScaleX.setRepeatCount(ObjectAnimator.INFINITE);
+
+        animator3ScaleY = ObjectAnimator.ofFloat(wave3, "scaleY", 1f, 1.5f);
+        animator3ScaleY.setDuration(1500);
+        animator3ScaleY.setStartDelay(400);
+        animator3ScaleY.setRepeatCount(ObjectAnimator.INFINITE);
+
+        animator3Alpha = ObjectAnimator.ofFloat(wave3, "alpha", 0.1f, 0f);
+        animator3Alpha.setDuration(1500);
+        animator3Alpha.setStartDelay(400);
+        animator3Alpha.setRepeatCount(ObjectAnimator.INFINITE);
+    }
+
+    // Bắt đầu hoạt hình
+    private void startWaves() {
+        // Kiểm tra trạng thái của animator và quyết định start hoặc resume
+        if (animator1ScaleX.isPaused()) {
+            animator1ScaleX.resume();
+            animator1ScaleY.resume();
+            animator1Alpha.resume();
+        } else if (!animator1ScaleX.isRunning()) {
+            animator1ScaleX.start();
+            animator1ScaleY.start();
+            animator1Alpha.start();
+        }
+
+        if (animator2ScaleX.isPaused()) {
+            animator2ScaleX.resume();
+            animator2ScaleY.resume();
+            animator2Alpha.resume();
+        } else if (!animator2ScaleX.isRunning()) {
+            animator2ScaleX.start();
+            animator2ScaleY.start();
+            animator2Alpha.start();
+        }
+
+        if (animator3ScaleX.isPaused()) {
+            animator3ScaleX.resume();
+            animator3ScaleY.resume();
+            animator3Alpha.resume();
+        } else if (!animator3ScaleX.isRunning()) {
+            animator3ScaleX.start();
+            animator3ScaleY.start();
+            animator3Alpha.start();
+        }
+    }
+
+    // Dừng hoạt hình
+    private void stopWaves() {
+        animator1ScaleX.pause();
+        animator1ScaleY.pause();
+        animator1Alpha.pause();
+
+        animator2ScaleX.pause();
+        animator2ScaleY.pause();
+        animator2Alpha.pause();
+
+        animator3ScaleX.pause();
+        animator3ScaleY.pause();
+        animator3Alpha.pause();
+    }
+    // Đồng bộ âm thanh và hoạt hình
+    private void toggleAudioAndAnimation() {
+        if (!isPlayingAnimation) {
+            // Bắt đầu phát âm thanh
+            playAudio(audioUrl);
+            // Bắt đầu hoạt hình
+            startWaves();
+            isPlayingAnimation = true;
+        } else {
+            // Dừng âm thanh
+            if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+                mediaPlayer.pause();
+                currentPosition = mediaPlayer.getCurrentPosition(); // Lưu vị trí hiện tại
+                isPaused = true;
+                //mediaPlayer.release();
+                //mediaPlayer = null;
+            }
+            // Dừng hoạt hình
+            stopWaves();
+            isPlayingAnimation = false;
+        }
+    }
+    private void replayAudio() {
+        if (mediaPlayer != null) {
+            mediaPlayer.seekTo(0); // Đặt vị trí về đầu
+            mediaPlayer.start(); // Phát lại từ đầu
+            currentPosition = 0; // Đặt lại vị trí hiện tại
+            isPaused = false; // Đặt lại trạng thái tạm dừng
+
+            // Dừng hoạt hình hiện tại
+            stopWaves();
+
+            // Đặt lại trạng thái của các vòng tròn sóng âm về giá trị ban đầu
+            wave1.setScaleX(1f);
+            wave1.setScaleY(1f);
+            wave1.setAlpha(0.5f);
+
+            wave2.setScaleX(1f);
+            wave2.setScaleY(1f);
+            wave2.setAlpha(0.3f);
+
+            wave3.setScaleX(1f);
+            wave3.setScaleY(1f);
+            wave3.setAlpha(0.1f);
+
+            // Chạy lại hoạt hình từ đầu
+            startWaves();
+            isPlayingAnimation = true;
+        } else {
+            // Nếu mediaPlayer chưa được khởi tạo, gọi playAudio để khởi tạo và phát từ đầu
+            playAudio(audioUrl);
         }
     }
 }
