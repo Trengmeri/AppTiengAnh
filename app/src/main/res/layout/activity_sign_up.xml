@@ -53,7 +53,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="48dp"
-            android:text="Sign Up"
+            android:text="@string/action_sign_up_short"
             android:textColor="#172B4D"
             android:textSize="30sp"
             android:textStyle="bold"
@@ -82,7 +82,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
-                        android:text="Create account"
+                        android:text="@string/createacc"
                         android:textColor="#AC3B00"
                         android:textSize="18sp"
                         android:textStyle="bold"
@@ -93,7 +93,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
-                        android:text="Hello there, fill in below to create an account"
+                        android:text="@string/hellothere2"
                         android:textColor="#7A7A7A"
                         android:textSize="14sp"
                         android:layout_marginStart="30dp"/>
@@ -110,7 +110,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:ems="10"
-                            android:hint="Name"
+                            android:hint="@string/hint_name"
                             android:inputType="text"
                             android:background="@android:color/transparent"
                             android:drawableStart="@drawable/icon_person"
@@ -165,7 +165,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:ems="10"
-                            android:hint="Password"
+                            android:hint="@string/hint_pass"
                             android:inputType="text"
                             android:background="@android:color/transparent"
                             android:drawableStart="@drawable/icon_pass"
@@ -197,7 +197,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="12dp"
-                            android:text="Agree to Terms Conditions"
+                            android:text="@string/agree"
                             android:textColor="#7A7A7A"/>
 
                         <Button
@@ -210,7 +210,7 @@
                             android:backgroundTint="#BC6136"
                             android:enabled="false"
                             android:alpha="0.5"
-                            android:text="Sign Up"
+                            android:text="@string/action_sign_up_short"
                             android:textColor="#FFFFFF"
                             android:textColorLink="#9E3A00"/>
 <!--                    <TextView-->
@@ -249,14 +249,14 @@
                         android:id="@+id/textView6"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Already have an account? "
+                        android:text="@string/havedacc"
                         android:textColor="#AC3B00"/>
                     <Button
                         android:id="@+id/btnIn"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:background="@android:color/transparent"
-                        android:text="SIGN IN"
+                        android:text="@string/signin"
                         android:textColor="#AF4610"/>
                 </LinearLayout>
             </LinearLayout>

@@ -9,7 +9,8 @@
     <string name="prompt_email" translatable="false">Email</string>
     <string name="prompt_password">Password</string>
     <string name="action_sign_in" translatable="false">Sign in or register</string>
-    <string name="action_sign_in_short">Sign in</string>
+    <string name="action_sign_in_short">Sign In</string>
+    <string name="action_sign_up_short">Sign Up</string>
     <string name="welcome">Welcome !</string>
     <string name="invalid_username">Not a valid username</string>
     <string name="invalid_password">Password must be >5 characters</string>
@@ -134,6 +135,20 @@
     <string name="Done">Done</string>
     <string name="Writetheanswer">Write the answer follow the question</string>
     <string name="Answer">Answer: </string>
-
-
+    <string name="welcome_">Welcome Back </string>
+    <string name="hellothere">Hello there, sign in continue</string>
+    <string name="remme">Remember me</string>
+    <string name="forgotpass">Forgot Password</string>
+    <string name="not_have_acc">Don’t have an Account?</string>
+    <string name="signup">SIGN UP</string>
+    <string name="createacc">Create account</string>
+    <string name="hellothere2">Hello there, fill in below to create an account</string>
+    <string name="agree">Agree to Terms Conditions</string>
+    <string name="havedacc">Already have an account?</string>
+    <string name="signin">SIGN IN</string>
+<!--    <string name="intro1">Welcome to Encybara - The Specialized English \n Learning App!</string>-->
+<!--    <string name="getready">Get ready!!</string>-->
+<!--    <string name="encybara">Encybara!</string>-->
+<!--    <string name="learn_capy">Let's learn English with Capy >v<</string>-->
+<!--    <string name="future_app">The English learning app from the future!</string>-->
 </resources>

@@ -3,6 +3,7 @@
     <string name="back">Quay lại</string>
     <string name="prompt_password">Mật khẩu</string>
     <string name="action_sign_in_short">Đăng nhập</string>
+    <string name="action_sign_up_short">Đăng ký</string>
     <string name="welcome">Chào mừng !</string>
     <string name="mycourse">Khóa học của tôi</string>
     <string name="suggestcourse">Tất cả khóa học</string>
@@ -131,4 +132,20 @@
     <string name="Done">Hoàn thành</string>
     <string name="Writetheanswer">Viết câu trả lời theo câu hỏi</string>
     <string name="Answer">Câu trả lời: </string>
+    <string name="welcome_">Chào mừng trở lại</string>
+    <string name="hellothere">Xin chào, đăng nhập để tiếp tục nhé</string>
+    <string name="remme">Ghi nhớ tôi</string>
+    <string name="forgotpass">Quên mật khẩu</string>
+    <string name="not_have_acc">Bạn chưa có tài khoản ?</string>
+    <string name="signup">ĐĂNG KÝ</string>
+    <string name="createacc">Tạo tài khoản</string>
+    <string name="hellothere2">Xin chào, điền thông tin bên dưới để tạo tài khoản</string>
+    <string name="agree">Đồng ý với điều khoản</string>
+    <string name="havedacc">Bạn đã có tài khoản ?</string>
+    <string name="signin">ĐĂNG NHẬP</string>
+<!--    <string name="intro1">Chào mừng đến với Encybara - Ứng dụng học tiếng Anh\n chuyên ngành!</string>-->
+<!--    <string name="getready">Get ready!!</string>-->
+<!--    <string name="encybara">Encybara!</string>-->
+<!--    <string name="learn_capy">Let's learn English with Capy >v<</string>-->
+<!--    <string name="future_app">The English learning app from the future!</string>-->
 </resources>

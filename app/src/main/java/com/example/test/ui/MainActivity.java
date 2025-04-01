@@ -64,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void loadLocale() {
         SharedPreferences prefs = getSharedPreferences("Settings", MODE_PRIVATE);
-        String language = prefs.getString("Language", "vi"); // Mặc định là tiếng Anh
+        String language = prefs.getString("Language", "en"); // Mặc định là tiếng Anh
         Locale locale = new Locale(language);
         Locale.setDefault(locale);
         Resources resources = getResources();

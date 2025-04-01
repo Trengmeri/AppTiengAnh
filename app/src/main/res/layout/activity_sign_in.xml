@@ -50,7 +50,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="48dp"
-                android:text="Sign In"
+                android:text="@string/action_sign_in_short"
                 android:textColor="#172B4D"
                 android:textSize="30sp"
                 android:textStyle="bold"
@@ -79,7 +79,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:text="Welcome Back"
+            android:text="@string/welcome_"
             android:textColor="#AC3B00"
             android:textSize="18sp"
             android:textStyle="bold"
@@ -90,7 +90,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="Hello there, sign in continue"
+            android:text="@string/hellothere"
             android:textColor="#7A7A7A"
             android:textSize="14sp"
             android:layout_marginLeft="30dp"/>
@@ -143,7 +143,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="5dp"
-                android:hint="Password"
+                android:hint="@string/hint_pass"
                 android:inputType="text"
                 android:background="@android:color/transparent"
                 android:drawableStart="@drawable/icon_pass"
@@ -174,14 +174,14 @@
         android:id="@+id/cbRemember"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Remember me"
+        android:text="@string/remme"
         android:textColor="#7A7A7A"/>
     <Button
             android:id="@+id/btnForgot"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
-            android:text="Forgot Password"
+            android:text="@string/forgotpass"
             android:textColor="#AB3B00"
             android:layout_marginLeft="@dimen/dp_30"/>
     <!-- Hoặc tiếp tục -->
@@ -198,7 +198,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:backgroundTint="#BC6136"
-        android:text="Sign In"
+        android:text="@string/action_sign_in_short"
         android:enabled="false"
         android:alpha="0.5"
         android:textColor="#FFFFFF"
@@ -249,14 +249,14 @@
             android:id="@+id/textView6"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Don’t have an Account? "
+            android:text="@string/not_have_acc"
             android:textColor="#AC3B00"/>
         <Button
             android:id="@+id/btnUp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
-            android:text="SIGN UP"
+            android:text="@string/signup"
             android:textColor="#AF4610"/>
     </LinearLayout>
        </LinearLayout>
