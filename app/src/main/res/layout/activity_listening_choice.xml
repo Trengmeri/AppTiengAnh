@@ -35,17 +35,6 @@
             android:layout_marginTop="8dp"/>
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/tvInstruction"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="25dp"
-        android:layout_marginStart="@dimen/dp_16"
-        android:drawableLeft="@drawable/grommet_icons_assist_listening"
-        android:drawablePadding="5dp"
-        android:text="@string/listen_rewrite"
-        android:textSize="24sp"
-        android:textStyle="bold" />
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
@@ -55,7 +44,17 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
-
+            <TextView
+                android:id="@+id/tvInstruction"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="25dp"
+                android:layout_marginStart="@dimen/dp_16"
+                android:drawableLeft="@drawable/grommet_icons_assist_listening"
+                android:drawablePadding="5dp"
+                android:text="@string/listen_rewrite"
+                android:textSize="24sp"
+                android:textStyle="bold" />
             <ImageView
                 android:id="@+id/btnListen"
                 android:layout_width="327dp"
@@ -63,7 +62,14 @@
                 android:layout_gravity="center"
                 android:layout_marginTop="25dp"
                 app:srcCompat="@drawable/listening" />
-
+            <ImageView
+                android:id="@+id/imgLessonMaterial"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:adjustViewBounds="true"
+                android:scaleType="fitCenter"
+                android:visibility="gone" />
             <TextView
                 android:id="@+id/tvQuestion"
                 android:layout_width="wrap_content"
@@ -73,15 +79,6 @@
                 android:drawableLeft="@drawable/fe_question"
                 android:textSize="20sp"
                 android:textStyle="bold" />
-            <ImageView
-                android:id="@+id/imgLessonMaterial"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:adjustViewBounds="true"
-                android:scaleType="fitCenter"
-                android:visibility="gone" />
-
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerViewChoices"
                 android:layout_width="match_parent"

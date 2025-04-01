@@ -42,17 +42,6 @@
                 android:layout_marginTop="8dp"/>
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/tvQuestion"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="48dp"
-            android:layout_marginBottom="48dp"
-            android:drawableLeft="@drawable/jam_write"
-            android:drawablePadding="10dp"
-            android:text="@string/choose"
-            android:textSize="24sp"
-            android:textStyle="bold" />
 
         <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
@@ -62,14 +51,16 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
-
-        <TextView
-            android:id="@+id/tvContent"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:textSize="18sp"
-            android:textStyle="bold"/>
+            <TextView
+                android:id="@+id/tvQuestion"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="48dp"
+                android:drawableLeft="@drawable/jam_write"
+                android:drawablePadding="10dp"
+                android:text="@string/choose"
+                android:textSize="24sp"
+                android:textStyle="bold" />
             <ImageView
                 android:id="@+id/imgLessonMaterial"
                 android:layout_width="match_parent"
@@ -78,7 +69,13 @@
                 android:adjustViewBounds="true"
                 android:scaleType="fitCenter"
                 android:visibility="gone" />
-
+            <TextView
+                android:id="@+id/tvContent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:textSize="18sp"
+                android:textStyle="bold"/>
         <!-- RecyclerView cho các tùy chọn đáp án -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerViewChoices"

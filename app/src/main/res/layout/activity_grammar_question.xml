@@ -58,7 +58,6 @@
                 android:text="@string/fill_blank"
                 android:textSize="22sp"
                 android:textStyle="bold" />
-
             <ImageView
                 android:id="@+id/imgLessonMaterial"
                 android:layout_width="match_parent"
@@ -75,7 +74,6 @@
                 android:layout_marginTop="60dp"
                 android:layout_marginStart="@dimen/dp_16"
                 android:padding="10dp"
-                android:text=""
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
