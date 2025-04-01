@@ -9,6 +9,7 @@
     <string name="txt_editPro">Sửa hồ sơ</string>
     <string name="nextques">Câu hỏi tiếp theo</string>
     <string name="join">Tham gia khóa học</string>
+    <string name="start_">BẠN MUỐN BẮT ĐẦU NHƯ THẾ NÀO ?</string>
     <string name="viewpointcourse">Xem kết quả khóa học</string>
     <string name="invalid_username">Không phải tên người dùng hợp lệ</string>
     <string name="invalid_password">Mật khẩu phải > 5 ký tự</string>

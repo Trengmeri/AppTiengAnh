@@ -32,6 +32,7 @@ import com.example.test.model.Course;
 import com.example.test.model.Enrollment;
 import com.example.test.model.Lesson;
 import com.example.test.model.Review;
+import com.example.test.ui.home.HomeActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -164,7 +165,8 @@ import java.util.List;
                         @Override
                         public void onSuccess(Object result) {
                             Log.d("CourseManager", "Course joined");
-                            Intent intent = new Intent(CourseInformationActivity.this, NevigateQuestion.class);
+                            Intent intent = new Intent(CourseInformationActivity.this, HomeActivity.class);
+                            intent.putExtra("targetPage", 0);
                             startActivity(intent);
 
                         }

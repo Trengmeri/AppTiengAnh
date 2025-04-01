@@ -74,27 +74,29 @@ public class NevigateQuestion extends AppCompatActivity {
     }
 
     private void fetchQuestionsFromAPI(String skill) {
-        for (Integer id : questionIds) {
-            quesManager.fetchQuestionContentFromApi(id, new ApiCallback<Question>() {
-                @Override
-                public void onSuccess(Question question) {
-                    if (question != null) {
-                        questions.add(question);
-                        // Khi đã lấy đủ tất cả câu hỏi, chuyển sang Activity tiếp theo
-                        if (questions.size() == questionIds.size()) {
-                            navigateToActivity(questions.get(currentQuestionIndex) , skill);
+        if(questionIds != null){
+            for (Integer id : questionIds) {
+                quesManager.fetchQuestionContentFromApi(id, new ApiCallback<Question>() {
+                    @Override
+                    public void onSuccess(Question question) {
+                        if (question != null) {
+                            questions.add(question);
+                            // Khi đã lấy đủ tất cả câu hỏi, chuyển sang Activity tiếp theo
+                            if (questions.size() == questionIds.size()) {
+                                navigateToActivity(questions.get(currentQuestionIndex) , skill);
+                            }
                         }
                     }
-                }
 
-                @Override
-                public void onFailure(String errorMessage) {
-                    finish(); // Nếu có lỗi, đóng Activity
-                }
+                    @Override
+                    public void onFailure(String errorMessage) {
+                        finish(); // Nếu có lỗi, đóng Activity
+                    }
 
-                @Override
-                public void onSuccess() {}
-            });
+                    @Override
+                    public void onSuccess() {}
+                });
+            }
         }
     }
 
