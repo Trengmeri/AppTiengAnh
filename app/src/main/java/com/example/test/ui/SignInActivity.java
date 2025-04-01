@@ -136,7 +136,7 @@ public class SignInActivity extends AppCompatActivity {
 
                                 SharedPreferences sharedPreferences = getSharedPreferences("LoginPrefs", MODE_PRIVATE);
                                 SharedPreferences.Editor editor = sharedPreferences.edit();
-
+                                boolean isSameAccount = email.equals(savedEmail);
                                 // Lưu Remember Me
                                 if (cbRemember.isChecked()) {
                                     editor.putBoolean("rememberMe", true);
@@ -148,9 +148,15 @@ public class SignInActivity extends AppCompatActivity {
                                     editor.remove("password");
                                     editor.remove("lastActivity");
                                 }
+                                if (!isSameAccount) {
+                                    editor.remove("lastActivity"); // Xóa lastActivity để bắt đầu lại
+                                    editor.putBoolean("hasSelectedOption", false); // Đặt lại cờ chọn ngành
+                                }
                                 editor.apply();
                                 Log.d("LastActivity", lastActivity);
 
+                                boolean hasSelectedOption = sharedPreferences.getBoolean("hasSelectedOption", false);
+                                String lastActivity = sharedPreferences.getString("lastActivity", "");
 
                                 Intent intent;
                                 if (hasSelectedOption) {
