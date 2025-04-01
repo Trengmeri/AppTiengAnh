@@ -38,7 +38,8 @@ import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
 
-
+    private static final String PREFS_NAME = "MyPrefs";
+    private static final String KEY_IS_FIRST_TIME = "isFirstTime";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         // Load lại ngôn ngữ trước khi hiển thị giao diện
@@ -53,11 +54,26 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
         AlarmScheduler.logAllAlarms(this);
+        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+        boolean isFirstTime = prefs.getBoolean(KEY_IS_FIRST_TIME, true);
 
         // Chuyển sang Intro2 sau 3 giây
+        // Hiển thị MainActivity trong 3 giây, sau đó điều hướng
         new Handler().postDelayed(() -> {
-            Intent intent = new Intent(MainActivity.this, Intro2Activity.class);
+            Intent intent;
+            if (isFirstTime) {
+                // Lần đầu mở app, đi qua Intro2
+                intent = new Intent(MainActivity.this, Intro2Activity.class);
+                // Đánh dấu đã qua lần đầu
+                SharedPreferences.Editor editor = prefs.edit();
+                editor.putBoolean(KEY_IS_FIRST_TIME, false);
+                editor.apply();
+            } else {
+                // Không phải lần đầu, chuyển thẳng đến SignInActivity
+                intent = new Intent(MainActivity.this, SignInActivity.class);
+            }
             startActivity(intent);
+            finish(); // Đóng MainActivity sau khi chuyển màn
         }, 3000);
     }
 

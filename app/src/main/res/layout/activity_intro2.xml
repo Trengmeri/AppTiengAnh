@@ -70,7 +70,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:text="@string/intro1"
+        android:text="Welcome to Encybara - The Specialized English \n Learning App!"
         android:textAlignment="center"
         android:textColor="#434242"
         android:textStyle="bold"
