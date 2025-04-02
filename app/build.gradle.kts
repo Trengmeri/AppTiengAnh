@@ -10,7 +10,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.test"
-        minSdk = 26
+        minSdk = 29
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -37,6 +37,7 @@ android {
 }
 
 dependencies {
+    implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.code.gson:gson:2.8.8")
     implementation("com.squareup.okhttp3:okhttp:4.10.0")
     implementation("androidx.cardview:cardview:1.0.0")

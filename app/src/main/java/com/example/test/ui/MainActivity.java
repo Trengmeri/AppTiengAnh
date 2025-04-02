@@ -21,6 +21,7 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.appcompat.app.AppCompatDelegate;
 
 
 import androidx.activity.EdgeToEdge;
@@ -44,10 +45,13 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         // Load lại ngôn ngữ trước khi hiển thị giao diện
         loadLocale();
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
 
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
+
         setContentView(R.layout.activity_main);
+
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
