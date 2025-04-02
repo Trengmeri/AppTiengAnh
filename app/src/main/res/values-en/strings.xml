@@ -11,6 +11,10 @@
     <string name="txt_editPro">Edit Profile</string>
     <string name="nextques">Next question</string>
     <string name="joinn">You have successfully joined the course, go to Study to start the lesson!</string>
+    <string name="success">Success</string>
+    <string name="error">Error</string>
+    <string name="lichmoi">The schedule has been successfully set!</string>
+    <string name="trunglich">You have already set this schedule!</string>
     <string name="start_">HOW WOULD YOU LIKE TO START ?</string>
     <string name="viewpointcourse">View course result</string>
     <string name="nonetest">Start a new\n program!</string>

@@ -320,7 +320,7 @@ public class ScheduleActivity extends AppCompatActivity {
                 @Override
                 public void onSuccess() {
                     Log.d("ScheduleActivity", "Tạo lịch học thành công: " + schedule.toString());
-                    showDialog("Success", "Lịch học đã được đặt thành công!");
+                    showDialog(getString(R.string.success), getString(R.string.lichmoi));
                 }
 
                 @Override
@@ -329,7 +329,7 @@ public class ScheduleActivity extends AppCompatActivity {
                 @Override
                 public void onFailure(String errorMessage) {
                     Log.e("ScheduleActivity", "Lỗi tạo lịch học: " + errorMessage);
-                    showDialog("Error", "Bạn đã đặt lịch học này rồi!");
+                    showDialog(getString(R.string.error), getString(R.string.trunglich));
                 }
             });
         }
