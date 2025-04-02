@@ -2,6 +2,7 @@ package com.example.test.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -19,6 +20,7 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.test.NevigateQuestion;
 import com.example.test.R;
 import com.example.test.adapter.LessonAdapter;
@@ -165,9 +167,33 @@ import java.util.List;
                         @Override
                         public void onSuccess(Object result) {
                             Log.d("CourseManager", "Course joined");
-                            Intent intent = new Intent(CourseInformationActivity.this, HomeActivity.class);
-                            intent.putExtra("targetPage", 0);
-                            startActivity(intent);
+                            runOnUiThread(() -> {
+                                btnJoin.setVisibility(View.GONE); // Ẩn nút Join
+                                // Hiển thị nền tối
+                                View darkOverlay = findViewById(R.id.darkOverlay);
+                                darkOverlay.setVisibility(View.VISIBLE);
+
+                                // Hiển thị GIF và thông báo
+                                ImageView imgSuccessGif = findViewById(R.id.imgSuccessGif);
+                                TextView tvSuccessMessage = findViewById(R.id.tvSuccessMessage);
+
+                                imgSuccessGif.setVisibility(View.VISIBLE);
+                                tvSuccessMessage.setVisibility(View.VISIBLE);
+
+                                // Load GIF bằng Glide
+                                Glide.with(CourseInformationActivity.this)
+                                        .asGif()
+                                        .load(R.raw.like)
+                                        .into(imgSuccessGif);
+
+                                // Tự động chuyển đến Study sau vài giây
+                                new Handler().postDelayed(() -> {
+                                    Intent intent = new Intent(CourseInformationActivity.this, HomeActivity.class);
+                                    intent.putExtra("targetPage", 0);
+                                    startActivity(intent);
+                                    finish();
+                                }, 3000);
+                            });
 
                         }
                         @Override

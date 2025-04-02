@@ -44,4 +44,44 @@
                     android:layout_gravity="center"/>
         </FrameLayout>
 
+        <View
+            android:id="@+id/darkOverlay"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#80000000"
+            android:visibility="gone"/>
+
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_gravity="center">
+
+                <ImageView
+                    android:id="@+id/imgSuccessGif"
+                    android:layout_width="wrap_content"
+                    android:layout_height="392dp"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="@dimen/dp40"
+                    android:layout_marginRight="@dimen/dp40"
+                    android:src="@raw/like"
+                    android:visibility="gone"/>
+
+                <TextView
+                    android:id="@+id/tvSuccessMessage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="@string/joinn"
+                    android:textSize="24sp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginLeft="35dp"
+                    android:layout_marginRight="35dp"
+                    android:gravity="center"
+                    android:textColor="@android:color/white"
+                    android:visibility="gone"/>
+        </LinearLayout>
+
 </FrameLayout>

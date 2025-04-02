@@ -46,6 +46,7 @@
     <string name="txt_resendcodeIn">Resend Code in</string>
     <string name="txt_resendcode">Resend Code </string>
     <string name="txt_about">About</string>
+    <string name="joinn">You have successfully joined the course, go to Study to start the lesson!</string>
     <string name="start_">HOW WOULD YOU LIKE TO START ?</string>
     <string name="txt_lesson">Lessons</string>
     <string name="txt_rvCourse">Reviews</string>
@@ -109,7 +110,7 @@
     <string name="ontheday">On the days:</string>
     <string name="smalltestintro">Receive a personalized\n learning program\n upon completion</string>
     <string name="newprogramintro">Explore a pre-made\n program and start\n learning</string>
-    <string name="txt_rating" >Rate this course:</string>
+    <string name="txt_rating">Rate this course:</string>
     <string name="writeAReview">Write a review... </string>
     <string name="Phonetic">Phonetic: </string>
     <string name="PartofSpeech">Part of Speech: </string>
@@ -146,9 +147,9 @@
     <string name="agree">Agree to Terms Conditions</string>
     <string name="havedacc">Already have an account?</string>
     <string name="signin">SIGN IN</string>
-<!--    <string name="intro1">Welcome to Encybara - The Specialized English \n Learning App!</string>-->
-<!--    <string name="getready">Get ready!!</string>-->
-<!--    <string name="encybara">Encybara!</string>-->
-<!--    <string name="learn_capy">Let's learn English with Capy >v<</string>-->
-<!--    <string name="future_app">The English learning app from the future!</string>-->
+    <!--    <string name="intro1">Welcome to Encybara - The Specialized English \n Learning App!</string>-->
+    <!--    <string name="getready">Get ready!!</string>-->
+    <!--    <string name="encybara">Encybara!</string>-->
+    <!--    <string name="learn_capy">Let's learn English with Capy >v<</string>-->
+    <!--    <string name="future_app">The English learning app from the future!</string>-->
 </resources>

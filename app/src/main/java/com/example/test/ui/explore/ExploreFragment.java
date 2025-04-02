@@ -43,31 +43,23 @@ public class ExploreFragment extends Fragment {
         btnSche= view.findViewById(R.id.btnSche);
         btnDic= view.findViewById(R.id.btnDic);
         tvName= view.findViewById(R.id.tvName);
-        User user = SharedPreferencesManager.getInstance(getContext()).getUser();
-        if (user != null) {
-            tvName.setText("Hi "+ user.getName() + "!");
+        if (isAdded() && getContext() != null) {
+            User user = SharedPreferencesManager.getInstance(getContext()).getUser();
+            if (user != null) {
+                tvName.setText("Hi " + user.getName() + "!");
+            }
         }
 
-        btnFlash.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getActivity(), GroupFlashcardActivity.class);
-                startActivity(intent);
-            }
-        });
-        btnSche.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getActivity(), ScheduleActivity.class);
-                startActivity(intent);
-            }
-        });
-        btnDic.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getActivity(), DictionaryActivity.class);
-                startActivity(intent);
-            }
-        });
+        btnFlash.setOnClickListener(v -> openActivity(GroupFlashcardActivity.class));
+        btnSche.setOnClickListener(v -> openActivity(ScheduleActivity.class));
+        btnDic.setOnClickListener(v -> openActivity(DictionaryActivity.class));
+
+
     }
+    private void openActivity(Class<?> activityClass) {
+        if (isAdded() && getActivity() != null) {
+            startActivity(new Intent(getActivity(), activityClass));
+        }
+    }
+
 }

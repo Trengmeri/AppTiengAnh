@@ -171,7 +171,8 @@ public class ProfileFragment extends Fragment {
     }
 
     private void showLogoutDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        if (!isAdded() || getActivity() == null) return;
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle("Xác nhận đăng xuất");
         builder.setMessage("Bạn có chắc chắn muốn đăng xuất không?");
 
@@ -182,8 +183,8 @@ public class ProfileFragment extends Fragment {
             apiManager.sendLogoutRequest(new ApiCallback() {
                 @Override
                 public void onSuccess() {
-                    // Chuyển về màn hình đăng nhập
-                    SharedPreferences sharedPreferences = getActivity().getSharedPreferences("LoginPrefs", MODE_PRIVATE);
+                    if (!isAdded() || getActivity() == null) return;
+                    SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("LoginPrefs", MODE_PRIVATE);
                     SharedPreferences.Editor editor = sharedPreferences.edit();
                     editor.clear();  // Xóa tất cả dữ liệu
                     editor.commit(); // Lưu thay đổi ngay lập tức
