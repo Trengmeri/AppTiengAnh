@@ -122,8 +122,7 @@ public class ListeningActivity extends AppCompatActivity {
                 isPlayingAnimation = false;
             }
             String userAnswer = etAnswer.getText().toString().trim();
-            // Xóa nội dung EditText ngay khi bấm "Check Answers"
-            etAnswer.setText("");
+
             Log.d("ListeningActivity", "User Answers: " + userAnswer);
             if (userAnswer.isEmpty()) {
                 Toast.makeText(ListeningActivity.this, "Vui lòng trả lời câu hỏi!", Toast.LENGTH_SHORT).show();
@@ -139,7 +138,7 @@ public class ListeningActivity extends AppCompatActivity {
                         runOnUiThread(() -> {
                             PopupHelper.showResultPopup(ListeningActivity.this, questype, userAnswer, correctAnswer, null, null, null, () -> {
                                 currentStep++; // Tăng currentStep
-
+                                etAnswer.setText("");
                                 // Kiểm tra nếu hoàn thành
                                 if (currentStep < totalSteps) {
                                     fetchQuestion(questionIds.get(currentStep)); // Lấy câu hỏi tiếp theo

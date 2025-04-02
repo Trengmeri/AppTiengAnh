@@ -28,6 +28,7 @@ import com.example.test.model.Course;
 import com.example.test.model.Enrollment;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -98,15 +99,6 @@ public class MyCourseFragment extends Fragment {
     }
 
     private void fetchCourses() {
-        // Xóa danh sách cũ trước khi fetch dữ liệu mới
-        courseList1.clear();
-        courseList2.clear();
-        courseList3.clear();
-        processedCourseIds.clear(); // Đảm bảo dữ liệu mới được cập nhật lại
-
-        adapter1.notifyDataSetChanged();
-        adapter2.notifyDataSetChanged();
-        adapter3.notifyDataSetChanged();
 
         enrollmentManager.fetchAllEnrolledCourseIds(new ApiCallback<List<Integer>>() {
             @Override
@@ -147,29 +139,24 @@ public class MyCourseFragment extends Fragment {
 
                         @Override
                         public void onSuccess(Course course) {
-                            if (course == null) {
-                                Log.e("MyCourseFragment", "❌ Course ID " + courseId + " không tồn tại!");
-                                return;
-                            }
-                            Log.d("MyCourseFragment", "📌 Course ID: " + course.getId() + ", Lessons: " + course.getLessonIds());
+                            if (course == null) return;
 
                             if ("true".equalsIgnoreCase(prostatus)) {
                                 if (totalPoint != 0) {
-                                    courseList3.add(course);
+                                    courseList3.add(course); // Hoàn thành
                                 } else {
-                                    courseList1.add(course);
+                                    courseList1.add(course); // Đang học
                                 }
                             } else {
-                                courseList2.add(course);
+                                courseList2.add(course); // Chưa đăng ký
                             }
 
-                            if (getActivity() == null) return; // Ngăn lỗi khi Fragment đã bị tách khỏi Activity
+                            if (getActivity() == null) return;
                             getActivity().runOnUiThread(() -> {
-                                    adapter1.notifyDataSetChanged();
-                                    adapter2.notifyDataSetChanged();
-                                    adapter3.notifyDataSetChanged();
-                                });
-
+                                adapter1.notifyItemRangeChanged(0, courseList1.size());
+                                adapter2.notifyItemRangeChanged(0, courseList2.size());
+                                adapter3.notifyItemRangeChanged(0, courseList3.size());
+                            });
                         }
 
                         @Override
@@ -186,4 +173,5 @@ public class MyCourseFragment extends Fragment {
             });
         }
     }
+
 }

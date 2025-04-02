@@ -86,8 +86,7 @@ public class TextReadingActivity extends AppCompatActivity {
 
         btnCheckAnswer.setOnClickListener(v -> {
             String userAnswer = etAnswer.getText().toString().trim();
-            // Xóa nội dung EditText ngay khi bấm "Check Answers"
-            etAnswer.setText("");
+
             Log.d("TextReadingActivity", "User Answers: " + userAnswer);
             if (userAnswer.isEmpty()) {
                 Toast.makeText(TextReadingActivity.this, "Vui lòng trả lời câu hỏi!", Toast.LENGTH_SHORT).show();
@@ -102,7 +101,7 @@ public class TextReadingActivity extends AppCompatActivity {
                         runOnUiThread(() -> {
                             PopupHelper.showResultPopup(TextReadingActivity.this, questype, userAnswer, correctAnswers, null, null, null, () -> {
                                 currentStep++; // Tăng currentStep
-
+                                etAnswer.setText("");
                                 // Kiểm tra nếu hoàn thành
                                 if (currentStep < totalSteps) {
                                     fetchQuestion(questionIds.get(currentStep)); // Lấy câu hỏi tiếp theo

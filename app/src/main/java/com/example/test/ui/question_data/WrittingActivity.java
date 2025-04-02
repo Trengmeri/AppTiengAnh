@@ -123,10 +123,6 @@ public class WrittingActivity extends AppCompatActivity {
         String questionContent = tvContent.getText().toString().trim();
         ApiService apiService = new ApiService(this);
 
-        // Xóa nội dung EditText ngay khi bấm "Check Answers"
-        etAnswer.setText("");
-        key.setText("");
-
         // Hiển thị ProgressDialog
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage(getString(R.string.load));
@@ -149,6 +145,8 @@ public class WrittingActivity extends AppCompatActivity {
                             PopupHelper.showResultPopup(WrittingActivity.this, questype, null, null, result.getPoint(), result.getimprovements(), result.getevaluation(), () -> {
                                 currentStep++; // Tăng currentStep
                                 currentQuestionIndex++;
+                                etAnswer.setText("");
+                                key.setText("");
                                 if (currentQuestionIndex < questions.size()) {
                                     createProgressBars(totalSteps, currentQuestionIndex);
                                     loadQuestion(currentQuestionIndex);
@@ -217,7 +215,10 @@ public class WrittingActivity extends AppCompatActivity {
             new AlertDialog.Builder(WrittingActivity.this)
                     .setTitle("Lỗi")
                     .setMessage(message)
-                    .setPositiveButton("OK", (dialog, which) -> dialog.dismiss())
+                    .setPositiveButton("OK", (dialog, which) -> {
+                        dialog.dismiss();
+                        etAnswer.setText("");
+                    })
                     .show();
         });
     }

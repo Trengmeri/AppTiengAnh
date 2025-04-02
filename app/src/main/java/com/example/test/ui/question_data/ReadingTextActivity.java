@@ -98,8 +98,6 @@ public class ReadingTextActivity extends AppCompatActivity {
 
         btnCheckAnswer.setOnClickListener(v -> {
             String userAnswer = etAnswer.getText().toString().trim();
-            // Xóa nội dung EditText ngay khi bấm "Check Answers"
-            etAnswer.setText("");
             userAnswers.clear(); // Xóa các câu trả lời trước đó
             userAnswers.add(userAnswer); // Thêm câu trả lời mới vào danh sách
             Log.d("ReadingTextActivity", "User Answers: " + userAnswers);
@@ -123,7 +121,7 @@ public class ReadingTextActivity extends AppCompatActivity {
                         runOnUiThread(() -> {
                             PopupHelper.showResultPopup(ReadingTextActivity.this, questype, answerContent, correctAnswers, null, null, null, () -> {
                                 currentQuestionIndex++; // Tăng currentStep
-
+                                etAnswer.setText("");
                                 // Kiểm tra nếu hoàn thành
                                 if (currentQuestionIndex < questions.size()) {
                                     Question nextQuestion = questions.get(currentQuestionIndex);

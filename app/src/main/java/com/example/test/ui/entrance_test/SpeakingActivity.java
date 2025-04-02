@@ -107,9 +107,6 @@ public class SpeakingActivity extends AppCompatActivity implements SpeechRecogni
     private void checkAnswer(String userAnswer,int enrollmentId) {
         String questionContent = tvQuestion.getText().toString().trim();
         ApiService apiService = new ApiService(this);
-        // Xóa nội dung EditText ngay khi bấm "Check Answers"
-        tvTranscription.setText("");
-        key.setText("");
         // Hiển thị ProgressDialog
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage(getString(R.string.load));
@@ -134,6 +131,8 @@ public class SpeakingActivity extends AppCompatActivity implements SpeechRecogni
                         progressDialog.dismiss();
                         runOnUiThread(() -> {
                             PopupHelper.showResultPopup(SpeakingActivity.this, questype, null, null, result.getPoint(), result.getimprovements(), result.getevaluation(), () -> {
+                                tvTranscription.setText("");
+                                key.setText("");
                                 currentStep++;
                                 if (currentStep < totalSteps) {
                                     fetchQuestion(questionIds.get(currentStep));
@@ -206,7 +205,10 @@ public class SpeakingActivity extends AppCompatActivity implements SpeechRecogni
             new AlertDialog.Builder(SpeakingActivity.this)
                     .setTitle("Lỗi")
                     .setMessage(message)
-                    .setPositiveButton("OK", (dialog, which) -> dialog.dismiss())
+                    .setPositiveButton("OK", (dialog, which) -> {
+                        dialog.dismiss();
+                        tvTranscription.setText("");
+                    })
                     .show();
         });
     }

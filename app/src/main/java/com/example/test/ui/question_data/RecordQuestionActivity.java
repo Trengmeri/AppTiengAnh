@@ -104,9 +104,7 @@ public class RecordQuestionActivity extends AppCompatActivity implements SpeechR
     private void checkAnswer(String userAnswer) {
         String questionContent = tvQuestion.getText().toString().trim();
         ApiService apiService = new ApiService(this);
-        // Xóa nội dung EditText ngay khi bấm "Check Answers"
-        tvTranscription.setText("");
-        key.setText("");
+
 
         // Hiển thị ProgressDialog
         progressDialog = new ProgressDialog(this);
@@ -132,6 +130,8 @@ public class RecordQuestionActivity extends AppCompatActivity implements SpeechR
                         progressDialog.dismiss();
                         runOnUiThread(() -> {
                             PopupHelper.showResultPopup(RecordQuestionActivity.this, questype, null, null, result.getPoint(), result.getimprovements(), result.getevaluation(), () -> {
+                                tvTranscription.setText("");
+                                key.setText("");
                                 currentStep++; // Tăng currentStep
                                 currentQuestionIndex++;
                                 if (currentQuestionIndex < questions.size()) {
@@ -202,7 +202,10 @@ public class RecordQuestionActivity extends AppCompatActivity implements SpeechR
             new AlertDialog.Builder(RecordQuestionActivity.this)
                     .setTitle("Lỗi")
                     .setMessage(message)
-                    .setPositiveButton("OK", (dialog, which) -> dialog.dismiss())
+                    .setPositiveButton("OK", (dialog, which) -> {
+                        dialog.dismiss();
+                        tvTranscription.setText("");
+                    })
                     .show();
         });
     }

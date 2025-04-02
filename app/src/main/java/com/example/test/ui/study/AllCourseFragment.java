@@ -86,12 +86,13 @@ public class AllCourseFragment extends Fragment {
 
             @Override
             public void onSuccess(List<String> data) {
-                getActivity().runOnUiThread(()-> {
+                getActivity().runOnUiThread(() -> {
                     groupList.clear();
                     groupList.addAll(data);
-                    adapter.notifyDataSetChanged();
+                    adapter.notifyItemRangeChanged(0, groupList.size());
                 });
             }
+
 
             @Override
             public void onFailure(String errorMessage) {
