@@ -122,17 +122,16 @@ public class ListeningPick1Activity extends AppCompatActivity {
         progressBar = findViewById(R.id.progressBar); // Ánh xạ ProgressBar
         createProgressBars(totalSteps, currentStep); // Cập nhật thanh tiến trình mỗi lần chuyển câu
 
-        btnReplay.setOnClickListener(v -> {
-            replayAudio();
-        });
-        btnCheckResult.setOnClickListener(v -> {
+        btnReplay.setOnClickListener(v -> replayAudio());
+        btnListen.setOnClickListener(v -> {
+                                            Log.d("AudioTest", "Đã click vào nút nghe");
+                                            toggleAudioAndAnimation();
+                                        });
+
+            btnCheckResult.setOnClickListener(v -> {
             if (mediaPlayer != null && mediaPlayer.isPlaying()) {
-                mediaPlayer.pause();  // Dừng âm thanh nếu đang phát
-                currentPosition = mediaPlayer.getCurrentPosition();
-                isPaused = true;
-                // mediaPlayer.release();
-                //mediaPlayer = null;
-                stopWaves(); // Dừng hoạt hình khi dừng âm thanh
+                pauseAudio();
+                stopWaves();
                 isPlayingAnimation = false;
             }
             Log.d("ListeningPick1Activity", "User Answers: " + userAnswers);
@@ -251,10 +250,10 @@ public class ListeningPick1Activity extends AppCompatActivity {
                                 runOnUiThread(() -> { // Sử dụng runOnUiThread ở đây
                                     if (result!= null) {
                                         audioUrl = result;
-                                        btnListen.setOnClickListener(v -> {
-                                            Log.d("AudioTest", "Đã click vào nút nghe");
-                                            toggleAudioAndAnimation();
-                                        });
+//                                        btnListen.setOnClickListener(v -> {
+//                                            Log.d("AudioTest", "Đã click vào nút nghe");
+//                                            toggleAudioAndAnimation();
+//                                        });
 
                                     }
                                 });
@@ -435,9 +434,18 @@ public class ListeningPick1Activity extends AppCompatActivity {
     // Đồng bộ âm thanh và hoạt hình
     private void toggleAudioAndAnimation() {
         if (!isPlayingAnimation) {
-            playAudio(audioUrl);
-            startWaves();
-            isPlayingAnimation = true;
+            if (isPaused && mediaPlayer != null) {
+                // Tiếp tục từ vị trí tạm dừng
+                mediaPlayer.start();
+                startWaves();
+                isPlayingAnimation = true;
+                isPaused = false;
+            } else {
+                // Phát từ đầu nếu chưa có mediaPlayer hoặc đã hoàn thành
+                playAudio(audioUrl);
+                startWaves();
+                isPlayingAnimation = true;
+            }
         } else {
             pauseAudio();
             stopWaves();
@@ -503,13 +511,9 @@ public class ListeningPick1Activity extends AppCompatActivity {
             if (mediaPlayer == null) {
                 initializeMediaPlayer(audioUrl);
             } else if (!mediaPlayer.isPlaying()) {
+                mediaPlayer.seekTo(currentPosition);
                 mediaPlayer.start();
             }
-
-            if (currentPosition > 0) {
-                mediaPlayer.seekTo(currentPosition);
-            }
-
         } catch (IllegalStateException e) {
             Log.e("MediaPlayerError", "IllegalStateException: " + e.getMessage());
             resetMediaPlayer(audioUrl);
@@ -518,28 +522,26 @@ public class ListeningPick1Activity extends AppCompatActivity {
     // Phát lại âm thanh từ đầu
     private void replayAudio() {
         if (audioUrl == null) return;
-
         if (mediaPlayer != null) {
-            try {
-                mediaPlayer.stop();
-                mediaPlayer.reset();
-            } catch (IllegalStateException e) {
-                Log.e("MediaPlayerError", "Error resetting player: " + e.getMessage());
-            }
+            mediaPlayer.stop();
+            mediaPlayer.reset();
         }
-
         stopWaves();
         resetWaveViews();
+        currentPosition = 0;
         initializeMediaPlayer(audioUrl);
         startWaves();
         isPlayingAnimation = true;
     }
+
     private void pauseAudio() {
         if (mediaPlayer != null && mediaPlayer.isPlaying()) {
             currentPosition = mediaPlayer.getCurrentPosition();
             mediaPlayer.pause();
+            isPaused = true;
         }
     }
+
     private void initializeMediaPlayer(String audioUrl) {
         try {
             mediaPlayer = new MediaPlayer();
@@ -558,12 +560,14 @@ public class ListeningPick1Activity extends AppCompatActivity {
                 stopWaves();
                 isPlayingAnimation = false;
                 currentPosition = 0;
+                isPaused = false;
             });
             mediaPlayer.prepareAsync();
         } catch (IOException e) {
             Log.e("MediaPlayerError", "Error initializing: " + e.getMessage());
         }
     }
+
     private void resetMediaPlayer(String audioUrl) {
         if (mediaPlayer != null) {
             mediaPlayer.release();
