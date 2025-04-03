@@ -96,7 +96,7 @@
     <string name="flash_group">Nhóm thẻ ghi nhớ</string>
     <string name="skip">Bỏ qua</string>
     <string name="congrat">Chúc mừng</string>
-    <string name="txt_setupacc">Tài khoản của bạn đã sẵn sàng để sử dụng. Bạn sẽ được chuyển hướng đến trang chủ trong vài giây.</string>
+    <string name="txt_setupacc">Tài khoản của bạn đã sẵn sàng để sử dụng. Bạn sẽ được chuyển hướng đến trang đăng nhập trong vài giây.</string>
     <string name="newpass">Tạo mật khẩu mới</string>
     <string name="txt_newpass">Tạo mật khẩu mới của bạn</string>
     <string name="hint_pass">Mật khẩu</string>
