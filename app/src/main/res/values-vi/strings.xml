@@ -8,7 +8,7 @@
     <string name="mycourse">Khóa học của tôi</string>
     <string name="suggestcourse">Tất cả khóa học</string>
     <string name="txt_editPro">Sửa hồ sơ</string>
-    <string name="nextques">Câu hỏi tiếp theo</string>
+    <string name="nextques">Bài học tiếp theo</string>
     <string name="join">Tham gia khóa học</string>
     <string name="start_">BẠN MUỐN BẮT ĐẦU NHƯ THẾ NÀO ?</string>
     <string name="joinn">Bạn đã tham gia khóa học thành công, vào Study để bắt đầu bài học!</string>
@@ -117,7 +117,7 @@
     <string name="PartofSpeech">Loại từ: </string>
     <string name="Definition">Định nghĩa: </string>
     <string name="VietnameseMeaning">Ý nghĩa Tiếng Việt: </string>
-    <string name="Editprofile">Thông tin cá nhânh</string>
+    <string name="Editprofile">Thông tin cá nhân</string>
     <string name="Language2">Ngôn ngữ</string>
     <string name="TermsAndConditions">Điều khoản &amp; Điều kiện</string>
     <string name="Logout">Đăng xuất</string>

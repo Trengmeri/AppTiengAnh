@@ -34,6 +34,7 @@ import com.example.test.model.EvaluationResult;
 import com.example.test.model.MediaFile;
 import com.example.test.model.Question;
 import com.example.test.model.QuestionChoice;
+import com.example.test.ui.entrance_test.ListeningActivity;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -153,20 +154,11 @@ public class ListeningQuestionActivity extends AppCompatActivity {
                 isPlayingAnimation = false;
             }
             String userAnswer = etAnswer.getText().toString().trim();
-            userAnswers.clear(); // Xóa các câu trả lời trước đó
-            userAnswers.add(userAnswer); // Thêm câu trả lời mới vào danh sách
             Log.d("ListeningQuestionActivity", "User Answers: " + userAnswers);
-            if (userAnswers.isEmpty()) {
+            if (userAnswer.isEmpty()) {
                 Toast.makeText(ListeningQuestionActivity.this, "Vui lòng trả lời câu hỏi!", Toast.LENGTH_SHORT).show();
             } else {
-                StringBuilder sb = new StringBuilder();
-                for (int i = 0; i < userAnswers.size(); i++) {
-                    sb.append(userAnswers.get(i));
-                    if (i < userAnswers.size() - 1) {
-                        sb.append(", "); // Hoặc ký tự phân cách khác
-                    }
-                }
-                String answerContent = sb.toString();
+                String answerContent = userAnswer;
                 // Lưu câu trả lời của người dùng
                 quesManager.saveUserAnswer(questions.get(currentQuestionIndex).getId(), answerContent,0,null,enrollmentId, new ApiCallback() {
                     @Override

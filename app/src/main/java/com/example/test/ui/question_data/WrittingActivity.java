@@ -175,7 +175,7 @@ public class WrittingActivity extends AppCompatActivity {
             public void onFailure(String errorMessage) {
                 progressDialog.dismiss();
                 Log.e("WritingActivity", "Câu trả lời khong hop le: " + errorMessage);
-                showErrorDialog("Câu trả lời khong hop le. Vui lòng thử lại.");
+                showErrorDialog(getString(R.string.invalidans));
                 apiService.getSuggestionFromApi(questionContent, new ApiCallback<String>(){
 
                     @Override
@@ -213,7 +213,7 @@ public class WrittingActivity extends AppCompatActivity {
     private void showErrorDialog(String message) {
         runOnUiThread(() -> {
             new AlertDialog.Builder(WrittingActivity.this)
-                    .setTitle("Lỗi")
+                    .setTitle(getString(R.string.error))
                     .setMessage(message)
                     .setPositiveButton("OK", (dialog, which) -> {
                         dialog.dismiss();

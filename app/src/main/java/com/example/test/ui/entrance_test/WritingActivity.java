@@ -242,7 +242,7 @@ public class WritingActivity extends AppCompatActivity {
     private void showErrorDialog(String message) {
         runOnUiThread(() -> {
             new AlertDialog.Builder(WritingActivity.this)
-                    .setTitle("Lỗi")
+                    .setTitle(getString(R.string.error))
                     .setMessage(message)
                     .setPositiveButton("OK", (dialog, which) -> {
                         dialog.dismiss();

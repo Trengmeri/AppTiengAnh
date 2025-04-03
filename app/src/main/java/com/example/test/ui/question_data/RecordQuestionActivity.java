@@ -39,7 +39,7 @@ import okhttp3.Response;
 public class RecordQuestionActivity extends AppCompatActivity implements SpeechRecognitionCallback {
 
     private MediaPlayer mediaPlayer;
-    private ImageView imgVoice;
+    private LinearLayout imgVoice;
     private TextView tvTranscription, key;
     private SpeechRecognitionHelper speechRecognitionHelper;
 
@@ -91,9 +91,7 @@ public class RecordQuestionActivity extends AppCompatActivity implements SpeechR
 
         btnCheckResult.setOnClickListener(v -> {
             String userAnswer = tvTranscription.getText().toString().trim();
-            userAnswers.clear();
-            userAnswers.add(userAnswer);
-            if (userAnswers.isEmpty()) {
+            if (userAnswer.isEmpty()) {
                 Toast.makeText(this, "Vui lòng trả lời câu hỏi!", Toast.LENGTH_SHORT).show();
             } else {
                 checkAnswer(userAnswer);
@@ -200,7 +198,7 @@ public class RecordQuestionActivity extends AppCompatActivity implements SpeechR
     private void showErrorDialog(String message) {
         runOnUiThread(() -> {
             new AlertDialog.Builder(RecordQuestionActivity.this)
-                    .setTitle("Lỗi")
+                    .setTitle(getString(R.string.error))
                     .setMessage(message)
                     .setPositiveButton("OK", (dialog, which) -> {
                         dialog.dismiss();

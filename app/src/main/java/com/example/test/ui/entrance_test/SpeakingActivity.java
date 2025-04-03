@@ -112,10 +112,8 @@ public class SpeakingActivity extends AppCompatActivity implements SpeechRecogni
 
         btnCheckResult.setOnClickListener(v -> {
             String userAnswer = tvTranscription.getText().toString().trim();
-            userAnswers.clear();
-            userAnswers.add(userAnswer);
 
-            if (userAnswers.isEmpty()) {
+            if (userAnswer.isEmpty()) {
                 Toast.makeText(SpeakingActivity.this, "Vui lòng trả lời câu hỏi!", Toast.LENGTH_SHORT).show();
             } else {
                 checkAnswer(userAnswer, enrollmentId);
@@ -222,7 +220,7 @@ public class SpeakingActivity extends AppCompatActivity implements SpeechRecogni
     private void showErrorDialog(String message) {
         runOnUiThread(() -> {
             new AlertDialog.Builder(SpeakingActivity.this)
-                    .setTitle("Lỗi")
+                    .setTitle(getString(R.string.error))
                     .setMessage(message)
                     .setPositiveButton("OK", (dialog, which) -> {
                         dialog.dismiss();
