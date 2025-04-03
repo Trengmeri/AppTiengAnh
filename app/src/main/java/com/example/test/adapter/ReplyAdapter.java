@@ -63,11 +63,11 @@ public class ReplyAdapter extends RecyclerView.Adapter<ReplyAdapter.ViewHolder> 
             @Override
             public void onSuccess(User user) {
                 String avatar = user.getAvt();
-                String uri;
-                if (avatar == null) return;
-                uri = avatar.replace("0.0.0.0", "14.225.198.3");
                 new Handler(Looper.getMainLooper()).post(() -> {
                     holder.txtUser.setText(user.getName());
+                    if (avatar == null) return;
+                    String uri = avatar.replace("0.0.0.0", "14.225.198.3");
+                    Log.d("DiscussionAdapter", user.getName());
                     Glide.with(context)
                             .load(uri)
                             .placeholder(R.drawable.icon_lesson) // Ảnh mặc định

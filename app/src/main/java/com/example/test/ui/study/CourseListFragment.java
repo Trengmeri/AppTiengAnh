@@ -114,7 +114,7 @@ public class CourseListFragment extends Fragment {
                                             // Tự động chuyển đến Study sau vài giây
                                             new Handler().postDelayed(() -> {
                                                 ViewPager2 viewPager = requireActivity().findViewById(R.id.vpg_main);
-                                                viewPager.setCurrentItem(0, true);
+                                                viewPager.setCurrentItem(1, true);
                                             }, 3000);
                                         });
                                     }

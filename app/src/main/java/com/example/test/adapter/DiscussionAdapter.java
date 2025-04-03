@@ -26,10 +26,13 @@ import com.example.test.model.Discussion;
 import com.example.test.model.User;
 import com.example.test.ui.DiscussionActivity;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class DiscussionAdapter extends RecyclerView.Adapter<DiscussionAdapter.ViewHolder> {
     private List<Discussion> discussions;
+    private Map<Integer, String> discussionUserMap = new HashMap<>();
     private Context context;
     private ReplyAdapter replyAdapter;
 
@@ -71,11 +74,12 @@ public class DiscussionAdapter extends RecyclerView.Adapter<DiscussionAdapter.Vi
             @Override
             public void onSuccess(User user) {
                 String avatar = user.getAvt();
-                String uri;
-                if (avatar == null) return;
-                uri = avatar.replace("0.0.0.0", "14.225.198.3");
                 new Handler(Looper.getMainLooper()).post(() -> {
                     holder.txtUser.setText(user.getName());
+                    discussionUserMap.put(discussion.getId(), user.getName());
+                    if (avatar == null) return;
+                    String uri = avatar.replace("0.0.0.0", "14.225.198.3");
+                    Log.d("DiscussionAdapter", user.getName());
                     Glide.with(context)
                             .load(uri)
                             .placeholder(R.drawable.icon_lesson) // Ảnh mặc định
@@ -183,6 +187,7 @@ public class DiscussionAdapter extends RecyclerView.Adapter<DiscussionAdapter.Vi
 
 
 
+
         // Hiển thị danh sách reply
         if (holder.recyclerReply.getLayoutManager() == null) {
             holder.recyclerReply.setLayoutManager(new LinearLayoutManager(context));
@@ -258,6 +263,9 @@ public class DiscussionAdapter extends RecyclerView.Adapter<DiscussionAdapter.Vi
             recyclerReply = itemView.findViewById(R.id.recyclerReply);
             imgAvatar = itemView.findViewById(R.id.imgAvatar);
         }
+    }
+    public Map<Integer, String> getDiscussionUserMap() {
+        return discussionUserMap;
     }
 }
 

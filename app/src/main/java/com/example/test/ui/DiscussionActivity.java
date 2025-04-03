@@ -30,14 +30,16 @@ import com.example.test.model.Course;
 import com.example.test.model.Discussion;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class DiscussionActivity extends AppCompatActivity implements DiscussionAdapter.OnReplyClickListener  {
 
     private int currentPage = 1; // Bắt đầu từ trang 1
     private boolean isLoading = false; // Để tránh tải dữ liệu nhiều lần
     private boolean hasMoreData = true; // Để biết còn dữ liệu để tải không
-
+    private Map<Integer, String> discussionUserMap = new HashMap<>();
     private int lessonID;
     private DiscussionManager discussionManager= new DiscussionManager(this);;
     private DiscussionAdapter discussionAdapter ;
@@ -63,6 +65,7 @@ public class DiscussionActivity extends AppCompatActivity implements DiscussionA
         discussionAdapter = new DiscussionAdapter(DiscussionActivity.this, new ArrayList<>(), DiscussionActivity.this);
         rv_discussions.setLayoutManager(new LinearLayoutManager(DiscussionActivity.this));
         rv_discussions.setAdapter(discussionAdapter);
+        discussionUserMap = discussionAdapter.getDiscussionUserMap();
 
 
         rv_discussions.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -305,7 +308,11 @@ public class DiscussionActivity extends AppCompatActivity implements DiscussionA
 
     @Override
     public void onReplyClicked(int discussionId) {
-        String userName = SharedPreferencesManager.getInstance(this).getUser().getName();
-        focusOnReply(discussionId,userName);
+        String ownerName = discussionUserMap.get(discussionId);
+        if (ownerName != null) {
+            focusOnReply(discussionId, ownerName);
+        } else {
+            Toast.makeText(this, "Không tìm thấy chủ nhân!", Toast.LENGTH_SHORT).show();
+        }
     }
 }
