@@ -35,6 +35,7 @@ import com.example.test.model.Enrollment;
 import com.example.test.model.Lesson;
 import com.example.test.model.Review;
 import com.example.test.ui.home.HomeActivity;
+import com.example.test.ui.study.StudyFragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -188,10 +189,9 @@ import java.util.List;
 
                                 // Tự động chuyển đến Study sau vài giây
                                 new Handler().postDelayed(() -> {
-                                    Intent intent = new Intent(CourseInformationActivity.this, HomeActivity.class);
+                                    Intent intent = new Intent(CourseInformationActivity.this, StudyFragment.class);
                                     intent.putExtra("targetPage", 0);
                                     startActivity(intent);
-                                    finish();
                                 }, 3000);
                             });
 
