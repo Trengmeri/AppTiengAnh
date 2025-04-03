@@ -1,6 +1,7 @@
 package com.example.test.ui.study;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -27,6 +28,8 @@ import com.example.test.api.EnrollmentManager;
 import com.example.test.api.ResultManager;
 import com.example.test.model.Course;
 import com.example.test.model.Enrollment;
+import com.example.test.ui.CourseInformationActivity;
+import com.example.test.ui.home.HomeActivity;
 
 import java.io.Serializable;
 import java.util.Collections;
@@ -113,8 +116,11 @@ public class CourseListFragment extends Fragment {
 
                                             // Tự động chuyển đến Study sau vài giây
                                             new Handler().postDelayed(() -> {
-                                                ViewPager2 viewPager = requireActivity().findViewById(R.id.vpg_main);
-                                                viewPager.setCurrentItem(1, true);
+                                                if (getActivity() != null) {  // Kiểm tra tránh lỗi NullPointerException
+                                                    Intent intent = new Intent(getActivity(), HomeActivity.class);
+                                                    intent.putExtra("targetPage", 1);
+                                                    startActivity(intent);
+                                                }
                                             }, 3000);
                                         });
                                     }

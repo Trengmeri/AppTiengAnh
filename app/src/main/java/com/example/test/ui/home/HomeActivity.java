@@ -75,6 +75,7 @@ public class HomeActivity extends AppCompatActivity {
         int targetPage = intent.getIntExtra("targetPage", 0);
         ViewPager2 viewPager = findViewById(R.id.vpg_main);
         viewPager.setCurrentItem(targetPage, true);
+        reloadFragment(targetPage);
     }
 
     private void reloadFragment(int position) {

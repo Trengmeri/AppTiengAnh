@@ -189,8 +189,8 @@ import java.util.List;
 
                                 // Tự động chuyển đến Study sau vài giây
                                 new Handler().postDelayed(() -> {
-                                    Intent intent = new Intent(CourseInformationActivity.this, StudyFragment.class);
-                                    intent.putExtra("targetPage", 0);
+                                    Intent intent = new Intent(CourseInformationActivity.this, HomeActivity.class);
+                                    intent.putExtra("targetPage", 1);
                                     startActivity(intent);
                                 }, 3000);
                             });
