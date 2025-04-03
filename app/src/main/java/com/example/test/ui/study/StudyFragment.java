@@ -53,21 +53,21 @@ public class StudyFragment extends Fragment {
             public void onPageSelected(int position) {
                 super.onPageSelected(position);
 
-                FragmentManager fragmentManager = getChildFragmentManager();
+                if (!isAdded()) { // Kiểm tra tránh lỗi "Fragment has not been attached yet"
+                    return;
+                }
 
-                if (position == 0) { // Khi chuyển đến MyCourseFragment
-                    MyCourseFragment myCourseFragment = (MyCourseFragment) fragmentManager.findFragmentByTag("f0");
-                    if (myCourseFragment != null) {
-                        myCourseFragment.onResume(); // Gọi lại onResume() để làm mới dữ liệu
-                    }
-                } else if (position == 1) { // Khi chuyển đến AllCourseFragment
-                    AllCourseFragment allCourseFragment = (AllCourseFragment) fragmentManager.findFragmentByTag("f1");
-                    if (allCourseFragment != null) {
-                        allCourseFragment.onResume(); // Gọi lại onResume() để làm mới dữ liệu
-                    }
+                FragmentManager fragmentManager = getChildFragmentManager();
+                Fragment fragment = fragmentManager.findFragmentByTag("f" + position);
+
+                if (fragment instanceof MyCourseFragment && position == 0) {
+                    ((MyCourseFragment) fragment).onResume(); // Gọi phương thức cập nhật
+                } else if (fragment instanceof AllCourseFragment && position == 1) {
+                    ((AllCourseFragment) fragment).onResume(); // Gọi phương thức cập nhật
                 }
             }
         });
+
 
     }
 

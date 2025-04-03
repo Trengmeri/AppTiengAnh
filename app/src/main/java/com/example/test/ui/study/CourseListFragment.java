@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -97,21 +98,16 @@ public class CourseListFragment extends Fragment {
                                     public void onSuccess() {
                                         getActivity().runOnUiThread(() -> {
                                             join.setVisibility(View.GONE); // Ẩn nút Join
-                                            // Hiển thị nền tối
-                                            View darkOverlay = view.findViewById(R.id.darkOverlay);
-                                            darkOverlay.setVisibility(View.VISIBLE);
+                                            LinearLayout gif = view.findViewById(R.id.gif);
+                                            gif.setVisibility(View.VISIBLE);
 
                                             // Hiển thị GIF và thông báo
                                             ImageView imgSuccessGif = view.findViewById(R.id.imgSuccessGif);
-                                            TextView tvSuccessMessage = view.findViewById(R.id.tvSuccessMessage);
-
-                                            imgSuccessGif.setVisibility(View.VISIBLE);
-                                            tvSuccessMessage.setVisibility(View.VISIBLE);
 
                                             // Load GIF bằng Glide
                                             Glide.with(CourseListFragment.this)
                                                     .asGif()
-                                                    .load(R.raw.like)
+                                                    .load(R.raw.love)
                                                     .into(imgSuccessGif);
 
                                             // Tự động chuyển đến Study sau vài giây
