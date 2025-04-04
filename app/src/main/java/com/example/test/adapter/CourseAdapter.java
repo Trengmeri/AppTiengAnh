@@ -295,5 +295,44 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseView
             lessonContainer = itemView.findViewById(R.id.lessonContainer);
         }
     }
+    public void openLesson(int courseId, int lessonId) {
+        Log.d("CourseAdapter", "Opening lesson " + lessonId + " for course " + courseId);
+
+        resultManager.getEnrollment(courseId, new ApiCallback<Enrollment>() {
+            @Override
+            public void onSuccess(Enrollment enrollment) {
+                int enrollmentId = enrollment.getId();
+                lessonManager.fetchLessonById(lessonId, new ApiCallback<Lesson>() {
+                    @Override
+                    public void onSuccess(Lesson lesson) {
+                        Intent intent = new Intent(context, NevigateQuestion.class);
+                        intent.putExtra("courseId", courseId);
+                        intent.putExtra("enrollmentId", enrollmentId);
+                        intent.putExtra("lessonId", lessonId);
+                        intent.putExtra("questionIds", new ArrayList<>(lesson.getQuestionIds()));
+                        context.startActivity(intent);
+                    }
+
+                    @Override
+                    public void onSuccess() {}
+
+                    @Override
+                    public void onFailure(String errorMessage) {
+                        new Handler(Looper.getMainLooper()).post(() -> {
+                            Toast.makeText(context, "Lỗi tải dữ liệu: " + errorMessage, Toast.LENGTH_SHORT).show();
+                        });
+                    }
+                });
+            }
+
+            @Override
+            public void onSuccess() {}
+
+            @Override
+            public void onFailure(String errorMessage) {
+                Log.e("CourseAdapter", "Error getting enrollment: " + errorMessage);
+            }
+        });
+    }
 }
 

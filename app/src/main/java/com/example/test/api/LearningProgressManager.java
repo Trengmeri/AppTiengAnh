@@ -27,7 +27,7 @@ public class LearningProgressManager extends BaseApiManager {
     // Trong LearningProgressManager.java
     public void fetchLatestEnrollment(ApiCallback<JsonObject> callback) {
         String userId = SharedPreferencesManager.getInstance(context).getID();
-        String url = BASE_URL + "/api/v1/enrollments/user/" + userId + "?page=1&size=4";
+        String url = BASE_URL + "/api/v1/enrollments/user/" + userId + "?page=1&size=100";
 
         Log.d("LearningProgressManager", "Fetching enrollments for user: " + userId);
         Log.d("LearningProgressManager", "URL: " + url);

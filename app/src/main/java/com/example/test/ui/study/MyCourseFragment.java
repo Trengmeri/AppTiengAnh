@@ -28,7 +28,6 @@ import com.example.test.model.Course;
 import com.example.test.model.Enrollment;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -42,6 +41,8 @@ public class MyCourseFragment extends Fragment {
     private ResultManager resultManager;
     LinearLayout contentAbout;
     private Set<Integer> processedCourseIds = new HashSet<>();
+    private boolean isDataLoaded = false;
+    private int pendingScrollCourseId = -1;
 
     public MyCourseFragment() {
     }
@@ -59,11 +60,7 @@ public class MyCourseFragment extends Fragment {
         resultManager = new ResultManager(context);
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        fetchCourses();
-    }
+
 
     @SuppressLint("WrongViewCast")
     @Override
@@ -76,8 +73,8 @@ public class MyCourseFragment extends Fragment {
         recyclerView1.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView2 = view.findViewById(R.id.recyclerView2);
         recyclerView2.setLayoutManager(new LinearLayoutManager(getContext()));
-//        recyclerView3 = view.findViewById(R.id.recyclerView3);
-//        recyclerView3.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerView3 = view.findViewById(R.id.recyclerView3);
+        recyclerView3.setLayoutManager(new LinearLayoutManager(getContext()));
 
         contentAbout = view.findViewById(R.id.mycourse);
 
@@ -90,15 +87,66 @@ public class MyCourseFragment extends Fragment {
         adapter2 = new CourseAdapter("False", getContext(), courseList2);
         recyclerView2.setAdapter(adapter2);
 
-//        courseList3 = new ArrayList<>();
-//        adapter3 = new CourseAdapter("Done", getContext(), courseList3);
-//        recyclerView3.setAdapter(adapter3);
+        courseList3 = new ArrayList<>();
+        adapter3 = new CourseAdapter("Done", getContext(), courseList3);
+        recyclerView3.setAdapter(adapter3);
 
         lessonManager = new LessonManager();
-        fetchCourses();
-    }
 
+        if (!isDataLoaded) {
+            fetchCourses();
+        }
+    }
+    public void scrollWhenReady(int courseId) {
+        Log.d("MyCourseFragment", "Waiting to scroll to course: " + courseId);
+        this.pendingScrollCourseId = courseId;
+        if (isDataLoaded && !courseList1.isEmpty()) {
+            scrollToCourse(courseId);
+        }
+    }
+    private void scrollToCourse(int courseId) {
+        if (courseList1 == null || courseList1.isEmpty()) {
+            Log.d("MyCourseFragment", "Course list is empty or null");
+            return;
+        }
+
+        Log.d("MyCourseFragment", "Scrolling to course ID: " + courseId);
+        for (int i = 0; i < courseList1.size(); i++) {
+            if (courseList1.get(i).getId() == courseId) {
+                Log.d("MyCourseFragment", "Found course at position: " + i);
+                final int position = i; // Lưu vị trí vào biến final
+                recyclerView1.post(() -> recyclerView1.smoothScrollToPosition(position));
+                break;
+            }
+        }
+    }
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.d("MyCourseFragment", "onResume được gọi");
+
+        // Kiểm tra có courseId được chọn không
+        if (getArguments() != null && getArguments().containsKey("selected_course_id")) {
+            int selectedCourseId = getArguments().getInt("selected_course_id");
+            Log.d("MyCourseFragment", "Tìm thấy courseId: " + selectedCourseId);
+            scrollToCourse(selectedCourseId);
+            // Xóa argument để tránh scroll lặp lại
+            getArguments().remove("selected_course_id");
+        }
+    }
     private void fetchCourses() {
+        // Xóa danh sách cũ trước khi fetch dữ liệu mới
+        if (!isAdded() || getActivity() == null) return;
+
+        Log.d("MyCourseFragment", "Bắt đầu fetch courses");
+        courseList1.clear();
+        courseList2.clear();
+        courseList3.clear();
+        processedCourseIds.clear(); // Đảm bảo dữ liệu mới được cập nhật lại
+
+        adapter1.notifyDataSetChanged();
+        adapter2.notifyDataSetChanged();
+        adapter3.notifyDataSetChanged();
 
         enrollmentManager.fetchAllEnrolledCourseIds(new ApiCallback<List<Integer>>() {
             @Override
@@ -115,8 +163,28 @@ public class MyCourseFragment extends Fragment {
                 Log.e("MyCourseFragment", "❌ Lỗi khi lấy danh sách khóa học: " + errorMessage);
             }
         });
+        isDataLoaded = true;
+        if (pendingScrollCourseId != -1) {
+            scrollToCourse(pendingScrollCourseId);
+            pendingScrollCourseId = -1;
+        }
     }
+    public void openFirstLesson(int courseId) {
+        Log.d("MyCourseFragment", "Opening first lesson for course: " + courseId);
 
+        for (Course course : courseList1) {
+            if (course.getId() == courseId && course.getLessonIds() != null && !course.getLessonIds().isEmpty()) {
+                // Lấy lesson đầu tiên của khóa học
+                int firstLessonId = course.getLessonIds().get(0);
+
+                // Truyền thông tin vào adapter để mở lesson
+                if (adapter1 != null) {
+                    adapter1.openLesson(courseId, firstLessonId);
+                }
+                break;
+            }
+        }
+    }
     private void fetchLessonsForCourses(List<Integer> courseIds) {
         for (Integer courseId : courseIds) {
             if (processedCourseIds.contains(courseId)) {
@@ -139,25 +207,29 @@ public class MyCourseFragment extends Fragment {
 
                         @Override
                         public void onSuccess(Course course) {
-                            if (course == null) return;
+                            if (course == null) {
+                                Log.e("MyCourseFragment", "❌ Course ID " + courseId + " không tồn tại!");
+                                return;
+                            }
+                            Log.d("MyCourseFragment", "📌 Course ID: " + course.getId() + ", Lessons: " + course.getLessonIds());
 
                             if ("true".equalsIgnoreCase(prostatus)) {
-//                                if (totalPoint != 0) {
-//                                    courseList3.add(course); // Hoàn thành
-//                                } else {
-                                if (totalPoint == 0){
-                                    courseList1.add(course); // Đang học
+                                if (totalPoint != 0) {
+                                    courseList3.add(course);
+                                } else {
+                                    courseList1.add(course);
                                 }
                             } else {
-                                courseList2.add(course); // Chưa đăng ký
+                                courseList2.add(course);
                             }
 
-                            if (getActivity() == null) return;
+                            if (getActivity() == null) return; // Ngăn lỗi khi Fragment đã bị tách khỏi Activity
                             getActivity().runOnUiThread(() -> {
-                                adapter1.notifyItemRangeChanged(0, courseList1.size());
-                                adapter2.notifyItemRangeChanged(0, courseList2.size());
-//                                adapter3.notifyItemRangeChanged(0, courseList3.size());
-                            });
+                                    adapter1.notifyDataSetChanged();
+                                    adapter2.notifyDataSetChanged();
+                                    adapter3.notifyDataSetChanged();
+                                });
+
                         }
 
                         @Override

@@ -69,7 +69,7 @@ public class ReviewAnswerActivity extends AppCompatActivity {
         btnBackto = findViewById(R.id.btnBackto);
 //        lessonsContainer = findViewById(R.id.lessonsContainer);
         tableTestResult= findViewById(R.id.tableTestResult);
-
+        Log.d("ReviewAnswerActivity", "Đã vào màn này ") ;
         btnBackto.setOnClickListener(v -> {
             finish();
         });

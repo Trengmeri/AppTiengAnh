@@ -2,13 +2,19 @@ package com.example.test.ui;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Rect;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewTreeObserver;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -53,6 +59,7 @@ public class DiscussionActivity extends AppCompatActivity implements DiscussionA
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+       // getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE | WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_dicussion);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
@@ -60,7 +67,21 @@ public class DiscussionActivity extends AppCompatActivity implements DiscussionA
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+        // Thêm vào phương thức onCreate() ngay sau super.onCreate()
+
         khaiBao();
+        ScrollView scrollView = findViewById(R.id.scrollView);
+        editDiscussion = findViewById(R.id.editDiscussion);
+        editDiscussion.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+                    v.postDelayed(() -> {
+                        scrollView.smoothScrollTo(0, v.getBottom());
+                    }, 200);
+                }
+            }
+        });
         // Khởi tạo adapter với danh sách rỗng ngay từ đầu
         discussionAdapter = new DiscussionAdapter(DiscussionActivity.this, new ArrayList<>(), DiscussionActivity.this);
         rv_discussions.setLayoutManager(new LinearLayoutManager(DiscussionActivity.this));
@@ -102,7 +123,7 @@ public class DiscussionActivity extends AppCompatActivity implements DiscussionA
     private void khaiBao(){
         lessonID = getIntent().getIntExtra("lessonId",1);
         btSendDisussion = findViewById(R.id.btSendDiscussion);
-        editDiscussion = findViewById(R.id.editDiscussion);
+
         back = findViewById(R.id.back);
         rv_discussions = findViewById(R.id.rv_discussions);
         replyContainer = findViewById(R.id.replyContainer); // Ánh xạ replyContainer
@@ -158,7 +179,7 @@ public class DiscussionActivity extends AppCompatActivity implements DiscussionA
         txtReplyUser.setText(userName); // Hiển thị tên người dùng đang trả lời
         editDiscussion.setHint("Write a reply for " + userName);
         editDiscussion.requestFocus();
-        showKeyboard(); // Hiển thị bàn phím
+
     }
     private void cancelReply() {
         currentParentId = -1; // Xóa trạng thái reply
@@ -169,61 +190,7 @@ public class DiscussionActivity extends AppCompatActivity implements DiscussionA
 
 
 
-//    private void sendDiscussion() {
-//        String id = SharedPreferencesManager.getInstance(this).getID();
 //
-//        if (id == null || id.isEmpty()) {
-//            Toast.makeText(this, "Không tìm thấy user ID. Vui lòng đăng nhập!", Toast.LENGTH_SHORT).show();
-//            return;
-//        }
-//
-//        int userId;
-//        try {
-//            userId = Integer.parseInt(id);
-//        } catch (NumberFormatException e) {
-//            Log.e("DiscussionActivity", "Lỗi chuyển đổi user ID: " + e.getMessage(), e);
-//            Toast.makeText(this, "Lỗi lấy ID người dùng!", Toast.LENGTH_SHORT).show();
-//            return;
-//        }
-//
-//        String discussionText = editDiscussion.getText().toString().trim();
-//        if (discussionText.isEmpty()) {
-//            Toast.makeText(this, "Vui lòng nhập nội dung!", Toast.LENGTH_SHORT).show();
-//            return;
-//        }
-//
-//        discussionManager.createDiscussion(userId, lessonID, discussionText, null, new ApiCallback<Discussion>() {
-//            @Override
-//            public void onSuccess() {
-//
-//            }
-//
-//            @Override
-//            public void onSuccess(Discussion result) {
-//                runOnUiThread(() -> {
-//                    Toast.makeText(DiscussionActivity.this, "Bình luận đã gửi!", Toast.LENGTH_SHORT).show();
-//                    editDiscussion.setText("");
-//
-//                    if (discussionAdapter != null) {
-//                        discussionAdapter.addDiscussion(result);
-//                        discussionAdapter.notifyDataSetChanged();
-//                    } else {
-//                        Log.e("DiscussionActivity", "discussionAdapter is null");
-//                    }
-//                });
-//            }
-//
-//            @Override
-//            public void onFailure(String errorMessage) {
-//                runOnUiThread(() -> {
-//                    Log.e("DiscussionActivity", "Lỗi gửi bình luận: " + errorMessage);
-//                    Toast.makeText(DiscussionActivity.this, "Gửi bình luận thất bại. Vui lòng thử lại!", Toast.LENGTH_SHORT).show();
-//                });
-//            }
-//        });
-//    }
-
-
     private void sendDiscussion() {
         String id = SharedPreferencesManager.getInstance(this).getID();
         if (id == null || id.isEmpty()) {
@@ -295,15 +262,30 @@ public class DiscussionActivity extends AppCompatActivity implements DiscussionA
                 });
     }
 
-    private void showKeyboard() {
-        editDiscussion.post(() -> {
-            editDiscussion.requestFocus();
-            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-            if (imm != null) {
-                imm.showSoftInput(editDiscussion, InputMethodManager.SHOW_IMPLICIT);
-            }
-        });
-    }
+//    private void showKeyboard() {
+//        // Đảm bảo EditText luôn hiển thị khi bàn phím xuất hiện
+//        editDiscussion.post(() -> {
+//            editDiscussion.requestFocus();
+//
+//            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+//            if (imm != null) {
+//                imm.showSoftInput(editDiscussion, InputMethodManager.SHOW_IMPLICIT);
+//            }
+//
+//            // Đợi một chút để bàn phím hiển thị, sau đó đảm bảo EditText hiển thị
+//            new Handler(Looper.getMainLooper()).postDelayed(() -> {
+//                // Đảm bảo EditText hiển thị hoàn toàn bằng cách yêu cầu nó hiển thị trong vùng nhìn
+//                Rect rect = new Rect(0, 0, editDiscussion.getWidth(), editDiscussion.getHeight());
+//                editDiscussion.requestRectangleOnScreen(rect, true);
+//
+//                // Cuộn RecyclerView đến vị trí cuối cùng
+//                if (rv_discussions.getAdapter() != null && rv_discussions.getAdapter().getItemCount() > 0) {
+//                    rv_discussions.smoothScrollToPosition(rv_discussions.getAdapter().getItemCount() - 1);
+//                }
+//            }, 300); // Đợi 300ms cho bàn phím hiển thị
+//        });
+//    }
+
 
 
     @Override

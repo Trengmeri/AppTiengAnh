@@ -7,6 +7,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.DiscussionActivity"
+    android:fitsSystemWindows="true"
     android:padding="16dp"
     android:background="@color/white">
 
@@ -27,15 +28,20 @@
         app:layout_constraintStart_toStartOf="parent"/>
 
     <!-- Danh sách bình luận -->
+
+    <!-- Container cho phần nhập bình luận -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_discussions"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:clipToPadding="false"
         android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        app:layout_constraintBottom_toTopOf="@id/inputContainer"
         app:layout_constraintTop_toBottomOf="@id/back"
-        app:layout_constraintBottom_toTopOf="@id/inputContainer"/>
+        app:layout_constraintVertical_bias="1.0"
+        tools:layout_editor_absoluteX="-15dp" />
 
-    <!-- Container cho phần nhập bình luận -->
     <androidx.cardview.widget.CardView
         android:id="@+id/inputContainer"
         android:layout_width="match_parent"
@@ -45,7 +51,10 @@
         android:elevation="4dp"
         app:cardCornerRadius="12dp"
         app:layout_constraintBottom_toBottomOf="parent">
-
+        <ScrollView
+            android:id="@+id/scrollView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -58,6 +67,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
+                android:layout_alignParentBottom="true"
                 android:visibility="gone"
                 android:background="@color/light_gray"
                 android:padding="8dp"
@@ -119,5 +129,6 @@
                     android:background="?attr/selectableItemBackground"/>
             </LinearLayout>
         </LinearLayout>
+        </ScrollView>
     </androidx.cardview.widget.CardView>
 </androidx.constraintlayout.widget.ConstraintLayout>

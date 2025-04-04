@@ -1,6 +1,7 @@
 package com.example.test.ui.study;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +19,7 @@ import java.util.List;
 public class StudyFragment extends Fragment {
     private Button btnAbout, btnLesson;
     private ViewPager2 viewPager;
+    private StudyPagerAdapter adapter;
 
     public StudyFragment() {}
 
@@ -36,36 +38,51 @@ public class StudyFragment extends Fragment {
         viewPager = view.findViewById(R.id.viewPager);
         viewPager.setSaveEnabled(false);
 
-
-        StudyPagerAdapter adapter = new StudyPagerAdapter(getChildFragmentManager(), getLifecycle());
-
-
+        adapter = new StudyPagerAdapter(getChildFragmentManager(), getLifecycle());
         adapter.addFragment(new MyCourseFragment());
         adapter.addFragment(new AllCourseFragment());
         viewPager.setAdapter(adapter);
 
-        // Set sự kiện click cho button
-        btnAbout.setOnClickListener(v -> viewPager.setCurrentItem(0)); // Chuyển về MyCourseFragment
-        btnLesson.setOnClickListener(v -> viewPager.setCurrentItem(1)); // Chuyển về AllCourseFragment
+        btnAbout.setOnClickListener(v -> viewPager.setCurrentItem(0));
+        btnLesson.setOnClickListener(v -> viewPager.setCurrentItem(1));
+
+        // Kiểm tra nếu có courseId được truyền vào
+        Bundle args = getArguments();
+        if (args != null && args.containsKey("selected_course_id")) {
+            int selectedCourseId = args.getInt("selected_course_id");
+            selectCourse(selectedCourseId);
+        }
 
         viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
             public void onPageSelected(int position) {
                 super.onPageSelected(position);
-
-                if (!isAdded()) { // Kiểm tra tránh lỗi "Fragment has not been attached yet"
-                    return;
-                }
-
-                FragmentManager fragmentManager = getChildFragmentManager();
-                Fragment fragment = fragmentManager.findFragmentByTag("f" + position);
-
-                if (fragment instanceof MyCourseFragment && position == 0) {
-                    ((MyCourseFragment) fragment).onResume(); // Gọi phương thức cập nhật
-                } else if (fragment instanceof AllCourseFragment && position == 1) {
-                    ((AllCourseFragment) fragment).onResume(); // Gọi phương thức cập nhật
-                }
+                refreshCurrentFragment(position);
             }
         });
+    }
+
+    private void refreshCurrentFragment(int position) {
+        Fragment fragment = getChildFragmentManager().findFragmentByTag("f" + position);
+        if (fragment instanceof MyCourseFragment && position == 0) {
+            ((MyCourseFragment) fragment).onResume();
+        } else if (fragment instanceof AllCourseFragment && position == 1) {
+            ((AllCourseFragment) fragment).onResume();
+        }
+    }
+
+    public void selectCourse(int courseId) {
+        Log.d("StudyFragment", "Selecting course with ID: " + courseId);
+        viewPager.setCurrentItem(0, true);
+
+        Fragment currentFragment = getChildFragmentManager().findFragmentByTag("f0");
+        if (currentFragment instanceof MyCourseFragment) {
+            Log.d("StudyFragment", "Found existing MyCourseFragment");
+            MyCourseFragment myCourseFragment = (MyCourseFragment) currentFragment;
+            // Thay vì scroll, gọi phương thức mở lesson
+            myCourseFragment.openFirstLesson(courseId);
+        } else {
+            Log.e("StudyFragment", "MyCourseFragment not found");
+        }
     }
 }

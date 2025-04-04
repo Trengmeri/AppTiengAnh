@@ -67,8 +67,7 @@
             android:exported="false" />
         <activity
             android:name=".ui.DiscussionActivity"
-            android:exported="false"
-            android:windowSoftInputMode="adjustResize" />
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".ui.question_data.WrittingActivity"
             android:exported="false" />
