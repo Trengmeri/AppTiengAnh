@@ -132,11 +132,13 @@
             android:padding="16dp">
 
             <TableRow android:background="@color/white">
+
                 <TextView
-                    android:text="@string/question"
-                    android:textStyle="bold"
+                    android:layout_width="141dp"
                     android:layout_weight="1"
-                    android:padding="10dp"/>
+                    android:padding="10dp"
+                    android:text="@string/question"
+                    android:textStyle="bold" />
                 <TextView
                     android:text="@string/yans"
                     android:layout_weight="1"
