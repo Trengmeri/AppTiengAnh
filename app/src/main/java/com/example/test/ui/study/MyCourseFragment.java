@@ -28,6 +28,7 @@ import com.example.test.model.Course;
 import com.example.test.model.Enrollment;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -43,7 +44,6 @@ public class MyCourseFragment extends Fragment {
     private Set<Integer> processedCourseIds = new HashSet<>();
     private boolean isDataLoaded = false;
     private int pendingScrollCourseId = -1;
-
     public MyCourseFragment() {
     }
 
@@ -61,7 +61,6 @@ public class MyCourseFragment extends Fragment {
     }
 
 
-
     @SuppressLint("WrongViewCast")
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -73,8 +72,8 @@ public class MyCourseFragment extends Fragment {
         recyclerView1.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView2 = view.findViewById(R.id.recyclerView2);
         recyclerView2.setLayoutManager(new LinearLayoutManager(getContext()));
-        recyclerView3 = view.findViewById(R.id.recyclerView3);
-        recyclerView3.setLayoutManager(new LinearLayoutManager(getContext()));
+//        recyclerView3 = view.findViewById(R.id.recyclerView3);
+//        recyclerView3.setLayoutManager(new LinearLayoutManager(getContext()));
 
         contentAbout = view.findViewById(R.id.mycourse);
 
@@ -87,15 +86,15 @@ public class MyCourseFragment extends Fragment {
         adapter2 = new CourseAdapter("False", getContext(), courseList2);
         recyclerView2.setAdapter(adapter2);
 
-        courseList3 = new ArrayList<>();
-        adapter3 = new CourseAdapter("Done", getContext(), courseList3);
-        recyclerView3.setAdapter(adapter3);
+//        courseList3 = new ArrayList<>();
+//        adapter3 = new CourseAdapter("Done", getContext(), courseList3);
+//        recyclerView3.setAdapter(adapter3);
 
         lessonManager = new LessonManager();
-
         if (!isDataLoaded) {
             fetchCourses();
         }
+
     }
     public void scrollWhenReady(int courseId) {
         Log.d("MyCourseFragment", "Waiting to scroll to course: " + courseId);
@@ -120,6 +119,8 @@ public class MyCourseFragment extends Fragment {
             }
         }
     }
+
+
     @Override
     public void onResume() {
         super.onResume();
@@ -134,6 +135,7 @@ public class MyCourseFragment extends Fragment {
             getArguments().remove("selected_course_id");
         }
     }
+
     private void fetchCourses() {
         // Xóa danh sách cũ trước khi fetch dữ liệu mới
         if (!isAdded() || getActivity() == null) return;
@@ -141,12 +143,12 @@ public class MyCourseFragment extends Fragment {
         Log.d("MyCourseFragment", "Bắt đầu fetch courses");
         courseList1.clear();
         courseList2.clear();
-        courseList3.clear();
+
         processedCourseIds.clear(); // Đảm bảo dữ liệu mới được cập nhật lại
 
         adapter1.notifyDataSetChanged();
         adapter2.notifyDataSetChanged();
-        adapter3.notifyDataSetChanged();
+//        adapter3.notifyDataSetChanged();
 
         enrollmentManager.fetchAllEnrolledCourseIds(new ApiCallback<List<Integer>>() {
             @Override
@@ -163,12 +165,9 @@ public class MyCourseFragment extends Fragment {
                 Log.e("MyCourseFragment", "❌ Lỗi khi lấy danh sách khóa học: " + errorMessage);
             }
         });
-        isDataLoaded = true;
-        if (pendingScrollCourseId != -1) {
-            scrollToCourse(pendingScrollCourseId);
-            pendingScrollCourseId = -1;
-        }
+
     }
+
     public void openFirstLesson(int courseId) {
         Log.d("MyCourseFragment", "Opening first lesson for course: " + courseId);
 
@@ -207,29 +206,25 @@ public class MyCourseFragment extends Fragment {
 
                         @Override
                         public void onSuccess(Course course) {
-                            if (course == null) {
-                                Log.e("MyCourseFragment", "❌ Course ID " + courseId + " không tồn tại!");
-                                return;
-                            }
-                            Log.d("MyCourseFragment", "📌 Course ID: " + course.getId() + ", Lessons: " + course.getLessonIds());
+                            if (course == null) return;
 
                             if ("true".equalsIgnoreCase(prostatus)) {
-                                if (totalPoint != 0) {
-                                    courseList3.add(course);
-                                } else {
-                                    courseList1.add(course);
+//                                if (totalPoint != 0) {
+//                                    courseList3.add(course); // Hoàn thành
+//                                } else {
+                                if (totalPoint == 0){
+                                    courseList1.add(course); // Đang học
                                 }
                             } else {
-                                courseList2.add(course);
+                                courseList2.add(course); // Chưa đăng ký
                             }
 
-                            if (getActivity() == null) return; // Ngăn lỗi khi Fragment đã bị tách khỏi Activity
+                            if (getActivity() == null) return;
                             getActivity().runOnUiThread(() -> {
-                                    adapter1.notifyDataSetChanged();
-                                    adapter2.notifyDataSetChanged();
-                                    adapter3.notifyDataSetChanged();
-                                });
-
+                                adapter1.notifyItemRangeChanged(0, courseList1.size());
+                                adapter2.notifyItemRangeChanged(0, courseList2.size());
+//                                adapter3.notifyItemRangeChanged(0, courseList3.size());
+                            });
                         }
 
                         @Override
