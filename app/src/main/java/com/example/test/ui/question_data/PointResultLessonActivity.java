@@ -422,13 +422,15 @@ public class PointResultLessonActivity extends AppCompatActivity {
                             pointTextView.setTypeface(null, Typeface.BOLD);
 
                             // Đổi màu chữ tùy theo đúng/sai
-                            if (userAnswers.equals(correctAnswers)) {
+                            if (!userAnswers.isEmpty() && !correctAnswers.isEmpty() &&
+                                    userAnswers.get(0).trim().equalsIgnoreCase(correctAnswers.get(0).trim())) {
                                 userAnswerTextView.setTextColor(ContextCompat.getColor(tableResult.getContext(), android.R.color.holo_green_dark));
                                 pointTextView.setTextColor(ContextCompat.getColor(tableResult.getContext(), android.R.color.holo_green_dark));
                             } else {
                                 userAnswerTextView.setTextColor(ContextCompat.getColor(tableResult.getContext(), android.R.color.holo_red_dark));
                                 pointTextView.setTextColor(ContextCompat.getColor(tableResult.getContext(), android.R.color.holo_red_dark));
                             }
+
                             // Thêm các TextView vào hàng
                             row.addView(questionTextView);
                             row.addView(userAnswerTextView);

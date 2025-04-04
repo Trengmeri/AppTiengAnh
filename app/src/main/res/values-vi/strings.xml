@@ -30,14 +30,14 @@
     <string name="writting">Viết</string>
     <string name="backhome">Về trang chủ</string>
     <string name="writeans">Nhập câu trả lời của bạn.....</string>
-    <string name="starttest">Làm một \n bài kiểm tra nhỏ!</string>
+    <string name="starttest">Làm một bài\nkiểm tra nhỏ!</string>
     <string name="englishlevel">Chọn trình độ \ntiếng anh của bạn!</string>
     <string name="levelintro">Chọn cấp độ bắt đầu \ntương ứng với trình độ \ncủa bạn</string>
     <string name="start">Bắt đầu!</string>
     <string name="course_cotinue">Khóa học đang tham gia</string>
     <string name="course_suggest">Khóa học đề xuất</string>
     <string name="course_comp">Khóa học đã hoàn thành</string>
-    <string name="nonetest">Bắt đầu một \nchương trình mới!</string>
+    <string name="nonetest">Bắt đầu một\nchương trình mới!</string>
     <string name="invalidans">Câu trả lời không hợp lệ. Vui lòng thử lại.</string>
     <string name="lis">Nghe</string>
     <string name="speak">Nói</string>
@@ -97,7 +97,7 @@
     <string name="flash_group">Nhóm thẻ ghi nhớ</string>
     <string name="skip">Bỏ qua</string>
     <string name="congrat">Chúc mừng</string>
-    <string name="txt_setupacc">Tài khoản của bạn đã sẵn sàng để sử dụng. Bạn sẽ được chuyển hướng đến trang chủ trong vài giây.</string>
+    <string name="txt_setupacc">Tài khoản của bạn đã sẵn sàng để sử dụng. Bạn sẽ được chuyển hướng đến trang đăng nhập trong vài giây.</string>
     <string name="newpass">Tạo mật khẩu mới</string>
     <string name="txt_newpass">Tạo mật khẩu mới của bạn</string>
     <string name="hint_pass">Mật khẩu</string>

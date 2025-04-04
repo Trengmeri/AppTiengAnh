@@ -132,18 +132,22 @@
             android:padding="16dp">
 
             <TableRow android:background="@color/white">
+
                 <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="2"
+                    android:padding="10dp"
                     android:text="@string/question"
-                    android:textStyle="bold"
-                    android:layout_weight="1"
-                    android:padding="10dp"/>
+                    android:textStyle="bold" />
                 <TextView
-                    android:text="@string/yans"
+                    android:text="@string/ans"
+                    android:layout_width="0dp"
                     android:layout_weight="1"
                     android:textStyle="bold"
                     android:padding="10dp" />
                 <TextView
                     android:text="@string/point"
+                    android:layout_width="0dp"
                     android:layout_weight="1"
                     android:gravity="center"
                     android:textStyle="bold"

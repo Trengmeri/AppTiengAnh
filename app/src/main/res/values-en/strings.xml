@@ -97,7 +97,7 @@
     <string name="flash_group">Flashcard groups</string>
     <string name="skip">Skip</string>
     <string name="congrat">Congratulations</string>
-    <string name="txt_setupacc">Your Account is Ready to Use. You will be redirected to the Home Page in a few seconds.</string>
+    <string name="txt_setupacc">Your Account is Ready to Use. You will be redirected to the Sign In in a few seconds.</string>
     <string name="newpass">Create New PassWord</string>
     <string name="txt_newpass">Create Your New Password</string>
     <string name="hint_pass">Password</string>

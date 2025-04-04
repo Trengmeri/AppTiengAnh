@@ -10,7 +10,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.test"
-        minSdk = 29
+        minSdk = 28
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -46,6 +46,8 @@ dependencies {
     //annotationProcessor(libs.glide.compiler)
     implementation ("com.github.bumptech.glide:glide:4.15.1")
     annotationProcessor ("com.github.bumptech.glide:compiler:4.15.1")
+//    implementation ("androidx.lifecycle:lifecycle-runtime-ktx:2.6.1")
+//    implementation ("androidx.lifecycle:lifecycle-extensions:2.2.0")
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.activity)
@@ -57,6 +59,5 @@ dependencies {
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
     implementation("androidx.viewpager2:viewpager2:1.0.0")
-//    implementation(kotlin("script-runtime"))
 
 }
