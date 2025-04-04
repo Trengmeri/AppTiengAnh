@@ -68,77 +68,12 @@ public class CourseListFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         recyclerView = view.findViewById(R.id.recyclerView);
-        join = view.findViewById(R.id.join);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         if (getArguments() != null) {
             courseList = (List<Course>) getArguments().getSerializable("courses");
-            adapter = new CourseAdapter("None",getContext(), courseList);
+            adapter = new CourseAdapter("None", getContext(), courseList);
             recyclerView.setAdapter(adapter);
-            int minCourseId = Collections.min(courseList, Comparator.comparingInt(Course::getId)).getId();
-            resultManager.getEnrollment(minCourseId, new ApiCallback<Enrollment>() {
-                @Override
-                public void onSuccess() {
-
-                }
-
-                @Override
-                public void onSuccess(Enrollment result) {
-                }
-
-
-                @Override
-                public void onFailure(String errorMessage) {
-                    getActivity().runOnUiThread(() -> {
-                        if (errorMessage.contains("404")) { // Chỉ hiển thị join nếu lỗi 404
-                            join.setVisibility(View.VISIBLE);
-                            join.setOnClickListener(v -> {
-                                resultManager.createEnrollment(minCourseId, new ApiCallback() {
-                                    @Override
-                                    public void onSuccess() {
-                                        getActivity().runOnUiThread(() -> {
-                                            join.setVisibility(View.GONE); // Ẩn nút Join
-                                            LinearLayout gif = view.findViewById(R.id.gif);
-                                            gif.setVisibility(View.VISIBLE);
-
-                                            // Hiển thị GIF và thông báo
-                                            ImageView imgSuccessGif = view.findViewById(R.id.imgSuccessGif);
-
-                                            // Load GIF bằng Glide
-                                            Glide.with(CourseListFragment.this)
-                                                    .asGif()
-                                                    .load(R.raw.love)
-                                                    .into(imgSuccessGif);
-
-                                            // Tự động chuyển đến Study sau vài giây
-                                            new Handler().postDelayed(() -> {
-                                                if (getActivity() != null) {  // Kiểm tra tránh lỗi NullPointerException
-                                                    Intent intent = new Intent(getActivity(), HomeActivity.class);
-                                                    intent.putExtra("targetPage", 1);
-                                                    startActivity(intent);
-                                                }
-                                            }, 3000);
-                                        });
-                                    }
-
-                                    @Override
-                                    public void onSuccess(Object result) {
-
-                                    }
-
-                                    @Override
-                                    public void onFailure(String errorMessage) {
-                                        Log.e("EnrollmentError", "Lỗi khi đăng ký khóa học: " + errorMessage);
-                                    }
-                                });
-                            });
-                        } else {
-                            Log.e("API_ERROR", "Lỗi khác: " + errorMessage);
-                        }
-                    });
-                }
-
-            });
         }
     }
 }
