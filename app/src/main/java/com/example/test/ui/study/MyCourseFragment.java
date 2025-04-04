@@ -76,8 +76,8 @@ public class MyCourseFragment extends Fragment {
         recyclerView1.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView2 = view.findViewById(R.id.recyclerView2);
         recyclerView2.setLayoutManager(new LinearLayoutManager(getContext()));
-        recyclerView3 = view.findViewById(R.id.recyclerView3);
-        recyclerView3.setLayoutManager(new LinearLayoutManager(getContext()));
+//        recyclerView3 = view.findViewById(R.id.recyclerView3);
+//        recyclerView3.setLayoutManager(new LinearLayoutManager(getContext()));
 
         contentAbout = view.findViewById(R.id.mycourse);
 
@@ -90,9 +90,9 @@ public class MyCourseFragment extends Fragment {
         adapter2 = new CourseAdapter("False", getContext(), courseList2);
         recyclerView2.setAdapter(adapter2);
 
-        courseList3 = new ArrayList<>();
-        adapter3 = new CourseAdapter("Done", getContext(), courseList3);
-        recyclerView3.setAdapter(adapter3);
+//        courseList3 = new ArrayList<>();
+//        adapter3 = new CourseAdapter("Done", getContext(), courseList3);
+//        recyclerView3.setAdapter(adapter3);
 
         lessonManager = new LessonManager();
         fetchCourses();
@@ -142,9 +142,10 @@ public class MyCourseFragment extends Fragment {
                             if (course == null) return;
 
                             if ("true".equalsIgnoreCase(prostatus)) {
-                                if (totalPoint != 0) {
-                                    courseList3.add(course); // Hoàn thành
-                                } else {
+//                                if (totalPoint != 0) {
+//                                    courseList3.add(course); // Hoàn thành
+//                                } else {
+                                if (totalPoint == 0){
                                     courseList1.add(course); // Đang học
                                 }
                             } else {
@@ -155,7 +156,7 @@ public class MyCourseFragment extends Fragment {
                             getActivity().runOnUiThread(() -> {
                                 adapter1.notifyItemRangeChanged(0, courseList1.size());
                                 adapter2.notifyItemRangeChanged(0, courseList2.size());
-                                adapter3.notifyItemRangeChanged(0, courseList3.size());
+//                                adapter3.notifyItemRangeChanged(0, courseList3.size());
                             });
                         }
 

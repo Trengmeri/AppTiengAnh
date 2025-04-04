@@ -67,10 +67,5 @@ public class StudyFragment extends Fragment {
                 }
             }
         });
-
-
     }
-
-
-
 }

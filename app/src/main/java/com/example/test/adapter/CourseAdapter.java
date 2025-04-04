@@ -244,9 +244,37 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseView
                     ColorStateList.valueOf(ContextCompat.getColor(context, R.color.light_yellow))
             );
         } else if (proStatus.equals("None")) {
-            holder.itemView.setBackgroundTintList(ColorStateList.valueOf(Color.LTGRAY));
-        }
+            resultManager.getEnrollment(course.getId(), new ApiCallback<Enrollment>() {
+                @Override
+                public void onSuccess() {
 
+                }
+
+                @Override
+                public void onSuccess(Enrollment enrollment) {
+                    new Handler(Looper.getMainLooper()).post(() -> {
+                        holder.itemView.setBackgroundTintList(
+                                ColorStateList.valueOf(ContextCompat.getColor(context, R.color.light_yellow))
+                        );
+                        holder.itemView.setOnClickListener(v -> {
+                            Toast.makeText(context, context.getString(R.string.compcourse), Toast.LENGTH_SHORT).show();
+                        });
+                    });
+                }
+
+                @Override
+                public void onFailure(String errorMessage) {
+                    new Handler(Looper.getMainLooper()).post(() -> {
+                        holder.itemView.setBackgroundTintList(ColorStateList.valueOf(Color.LTGRAY));
+                        holder.itemView.setOnClickListener(v -> {
+                            Intent intent = new Intent(context, CourseInformationActivity.class);
+                            intent.putExtra("courseId", course.getId());
+                            context.startActivity(intent);
+                        });
+                    });
+                }
+            });
+        }
     }
 
 
