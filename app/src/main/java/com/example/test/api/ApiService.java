@@ -44,7 +44,7 @@ public class ApiService {
             JSONObject jsonBody = new JSONObject();
             jsonBody.put("question", question);
             jsonBody.put("userAnswer", userAnswer);
-            jsonBody.put("prompt", "short evaluate");
+            jsonBody.put("prompt", "Evaluate the user's response based on grammar accuracy, logical coherence, and relevance to the question. Note that names can be unique or unconventional (e.g., 'Home' or other unusual names). If the user's response is completely irrelevant to the question, assign a score of 0. Provide feedback in a supportive tone and assign a slightly higher score than usual for relevant answers to encourage the user.");
 
             RequestBody body = RequestBody.create(jsonBody.toString(), MediaType.get("application/json; charset=utf-8"));
 
