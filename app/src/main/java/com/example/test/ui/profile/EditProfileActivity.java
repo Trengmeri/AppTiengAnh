@@ -159,8 +159,7 @@ public class EditProfileActivity extends AppCompatActivity {
         levelAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spnLevel.setAdapter(levelAdapter);
 
-        // Thêm padding cho spinner
-        Drawable dropdownIcon = ContextCompat.getDrawable(this, R.drawable.icon_down);
+
         spnField.setPadding(40, 25, 25, 25);
         spnField.setBackground(ContextCompat.getDrawable(this, R.drawable.spinner_background));
         spnField.setPopupBackgroundDrawable(ContextCompat.getDrawable(this, R.drawable.rounded_corner));

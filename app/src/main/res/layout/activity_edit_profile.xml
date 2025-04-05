@@ -82,6 +82,7 @@
                     android:padding="@dimen/dp_30"
                     android:background="@drawable/spinner_background"
                     android:spinnerMode="dropdown"
+                    android:overlapAnchor="false" />
                      />
                 <Spinner
                     android:id="@+id/spnLevel"
