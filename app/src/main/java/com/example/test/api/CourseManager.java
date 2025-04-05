@@ -238,6 +238,39 @@ public class CourseManager extends BaseApiManager{
 
             });
         }
+    public void creatEnrollment(int userId, int courseId, ApiCallback callback) {
+        String token = SharedPreferencesManager.getInstance(context).getAccessToken();
+        String url = BASE_URL + "/api/v1/enrollments";
+
+        // Tạo JSON body
+        String jsonBody = "{ \"userId\": " + userId + ", \"courseId\": " + courseId + " }";
+        RequestBody body = RequestBody.create(jsonBody, MediaType.get("application/json"));
+
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("Authorization", "Bearer " + token)
+                .addHeader("Content-Type", "application/json")
+                .post(body)  // Gửi POST request
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                callback.onFailure("Connection error: " + e.getMessage());
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String responseBody = response.body() != null ? response.body().string() : "No response body";
+                if (response.isSuccessful()) {
+                    callback.onSuccess(null);
+                } else {
+                    callback.onFailure("Request failed: " + response.code() + " - " + responseBody);
+                }
+            }
+        });
+    }
+
 
 
 
