@@ -331,22 +331,23 @@
         android:gravity="center">
 
         <FrameLayout
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:clickable="true"
             android:focusable="true"
             android:focusableInTouchMode="true">
 
             <RelativeLayout
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
                 <ImageView
                     android:id="@+id/mon"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@drawable/bg_day"
-                    android:layout_margin="5dp"/>
+                    android:layout_margin="5dp" />
 
                 <ImageView
                     android:id="@+id/check_icon2"
@@ -358,32 +359,39 @@
                     android:layout_marginRight="-9dp"
                     android:layout_marginBottom="26dp"
                     android:src="@drawable/is_checked"
-                    android:visibility="gone"/>
-
+                    android:visibility="gone" />
             </RelativeLayout>
 
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Mon"  android:textColor="@color/black"  android:textSize="16sp"  android:layout_gravity="center"  android:textStyle="bold"  android:padding="4dp"/>
+                android:text="Mon"
+                android:gravity="center"
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                android:layout_gravity="center"
+                android:textStyle="bold"
+                android:padding="4dp" />
         </FrameLayout>
+
         <FrameLayout
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:clickable="true"
             android:focusable="true"
             android:focusableInTouchMode="true">
 
             <RelativeLayout
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
                 <ImageView
                     android:id="@+id/tue"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@drawable/bg_day"
-                    android:layout_margin="5dp"/>
+                    android:layout_margin="5dp" />
 
                 <ImageView
                     android:id="@+id/check_icon3"
@@ -395,32 +403,39 @@
                     android:layout_marginRight="-9dp"
                     android:layout_marginBottom="26dp"
                     android:src="@drawable/is_checked"
-                    android:visibility="gone"/>
-
+                    android:visibility="gone" />
             </RelativeLayout>
 
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Tue"  android:textColor="@color/black"  android:textSize="16sp"  android:layout_gravity="center"  android:textStyle="bold"  android:padding="4dp"/>
+                android:text="Tue"
+                android:gravity="center"
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                android:layout_gravity="center"
+                android:textStyle="bold"
+                android:padding="4dp" />
         </FrameLayout>
+
         <FrameLayout
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:clickable="true"
             android:focusable="true"
             android:focusableInTouchMode="true">
 
             <RelativeLayout
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
                 <ImageView
                     android:id="@+id/wed"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@drawable/bg_day"
-                    android:layout_margin="5dp"/>
+                    android:layout_margin="5dp" />
 
                 <ImageView
                     android:id="@+id/check_icon4"
@@ -432,32 +447,39 @@
                     android:layout_marginRight="-9dp"
                     android:layout_marginBottom="26dp"
                     android:src="@drawable/is_checked"
-                    android:visibility="gone"/>
-
+                    android:visibility="gone" />
             </RelativeLayout>
 
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Wed"  android:textColor="@color/black"  android:textSize="16sp"  android:layout_gravity="center"  android:textStyle="bold"  android:padding="4dp"/>
+                android:text="Wed"
+                android:gravity="center"
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                android:layout_gravity="center"
+                android:textStyle="bold"
+                android:padding="4dp" />
         </FrameLayout>
+
         <FrameLayout
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:clickable="true"
             android:focusable="true"
             android:focusableInTouchMode="true">
 
             <RelativeLayout
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
                 <ImageView
                     android:id="@+id/thu"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@drawable/bg_day"
-                    android:layout_margin="5dp"/>
+                    android:layout_margin="5dp" />
 
                 <ImageView
                     android:id="@+id/check_icon5"
@@ -469,32 +491,39 @@
                     android:layout_marginRight="-9dp"
                     android:layout_marginBottom="26dp"
                     android:src="@drawable/is_checked"
-                    android:visibility="gone"/>
-
+                    android:visibility="gone" />
             </RelativeLayout>
 
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Thu"  android:textColor="@color/black"  android:textSize="16sp"  android:layout_gravity="center"  android:textStyle="bold"  android:padding="4dp"/>
+                android:text="Thu"
+                android:gravity="center"
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                android:layout_gravity="center"
+                android:textStyle="bold"
+                android:padding="4dp" />
         </FrameLayout>
+
         <FrameLayout
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:clickable="true"
             android:focusable="true"
             android:focusableInTouchMode="true">
 
             <RelativeLayout
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
                 <ImageView
                     android:id="@+id/fri"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@drawable/bg_day"
-                    android:layout_margin="5dp"/>
+                    android:layout_margin="5dp" />
 
                 <ImageView
                     android:id="@+id/check_icon6"
@@ -506,32 +535,39 @@
                     android:layout_marginRight="-9dp"
                     android:layout_marginBottom="26dp"
                     android:src="@drawable/is_checked"
-                    android:visibility="gone"/>
-
+                    android:visibility="gone" />
             </RelativeLayout>
 
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Fri"  android:textColor="@color/black"  android:textSize="16sp"  android:layout_gravity="center"  android:textStyle="bold"  android:padding="4dp"/>
+                android:gravity="center"
+                android:text="Fri"
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                android:layout_gravity="center"
+                android:textStyle="bold"
+                android:padding="4dp" />
         </FrameLayout>
+
         <FrameLayout
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:clickable="true"
             android:focusable="true"
             android:focusableInTouchMode="true">
 
             <RelativeLayout
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
                 <ImageView
                     android:id="@+id/sat"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@drawable/bg_day"
-                    android:layout_margin="5dp"/>
+                    android:layout_margin="5dp" />
 
                 <ImageView
                     android:id="@+id/check_icon7"
@@ -543,32 +579,39 @@
                     android:layout_marginRight="-9dp"
                     android:layout_marginBottom="26dp"
                     android:src="@drawable/is_checked"
-                    android:visibility="gone"/>
-
+                    android:visibility="gone" />
             </RelativeLayout>
 
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Sat"  android:textColor="@color/black"  android:textSize="16sp"  android:layout_gravity="center"  android:textStyle="bold"  android:padding="4dp"/>
+                android:text="Sat"
+                android:gravity="center"
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                android:layout_gravity="center"
+                android:textStyle="bold"
+                android:padding="4dp" />
         </FrameLayout>
+
         <FrameLayout
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:clickable="true"
             android:focusable="true"
             android:focusableInTouchMode="true">
 
             <RelativeLayout
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
                 <ImageView
                     android:id="@+id/sun"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@drawable/bg_day"
-                    android:layout_margin="5dp"/>
+                    android:layout_margin="5dp" />
 
                 <ImageView
                     android:id="@+id/check_icon0"
@@ -580,17 +623,23 @@
                     android:layout_marginRight="-9dp"
                     android:layout_marginBottom="26dp"
                     android:src="@drawable/is_checked"
-                    android:visibility="gone"/>
-
+                    android:visibility="gone" />
             </RelativeLayout>
 
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Sun"  android:textColor="@color/black"  android:textSize="16sp"  android:layout_gravity="center"  android:textStyle="bold"  android:padding="4dp"/>
+                android:text="Sun"
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                android:gravity="center"
+                android:layout_gravity="center"
+                android:textStyle="bold"
+                android:padding="4dp" />
         </FrameLayout>
 
     </LinearLayout>
+
 
 </LinearLayout>
 </ScrollView>

@@ -39,6 +39,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseViewHolder> {
 
@@ -64,8 +65,10 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseView
 
     @Override
     public void onBindViewHolder(@NonNull CourseViewHolder holder, int position) {
-        courseList.removeIf(Objects::isNull);  // Xóa phần tử null trước khi sắp xếp
-        courseList.sort(Comparator.comparingInt(Course::getId));
+        this.courseList = courseList != null ? courseList.stream()
+                .filter(Objects::nonNull)
+                .sorted(Comparator.comparingInt(Course::getId))
+                .collect(Collectors.toList()) : new ArrayList<>();
 
         Course course = courseList.get(position);
         if (course == null) {
