@@ -252,14 +252,25 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseView
 
                 @Override
                 public void onSuccess(Enrollment enrollment) {
-                    new Handler(Looper.getMainLooper()).post(() -> {
-                        holder.itemView.setBackgroundTintList(
-                                ColorStateList.valueOf(ContextCompat.getColor(context, R.color.light_yellow))
-                        );
-                        holder.itemView.setOnClickListener(v -> {
-                            Toast.makeText(context, context.getString(R.string.compcourse), Toast.LENGTH_SHORT).show();
+                    if(enrollment.getTotalPoints() > 0){
+                        new Handler(Looper.getMainLooper()).post(() -> {
+                            holder.itemView.setBackgroundTintList(
+                                    ColorStateList.valueOf(ContextCompat.getColor(context, R.color.light_yellow))
+                            );
+                            holder.itemView.setOnClickListener(v -> {
+                                Toast.makeText(context, context.getString(R.string.compcourse), Toast.LENGTH_SHORT).show();
+                            });
                         });
-                    });
+                    } else {
+                        new Handler(Looper.getMainLooper()).post(() -> {
+                            holder.itemView.setBackgroundTintList(
+                                    ColorStateList.valueOf(ContextCompat.getColor(context, R.color.colorDefault))
+                            );
+                            holder.itemView.setOnClickListener(v -> {
+                                Toast.makeText(context, context.getString(R.string.joincourse), Toast.LENGTH_SHORT).show();
+                            });
+                        });
+                    }
                 }
 
                 @Override

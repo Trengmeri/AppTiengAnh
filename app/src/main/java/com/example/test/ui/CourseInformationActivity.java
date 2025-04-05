@@ -206,7 +206,46 @@ import java.util.List;
 
                 @Override
                 public void onFailure(String errorMessage) {
+                    resultManager.createEnrollment(courseID, new ApiCallback() {
+                        @Override
+                        public void onSuccess() {
+                            runOnUiThread(() -> {
+                                btnJoin.setVisibility(View.GONE); // Ẩn nút Join
+                                // Hiển thị nền tối
+                                View darkOverlay = findViewById(R.id.darkOverlay);
+                                darkOverlay.setVisibility(View.VISIBLE);
 
+                                // Hiển thị GIF và thông báo
+                                ImageView imgSuccessGif = findViewById(R.id.imgSuccessGif);
+                                TextView tvSuccessMessage = findViewById(R.id.tvSuccessMessage);
+
+                                imgSuccessGif.setVisibility(View.VISIBLE);
+                                tvSuccessMessage.setVisibility(View.VISIBLE);
+
+                                // Load GIF bằng Glide
+                                Glide.with(CourseInformationActivity.this)
+                                        .asGif()
+                                        .load(R.raw.like)
+                                        .into(imgSuccessGif);
+
+                                // Tự động chuyển đến Study sau vài giây
+                                new Handler().postDelayed(() -> {
+                                    Intent intent = new Intent(CourseInformationActivity.this, HomeActivity.class);
+                                    intent.putExtra("targetPage", 1);
+                                    startActivity(intent);
+                                }, 3000);
+                            });
+                        }
+
+                        @Override
+                        public void onSuccess(Object result) {
+
+                        }
+
+                        @Override
+                        public void onFailure(String errorMessage) {
+                        }
+                    });
                 }
             });
 
