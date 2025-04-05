@@ -1,5 +1,6 @@
 package com.example.test.ui.profile;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -12,6 +13,8 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.test.R;
+import com.example.test.ui.CourseInformationActivity;
+import com.example.test.ui.home.HomeActivity;
 
 public class TermActivity extends AppCompatActivity {
 
@@ -25,7 +28,9 @@ public class TermActivity extends AppCompatActivity {
         ImageView back = findViewById(R.id.btnBack);
 
         back.setOnClickListener(view -> {
-            finish();
+            Intent intent = new Intent(TermActivity.this, HomeActivity.class);
+            intent.putExtra("targetPage", 3);
+            startActivity(intent);
         });
 
         webView.loadUrl("https://trengmeri.github.io/WebView/webview.html");
