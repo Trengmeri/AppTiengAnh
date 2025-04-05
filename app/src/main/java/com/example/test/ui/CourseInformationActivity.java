@@ -23,6 +23,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.test.NevigateQuestion;
 import com.example.test.R;
+import com.example.test.SharedPreferencesManager;
 import com.example.test.adapter.LessonAdapter;
 import com.example.test.adapter.ReviewAdapter;
 import com.example.test.api.ApiCallback;
@@ -34,6 +35,7 @@ import com.example.test.model.Course;
 import com.example.test.model.Enrollment;
 import com.example.test.model.Lesson;
 import com.example.test.model.Review;
+import com.example.test.model.User;
 import com.example.test.ui.home.HomeActivity;
 import com.example.test.ui.study.StudyFragment;
 
@@ -60,6 +62,7 @@ import java.util.List;
     private CourseManager courseManager = new CourseManager(CourseInformationActivity.this);
     private ResultManager resultManager = new ResultManager(CourseInformationActivity.this);
 
+    private User curUser = SharedPreferencesManager.getInstance(this).getUser();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -198,7 +201,49 @@ import java.util.List;
                         }
                         @Override
                         public void onFailure(String errorMessage) {
-                            Log.e("CourseManager", "Error joining course: " + errorMessage);
+                            Log.e("CourseManager", "Try join course again!!! ");
+                            courseManager.creatEnrollment(curUser.getId(), courseID, new ApiCallback() {
+                                @Override
+                                public void onSuccess() {
+                                    Log.d("CourseManager", "Course joined successfully");
+                                }
+
+                                @Override
+                                public void onSuccess(Object result) {
+                                    Log.d("CourseManager", "Course joined");
+                                    runOnUiThread(() -> {
+                                        btnJoin.setVisibility(View.GONE); // Ẩn nút Join
+                                        // Hiển thị nền tối
+                                        View darkOverlay = findViewById(R.id.darkOverlay);
+                                        darkOverlay.setVisibility(View.VISIBLE);
+
+                                        // Hiển thị GIF và thông báo
+                                        ImageView imgSuccessGif = findViewById(R.id.imgSuccessGif);
+                                        TextView tvSuccessMessage = findViewById(R.id.tvSuccessMessage);
+
+                                        imgSuccessGif.setVisibility(View.VISIBLE);
+                                        tvSuccessMessage.setVisibility(View.VISIBLE);
+
+                                        // Load GIF bằng Glide
+                                        Glide.with(CourseInformationActivity.this)
+                                                .asGif()
+                                                .load(R.raw.like)
+                                                .into(imgSuccessGif);
+
+                                        // Tự động chuyển đến Study sau vài giây
+                                        new Handler().postDelayed(() -> {
+                                            Intent intent = new Intent(CourseInformationActivity.this, HomeActivity.class);
+                                            intent.putExtra("targetPage", 1);
+                                            startActivity(intent);
+                                        }, 3000);
+                                    });
+                                }
+
+                                @Override
+                                public void onFailure(String errorMessage) {
+                                    Log.e("CourseManager", "Error joining course: " + errorMessage);
+                                }
+                            });
 //                    Toast.makeText(CourseInformationActivity.this, "Error joining course: " + errorMessage, Toast.LENGTH_SHORT).show();
                         }
                     });
