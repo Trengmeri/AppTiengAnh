@@ -209,23 +209,27 @@ public class MyCourseFragment extends Fragment {
                             if (course == null) return;
 
                             if ("true".equalsIgnoreCase(prostatus)) {
-//                                if (totalPoint != 0) {
-//                                    courseList3.add(course); // Hoàn thành
-//                                } else {
-                                if (totalPoint == 0){
-                                    courseList1.add(course); // Đang học
+                                if (totalPoint == 0) {
+                                    courseList1.add(course);
                                 }
                             } else {
-                                courseList2.add(course); // Chưa đăng ký
+                                courseList2.add(course);
                             }
 
                             if (getActivity() == null) return;
+
+                            // Chuyển vào thread chính để cập nhật UI
                             getActivity().runOnUiThread(() -> {
+                                // Cập nhật dữ liệu trong adapter trên thread chính
+                                adapter1.setCourseList(courseList1); // 👈 Gọi ở đây
+                                adapter2.setCourseList(courseList2); // 👈 Và gọi ở đây
+
+                                // Notify adapter về sự thay đổi dữ liệu
                                 adapter1.notifyItemRangeChanged(0, courseList1.size());
                                 adapter2.notifyItemRangeChanged(0, courseList2.size());
-//                                adapter3.notifyItemRangeChanged(0, courseList3.size());
                             });
                         }
+
 
                         @Override
                         public void onFailure(String errorMessage) {

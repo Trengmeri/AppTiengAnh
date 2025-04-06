@@ -52,7 +52,12 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseView
     public CourseAdapter(String proStatus, Context context, List<Course> courseList) {
         this.proStatus = proStatus;
         this.context = context;
-        this.courseList = courseList;
+        this.courseList = courseList != null
+                ? courseList.stream()
+                .filter(Objects::nonNull)
+                .sorted(Comparator.comparingInt(Course::getId))
+                .collect(Collectors.toList())
+                : new ArrayList<>();
         this.resultManager = new ResultManager(context);
     }
 
@@ -65,10 +70,6 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseView
 
     @Override
     public void onBindViewHolder(@NonNull CourseViewHolder holder, int position) {
-        this.courseList = courseList != null ? courseList.stream()
-                .filter(Objects::nonNull)
-                .sorted(Comparator.comparingInt(Course::getId))
-                .collect(Collectors.toList()) : new ArrayList<>();
 
         Course course = courseList.get(position);
         if (course == null) {
@@ -297,6 +298,30 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseView
     public int getItemCount() {
         return courseList.size();
     }
+
+    public void setCourseList(List<Course> newList) {
+        if (newList != null) {
+            // Tạo một danh sách mới đã sắp xếp
+            List<Course> newSortedList = newList.stream()
+                    .filter(Objects::nonNull)
+                    .sorted(Comparator.comparingInt(Course::getId))
+                    .collect(Collectors.toList());
+
+            // Lưu lại vị trí thay đổi trong courseList
+            int oldSize = this.courseList != null ? this.courseList.size() : 0;
+            this.courseList = newSortedList;
+
+            // Kiểm tra xem có thay đổi danh sách không và thông báo phạm vi đã thay đổi
+            if (oldSize != newSortedList.size()) {
+                notifyItemRangeChanged(0, newSortedList.size());
+            }
+        } else {
+            this.courseList = new ArrayList<>();
+            notifyItemRangeChanged(0, 0);  // Nếu danh sách trống, thông báo là đã thay đổi
+        }
+    }
+
+
 
     static class CourseViewHolder extends RecyclerView.ViewHolder {
         TextView tvCourseTitle, tvCourseDescription;
