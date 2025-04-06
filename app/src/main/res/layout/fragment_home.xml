@@ -92,7 +92,7 @@
                     android:layout_weight="1"
                     android:backgroundTint="@color/cotinute"
                     android:layout_marginStart="8dp"
-                    android:text="Select Course"
+                    android:text="@string/txt_choose"
                     android:padding="8dp" />
             </LinearLayout>
 
