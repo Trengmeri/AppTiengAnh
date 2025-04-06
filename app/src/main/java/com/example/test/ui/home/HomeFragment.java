@@ -41,7 +41,8 @@ import com.example.test.ui.study.MyCourseFragment;
 import com.example.test.ui.study.StudyFragment;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-
+import android.view.MenuItem;
+import android.widget.PopupMenu;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -50,7 +51,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class HomeFragment extends Fragment {
-    private Button continueButton;
+    private Button continueButton,selectCourseButton;
     private Spinner courseSpinner;
     private TextView courseTitle, courseNumber;
     private TextView totalPoints, readingPoints, listeningPoints, speakingPoints, writingpoint;
@@ -79,14 +80,14 @@ public class HomeFragment extends Fragment {
         btnProfile = view.findViewById(R.id.imgAvatar);
         continueButton = view.findViewById(R.id.btn_continue);
         courseTitle = view.findViewById(R.id.courseTitle);
-
+        selectCourseButton = view.findViewById(R.id.btn_select_course);
         btnNoti = view.findViewById(R.id.img_notification);
         totalPoints = view.findViewById(R.id.totalPoints);
         readingPoints = view.findViewById(R.id.readingpoint);
         listeningPoints = view.findViewById(R.id.listeningpoint);
         speakingPoints = view.findViewById(R.id.speakingpoint);
         writingpoint = view.findViewById(R.id.writingpoint);
-        courseSpinner = view.findViewById(R.id.courseSpinner);
+
     }
 
     private void initializeManagers() {
@@ -96,46 +97,13 @@ public class HomeFragment extends Fragment {
     }
 
     private void setupViews() {
-        setupSpinner();
         setupClickListeners();
     }
 
-    private void setupSpinner() {
-        spinnerAdapter = new ArrayAdapter<CourseInfo>(
-                requireContext(),
-                android.R.layout.simple_spinner_item,
-                activeCourses
-        )
-        {
-            @Override
-            public View getDropDownView(int position, View convertView, @NonNull ViewGroup parent) {
-            View view = super.getDropDownView(position, convertView, parent);
-            TextView textView = (TextView) view;
-            textView.setTextColor(Color.BLACK);
-            textView.setPadding(16, 16, 16, 16);
-            return view;
-        }
-        };
-        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        courseSpinner.setAdapter(spinnerAdapter);
-        courseSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if (position >= 0 && position < activeCourses.size()) {
-                    CourseInfo selectedCourse = activeCourses.get(position);
-                    if (selectedCourse != null) {
-                        selectedCourseId = selectedCourse.getCourseId(); // Lưu ID
-                        updateSelectedCourse(selectedCourse);
-                    }
-                }
-            }
 
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {}
-        });
-    }
 
     private void setupClickListeners() {
+        selectCourseButton.setOnClickListener(v -> showCoursePopupMenu(v));
         continueButton.setOnClickListener(v -> {
             if (!isAdded() || getActivity() == null) {
                 return;
@@ -164,16 +132,45 @@ public class HomeFragment extends Fragment {
     }
 
 
-    private void navigateToNotifications() {
-        startActivity(new Intent(getActivity(), NotificationActivity.class));
-    }
+    private void showCoursePopupMenu(View view) {
+        if (!isAdded()) {
+            Log.e("HomeFragment", "Fragment not attached to context");
+            return;
+        }
+        PopupMenu popupMenu = new PopupMenu(requireContext(), view);
+        for (int i = 0; i < activeCourses.size(); i++) {
+            CourseInfo course = activeCourses.get(i);
+            popupMenu.getMenu().add(0, i, 0, course.getCourseName());
+        }
 
+        popupMenu.setOnMenuItemClickListener(item -> {
+            int position = item.getItemId();
+            if (position >= 0 && position < activeCourses.size()) {
+                CourseInfo selectedCourse = activeCourses.get(position);
+                if (selectedCourse != null) {
+                    selectedCourseId = selectedCourse.getCourseId();
+                    updateSelectedCourse(selectedCourse);
+                }
+            }
+            return true;
+        });
+
+        popupMenu.show();
+    }
+    private void updateSelectedCourse(CourseInfo course) {
+        if (!isAdded() || getActivity() == null) return;
+
+        requireActivity().runOnUiThread(() -> {
+            if (courseTitle != null) {
+                courseTitle.setText(course.getCourseName());
+            }
+        });
+    }
     private void loadData() {
         loadEnrollments();
         loadLearningResults();
         loadUserProfile();
     }
-
     private void loadEnrollments() {
         learningProgressManager.fetchLatestEnrollment(new ApiCallback<JsonObject>() {
             @Override
@@ -205,7 +202,7 @@ public class HomeFragment extends Fragment {
             JsonObject course = enrollments.get(i).getAsJsonObject();
             if (isActiveCourse(course)) {
                 foundActiveCourse = true;
-                fetchAndAddCourseToSpinner(course.get("courseId").getAsInt());
+                fetchAndAddCourseToPopup(course.get("courseId").getAsInt());
             }
         }
 
@@ -220,7 +217,7 @@ public class HomeFragment extends Fragment {
                 && course.get("totalPoints").getAsDouble() == 0;
     }
 
-    private void fetchAndAddCourseToSpinner(int courseId) {
+    private void fetchAndAddCourseToPopup(int courseId) {
         learningProgressManager.fetchCourseDetails(courseId, new ApiCallback<String>() {
             @Override
             public void onSuccess(String courseName) {
@@ -229,12 +226,6 @@ public class HomeFragment extends Fragment {
                 CourseInfo courseInfo = new CourseInfo(courseId, courseName);
                 requireActivity().runOnUiThread(() -> {
                     activeCourses.add(courseInfo);
-                    spinnerAdapter.notifyDataSetChanged();
-
-                    if (activeCourses.size() == 1 && courseSpinner != null) {
-                        courseSpinner.setSelection(0);
-                        updateSelectedCourse(courseInfo);
-                    }
                 });
             }
 
@@ -244,16 +235,6 @@ public class HomeFragment extends Fragment {
             @Override
             public void onFailure(String error) {
                 handleError("Failed to fetch course details", error);
-            }
-        });
-    }
-    private void updateSelectedCourse(CourseInfo course) {
-        if (!isAdded() || getActivity() == null) return;
-
-        requireActivity().runOnUiThread(() -> {
-
-            if (courseTitle != null) {
-                courseTitle.setText(course.getCourseName());
             }
         });
     }

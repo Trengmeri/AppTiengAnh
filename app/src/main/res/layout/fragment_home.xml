@@ -51,17 +51,12 @@
                     android:orientation="horizontal">
 
                     <!-- Xóa TextView courseNumber cũ -->
-
-                    <Spinner
-                        android:id="@+id/courseSpinner"
-                        android:layout_width="100dp"
+                    <Button
+                        android:id="@+id/btn_select_course"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-
-                        android:background="@android:drawable/spinner_background"
-                        android:dropDownWidth="wrap_content"
-                        android:popupBackground="@drawable/spinner_background"
-                        android:spinnerMode="dropdown"
-                        android:textColor="@color/white" />
+                        android:layout_gravity="center"
+                        android:text="Select Course" />
 
                     <ImageView
                         android:id="@+id/img_notification"
