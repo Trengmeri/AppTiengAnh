@@ -52,14 +52,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class HomeFragment extends Fragment {
     private Button continueButton,selectCourseButton;
-    private Spinner courseSpinner;
     private TextView courseTitle, courseNumber;
     private TextView totalPoints, readingPoints, listeningPoints, speakingPoints, writingpoint;
     private ImageView btnNoti, btnProfile;
     private UserManager userManager;
     private LearningProgressManager learningProgressManager;
     private List<CourseInfo> activeCourses;
-    private ArrayAdapter<CourseInfo> spinnerAdapter;
     private int selectedCourseId = -1;
 
     @Override
@@ -74,6 +72,10 @@ public class HomeFragment extends Fragment {
         initializeManagers();
         setupViews();
         loadData();
+        btnNoti.setOnClickListener(v -> {
+            Intent intent = new Intent(getActivity(), NotificationActivity.class);
+            startActivity(intent);
+        });
     }
 
     private void initializeViews(View view) {

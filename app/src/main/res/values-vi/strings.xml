@@ -55,6 +55,7 @@
     <string name="point">Điểm: </string>
     <string name="comp">Hoàn thành: </string>
     <string name="btn_continute">Tiếp tục bài học</string>
+    <string name="txt_choose">Chọn khóa học của bạn</string>
     <string name="txtcontinute">Tiếp tục hành trình của bạn !</string>
     <string name="txtschedulebasic">Cơ bản 10 phút mỗi ngày</string>
     <string name="txtscheduleadvance">Nâng cao 20 phút mỗi ngày</string>
