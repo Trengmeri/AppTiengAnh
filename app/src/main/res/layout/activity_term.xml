@@ -20,14 +20,6 @@
             android:layout_gravity="center"
             android:layout_marginLeft="10dp"/>
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="16dp"
-            android:text="@string/back"
-            android:textColor="@color/btncolor"
-            android:textSize="24sp"
-            android:textStyle="bold" />
     </LinearLayout>
 
     <WebView
