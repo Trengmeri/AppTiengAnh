@@ -7,6 +7,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -55,6 +56,7 @@ public class ScheduleActivity extends AppCompatActivity {
     private int currentMinute = 0;
     private int selectedGoal = 0; // 0: None, 1: Basic, 2: Advance, 3: LevelUp
     private ActivityResultLauncher<Intent> batteryOptimizationLauncher;
+    private ProgressDialog progressDialog;
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -215,6 +217,11 @@ public class ScheduleActivity extends AppCompatActivity {
         Done.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // Hiển thị ProgressDialog
+                progressDialog = new ProgressDialog(ScheduleActivity.this);
+                progressDialog.setMessage(getString(R.string.load));
+                progressDialog.setCancelable(false);
+                progressDialog.show();
                 createSchedule();
             }
         });
@@ -320,6 +327,7 @@ public class ScheduleActivity extends AppCompatActivity {
                 @Override
                 public void onSuccess() {
                     Log.d("ScheduleActivity", "Tạo lịch học thành công: " + schedule.toString());
+                    progressDialog.dismiss();
                     showDialog(getString(R.string.success), getString(R.string.lichmoi));
                 }
 
@@ -329,6 +337,7 @@ public class ScheduleActivity extends AppCompatActivity {
                 @Override
                 public void onFailure(String errorMessage) {
                     Log.e("ScheduleActivity", "Lỗi tạo lịch học: " + errorMessage);
+                    progressDialog.dismiss();
                     showDialog(getString(R.string.error), getString(R.string.trunglich));
                 }
             });
