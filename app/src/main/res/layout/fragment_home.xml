@@ -43,31 +43,21 @@
                     android:layout_weight="1"
                     android:orientation="vertical">
                 <!-- Container cho course info -->
-                <LinearLayout
-                    android:layout_width="198dp"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="10dp"
-                    android:layout_weight="1"
-                    android:orientation="horizontal">
-
-                    <!-- Xóa TextView courseNumber cũ -->
-                    <Button
-                        android:id="@+id/btn_select_course"
-                        android:layout_width="wrap_content"
+                    <LinearLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:text="Select Course" />
+                        android:orientation="horizontal"
+                        android:gravity="end">
 
-                    <ImageView
-                        android:id="@+id/img_notification"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="end"
-                        android:layout_marginLeft="10dp"
-                        android:background="@drawable/notifications" />
-
-
-                </LinearLayout>
+                        <ImageView
+                            android:id="@+id/img_notification"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="end"
+                            android:layout_marginEnd="0dp"
+                            android:layout_marginRight="0dp"
+                            android:background="@drawable/notifications" />
+                    </LinearLayout>
 
                 <TextView
                     android:id="@+id/courseTitle"
@@ -79,16 +69,32 @@
                     android:textStyle="bold" />
                 </LinearLayout>
             </LinearLayout>
-
-            <Button
-                android:id="@+id/btn_continue"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:backgroundTint="@color/cotinute"
+                android:orientation="horizontal"
+                android:padding="8dp">
 
+                <Button
+                    android:id="@+id/btn_continue"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="8dp"
+                    android:backgroundTint="@color/cotinute"
+                    android:text="@string/btn_continute"
+                    android:padding="8dp" />
 
-                android:text="@string/btn_continute" />
+                <Button
+                    android:id="@+id/btn_select_course"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:backgroundTint="@color/cotinute"
+                    android:layout_marginStart="8dp"
+                    android:text="@string/txt_choose"
+                    android:padding="8dp" />
+            </LinearLayout>
 
         </LinearLayout>
 
