@@ -265,6 +265,15 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseView
                                 Toast.makeText(context, context.getString(R.string.compcourse), Toast.LENGTH_SHORT).show();
                             });
                         });
+                    } else if (enrollment.getProStatus().equals("false")){
+                        new Handler(Looper.getMainLooper()).post(() -> {
+                            holder.itemView.setBackgroundTintList(ColorStateList.valueOf(Color.LTGRAY));
+                            holder.itemView.setOnClickListener(v -> {
+                                Intent intent = new Intent(context, CourseInformationActivity.class);
+                                intent.putExtra("courseId", course.getId());
+                                context.startActivity(intent);
+                            });
+                        });
                     } else {
                         new Handler(Looper.getMainLooper()).post(() -> {
                             holder.itemView.setBackgroundTintList(
