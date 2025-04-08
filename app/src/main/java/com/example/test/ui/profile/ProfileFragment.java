@@ -72,19 +72,19 @@ public class ProfileFragment extends Fragment {
             language = view.findViewById(R.id.language);
 
             language.setOnClickListener(v -> {
-                Intent intent = new Intent(getActivity(),LanguageActivity.class);
+                Intent intent = new Intent(requireActivity(),LanguageActivity.class);
                 startActivity(intent);
             });
 
             term.setOnClickListener(v -> {
-                Intent intent = new Intent(getActivity(),TermActivity.class);
+                Intent intent = new Intent(requireActivity(),TermActivity.class);
                 startActivity(intent);
             });
             // Tạo đối tượng NetworkChangeReceiver
             networkReceiver = new NetworkChangeReceiver();
             apiManager = new AuthenticationManager(requireContext());
             btnLogout.setOnClickListener(v -> showLogoutDialog());
-            SharedPreferences sharedPreferences = getActivity().getSharedPreferences("LoginPrefs", MODE_PRIVATE);
+            SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("LoginPrefs", MODE_PRIVATE);
             boolean isRemembered = sharedPreferences.getBoolean("rememberMe", false);
             String savedEmail = sharedPreferences.getString("email", "");
             String savedPassword = sharedPreferences.getString("password", "");
@@ -96,7 +96,7 @@ public class ProfileFragment extends Fragment {
             btnedit.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Intent intent = new Intent(getActivity(), EditProfileActivity.class);
+                    Intent intent = new Intent(requireActivity(), EditProfileActivity.class);
                     startActivityForResult(intent,EDIT_PROFILE_REQUEST);
                 }
             });
