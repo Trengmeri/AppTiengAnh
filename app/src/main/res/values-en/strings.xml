@@ -53,6 +53,7 @@
     <string name="txt_mechanic">MECHANIC</string>
     <string name="txt_construction">CONSTRUCTION</string>
     <string name="txt_other">OTHERS</string>
+    <string name="result">Hold on a second, we are working out your results!</string>
     <string name="txtcontinute">Continue your journey!</string>
     <string name="btn_continute">Continue Studying</string>
     <string name="txt_choose">Choose your course</string>

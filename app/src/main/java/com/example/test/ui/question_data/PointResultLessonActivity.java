@@ -31,6 +31,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.bumptech.glide.Glide;
 import com.example.test.NevigateQuestion;
 import com.example.test.R;
 import com.example.test.api.ApiCallback;
@@ -61,8 +62,9 @@ public class PointResultLessonActivity extends AppCompatActivity {
     QuestionManager quesManager = new QuestionManager(this);
     LessonManager lesManager = new LessonManager();
     ResultManager resultManager = new ResultManager(this);
-    TextView point;
-    ImageView star1,star2,star3;
+    TextView point, tvSuccessMessage;
+    ImageView star1,star2,star3, imgSuccessGif;
+    View darkOverlay;
     TableLayout tableResult;
     // Set lưu các ID đã gọi để tránh gọi trùng
     private Set<Integer> calledAnswerIds = new HashSet<>();
@@ -107,6 +109,22 @@ public class PointResultLessonActivity extends AppCompatActivity {
         star3 = findViewById(R.id.star3);
         btnDiscuss=findViewById(R.id.btnDiscuss);
         tableResult= findViewById(R.id.tableResult);
+        // Hiển thị nền tối
+        darkOverlay = findViewById(R.id.darkOverlay);
+        darkOverlay.setVisibility(View.VISIBLE);
+
+        // Hiển thị GIF và thông báo
+        imgSuccessGif = findViewById(R.id.imgSuccessGif);
+        tvSuccessMessage = findViewById(R.id.tvSuccessMessage);
+
+        imgSuccessGif.setVisibility(View.VISIBLE);
+        tvSuccessMessage.setVisibility(View.VISIBLE);
+
+        // Load GIF bằng Glide
+        Glide.with(PointResultLessonActivity.this)
+                .asGif()
+                .load(R.raw.butterfly)
+                .into(imgSuccessGif);
     }
 
     private void makepoint(int courseId, int lessonId) {
@@ -253,6 +271,9 @@ public class PointResultLessonActivity extends AppCompatActivity {
                             Log.d("PointResultActivity", "fetchResultByLesson: Lấy Result thành công");
                             runOnUiThread(() -> {
                                 point.setText(String.valueOf(result.getTotalPoints()));
+                                imgSuccessGif.setVisibility(View.GONE);
+                                tvSuccessMessage.setVisibility(View.GONE);
+                                darkOverlay.setVisibility(View.GONE);
                                 if (result.getComLevel() > 90) {
                                     star3.setBackgroundTintList(getResources().getColorStateList(R.color.yellow));
                                 }
