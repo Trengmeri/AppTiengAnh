@@ -72,7 +72,7 @@
                     android:id="@+id/basic"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/bg_choose"
+                    android:background="@drawable/bg_schedule"
                     android:backgroundTint="@color/grayy"/>
 
                 <ImageView
@@ -128,7 +128,7 @@
                     android:id="@+id/advance"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/bg_choose"
+                    android:background="@drawable/bg_schedule"
                     android:backgroundTint="#ECD29C"/>
 
                 <ImageView
@@ -184,7 +184,7 @@
                     android:id="@+id/levelup"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/bg_choose"
+                    android:background="@drawable/bg_schedule"
                     android:backgroundTint="#CE9566"/>
 
                 <ImageView
@@ -241,7 +241,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:background="@drawable/bg_choose">
+        android:background="@drawable/bg_schedule">
 
         <LinearLayout
             android:layout_width="0dp"

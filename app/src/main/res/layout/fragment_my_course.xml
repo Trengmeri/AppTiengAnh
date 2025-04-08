@@ -25,7 +25,8 @@
             android:id="@+id/recyclerView1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:nestedScrollingEnabled="false"/>
+            android:nestedScrollingEnabled="false"
+            android:layout_marginTop="20sp"/>
 
         <TextView
             android:layout_width="wrap_content"
@@ -33,13 +34,15 @@
             android:text="@string/course_suggest"
             android:textStyle="bold"
             android:textSize="18sp"
+            android:layout_marginTop="30dp"
             android:layout_marginLeft="30dp"/>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerView2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:nestedScrollingEnabled="false"/>
+            android:nestedScrollingEnabled="false"
+            android:layout_marginTop="20sp"/>
 
 <!--        <TextView-->
 <!--            android:layout_width="wrap_content"-->
