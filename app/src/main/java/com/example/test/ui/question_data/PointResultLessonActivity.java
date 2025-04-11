@@ -424,12 +424,14 @@ public class PointResultLessonActivity extends AppCompatActivity {
                             String userAnswer = answer.getAnswerContent().trim();
 
                             // Chuyển câu trả lời của người dùng thành danh sách và sắp xếp
-                            List<String> userAnswers = Arrays.stream(userAnswer.split(","))
-                                    .map(String::trim) // Loại bỏ khoảng trắng
-                                    .sorted() // Sắp xếp theo bảng chữ cái
-                                    .collect(Collectors.toList());
-                            String userAnswerFormatted = String.join(", ", userAnswers);
-                            userAnswerTextView.setText(userAnswerFormatted);
+//                            List<String> userAnswers = Arrays.stream(userAnswer.split(","))
+//                                    .map(String::trim) // Loại bỏ khoảng trắng
+//                                    .sorted() // Sắp xếp theo bảng chữ cái
+//                                    .collect(Collectors.toList());
+                            //String userAnswerFormatted = String.join(", ", userAnswers);
+                            //String userAnswerFormatted = answer.getAnswerContent().trim();
+
+                            userAnswerTextView.setText(userAnswer);
                             userAnswerTextView.setPadding(10, 10, 10, 10);
                             userAnswerTextView.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 1));
                             userAnswerTextView.setTypeface(null, Typeface.BOLD);
@@ -443,8 +445,8 @@ public class PointResultLessonActivity extends AppCompatActivity {
                             pointTextView.setTypeface(null, Typeface.BOLD);
 
                             // Đổi màu chữ tùy theo đúng/sai
-                            if (!userAnswers.isEmpty() && !correctAnswers.isEmpty() &&
-                                    userAnswers.get(0).trim().equalsIgnoreCase(correctAnswers.get(0).trim())) {
+                            if (!userAnswer.isEmpty() && !correctAnswers.isEmpty() &&
+                                    userAnswer.trim().equalsIgnoreCase(correctAnswers.get(0).trim())) {
                                 userAnswerTextView.setTextColor(ContextCompat.getColor(tableResult.getContext(), android.R.color.holo_green_dark));
                                 pointTextView.setTextColor(ContextCompat.getColor(tableResult.getContext(), android.R.color.holo_green_dark));
                             } else {
