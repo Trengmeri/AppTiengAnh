@@ -89,7 +89,6 @@ public class HomeFragment extends Fragment {
         listeningPoints = view.findViewById(R.id.listeningpoint);
         speakingPoints = view.findViewById(R.id.speakingpoint);
         writingpoint = view.findViewById(R.id.writingpoint);
-
     }
 
     private void initializeManagers() {

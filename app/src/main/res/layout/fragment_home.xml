@@ -58,7 +58,6 @@
                             android:layout_marginRight="0dp"
                             android:background="@drawable/notifications" />
                     </LinearLayout>
-
                 <TextView
                     android:id="@+id/courseTitle"
                     android:layout_width="wrap_content"
