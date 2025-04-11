@@ -27,8 +27,10 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.test.NetworkChangeReceiver;
 import com.example.test.R;
+import com.example.test.SharedPreferencesManager;
 import com.example.test.api.ApiCallback;
 import com.example.test.api.AuthenticationManager;
+import com.example.test.api.FieldManager;
 import com.example.test.model.Answer;
 import com.example.test.model.Course;
 import com.example.test.model.Enrollment;
@@ -39,17 +41,20 @@ import com.example.test.model.Result;
 import com.example.test.ui.home.HomeActivity;
 import com.google.android.material.textfield.TextInputLayout;
 
+import org.json.JSONObject;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class SignInActivity extends AppCompatActivity {
 
     EditText edtEmail, edtMKhau;
-   TextView tvEmailerror, tvPasserror;
+    TextView tvEmailerror, tvPasserror;
     CheckBox cbRemember;
     Button btnIn, btnForgot, btnUp;
     NetworkChangeReceiver networkReceiver;
     AuthenticationManager apiManager;
+    FieldManager fieldManager;
     boolean isValid = true;
     private boolean isPasswordVisible = false;
     private long lastClickTime = 0; // Biến để chặn multi-click
@@ -77,10 +82,10 @@ public class SignInActivity extends AppCompatActivity {
         Log.d("SignInActivity", "Saved Password: " + savedPassword);
         Log.d("DEBUG", "Last activity from SharedPreferences: " + lastActivity);
 
-
         setContentView(R.layout.activity_sign_in);
         AnhXa();
         setupPasswordField();
+
 
         editor = sharedPreferences.edit();
         // Hiển thị thông tin đăng nhập nếu Remember Me được chọn trước đó
@@ -115,6 +120,7 @@ public class SignInActivity extends AppCompatActivity {
         // Tạo đối tượng NetworkChangeReceiver
         networkReceiver = new NetworkChangeReceiver();
         apiManager = new AuthenticationManager(this);
+        fieldManager= new FieldManager(this);
 
         btnIn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -133,63 +139,70 @@ public class SignInActivity extends AppCompatActivity {
                         apiManager.sendLoginRequest(email, pass, new ApiCallback() {
                             @Override
                             public void onSuccess() {
+                                // Lấy userId từ SharedPreferencesManager
+                                String userId = SharedPreferencesManager.getInstance(SignInActivity.this).getID();
+                                fieldManager.fetchUserById(userId, new ApiCallback() {
+                                    @Override
+                                    public void onSuccess() {
 
-                                SharedPreferences sharedPreferences = getSharedPreferences("LoginPrefs", MODE_PRIVATE);
-                                SharedPreferences.Editor editor = sharedPreferences.edit();
-                                boolean isSameAccount = email.equals(savedEmail);
-                                // Lưu Remember Me
-                                if (cbRemember.isChecked()) {
-                                    editor.putBoolean("rememberMe", true);
-                                    editor.putString("email", email);
-                                    editor.putString("password", pass);
-                                } else {
-                                    editor.putBoolean("rememberMe", false);
-                                    editor.remove("email");
-                                    editor.remove("password");
-                                    editor.remove("lastActivity");
-                                }
-                                if (!isSameAccount) {
-                                    editor.remove("lastActivity"); // Xóa lastActivity để bắt đầu lại
-                                    editor.putBoolean("hasSelectedOption", false); // Đặt lại cờ chọn ngành
-                                }
-                                editor.apply();
-                                Log.d("LastActivity", lastActivity);
+                                    }
 
-                                boolean hasSelectedOption = sharedPreferences.getBoolean("hasSelectedOption", false);
-                                String lastActivity = sharedPreferences.getString("lastActivity", "");
-
-                                Intent intent;
-                                if (hasSelectedOption) {
-                                     intent = new Intent(SignInActivity.this, HomeActivity.class);
-                                } else {
-                                    if (lastActivity.isEmpty()) {
-                                        intent = new Intent(SignInActivity.this, ChooseFieldsActivity.class);
-                                    } else {
+                                    @Override
+                                    public void onSuccess(Object result) {
                                         try {
-                                            Class<?> lastActivityClass = Class.forName(lastActivity);
-                                            intent = new Intent(SignInActivity.this, lastActivityClass);
-                                        } catch (ClassNotFoundException e) {
-                                            e.printStackTrace();
-                                            intent = new Intent(SignInActivity.this, ChooseFieldsActivity.class); // Mặc định về SelectActivity
+                                            JSONObject userData = (JSONObject) result;
+                                            String speciField = userData.optString("speciField", "");
+                                            boolean hasSelectedField = !speciField.isEmpty() && !speciField.equals("null");
+
+                                            editor.putBoolean("hasSelectedOption", hasSelectedField);
+                                            if (cbRemember.isChecked()) {
+                                                editor.putBoolean("rememberMe", true);
+                                                editor.putString("email", email);
+                                                editor.putString("password", pass);
+                                            } else {
+                                                editor.putBoolean("rememberMe", false);
+                                                editor.remove("email");
+                                                editor.remove("password");
+                                                editor.remove("lastActivity");
+                                            }
+                                            editor.apply();
+
+                                            Intent intent = hasSelectedField
+                                                    ? new Intent(SignInActivity.this, HomeActivity.class)
+                                                    : new Intent(SignInActivity.this, ChooseFieldsActivity.class);
+                                            startActivity(intent);
+                                            finish();
+                                        } catch (Exception e) {
+                                            runOnUiThread(() -> {
+                                                Toast.makeText(SignInActivity.this, "Lỗi xử lý dữ liệu", Toast.LENGTH_SHORT).show();
+                                                btnIn.setEnabled(true);
+                                                btnIn.setAlpha(1.0f);
+                                            });
                                         }
                                     }
-                                }
 
-                                startActivity(intent);
-                                finish();
+                                    @Override
+                                    public void onFailure(String errorMessage) {
+                                        runOnUiThread(() -> {
+                                            Toast.makeText(SignInActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
+                                            btnIn.setEnabled(true);
+                                            btnIn.setAlpha(1.0f);
+                                        });
+                                    }
+                                });
                             }
+
                             @Override
                             public void onSuccess(Object result) {
+
                             }
+
                             @Override
                             public void onFailure(String errorMessage) {
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        Toast.makeText(SignInActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
-                                        btnIn.setEnabled(true); // Bật lại nút nếu thất bại
-                                        btnIn.setAlpha(1.0f);
-                                    }
+                                runOnUiThread(() -> {
+                                    Toast.makeText(SignInActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
+                                    btnIn.setEnabled(true);
+                                    btnIn.setAlpha(1.0f);
                                 });
                             }
                         });
