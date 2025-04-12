@@ -82,7 +82,7 @@ public class HomeFragment extends Fragment {
         btnProfile = view.findViewById(R.id.imgAvatar);
         continueButton = view.findViewById(R.id.btn_continue);
         courseTitle = view.findViewById(R.id.courseTitle);
-        selectCourseButton = view.findViewById(R.id.btn_select_course);
+//        courseNumber = view.findViewById(R.id.courseNumber);
         btnNoti = view.findViewById(R.id.img_notification);
         totalPoints = view.findViewById(R.id.totalPoints);
         readingPoints = view.findViewById(R.id.readingpoint);
@@ -101,11 +101,7 @@ public class HomeFragment extends Fragment {
     private void setupViews() {
         setupClickListeners();
     }
-
-
-
     private void setupClickListeners() {
-        selectCourseButton.setOnClickListener(v -> showCoursePopupMenu(v));
         continueButton.setOnClickListener(v -> {
             if (!isAdded() || getActivity() == null) {
                 return;
@@ -129,42 +125,6 @@ public class HomeFragment extends Fragment {
                 } else {
                     Log.e("HomeFragment", "StudyFragment not found");
                 }
-            }
-        });
-    }
-
-
-    private void showCoursePopupMenu(View view) {
-        if (!isAdded()) {
-            Log.e("HomeFragment", "Fragment not attached to context");
-            return;
-        }
-        PopupMenu popupMenu = new PopupMenu(requireContext(), view);
-        for (int i = 0; i < activeCourses.size(); i++) {
-            CourseInfo course = activeCourses.get(i);
-            popupMenu.getMenu().add(0, i, 0, course.getCourseName());
-        }
-
-        popupMenu.setOnMenuItemClickListener(item -> {
-            int position = item.getItemId();
-            if (position >= 0 && position < activeCourses.size()) {
-                CourseInfo selectedCourse = activeCourses.get(position);
-                if (selectedCourse != null) {
-                    selectedCourseId = selectedCourse.getCourseId();
-                    updateSelectedCourse(selectedCourse);
-                }
-            }
-            return true;
-        });
-
-        popupMenu.show();
-    }
-    private void updateSelectedCourse(CourseInfo course) {
-        if (!isAdded() || getActivity() == null) return;
-
-        requireActivity().runOnUiThread(() -> {
-            if (courseTitle != null) {
-                courseTitle.setText(course.getCourseName());
             }
         });
     }
@@ -198,48 +158,78 @@ public class HomeFragment extends Fragment {
 
     private void processEnrollments(JsonArray enrollments) {
         activeCourses.clear();
-        boolean foundActiveCourse = false;
+        selectedCourseId = -1; // Reset selected course ID
 
-        for (int i = 0; i < enrollments.size(); i++) {
+        // Log the entire enrollment data
+        Log.d("HomeFragment", "Enrollment data: " + enrollments.toString());
+
+        // Iterate from the end of the array to find the nearest course matching the conditions
+        for (int i = enrollments.size() - 1; i >= 0; i--) {
             JsonObject course = enrollments.get(i).getAsJsonObject();
-            if (isActiveCourse(course)) {
-                foundActiveCourse = true;
-                fetchAndAddCourseToPopup(course.get("courseId").getAsInt());
+            Log.d("HomeFragment", "Processing course: " + course.toString());
+
+            if (isMatchingCourse(course)) {
+                Log.d("HomeFragment", "Matching course found: " + course.toString());
+                // Safely retrieve courseId
+                if (course.has("courseId") && !course.get("courseId").isJsonNull()) {
+                    selectedCourseId = course.get("courseId").getAsInt();
+
+                    // Fetch course name using courseId
+                    learningProgressManager.fetchCourseDetails(selectedCourseId, new ApiCallback<String>() {
+                        @Override
+                        public void onSuccess() {
+
+                        }
+
+                        @Override
+                        public void onSuccess(String courseName) {
+                            // Update UI with the selected course
+                            requireActivity().runOnUiThread(() -> {
+                                courseTitle.setText(courseName);
+                                continueButton.setVisibility(View.VISIBLE);
+                            });
+                        }
+
+                        @Override
+                        public void onFailure(String error) {
+                            Log.e("HomeFragment", "Failed to fetch course details: " + error);
+                            requireActivity().runOnUiThread(() -> showNoCourseMessage());
+                        }
+                    });
+                    return; // Stop after finding the first match
+                } else {
+                    Log.e("HomeFragment", "Missing or null courseId in JSON object");
+                }
+            } else {
+                Log.d("HomeFragment", "Course does not match conditions: " + course.toString());
             }
         }
 
-        if (!foundActiveCourse) {
-            requireActivity().runOnUiThread(this::showNoCourseMessage);
+        // If no matching course is found, show a message
+        requireActivity().runOnUiThread(this::showNoCourseMessage);
+    }
+    private boolean isMatchingCourse(JsonObject course) {
+        boolean hasProStatus = course.has("proStatus") && !course.get("proStatus").isJsonNull();
+        boolean hasTotalPoints = course.has("totalPoints") && !course.get("totalPoints").isJsonNull();
+        boolean hasComLevel = course.has("comLevel") && !course.get("comLevel").isJsonNull();
+
+        if (hasProStatus && hasTotalPoints && hasComLevel) {
+            boolean proStatus = course.get("proStatus").getAsBoolean();
+            double totalPoints = course.get("totalPoints").getAsDouble();
+            double comLevel = course.get("comLevel").getAsDouble();
+
+            return proStatus && totalPoints == 0 && comLevel == 0.0;
         }
+
+        return false;
     }
 
-    private boolean isActiveCourse(JsonObject course) {
-        return course.get("proStatus").getAsBoolean()
-                && course.get("comLevel").getAsDouble() == 0
-                && course.get("totalPoints").getAsDouble() == 0;
+    private void showNoCourseMessage() {
+        courseTitle.setText("No active course found");
+        courseNumber.setText("");
+        continueButton.setVisibility(View.GONE);
     }
 
-    private void fetchAndAddCourseToPopup(int courseId) {
-        learningProgressManager.fetchCourseDetails(courseId, new ApiCallback<String>() {
-            @Override
-            public void onSuccess(String courseName) {
-                if (!isAdded() || getActivity() == null) return;
-
-                CourseInfo courseInfo = new CourseInfo(courseId, courseName);
-                requireActivity().runOnUiThread(() -> {
-                    activeCourses.add(courseInfo);
-                });
-            }
-
-            @Override
-            public void onSuccess() {}
-
-            @Override
-            public void onFailure(String error) {
-                handleError("Failed to fetch course details", error);
-            }
-        });
-    }
     private void loadLearningResults() {
         learningProgressManager.fetchLearningResults(new ApiCallback<JsonObject>() {
             @Override
@@ -291,11 +281,7 @@ public class HomeFragment extends Fragment {
         handleError(message, e.getMessage());
     }
 
-    private void showNoCourseMessage() {
-        courseNumber.setText("Thông báo");
-        courseTitle.setText("Bạn chưa tham gia khóa học nào");
-        continueButton.setVisibility(View.GONE);
-    }
+
     private void loadUserProfile() {
         String userId = SharedPreferencesManager.getInstance(requireContext()).getID();
         if (userId == null) return;
