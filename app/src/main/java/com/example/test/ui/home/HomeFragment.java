@@ -129,100 +129,101 @@ public class HomeFragment extends Fragment {
         });
     }
     private void loadData() {
-        loadEnrollments();
+
         loadLearningResults();
+        loadLatestLessonAndCourse();
         loadUserProfile();
     }
-    private void loadEnrollments() {
-        learningProgressManager.fetchLatestEnrollment(new ApiCallback<JsonObject>() {
-            @Override
-            public void onSuccess(JsonObject enrollment) {
-                try {
-                    JsonArray content = enrollment.getAsJsonObject("data")
-                            .getAsJsonArray("content");
-                    processEnrollments(content);
-                } catch (Exception e) {
-                    handleError("Error parsing enrollment", e);
-                }
-            }
-
-            @Override
-            public void onSuccess() {}
-
-            @Override
-            public void onFailure(String error) {
-                handleError("Failed to load enrollments", error);
-            }
-        });
-    }
-
-    private void processEnrollments(JsonArray enrollments) {
-        activeCourses.clear();
-        selectedCourseId = -1; // Reset selected course ID
-
-        // Log the entire enrollment data
-        Log.d("HomeFragment", "Enrollment data: " + enrollments.toString());
-
-        // Iterate from the end of the array to find the nearest course matching the conditions
-        for (int i = enrollments.size() - 1; i >= 0; i--) {
-            JsonObject course = enrollments.get(i).getAsJsonObject();
-            Log.d("HomeFragment", "Processing course: " + course.toString());
-
-            if (isMatchingCourse(course)) {
-                Log.d("HomeFragment", "Matching course found: " + course.toString());
-                // Safely retrieve courseId
-                if (course.has("courseId") && !course.get("courseId").isJsonNull()) {
-                    selectedCourseId = course.get("courseId").getAsInt();
-
-                    // Fetch course name using courseId
-                    learningProgressManager.fetchCourseDetails(selectedCourseId, new ApiCallback<String>() {
-                        @Override
-                        public void onSuccess() {
-
-                        }
-
-                        @Override
-                        public void onSuccess(String courseName) {
-                            // Update UI with the selected course
-                            requireActivity().runOnUiThread(() -> {
-                                courseTitle.setText(courseName);
-                                continueButton.setVisibility(View.VISIBLE);
-                            });
-                        }
-
-                        @Override
-                        public void onFailure(String error) {
-                            Log.e("HomeFragment", "Failed to fetch course details: " + error);
-                            requireActivity().runOnUiThread(() -> showNoCourseMessage());
-                        }
-                    });
-                    return; // Stop after finding the first match
-                } else {
-                    Log.e("HomeFragment", "Missing or null courseId in JSON object");
-                }
-            } else {
-                Log.d("HomeFragment", "Course does not match conditions: " + course.toString());
-            }
-        }
-
-        // If no matching course is found, show a message
-        requireActivity().runOnUiThread(this::showNoCourseMessage);
-    }
-    private boolean isMatchingCourse(JsonObject course) {
-        boolean hasProStatus = course.has("proStatus") && !course.get("proStatus").isJsonNull();
-        boolean hasTotalPoints = course.has("totalPoints") && !course.get("totalPoints").isJsonNull();
-        boolean hasComLevel = course.has("comLevel") && !course.get("comLevel").isJsonNull();
-
-        if (hasProStatus && hasTotalPoints && hasComLevel) {
-            boolean proStatus = course.get("proStatus").getAsBoolean();
-            double totalPoints = course.get("totalPoints").getAsDouble();
-            double comLevel = course.get("comLevel").getAsDouble();
-
-            return proStatus && totalPoints == 0 && comLevel == 0.0;
-        }
-
-        return false;
-    }
+//    private void loadEnrollments() {
+//        learningProgressManager.fetchLatestEnrollment(new ApiCallback<JsonObject>() {
+//            @Override
+//            public void onSuccess(JsonObject enrollment) {
+//                try {
+//                    JsonArray content = enrollment.getAsJsonObject("data")
+//                            .getAsJsonArray("content");
+//                    processEnrollments(content);
+//                } catch (Exception e) {
+//                    handleError("Error parsing enrollment", e);
+//                }
+//            }
+//
+//            @Override
+//            public void onSuccess() {}
+//
+//            @Override
+//            public void onFailure(String error) {
+//                handleError("Failed to load enrollments", error);
+//            }
+//        });
+//    }
+//
+//    private void processEnrollments(JsonArray enrollments) {
+//        activeCourses.clear();
+//        selectedCourseId = -1; // Reset selected course ID
+//
+//        // Log the entire enrollment data
+//        Log.d("HomeFragment", "Enrollment data: " + enrollments.toString());
+//
+//        // Iterate from the end of the array to find the nearest course matching the conditions
+//        for (int i = enrollments.size() - 1; i >= 0; i--) {
+//            JsonObject course = enrollments.get(i).getAsJsonObject();
+//            Log.d("HomeFragment", "Processing course: " + course.toString());
+//
+//            if (isMatchingCourse(course)) {
+//                Log.d("HomeFragment", "Matching course found: " + course.toString());
+//                // Safely retrieve courseId
+//                if (course.has("courseId") && !course.get("courseId").isJsonNull()) {
+//                    selectedCourseId = course.get("courseId").getAsInt();
+//
+//                    // Fetch course name using courseId
+//                    learningProgressManager.fetchCourseDetails(selectedCourseId, new ApiCallback<String>() {
+//                        @Override
+//                        public void onSuccess() {
+//
+//                        }
+//
+//                        @Override
+//                        public void onSuccess(String courseName) {
+//                            // Update UI with the selected course
+//                            requireActivity().runOnUiThread(() -> {
+//                                courseTitle.setText(courseName);
+//                                continueButton.setVisibility(View.VISIBLE);
+//                            });
+//                        }
+//
+//                        @Override
+//                        public void onFailure(String error) {
+//                            Log.e("HomeFragment", "Failed to fetch course details: " + error);
+//                            requireActivity().runOnUiThread(() -> showNoCourseMessage());
+//                        }
+//                    });
+//                    return; // Stop after finding the first match
+//                } else {
+//                    Log.e("HomeFragment", "Missing or null courseId in JSON object");
+//                }
+//            } else {
+//                Log.d("HomeFragment", "Course does not match conditions: " + course.toString());
+//            }
+//        }
+//
+//        // If no matching course is found, show a message
+//        requireActivity().runOnUiThread(this::showNoCourseMessage);
+//    }
+//    private boolean isMatchingCourse(JsonObject course) {
+//        boolean hasProStatus = course.has("proStatus") && !course.get("proStatus").isJsonNull();
+//        boolean hasTotalPoints = course.has("totalPoints") && !course.get("totalPoints").isJsonNull();
+//        boolean hasComLevel = course.has("comLevel") && !course.get("comLevel").isJsonNull();
+//
+//        if (hasProStatus && hasTotalPoints && hasComLevel) {
+//            boolean proStatus = course.get("proStatus").getAsBoolean();
+//            double totalPoints = course.get("totalPoints").getAsDouble();
+//            double comLevel = course.get("comLevel").getAsDouble();
+//
+//            return proStatus && totalPoints == 0 && comLevel == 0.0;
+//        }
+//
+//        return false;
+//    }
 
     private void showNoCourseMessage() {
         courseTitle.setText("No active course found");
@@ -281,7 +282,99 @@ public class HomeFragment extends Fragment {
         handleError(message, e.getMessage());
     }
 
+    private void loadLatestLessonAndCourse() {
+        learningProgressManager.fetchLatestLesson(new ApiCallback<JsonObject>() {
+            @Override
+            public void onSuccess() {
 
+            }
+
+            @Override
+            public void onSuccess(JsonObject latestLesson) {
+                try {
+                    Log.d("HomeFragment", "Latest lesson response: " + latestLesson.toString());
+                    // Ensure "data" exists and is not null
+                        // Ensure "content" exists and is a JsonArray
+                        if (latestLesson.has("content") && latestLesson.get("content").isJsonArray()) {
+                            JsonArray lessons = latestLesson.getAsJsonArray("content");
+
+                            if (lessons.size() > 0) {
+                                JsonObject lastLesson = lessons.get(lessons.size() - 1).getAsJsonObject();
+                                int lessonId = lastLesson.get("lessonId").getAsInt();
+                                Log.d("HomeFragment", "Latest lessonId: " + lessonId);
+
+                                // Fetch courses containing the lesson
+                                fetchCoursesContainingLesson(lessonId);
+                            } else {
+                                Log.e("HomeFragment", "No lessons found in response");
+                                requireActivity().runOnUiThread(() -> showNoCourseMessage());
+                            }
+                        } else {
+                            Log.e("HomeFragment", "Missing or invalid 'content' field in 'data'");
+                            requireActivity().runOnUiThread(() -> showNoCourseMessage());
+                        }
+
+                } catch (Exception e) {
+                    handleError("Error parsing latest lesson", e);
+                }
+            }
+
+            @Override
+            public void onFailure(String error) {
+                handleError("Failed to fetch latest lesson", error);
+            }
+        });
+    }
+
+    private void fetchCoursesContainingLesson(int lessonId) {
+        learningProgressManager.fetchCourses(new ApiCallback<JsonArray>() {
+            @Override
+            public void onSuccess() {
+
+            }
+
+            @Override
+            public void onSuccess(JsonArray courses) {
+
+                try {
+                    Log.d("HomeFregêmnt","Course details" + courses.toString());
+                    for (int i = 0; i < courses.size(); i++) {
+                        JsonObject course = courses.get(i).getAsJsonObject();
+
+                        JsonArray lessonIds = course.getAsJsonArray("lessonIds");
+
+                        // Kiểm tra nếu lessonId nằm trong lessonIds
+                        for (int j = 0; j < lessonIds.size(); j++) {
+                            if (lessonIds.get(j).getAsInt() == lessonId) {
+                                Log.d("HomeFragment", "Course found: " + course.toString());
+                                int courseId = course.get("id").getAsInt();
+                                String courseName = course.get("name").getAsString();
+
+                                // Hiển thị thông tin khóa học
+                                requireActivity().runOnUiThread(() -> {
+                                    courseTitle.setText(courseName);
+                                    selectedCourseId = courseId;
+                                    continueButton.setVisibility(View.VISIBLE);
+                                });
+                                return;
+                            }
+                        }
+                    }
+
+                    // Nếu không tìm thấy khóa học nào chứa lessonId
+                    Log.e("HomeFragment", "No course contains the lessonId: " + lessonId);
+                    requireActivity().runOnUiThread(() -> showNoCourseMessage());
+                } catch (Exception e) {
+                    handleError("Error parsing courses", e);
+                }
+            }
+
+            @Override
+            public void onFailure(String error) {
+                handleError("Failed to fetch courses", error);
+            }
+        });
+    }
     private void loadUserProfile() {
         String userId = SharedPreferencesManager.getInstance(requireContext()).getID();
         if (userId == null) return;
@@ -331,7 +424,7 @@ public class HomeFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        loadEnrollments();
+
         loadLearningResults();
         loadUserProfile();
     }

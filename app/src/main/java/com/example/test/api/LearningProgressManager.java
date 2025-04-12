@@ -121,4 +121,73 @@ public class LearningProgressManager extends BaseApiManager {
             }
         });
     }
+
+    public void fetchLatestLesson(ApiCallback<JsonObject> callback) {
+        String userId = SharedPreferencesManager.getInstance(context).getID();
+        String url = BASE_URL + "/api/v1/lesson-results/user/" + userId + "/latest";
+
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("Authorization", "Bearer " + SharedPreferencesManager.getInstance(context).getAccessToken())
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                callback.onFailure("Network error: " + e.getMessage());
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    String responseBody = response.body().string();
+                    JsonObject jsonResponse = gson.fromJson(responseBody, JsonObject.class);
+                    JsonObject data = jsonResponse.getAsJsonObject("data");
+                    callback.onSuccess(data);
+
+                } else {
+                    callback.onFailure("Server error: " + response.code());
+                }
+            }
+        });
+    }
+
+    public void fetchCourses(ApiCallback<JsonArray> callback) {
+        String url = BASE_URL + "/api/v1/courses";
+
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("Authorization", "Bearer " + SharedPreferencesManager.getInstance(context).getAccessToken())
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                callback.onFailure("Network error: " + e.getMessage());
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    String responseBody = response.body().string();
+                    JsonObject jsonResponse = gson.fromJson(responseBody, JsonObject.class);
+
+                    // Extract the "content" field from the "data" object
+                    if (jsonResponse.has("data") && jsonResponse.get("data").isJsonObject()) {
+                        JsonObject data = jsonResponse.getAsJsonObject("data");
+                        if (data.has("content") && data.get("content").isJsonArray()) {
+                            JsonArray contentArray = data.getAsJsonArray("content");
+                            callback.onSuccess(contentArray);
+                        } else {
+                            callback.onFailure("Expected a JsonArray in the 'content' field but found something else.");
+                        }
+                    } else {
+                        callback.onFailure("Expected a JsonObject in the 'data' field but found something else.");
+                    }
+                } else {
+                    callback.onFailure("Server error: " + response.code());
+                }
+            }
+        });
+    }
 }
