@@ -33,6 +33,7 @@ import com.example.test.api.AudioManager;
 import com.example.test.api.QuestionManager;
 import com.example.test.model.Question;
 import com.example.test.model.QuestionChoice;
+import com.example.test.model.SpeechResult;
 import com.example.test.ui.question_data.PointResultLessonActivity;
 import com.example.test.ui.question_data.RecordQuestionActivity;
 
@@ -358,22 +359,24 @@ public class Test2 extends AppCompatActivity {
 
         isRecordingAnimation = false;
 
-        audioManager.uploadfileM4A(recordedFile, new ApiCallback<File>() {
-            @Override
-            public void onSuccess() {
-                // Không dùng trong trường hợp này
-            }
+      audioManager.uploadAndTranscribeM4A(recordedFile, new ApiCallback<SpeechResult>() {
 
-            @Override
-            public void onSuccess(File result) {
+          @Override
+          public void onSuccess() {
 
-            }
+          }
 
-            @Override
-            public void onFailure(String errorMessage) {
-                Log.e("Upload", "Upload failed: " + errorMessage);
-            }
-        });
+          @Override
+          public void onSuccess(SpeechResult result) {
+              Log.d("SPEECH_TO_TEXT", result.toString());
+
+          }
+
+          @Override
+          public void onFailure(String errorMessage) {
+              Log.e("SPEECH_TO_TEXT", errorMessage);
+          }
+      });
 
         Log.d("Succsse", "Recording saved to: " + recordedFile.getAbsolutePath());
 

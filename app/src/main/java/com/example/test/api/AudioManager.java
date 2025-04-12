@@ -10,6 +10,10 @@ import android.util.Base64;
 import androidx.annotation.NonNull;
 
 import com.example.test.SharedPreferencesManager;
+import com.example.test.model.SpeechResult;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
@@ -29,15 +33,21 @@ public class AudioManager extends BaseApiManager{
         this.context = context;
     }
 
-    public void uploadfileM4A(File file, ApiCallback callback) {
+    public void uploadAndTranscribeM4A(File file, ApiCallback callback) {
         String token = SharedPreferencesManager.getInstance(context).getAccessToken();
+
         RequestBody requestBody = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
-                .addFormDataPart("file", file.getName(),
-                        RequestBody.create(file, MediaType.parse("audio/m4a")))
+                .addFormDataPart(
+                        "file",
+                        file.getName(),
+                        RequestBody.create(file,MediaType.parse("audio/x-m4a")
+                        )
+                )
                 .build();
+
         Request request = new Request.Builder()
-                .url(BASE_URL + "/api/v1/audio/convert-m4a-to-wav") // Cập nhật BASE_URL của bạn
+                .url(BASE_URL + "/api/v1/speech/convert") // Đây là endpoint tích hợp bạn nói
                 .addHeader("Authorization", "Bearer " + token)
                 .post(requestBody)
                 .build();
@@ -45,21 +55,38 @@ public class AudioManager extends BaseApiManager{
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                if (response.isSuccessful()) {
-                    byte[] wavData = response.body().bytes();
-                    String base64Wav = Base64.encodeToString(wavData, Base64.DEFAULT);
-                    callback.onSuccess(base64Wav);  // hoặc callback.onSuccess(wavData) nếu bạn dùng byte[]
+                if (response.isSuccessful() && response.body() != null) {
+                    String json = response.body().string();
+
+                    try {
+                        JSONObject root = new JSONObject(json);
+                        JSONObject data = root.optJSONObject("data");
+
+                        if (data != null) {
+                            String transcript = data.optString("transcript");
+                            double confidence = data.optDouble("confidence");
+
+                            SpeechResult result = new SpeechResult(transcript, confidence);
+                            callback.onSuccess(result);
+                        } else {
+                            callback.onFailure("Không tìm thấy kết quả trong phản hồi.");
+                        }
+
+                    } catch (JSONException e) {
+                        callback.onFailure("Lỗi JSON: " + e.getMessage());
+                    }
                 } else {
-                    callback.onFailure("Lỗi từ server: Mã lỗi " + response.code());
+                    callback.onFailure("Lỗi server: " + response.code());
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                callback.onFailure("Không thể kết nối tới API: " + e.getMessage());
+                callback.onFailure("Kết nối API thất bại: " + e.getMessage());
             }
         });
     }
+
 //    public void convert(File file, ApiCallback callback){
 //        String token = SharedPreferencesManager.getInstance(context).getAccessToken();
 //        RequestBody requestBody = new MultipartBody.Builder()

@@ -71,6 +71,7 @@ public class RecordQuestionActivity extends AppCompatActivity {
     private ObjectAnimator animator2ScaleX, animator2ScaleY, animator2Alpha;
     private ObjectAnimator animator3ScaleX, animator3ScaleY, animator3Alpha;
     private boolean isRecordingAnimation = false; // Trạng thái animation khi ghi âm
+    private double confidence;
 
 
     @Override
@@ -100,7 +101,7 @@ public class RecordQuestionActivity extends AppCompatActivity {
         } else {
             imgVoice.setOnClickListener(v -> {
                 if(!isRecordingAnimation){
-
+                    startRecording();
                     startWaves();
                     isRecordingAnimation = true;
                     Toast.makeText(this, "Đang ghi âm...", Toast.LENGTH_SHORT).show();
@@ -326,43 +327,57 @@ public class RecordQuestionActivity extends AppCompatActivity {
 
 
     private void startRecording() {
-
-
         File outputDir = getExternalFilesDir(Environment.DIRECTORY_MUSIC);
         String fileName = "recorded_audio_" + System.currentTimeMillis() + ".m4a";
         recordedFile = new File(outputDir, fileName);
-
         recorder = new MediaRecorder();
         recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
         recorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4); // vẫn giữ MPEG_4
         recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);    // encoder phù hợp cho m4a
         recorder.setOutputFile(recordedFile.getAbsolutePath());
-
         try {
             recorder.prepare();
             recorder.start();
             isRecordingAnimation = true;
             startWaves();
-            Toast.makeText(this, "Recording started", Toast.LENGTH_SHORT).show();
+            Log.d("Succsse", "Recording started");
         } catch (IOException e) {
             e.printStackTrace();
-            Toast.makeText(this, "Recording failed", Toast.LENGTH_SHORT).show();
+            Log.e("Fail", "Recording failed");
         }
     }
-
-
     private void stopRecording() {
         if (recorder != null) {
             recorder.stop();
             recorder.release();
             recorder = null;
         }
-
         if (animator != null) {
             animator.cancel();
         }
 
         isRecordingAnimation = false;
+
+        audioManager.uploadAndTranscribeM4A(recordedFile, new ApiCallback<SpeechResult>() {
+
+            @Override
+            public void onSuccess() {
+
+            }
+
+            @Override
+            public void onSuccess(SpeechResult result) {
+                Log.d("SPEECH_TO_TEXT", result.toString());
+                confidence= result.getConfidence();
+            }
+
+            @Override
+            public void onFailure(String errorMessage) {
+                Log.e("SPEECH_TO_TEXT", errorMessage);
+            }
+        });
+
+        Log.d("Succsse", "Recording saved to: " + recordedFile.getAbsolutePath());
 
         Toast.makeText(this, "Recording saved to: " + recordedFile.getAbsolutePath(), Toast.LENGTH_LONG).show();
     }
@@ -374,9 +389,4 @@ public class RecordQuestionActivity extends AppCompatActivity {
             recorder.release();
         }
     }
-
-
-
-
-
 }
