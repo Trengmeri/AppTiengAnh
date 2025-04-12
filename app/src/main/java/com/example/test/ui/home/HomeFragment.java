@@ -331,6 +331,8 @@ public class HomeFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        loadEnrollments();
+        loadLearningResults();
         loadUserProfile();
     }
 }
