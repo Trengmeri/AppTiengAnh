@@ -1,46 +1,48 @@
-package com.example.test.ui.question_data;
+package com.example.test.ui;
 
 import android.Manifest;
 import android.animation.ObjectAnimator;
 import android.app.ProgressDialog;
-import android.content.pm.PackageManager;
 import android.content.Intent;
-import android.graphics.Color;
-import android.media.AudioAttributes;
+import android.content.pm.PackageManager;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
-import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.View;
-import android.widget.*;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
-import androidx.annotation.NonNull;
+import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-
-import com.example.test.PopupHelper;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import com.example.test.R;
-import com.example.test.SpeechRecognitionCallback;
 import com.example.test.SpeechRecognitionHelper;
-import com.example.test.api.*;
-import com.example.test.model.*;
+import com.example.test.api.ApiCallback;
+import com.example.test.api.AudioManager;
+import com.example.test.api.QuestionManager;
+import com.example.test.model.Question;
+import com.example.test.model.QuestionChoice;
+import com.example.test.ui.question_data.PointResultLessonActivity;
+import com.example.test.ui.question_data.RecordQuestionActivity;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.Response;
-
-public class RecordQuestionActivity extends AppCompatActivity {
-
+public class Test2 extends AppCompatActivity {
     private MediaPlayer mediaPlayer;
     LinearLayout imgVoice;
     private ImageView imgReset;
@@ -51,10 +53,10 @@ public class RecordQuestionActivity extends AppCompatActivity {
     List<String> correctAnswers = new ArrayList<>();
     private List<Question> questions;
     private int currentQuestionIndex;
-    private int currentStep = 0;
-    private int lessonID, courseID, enrollmentId;
-    private  String questype;
-    private int totalSteps;
+//    private int currentStep = 0;
+//    private int lessonID, courseID, enrollmentId;
+//    private  String questype;
+//    private int totalSteps;
     QuestionManager quesManager = new QuestionManager(this);
     private MediaRecorder recorder;
     private String filePath;
@@ -63,7 +65,6 @@ public class RecordQuestionActivity extends AppCompatActivity {
     private Runnable updateSeekBar;
     private boolean isPlaying = false;
     TextView tvQuestion;
-    private AudioManager audioManager;
     private ProgressDialog progressDialog;
     // Thêm vào đầu class SpeakingActivity
     private View wave1, wave2, wave3;
@@ -71,6 +72,8 @@ public class RecordQuestionActivity extends AppCompatActivity {
     private ObjectAnimator animator2ScaleX, animator2ScaleY, animator2Alpha;
     private ObjectAnimator animator3ScaleX, animator3ScaleY, animator3Alpha;
     private boolean isRecordingAnimation = false; // Trạng thái animation khi ghi âm
+
+    private AudioManager audioManager = new AudioManager(this);
 
 
     @Override
@@ -89,20 +92,18 @@ public class RecordQuestionActivity extends AppCompatActivity {
         setupWaveAnimators();
         currentQuestionIndex = getIntent().getIntExtra("currentQuestionIndex", 0);
         questions = (List<Question>) getIntent().getSerializableExtra("questions");
-        courseID = getIntent().getIntExtra("courseID", 1);
-        lessonID = getIntent().getIntExtra("lessonID", 1);
-        enrollmentId = getIntent().getIntExtra("enrollmentId", 1);
-        totalSteps= questions.size();
-        loadQuestion(currentQuestionIndex);
+//        courseID = getIntent().getIntExtra("courseID", 1);
+//        lessonID = getIntent().getIntExtra("lessonID", 1);
+//        enrollmentId = getIntent().getIntExtra("enrollmentId", 1);
+//        totalSteps= questions.size();
+//        loadQuestion(currentQuestionIndex);
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO}, 1);
         } else {
             imgVoice.setOnClickListener(v -> {
                 if(!isRecordingAnimation){
-
-                    startWaves();
-                    isRecordingAnimation = true;
+                    startRecording();
                     Toast.makeText(this, "Đang ghi âm...", Toast.LENGTH_SHORT).show();
                 }
                 else{
@@ -128,7 +129,7 @@ public class RecordQuestionActivity extends AppCompatActivity {
 
     private void showErrorDialog(String message) {
         runOnUiThread(() -> {
-            new AlertDialog.Builder(RecordQuestionActivity.this)
+            new AlertDialog.Builder(Test2.this)
                     .setTitle(getString(R.string.error))
                     .setMessage(message)
                     .setPositiveButton("OK", (dialog, which) -> {
@@ -143,53 +144,46 @@ public class RecordQuestionActivity extends AppCompatActivity {
 
 
 
-    private void loadQuestion(int index) {
-        if (index < questions.size()) {
-            Question question = questions.get(index);
-            quesManager.fetchQuestionContentFromApi(question.getId(), new ApiCallback<Question>() {
-                @Override
-                public void onSuccess(Question question) {
-                    if (question != null) {
-                        questype = question.getQuesType();
-                        runOnUiThread(() -> {
-                            TextView tvQuestion = findViewById(R.id.tvQuestion);
-                            tvQuestion.setText(question.getQuesContent());
+//    private void loadQuestion(int index) {
+//        if (index < questions.size()) {
+//            Question question = questions.get(index);
+//            quesManager.fetchQuestionContentFromApi(question.getId(), new ApiCallback<Question>() {
+//                @Override
+//                public void onSuccess(Question question) {
+//                    if (question != null) {
+//                        questype = question.getQuesType();
+//                        runOnUiThread(() -> {
+//                            TextView tvQuestion = findViewById(R.id.tvQuestion);
+//                            tvQuestion.setText(question.getQuesContent());
+//
+//                            List<QuestionChoice> choices = question.getQuestionChoices();
+//                            correctAnswers.clear();
+//                            for (QuestionChoice choice : choices) {
+//                                if (choice.isChoiceKey()) {
+//                                    correctAnswers.add(choice.getChoiceContent());
+//                                }
+//                            }
+//                        });
+//                    } else {
+//                        Log.e("RecordQuestionActivity", "Câu hỏi trả về là null.");
+//                    }
+//                }
+//
+//                @Override
+//                public void onFailure(String errorMessage) {
+//                    Log.e("GrammarPick1QuestionActivity", errorMessage);
+//                }
+//
+//                @Override
+//                public void onSuccess() {
+//                }
+//            });
+//        } else {
+//            System.out.println("Ket thuc");
+//        }
+//    }
 
-                            List<QuestionChoice> choices = question.getQuestionChoices();
-                            correctAnswers.clear();
-                            for (QuestionChoice choice : choices) {
-                                if (choice.isChoiceKey()) {
-                                    correctAnswers.add(choice.getChoiceContent());
-                                }
-                            }
-                        });
-                    } else {
-                        Log.e("RecordQuestionActivity", "Câu hỏi trả về là null.");
-                    }
-                }
 
-                @Override
-                public void onFailure(String errorMessage) {
-                    Log.e("GrammarPick1QuestionActivity", errorMessage);
-                }
-
-                @Override
-                public void onSuccess() {
-                }
-            });
-        } else {
-            finishLesson();
-        }
-    }
-
-    private void finishLesson() {
-        Intent intent = new Intent(RecordQuestionActivity.this, PointResultLessonActivity.class);
-        intent.putExtra("lessonId", lessonID);
-        intent.putExtra("courseId", courseID);
-        intent.putExtra("enrollmentId", enrollmentId);
-        startActivity(intent);
-        finish();
-    }
 
 
     private void setupWaveAnimators() {
@@ -343,10 +337,11 @@ public class RecordQuestionActivity extends AppCompatActivity {
             recorder.start();
             isRecordingAnimation = true;
             startWaves();
-            Toast.makeText(this, "Recording started", Toast.LENGTH_SHORT).show();
+
+            Log.d("Succsse", "Recording started");
         } catch (IOException e) {
             e.printStackTrace();
-            Toast.makeText(this, "Recording failed", Toast.LENGTH_SHORT).show();
+            Log.e("Fail", "Recording failed");
         }
     }
 
@@ -357,12 +352,30 @@ public class RecordQuestionActivity extends AppCompatActivity {
             recorder.release();
             recorder = null;
         }
-
         if (animator != null) {
             animator.cancel();
         }
 
         isRecordingAnimation = false;
+
+        audioManager.uploadfileM4A(recordedFile, new ApiCallback<File>() {
+            @Override
+            public void onSuccess() {
+                // Không dùng trong trường hợp này
+            }
+
+            @Override
+            public void onSuccess(File result) {
+
+            }
+
+            @Override
+            public void onFailure(String errorMessage) {
+                Log.e("Upload", "Upload failed: " + errorMessage);
+            }
+        });
+
+        Log.d("Succsse", "Recording saved to: " + recordedFile.getAbsolutePath());
 
         Toast.makeText(this, "Recording saved to: " + recordedFile.getAbsolutePath(), Toast.LENGTH_LONG).show();
     }
@@ -374,9 +387,5 @@ public class RecordQuestionActivity extends AppCompatActivity {
             recorder.release();
         }
     }
-
-
-
-
 
 }
