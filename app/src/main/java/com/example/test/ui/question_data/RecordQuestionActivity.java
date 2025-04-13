@@ -141,11 +141,12 @@ public class RecordQuestionActivity extends AppCompatActivity {
         ApiService apiService = new ApiService(this);
 
 
-        // Hiển thị ProgressDialog
-        progressDialog = new ProgressDialog(this);
-        progressDialog.setMessage("Đang xử lý...");
-        progressDialog.setCancelable(false);
-        progressDialog.show();
+        runOnUiThread(() -> {
+            progressDialog = new ProgressDialog(this);
+            progressDialog.setMessage("Đang xử lý...");
+            progressDialog.setCancelable(false);
+            progressDialog.show();
+        });
 
         apiService.sendAnswerToApi(questionContent, userAnswer, new ApiCallback<EvaluationResult>() {
             @Override
@@ -162,6 +163,7 @@ public class RecordQuestionActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess() {
                         Log.d("RecordQuestionActivity.this", "Lưu thành công!");
+                        resetRecording();
                         progressDialog.dismiss();
                         runOnUiThread(() -> {
                             PopupHelper.showResultPopup(RecordQuestionActivity.this, questype, null, null, result.getPoint(), result.getimprovements(), result.getevaluation(), () -> {
