@@ -71,7 +71,7 @@ public class RecordQuestionActivity extends AppCompatActivity {
     private ObjectAnimator animator2ScaleX, animator2ScaleY, animator2Alpha;
     private ObjectAnimator animator3ScaleX, animator3ScaleY, animator3Alpha;
     private boolean isRecordingAnimation = false; // Trạng thái animation khi ghi âm
-    private double confidence;
+    private double confidence=0;
 
 
     @Override
@@ -104,7 +104,7 @@ public class RecordQuestionActivity extends AppCompatActivity {
                     startRecording();
                     startWaves();
                     isRecordingAnimation = true;
-                    Toast.makeText(this, "Đang ghi âm...", Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(this, "Đang ghi âm...", Toast.LENGTH_SHORT).show();
                 }
                 else{
                     stopRecording();
@@ -126,6 +126,7 @@ public class RecordQuestionActivity extends AppCompatActivity {
                 @Override
                 public void onSuccess(SpeechResult result) {
                     Log.d("SPEECH_TO_TEXT", result.toString());
+                    confidence= result.getConfidence();
                     checkAnswer(result.getTranscript());
                 }
 
@@ -294,9 +295,6 @@ public class RecordQuestionActivity extends AppCompatActivity {
                     .show();
         });
     }
-
-
-
 
 
     private void loadQuestion(int index) {
@@ -476,7 +474,10 @@ public class RecordQuestionActivity extends AppCompatActivity {
         tvTranscription.setText("");
         userAnswers.clear();
 
-        Toast.makeText(this, "Đã xóa bản ghi âm", Toast.LENGTH_SHORT).show();
+        runOnUiThread(() -> {
+            Toast.makeText(RecordQuestionActivity.this, "Ghi âm đã được reset", Toast.LENGTH_SHORT).show();
+        });
+
     }
 
     private void resetWaves() {
@@ -549,10 +550,7 @@ public class RecordQuestionActivity extends AppCompatActivity {
                 Log.e("SPEECH_TO_TEXT", errorMessage);
             }
         });
-
         Log.d("Succsse", "Recording saved to: " + recordedFile.getAbsolutePath());
-
-        Toast.makeText(this, "Recording saved to: " + recordedFile.getAbsolutePath(), Toast.LENGTH_LONG).show();
     }
 
     @Override
