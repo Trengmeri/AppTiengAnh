@@ -163,7 +163,7 @@ public class SignInActivity extends AppCompatActivity {
                                      intent = new Intent(SignInActivity.this, HomeActivity.class);
                                 } else {
                                     if (lastActivity.isEmpty()) {
-                                        intent = new Intent(SignInActivity.this, Test2.class);
+                                        intent = new Intent(SignInActivity.this, ChooseFieldsActivity.class);
                                     } else {
                                         try {
                                             Class<?> lastActivityClass = Class.forName(lastActivity);

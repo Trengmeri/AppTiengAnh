@@ -63,7 +63,7 @@ public class RecordQuestionActivity extends AppCompatActivity {
     private Runnable updateSeekBar;
     private boolean isPlaying = false;
     TextView tvQuestion;
-    private AudioManager audioManager;
+    private AudioManager audioManager = new AudioManager(this);
     private ProgressDialog progressDialog;
     // Thêm vào đầu class SpeakingActivity
     private View wave1, wave2, wave3;
@@ -127,7 +127,6 @@ public class RecordQuestionActivity extends AppCompatActivity {
                 public void onSuccess(SpeechResult result) {
                     Log.d("SPEECH_TO_TEXT", result.toString());
                     checkAnswer(result.getTranscript());
-
                 }
 
                 @Override
@@ -137,8 +136,104 @@ public class RecordQuestionActivity extends AppCompatActivity {
             });
         });
     }
-
     private void checkAnswer(String userAnswer) {
+        String questionContent = tvQuestion.getText().toString().trim();
+        ApiService apiService = new ApiService(this);
+
+
+        // Hiển thị ProgressDialog
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Đang xử lý...");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+
+        apiService.sendAnswerToApi(questionContent, userAnswer, new ApiCallback<EvaluationResult>() {
+            @Override
+            public void onSuccess() {
+
+            }
+
+            @Override
+            public void onSuccess(EvaluationResult result) {
+
+                double point = result.getPoint() *(70/100)+ confidence* (30/100);
+                // Lưu kết quả vào hệ thống
+                quesManager.saveUserAnswer(questions.get(currentStep).getId(), userAnswer, point, result.getimprovements(),enrollmentId, new ApiCallback() {
+                    @Override
+                    public void onSuccess() {
+                        Log.d("RecordQuestionActivity.this", "Lưu thành công!");
+                        progressDialog.dismiss();
+                        runOnUiThread(() -> {
+                            PopupHelper.showResultPopup(RecordQuestionActivity.this, questype, null, null, result.getPoint(), result.getimprovements(), result.getevaluation(), () -> {
+                                tvTranscription.setText("");
+                                key.setText("");
+                                currentStep++; // Tăng currentStep
+                                currentQuestionIndex++;
+                                if (currentQuestionIndex < questions.size()) {
+                                    createProgressBars(totalSteps, currentQuestionIndex);
+                                    loadQuestion(currentQuestionIndex);
+                                } else {
+                                    finishLesson();
+                                }
+                            });
+                        });
+                    }
+
+                    @Override
+                    public void onSuccess(Object result) {
+
+                    }
+
+                    @Override
+                    public void onFailure(String errorMessage) {
+                        progressDialog.dismiss();
+                        Log.e("WritingActivity", "Lỗi lưu câu trả lời: " + errorMessage);
+                        showErrorDialog("Lỗi khi lưu câu trả lời. Vui lòng thử lại.");
+                    }
+                });
+            }
+
+            @Override
+            public void onFailure(String errorMessage) {
+                progressDialog.dismiss();
+                Log.e("WritingActivity", "Lỗi lưu câu trả lời: " + errorMessage);
+                showErrorDialog(getString(R.string.invalidans));
+                apiService.getSuggestionFromApi(questionContent, new ApiCallback<String>(){
+
+                    @Override
+                    public void onSuccess() {
+
+                    }
+
+                    @Override
+                    public void onSuccess(String tip) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                key.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
+                                key.setMovementMethod(new ScrollingMovementMethod());
+
+                                String formattedTip = tip
+                                        .replaceAll("(?<!\\d)\\. ", ".\n")
+                                        .replaceAll(": ", ":\n");
+
+                                key.setText("Tip: \n" +formattedTip);
+                            }
+                        });
+                    }
+
+
+
+                    @Override
+                    public void onFailure(String errorMessage) {
+
+                    }
+                });
+            }
+        });
+    }
+
+    private void checkAnswer1(String userAnswer) {
         // Hiển thị ProgressDialog
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Đang xử lý...");
