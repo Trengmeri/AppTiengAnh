@@ -93,11 +93,7 @@ public class Test2 extends AppCompatActivity {
         setupWaveAnimators();
         currentQuestionIndex = getIntent().getIntExtra("currentQuestionIndex", 0);
         questions = (List<Question>) getIntent().getSerializableExtra("questions");
-//        courseID = getIntent().getIntExtra("courseID", 1);
-//        lessonID = getIntent().getIntExtra("lessonID", 1);
-//        enrollmentId = getIntent().getIntExtra("enrollmentId", 1);
-//        totalSteps= questions.size();
-//        loadQuestion(currentQuestionIndex);
+        boolean isCheck = false;
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO}, 1);
@@ -117,12 +113,23 @@ public class Test2 extends AppCompatActivity {
         }
 
         btnCheckResult.setOnClickListener(v -> {
-            String userAnswer = tvTranscription.getText().toString().trim();
-            if (userAnswer.isEmpty()) {
-                Toast.makeText(this, "Vui lòng trả lời câu hỏi!", Toast.LENGTH_SHORT).show();
-            } else {
+            audioManager.uploadAndTranscribeM4A(recordedFile, new ApiCallback<SpeechResult>() {
 
-            }
+                @Override
+                public void onSuccess() {
+
+                }
+
+                @Override
+                public void onSuccess(SpeechResult result) {
+                    Log.d("SPEECH_TO_TEXT", result.toString());
+                }
+
+                @Override
+                public void onFailure(String errorMessage) {
+                    Log.e("SPEECH_TO_TEXT", errorMessage);
+                }
+            });
         });
     }
 
@@ -142,47 +149,6 @@ public class Test2 extends AppCompatActivity {
     }
 
 
-
-
-
-//    private void loadQuestion(int index) {
-//        if (index < questions.size()) {
-//            Question question = questions.get(index);
-//            quesManager.fetchQuestionContentFromApi(question.getId(), new ApiCallback<Question>() {
-//                @Override
-//                public void onSuccess(Question question) {
-//                    if (question != null) {
-//                        questype = question.getQuesType();
-//                        runOnUiThread(() -> {
-//                            TextView tvQuestion = findViewById(R.id.tvQuestion);
-//                            tvQuestion.setText(question.getQuesContent());
-//
-//                            List<QuestionChoice> choices = question.getQuestionChoices();
-//                            correctAnswers.clear();
-//                            for (QuestionChoice choice : choices) {
-//                                if (choice.isChoiceKey()) {
-//                                    correctAnswers.add(choice.getChoiceContent());
-//                                }
-//                            }
-//                        });
-//                    } else {
-//                        Log.e("RecordQuestionActivity", "Câu hỏi trả về là null.");
-//                    }
-//                }
-//
-//                @Override
-//                public void onFailure(String errorMessage) {
-//                    Log.e("GrammarPick1QuestionActivity", errorMessage);
-//                }
-//
-//                @Override
-//                public void onSuccess() {
-//                }
-//            });
-//        } else {
-//            System.out.println("Ket thuc");
-//        }
-//    }
 
 
 
@@ -358,25 +324,6 @@ public class Test2 extends AppCompatActivity {
         }
 
         isRecordingAnimation = false;
-
-      audioManager.uploadAndTranscribeM4A(recordedFile, new ApiCallback<SpeechResult>() {
-
-          @Override
-          public void onSuccess() {
-
-          }
-
-          @Override
-          public void onSuccess(SpeechResult result) {
-              Log.d("SPEECH_TO_TEXT", result.toString());
-
-          }
-
-          @Override
-          public void onFailure(String errorMessage) {
-              Log.e("SPEECH_TO_TEXT", errorMessage);
-          }
-      });
 
         Log.d("Succsse", "Recording saved to: " + recordedFile.getAbsolutePath());
 

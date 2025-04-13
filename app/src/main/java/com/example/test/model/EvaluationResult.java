@@ -11,6 +11,22 @@ public class EvaluationResult {
         this.score = score;
     }
 
+    public EvaluationResult(double confidence) {
+        this.score = Math.round(confidence * 10 * 10.0) / 10.0;
+
+        if (confidence > 0.85) {
+            evaluation = "Phát âm rất tốt!";
+            improvements = "Tiếp tục duy trì phong độ!";
+        } else if (confidence > 0.6) {
+            evaluation = "Khá ổn";
+            improvements = "Cố gắng phát âm rõ hơn ở các từ khó.";
+        } else {
+            evaluation = "Cần cải thiện";
+            improvements = "Hãy nói chậm và rõ hơn, chú ý phát âm từng âm tiết.";
+        }
+    }
+
+
     public String getimprovements() {
         return improvements;
     }

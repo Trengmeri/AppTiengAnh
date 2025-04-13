@@ -116,15 +116,73 @@ public class RecordQuestionActivity extends AppCompatActivity {
         }
 
         btnCheckResult.setOnClickListener(v -> {
-            String userAnswer = tvTranscription.getText().toString().trim();
-            if (userAnswer.isEmpty()) {
-                Toast.makeText(this, "Vui lòng trả lời câu hỏi!", Toast.LENGTH_SHORT).show();
-            } else {
+            audioManager.uploadAndTranscribeM4A(recordedFile, new ApiCallback<SpeechResult>() {
 
-            }
+                @Override
+                public void onSuccess() {
+
+                }
+
+                @Override
+                public void onSuccess(SpeechResult result) {
+                    Log.d("SPEECH_TO_TEXT", result.toString());
+                    checkAnswer(result.getTranscript());
+
+                }
+
+                @Override
+                public void onFailure(String errorMessage) {
+                    Log.e("SPEECH_TO_TEXT", errorMessage);
+                }
+            });
         });
     }
 
+    private void checkAnswer(String userAnswer) {
+        // Hiển thị ProgressDialog
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Đang xử lý...");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+        EvaluationResult result = new EvaluationResult(confidence);
+
+        // Lưu kết quả vào hệ thống
+        quesManager.saveUserAnswer(questions.get(currentStep).getId(), userAnswer, result.getPoint(), result.getimprovements(),enrollmentId, new ApiCallback() {
+            @Override
+            public void onSuccess() {
+                Log.d("RecordQuestionActivity.this", "Lưu thành công!");
+                progressDialog.dismiss();
+                runOnUiThread(() -> {
+                    PopupHelper.showResultPopup(RecordQuestionActivity.this, questype, null, null, result.getPoint(), result.getimprovements(), result.getevaluation(), () -> {
+                        tvTranscription.setText("");
+                        key.setText("");
+                        currentStep++; // Tăng currentStep
+                        currentQuestionIndex++;
+                        if (currentQuestionIndex < questions.size()) {
+                            createProgressBars(totalSteps, currentQuestionIndex);
+                            loadQuestion(currentQuestionIndex);
+                        } else {
+                            finishLesson();
+                        }
+                    });
+                });
+            }
+
+            @Override
+            public void onSuccess(Object result) {
+
+            }
+
+            @Override
+            public void onFailure(String errorMessage) {
+                progressDialog.dismiss();
+                Log.e("WritingActivity", "Lỗi lưu câu trả lời: " + errorMessage);
+                showErrorDialog("Lỗi khi lưu câu trả lời. Vui lòng thử lại.");
+            }
+        });
+
+
+    }
 
 
     private void showErrorDialog(String message) {
@@ -190,6 +248,24 @@ public class RecordQuestionActivity extends AppCompatActivity {
         intent.putExtra("enrollmentId", enrollmentId);
         startActivity(intent);
         finish();
+    }
+    private void createProgressBars(int totalQuestions, int currentProgress) {
+        LinearLayout progressContainer = findViewById(R.id.progressContainer);
+        progressContainer.removeAllViews(); // Xóa thanh cũ nếu có
+
+        for (int i = 0; i < totalQuestions; i++) {
+            View bar = new View(this);
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(32, 8); // Kích thước mỗi thanh
+            params.setMargins(4, 4, 4, 4); // Khoảng cách giữa các thanh
+            bar.setLayoutParams(params);
+
+            if (i < currentProgress) {
+                bar.setBackgroundColor(Color.parseColor("#C4865E")); // Màu đã hoàn thành
+            } else {
+                bar.setBackgroundColor(Color.parseColor("#E0E0E0")); // Màu chưa hoàn thành
+            }
+            progressContainer.addView(bar);
+        }
     }
 
 
