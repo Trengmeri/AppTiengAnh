@@ -90,6 +90,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/dp_16"
             android:layout_marginRight="@dimen/dp_16"
+            android:layout_marginBottom="30dp"
             android:textColor="@color/black"
             android:backgroundTint="#C0CEEF"
             android:text="@string/check"
