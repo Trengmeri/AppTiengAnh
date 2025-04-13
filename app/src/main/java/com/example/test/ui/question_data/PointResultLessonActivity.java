@@ -2,10 +2,12 @@ package com.example.test.ui.question_data;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
@@ -18,6 +20,7 @@ import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -35,12 +38,14 @@ import com.bumptech.glide.Glide;
 import com.example.test.NevigateQuestion;
 import com.example.test.R;
 import com.example.test.api.ApiCallback;
+import com.example.test.api.ApiService;
 import com.example.test.api.LessonManager;
 import com.example.test.api.QuestionManager;
 import com.example.test.api.ResultManager;
 import com.example.test.model.Answer;
 import com.example.test.model.Course;
 import com.example.test.model.Enrollment;
+import com.example.test.model.EvaluationResult;
 import com.example.test.model.Lesson;
 import com.example.test.model.Question;
 import com.example.test.model.QuestionChoice;
@@ -68,7 +73,8 @@ public class PointResultLessonActivity extends AppCompatActivity {
     TableLayout tableResult;
     // Set lưu các ID đã gọi để tránh gọi trùng
     private Set<Integer> calledAnswerIds = new HashSet<>();
-
+    ApiService apiService;
+    private Dialog loadingDialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -80,6 +86,13 @@ public class PointResultLessonActivity extends AppCompatActivity {
         lessonID = getIntent().getIntExtra("lessonId",1);
         enrollmentId = getIntent().getIntExtra("enrollmentId", 1);
 
+        apiService= new ApiService(this);
+        // Khởi tạo Dialog loading
+        loadingDialog = new Dialog(this);
+        loadingDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        loadingDialog.setContentView(R.layout.dialog_loading);
+        loadingDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        loadingDialog.setCancelable(false); // Không cho phép đóng khi chạm ngoài màn hình
 
         Log.e("point","Lesson ID: "+ lessonID + "courseID: "+ courseID);
 
@@ -392,22 +405,46 @@ public class PointResultLessonActivity extends AppCompatActivity {
                                 ClickableSpan clickableSpan = new ClickableSpan() {
                                     @Override
                                     public void onClick(@NonNull View widget) {
-                                        SharedPreferences sharedPreferences = getSharedPreferences("AppPrefs", MODE_PRIVATE);
-                                        String improvementSuggestion = sharedPreferences.getString("improvement_suggestion", "No suggestion available.");
+                                        // Gọi API sendAnswerToAPI để lấy improvements
+                                        showLoading();
+                                        apiService.sendAnswerToApi(question.getQuesContent(), answer.getAnswerContent(), new ApiCallback<EvaluationResult>() {
+                                                    @Override
+                                                    public void onSuccess(EvaluationResult result) {
+                                                        runOnUiThread(() -> {
+                                                            hideLoading();
+                                                            // Hiển thị improvements trong AlertDialog
+                                                            new AlertDialog.Builder(tableResult.getContext())
+                                                                    .setTitle("Improvement Suggestions")
+                                                                    .setMessage(result.getimprovements() != null && !result.getimprovements().isEmpty()
+                                                                            ? result.getimprovements()
+                                                                            : "No suggestion available.")
+                                                                    .setPositiveButton("OK", (dialog, which) -> dialog.dismiss())
+                                                                    .show();
+                                                        });
+                                                    }
 
-                                        // Hiển thị hộp thoại khi nhấn vào "See improvement suggestions"
-                                        new AlertDialog.Builder(tableResult.getContext())
-                                                .setTitle("Improvement Suggestions")
-                                                .setMessage(improvementSuggestion) // Hiển thị nội dung từ API
-                                                .setPositiveButton("OK", (dialog, which) -> dialog.dismiss())
-                                                .show();
+                                                    @Override
+                                                    public void onSuccess() {}
+
+                                                    @Override
+                                                    public void onFailure(String errorMessage) {
+                                                        runOnUiThread(() -> {
+                                                            // Hiển thị lỗi nếu API thất bại
+                                                            new AlertDialog.Builder(tableResult.getContext())
+                                                                    .setTitle("Error")
+                                                                    .setMessage("Failed to load suggestions: " + errorMessage)
+                                                                    .setPositiveButton("OK", (dialog, which) -> dialog.dismiss())
+                                                                    .show();
+                                                        });
+                                                    }
+                                                });
                                     }
 
                                     @Override
                                     public void updateDrawState(@NonNull TextPaint ds) {
                                         super.updateDrawState(ds);
-                                        ds.setColor(Color.BLUE);  // Màu xanh để giống liên kết
-                                        ds.setUnderlineText(true); // Gạch chân
+                                        ds.setColor(Color.BLUE);
+                                        ds.setUnderlineText(true);
                                     }
                                 };
                                 spannable.setSpan(clickableSpan, answerStart, answerEnd, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -424,12 +461,14 @@ public class PointResultLessonActivity extends AppCompatActivity {
                             String userAnswer = answer.getAnswerContent().trim();
 
                             // Chuyển câu trả lời của người dùng thành danh sách và sắp xếp
-                            List<String> userAnswers = Arrays.stream(userAnswer.split(","))
-                                    .map(String::trim) // Loại bỏ khoảng trắng
-                                    .sorted() // Sắp xếp theo bảng chữ cái
-                                    .collect(Collectors.toList());
-                            String userAnswerFormatted = String.join(", ", userAnswers);
-                            userAnswerTextView.setText(userAnswerFormatted);
+//                            List<String> userAnswers = Arrays.stream(userAnswer.split(","))
+//                                    .map(String::trim) // Loại bỏ khoảng trắng
+//                                    .sorted() // Sắp xếp theo bảng chữ cái
+//                                    .collect(Collectors.toList());
+                            //String userAnswerFormatted = String.join(", ", userAnswers);
+                            //String userAnswerFormatted = answer.getAnswerContent().trim();
+
+                            userAnswerTextView.setText(userAnswer);
                             userAnswerTextView.setPadding(10, 10, 10, 10);
                             userAnswerTextView.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 1));
                             userAnswerTextView.setTypeface(null, Typeface.BOLD);
@@ -443,8 +482,8 @@ public class PointResultLessonActivity extends AppCompatActivity {
                             pointTextView.setTypeface(null, Typeface.BOLD);
 
                             // Đổi màu chữ tùy theo đúng/sai
-                            if (!userAnswers.isEmpty() && !correctAnswers.isEmpty() &&
-                                    userAnswers.get(0).trim().equalsIgnoreCase(correctAnswers.get(0).trim())) {
+                            if (!userAnswer.isEmpty() && !correctAnswers.isEmpty() &&
+                                    userAnswer.trim().equalsIgnoreCase(correctAnswers.get(0).trim())) {
                                 userAnswerTextView.setTextColor(ContextCompat.getColor(tableResult.getContext(), android.R.color.holo_green_dark));
                                 pointTextView.setTextColor(ContextCompat.getColor(tableResult.getContext(), android.R.color.holo_green_dark));
                             } else {
@@ -476,5 +515,16 @@ public class PointResultLessonActivity extends AppCompatActivity {
             }
 
         });
+    }
+    private void showLoading() {
+        if (!loadingDialog.isShowing()) {
+            loadingDialog.show();
+        }
+    }
+
+    private void hideLoading() {
+        if (loadingDialog.isShowing()) {
+            loadingDialog.dismiss();
+        }
     }
 }

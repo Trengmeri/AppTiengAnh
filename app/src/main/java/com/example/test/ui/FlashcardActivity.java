@@ -1,6 +1,7 @@
 package com.example.test.ui;
 
 import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -15,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -87,6 +89,7 @@ public class FlashcardActivity extends AppCompatActivity {
     private boolean isSorted = false; // Trạng thái sort
     private List<Flashcard> filteredFlashcards = new ArrayList<>(); // Danh sách đã lọc theo learned/unlearned
     private String currentSortType = "";
+    private Dialog loadingDialog;
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -120,6 +123,13 @@ public class FlashcardActivity extends AppCompatActivity {
 
         btnPrevious.setAlpha(0.5f);
         btnPrevious.setEnabled(false);
+
+        // Khởi tạo Dialog loading
+        loadingDialog = new Dialog(this);
+        loadingDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        loadingDialog.setContentView(R.layout.dialog_loading);
+        loadingDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        loadingDialog.setCancelable(false); // Không cho phép đóng khi chạm ngoài màn hình
 
         tvGroupName.setText(getIntent().getStringExtra("GROUP_NAME"));
         groupId = getIntent().getIntExtra("GROUP_ID", -1);
@@ -203,7 +213,7 @@ public class FlashcardActivity extends AppCompatActivity {
 
                 // Đóng dialog_add_flash trước khi mở dialog_add_definition
                 dialog.dismiss();
-
+                showLoading();
                 // Gọi API để lấy thông tin từ
                 showDefinitionDialog(word);
             });
@@ -223,6 +233,7 @@ public class FlashcardActivity extends AppCompatActivity {
             @Override
             public void onSuccess(WordData wordData) {
                 runOnUiThread(() -> {
+                    hideLoading();
                     // Gộp các nghĩa trước khi hiển thị
                     List<WordData> mergedData = FlashcardUtils.mergeWordData(Collections.singletonList(wordData));
                     Log.d("DEBUG", "Dữ liệu trước khi merge: " + new Gson().toJson(wordData));
@@ -819,6 +830,17 @@ public class FlashcardActivity extends AppCompatActivity {
                 }
 
             });
+        }
+    }
+    private void showLoading() {
+        if (!loadingDialog.isShowing()) {
+            loadingDialog.show();
+        }
+    }
+
+    private void hideLoading() {
+        if (loadingDialog.isShowing()) {
+            loadingDialog.dismiss();
         }
     }
 
