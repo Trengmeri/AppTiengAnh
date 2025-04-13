@@ -44,6 +44,7 @@ public class ForgotPassWordActivity extends AppCompatActivity {
     NetworkChangeReceiver networkReceiver;
     AuthenticationManager apiManager;
     boolean valid= true;
+    private Dialog loadingDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +55,13 @@ public class ForgotPassWordActivity extends AppCompatActivity {
 
         networkReceiver = new NetworkChangeReceiver();
         apiManager = new AuthenticationManager(this);
+
+        // Khởi tạo Dialog loading
+        loadingDialog = new Dialog(this);
+        loadingDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        loadingDialog.setContentView(R.layout.dialog_loading);
+        loadingDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        loadingDialog.setCancelable(false); // Không cho phép đóng khi chạm ngoài màn hình
 
         btnContinue.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -82,6 +90,7 @@ public class ForgotPassWordActivity extends AppCompatActivity {
                 btnContinue.setEnabled(false);
                 btnContinue.setAlpha(0.5f);
                 if (valid) {
+                    showLoading();
                     if (!apiManager.isInternetAvailable(ForgotPassWordActivity.this)) {
                         Toast.makeText(ForgotPassWordActivity.this, "Không có kết nối Internet!", Toast.LENGTH_SHORT).show();
                         return;
@@ -96,6 +105,7 @@ public class ForgotPassWordActivity extends AppCompatActivity {
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
+                                    hideLoading();
                                     //showCustomDialog("OTP was sent to your email.Please check!");
                                     //Toast.makeText(ForgotPassWordActivity.this, "Vui lòng kiểm tra email của bạn.", Toast.LENGTH_SHORT).show();
                                 }
@@ -111,6 +121,7 @@ public class ForgotPassWordActivity extends AppCompatActivity {
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
+                                    hideLoading();
                                     Toast.makeText(ForgotPassWordActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
                                     btnContinue.setEnabled(true);
                                     btnContinue.setAlpha(1f);
@@ -184,5 +195,16 @@ public class ForgotPassWordActivity extends AppCompatActivity {
 //            editor.putString("lastActivity", this.getClass().getName());
 //            editor.apply();
 //        }
+    }
+    private void showLoading() {
+        if (!loadingDialog.isShowing()) {
+            loadingDialog.show();
+        }
+    }
+
+    private void hideLoading() {
+        if (loadingDialog.isShowing()) {
+            loadingDialog.dismiss();
+        }
     }
 }

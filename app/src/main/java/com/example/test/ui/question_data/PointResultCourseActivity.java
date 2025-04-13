@@ -12,9 +12,12 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.bumptech.glide.Glide;
 import com.example.test.R;
 import com.example.test.api.ApiService;
 import com.example.test.model.Enrollment;
+import com.example.test.ui.CourseInformationActivity;
 import com.example.test.ui.home.HomeActivity;
 import com.example.test.api.ApiCallback;
 import com.example.test.api.LessonManager;
@@ -34,14 +37,14 @@ public class PointResultCourseActivity extends AppCompatActivity {
     private Button btnReview, btnNext;
     private TextView correctRead, compRead;
     private TextView correctLis, compLis;
-    private TextView correctSpeak, compSpeak;
+    private TextView correctSpeak, compSpeak, tvSuccessMessage;
     private TextView correctWrite, compWrite;
     private int totalPointR = 0,totalPointL = 0,totalPointS = 0,totalPointW = 0;
     private int r =0,l=0,s=0,w=0;
     private double compCourse;
     private int coursePoint;
     private double comR, comL, comS, comW;
-    ImageView star1,star2,star3;
+    ImageView star1,star2,star3, imgSuccessGif;
     QuestionManager quesManager = new QuestionManager(this);
     LessonManager lesManager = new LessonManager();
     ApiService apiService = new ApiService(this);
@@ -52,6 +55,7 @@ public class PointResultCourseActivity extends AppCompatActivity {
     private Handler handler = new Handler();
     private Runnable callApiRunnable;
     private static final int DELAY_MILLIS = 1500; // 1,5 giây
+    View darkOverlay;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,6 +104,23 @@ public class PointResultCourseActivity extends AppCompatActivity {
         star1 = findViewById(R.id.star1);
         star2 = findViewById(R.id.star2);
         star3 = findViewById(R.id.star3);
+
+        // Hiển thị nền tối
+        darkOverlay = findViewById(R.id.darkOverlay);
+        darkOverlay.setVisibility(View.VISIBLE);
+
+        // Hiển thị GIF và thông báo
+        imgSuccessGif = findViewById(R.id.imgSuccessGif);
+         tvSuccessMessage = findViewById(R.id.tvSuccessMessage);
+
+        imgSuccessGif.setVisibility(View.VISIBLE);
+        tvSuccessMessage.setVisibility(View.VISIBLE);
+
+        // Load GIF bằng Glide
+        Glide.with(PointResultCourseActivity.this)
+                .asGif()
+                .load(R.raw.butterfly)
+                .into(imgSuccessGif);
     }
 
     private void fetchCourseData(int courseId) {
@@ -297,13 +318,13 @@ public class PointResultCourseActivity extends AppCompatActivity {
                 }
             }
 
-            correctRead.setText(getString(R.string.point) + totalPointR);
+            correctRead.setText(getString(R.string.point) +": " + totalPointR);
             compRead.setText("Complete: " + String.format("%.1f", comR / r));
-            correctLis.setText(getString(R.string.point) + totalPointL);
+            correctLis.setText(getString(R.string.point) +": "+ totalPointL);
             compLis.setText("Complete: " + String.format("%.1f", comL / l));
-            correctSpeak.setText(getString(R.string.point) + totalPointS);
+            correctSpeak.setText(getString(R.string.point) +": "+ totalPointS);
             compSpeak.setText("Complete: " + String.format("%.1f", comS / s));
-            correctWrite.setText(getString(R.string.point) + totalPointW);
+            correctWrite.setText(getString(R.string.point) +": "+ totalPointW);
             compWrite.setText("Complete: " + String.format("%.1f", comW / w));
 
             // Hủy bất kỳ API call nào đang chờ trước đó
@@ -342,6 +363,11 @@ public class PointResultCourseActivity extends AppCompatActivity {
                         star1.setBackgroundTintList(getResources().getColorStateList(R.color.yellow));
                     }
                     pointTextView.setText(String.valueOf(coursePoint));
+
+                    imgSuccessGif.setVisibility(View.GONE);
+                    tvSuccessMessage.setVisibility(View.GONE);
+                    darkOverlay.setVisibility(View.GONE);
+
                     if (status.equals("test")) {
                         apiService.completeTest(enrollmentId, compCourse, coursePoint,
                                 totalPointR, totalPointL, totalPointS, totalPointW,

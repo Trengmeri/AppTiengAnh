@@ -63,6 +63,8 @@ public class StudyFragment extends Fragment {
     }
 
     private void refreshCurrentFragment(int position) {
+        if (!isAdded()) return; // ⛔ Tránh gọi khi chưa attach
+
         Fragment fragment = getChildFragmentManager().findFragmentByTag("f" + position);
         if (fragment instanceof MyCourseFragment && position == 0) {
             ((MyCourseFragment) fragment).onResume();
@@ -70,6 +72,7 @@ public class StudyFragment extends Fragment {
             ((AllCourseFragment) fragment).onResume();
         }
     }
+
 
     public void selectCourse(int courseId) {
         Log.d("StudyFragment", "Selecting course with ID: " + courseId);

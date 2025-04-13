@@ -5,7 +5,8 @@
     android:orientation="vertical"
     android:background="@drawable/bg_choose"
     android:backgroundTint="@color/colorDefault"
-    android:padding="45dp">
+    android:padding="15sp"
+    android:layout_margin="10dp">
 
     <!-- Tiêu đề khóa học -->
     <TextView
@@ -34,8 +35,9 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center"
+        android:layout_gravity="center"
         android:layout_marginTop="12dp"
-        android:layout_marginBottom="30dp">
+        android:layout_marginBottom="10dp">
     </LinearLayout>
     </HorizontalScrollView>
 </LinearLayout>

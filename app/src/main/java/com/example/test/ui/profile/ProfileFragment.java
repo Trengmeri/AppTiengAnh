@@ -48,6 +48,9 @@ public class ProfileFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
         return view;
     }
+    private boolean isFragmentActive() {
+        return isAdded() && getActivity() != null;
+    }
 
     @SuppressLint("WrongViewCast")
     @Override
@@ -71,21 +74,30 @@ public class ProfileFragment extends Fragment {
             term = view.findViewById(R.id.term);
             language = view.findViewById(R.id.language);
 
-            language.setOnClickListener(v -> {
-                Intent intent = new Intent(getActivity(),LanguageActivity.class);
+        language.setOnClickListener(v -> {
+            if (isFragmentActive()) {
+                Intent intent = new Intent(getActivity(), LanguageActivity.class);
                 startActivity(intent);
-            });
+            }
+        });
 
-            term.setOnClickListener(v -> {
-                Intent intent = new Intent(getActivity(),TermActivity.class);
+
+        term.setOnClickListener(v -> {
+            if (isFragmentActive()) {
+                Intent intent = new Intent(getActivity(), TermActivity.class);
                 startActivity(intent);
-            });
-            // Tạo đối tượng NetworkChangeReceiver
+            }
+        });
+
+        // Tạo đối tượng NetworkChangeReceiver
             networkReceiver = new NetworkChangeReceiver();
             apiManager = new AuthenticationManager(requireContext());
             btnLogout.setOnClickListener(v -> showLogoutDialog());
-            SharedPreferences sharedPreferences = getActivity().getSharedPreferences("LoginPrefs", MODE_PRIVATE);
-            boolean isRemembered = sharedPreferences.getBoolean("rememberMe", false);
+            SharedPreferences sharedPreferences = null;
+            if (isFragmentActive()) {
+                sharedPreferences = getActivity().getSharedPreferences("LoginPrefs", MODE_PRIVATE);
+            }
+        boolean isRemembered = sharedPreferences.getBoolean("rememberMe", false);
             String savedEmail = sharedPreferences.getString("email", "");
             String savedPassword = sharedPreferences.getString("password", "");
 
@@ -93,14 +105,12 @@ public class ProfileFragment extends Fragment {
             Log.d("ProfileFragment", "After Logout - Saved Email: " + savedEmail);
             Log.d("ProfileFragment", "After Logout - Saved Password: " + savedPassword);
 
-            btnedit.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Intent intent = new Intent(getActivity(), EditProfileActivity.class);
-                    startActivityForResult(intent,EDIT_PROFILE_REQUEST);
-                }
-            });
-
+        btnedit.setOnClickListener(v -> {
+            if (isFragmentActive()) {
+                Intent intent = new Intent(getActivity(), EditProfileActivity.class);
+                startActivityForResult(intent, EDIT_PROFILE_REQUEST);
+            }
+        });
 
     }
     @Override
@@ -117,10 +127,10 @@ public class ProfileFragment extends Fragment {
         userManager.fetchUserProfile(Integer.parseInt(userId), new ApiCallback<JSONObject>() {
             @Override
             public void onSuccess(JSONObject result) {
-                if (getActivity() == null || !isAdded()) return;
+                if (!isFragmentActive()) return;
 
                 getActivity().runOnUiThread(() -> {
-                    if (!isAdded()) return;
+                    if (!isFragmentActive()) return;
 
                     try {
                         userName.setText(result.getString("name"));
@@ -129,14 +139,12 @@ public class ProfileFragment extends Fragment {
                         if (avatarUrl != null && !avatarUrl.isEmpty()) {
                             avatarUrl = avatarUrl.replace("0.0.0.0", "14.225.198.3");
 
-                            if (isAdded()) {
-                                Glide.with(ProfileFragment.this)
-                                        .load(avatarUrl)
-                                        .placeholder(R.drawable.img_avt_profile)
-                                        .error(R.drawable.img_avt_profile)
-                                        .circleCrop()
-                                        .into(imgAvatar);
-                            }
+                            Glide.with(ProfileFragment.this)
+                                    .load(avatarUrl)
+                                    .placeholder(R.drawable.img_avt_profile)
+                                    .error(R.drawable.img_avt_profile)
+                                    .circleCrop()
+                                    .into(imgAvatar);
                         }
                     } catch (JSONException e) {
                         Log.e("ProfileFragment", "Error parsing profile data: " + e.getMessage());
@@ -146,16 +154,16 @@ public class ProfileFragment extends Fragment {
 
             @Override
             public void onSuccess() {
-                // Not used
             }
 
             @Override
             public void onFailure(String errorMessage) {
-                if (getActivity() == null || !isAdded()) return;
+                if (!isFragmentActive()) return;
 
                 getActivity().runOnUiThread(() -> {
-                    if (!isAdded()) return;
-                    Toast.makeText(requireContext(),
+                    if (!isFragmentActive()) return;
+
+                    Toast.makeText(getContext(),
                             "Failed to load profile: " + errorMessage,
                             Toast.LENGTH_SHORT).show();
                 });
@@ -171,39 +179,38 @@ public class ProfileFragment extends Fragment {
     }
 
     private void showLogoutDialog() {
-        if (!isAdded() || getActivity() == null) return;
+        if (!isFragmentActive()) return;
+
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle("Xác nhận đăng xuất");
         builder.setMessage("Bạn có chắc chắn muốn đăng xuất không?");
 
         builder.setPositiveButton("Có", (dialog, which) -> {
-            // Gọi API logout
-//            Intent intent= new Intent(getActivity(), SignInActivity.class);
-//            startActivity(intent);
             apiManager.sendLogoutRequest(new ApiCallback() {
                 @Override
                 public void onSuccess() {
-                    if (!isAdded() || getActivity() == null) return;
-                    SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("LoginPrefs", MODE_PRIVATE);
+                    if (!isFragmentActive()) return;
+
+                    SharedPreferences sharedPreferences = getActivity().getSharedPreferences("LoginPrefs", MODE_PRIVATE);
                     SharedPreferences.Editor editor = sharedPreferences.edit();
-                    editor.clear();  // Xóa tất cả dữ liệu
-                    editor.commit(); // Lưu thay đổi ngay lập tức
+                    editor.clear();
+                    editor.commit();
 
                     Log.d("Logout", "Đã xóa SharedPreferences");
                     Intent intent = new Intent(getActivity(), SignInActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(intent);
-                    requireActivity().finishAffinity(); // Đóng toàn bộ activity
+                    getActivity().finishAffinity();
                 }
 
                 @Override
-                public void onSuccess(Object result) {
-
-                }
+                public void onSuccess(Object result) {}
 
                 @Override
                 public void onFailure(String errorMessage) {
-                    Toast.makeText(getActivity(), errorMessage, Toast.LENGTH_SHORT).show();
+                    if (isFragmentActive()) {
+                        Toast.makeText(getActivity(), errorMessage, Toast.LENGTH_SHORT).show();
+                    }
                 }
             });
         });

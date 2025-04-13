@@ -26,6 +26,7 @@ import com.example.test.api.LessonManager;
 import com.example.test.api.ResultManager;
 import com.example.test.model.Course;
 import com.example.test.model.Enrollment;
+import com.example.test.ui.VerticalSpaceItemDecoration;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -72,6 +73,9 @@ public class MyCourseFragment extends Fragment {
         recyclerView1.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView2 = view.findViewById(R.id.recyclerView2);
         recyclerView2.setLayoutManager(new LinearLayoutManager(getContext()));
+        int spacingInPixels = (int) (20 * getResources().getDisplayMetrics().density); // convert 20dp to pixels
+        recyclerView1.addItemDecoration(new VerticalSpaceItemDecoration(spacingInPixels));
+        recyclerView2.addItemDecoration(new VerticalSpaceItemDecoration(spacingInPixels));
 //        recyclerView3 = view.findViewById(R.id.recyclerView3);
 //        recyclerView3.setLayoutManager(new LinearLayoutManager(getContext()));
 

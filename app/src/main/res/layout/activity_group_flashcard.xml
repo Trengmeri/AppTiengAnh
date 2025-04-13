@@ -43,9 +43,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/dp_16"
-                    android:textColor="@color/black"
                     android:drawableStart="@drawable/icon_back"
+                    android:drawablePadding="15dp"
                     android:text="@string/flash_group"
+                    android:textColor="@color/black"
                     android:textSize="24sp"
                     android:textStyle="bold" />
 

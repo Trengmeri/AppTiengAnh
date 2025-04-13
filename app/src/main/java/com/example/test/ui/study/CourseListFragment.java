@@ -30,6 +30,7 @@ import com.example.test.api.ResultManager;
 import com.example.test.model.Course;
 import com.example.test.model.Enrollment;
 import com.example.test.ui.CourseInformationActivity;
+import com.example.test.ui.VerticalSpaceItemDecoration;
 import com.example.test.ui.home.HomeActivity;
 
 import java.io.Serializable;
@@ -69,6 +70,9 @@ public class CourseListFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         recyclerView = view.findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        int spacingInPixels = (int) (20 * getResources().getDisplayMetrics().density); // convert 20dp to pixels
+        recyclerView.addItemDecoration(new VerticalSpaceItemDecoration(spacingInPixels));
+
 
         if (getArguments() != null) {
             courseList = (List<Course>) getArguments().getSerializable("courses");

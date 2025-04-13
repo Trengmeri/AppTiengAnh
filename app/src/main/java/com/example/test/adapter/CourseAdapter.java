@@ -98,9 +98,9 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseView
                 textView.setTypeface(null, Typeface.BOLD); // Chữ in đậm
                 textView.setGravity(Gravity.CENTER);
 
-                int size = 90;
+                int size = 100;
                 LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(size, size);
-                params.setMargins(10, 0, 10, 0); // Điều chỉnh khoảng cách giữa các lesson
+                params.setMargins(15, 0, 15, 0); // Điều chỉnh khoảng cách giữa các lesson
                 textView.setLayoutParams(params);
 
                 // Lấy ID bài học trước đó (nếu có)
@@ -263,6 +263,15 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseView
                             );
                             holder.itemView.setOnClickListener(v -> {
                                 Toast.makeText(context, context.getString(R.string.compcourse), Toast.LENGTH_SHORT).show();
+                            });
+                        });
+                    } else if (enrollment.getProStatus().equals("false")){
+                        new Handler(Looper.getMainLooper()).post(() -> {
+                            holder.itemView.setBackgroundTintList(ColorStateList.valueOf(Color.LTGRAY));
+                            holder.itemView.setOnClickListener(v -> {
+                                Intent intent = new Intent(context, CourseInformationActivity.class);
+                                intent.putExtra("courseId", course.getId());
+                                context.startActivity(intent);
                             });
                         });
                     } else {

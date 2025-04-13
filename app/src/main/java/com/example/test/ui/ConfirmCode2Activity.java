@@ -54,6 +54,7 @@ public class ConfirmCode2Activity extends AppCompatActivity {
     AuthenticationManager apiManager;
     private String typeScreen;
     private boolean isRequesting = false;
+    private Dialog loadingDialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,6 +67,13 @@ public class ConfirmCode2Activity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        // Khởi tạo Dialog loading
+        loadingDialog = new Dialog(this);
+        loadingDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        loadingDialog.setContentView(R.layout.dialog_loading);
+        loadingDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        loadingDialog.setCancelable(false); // Không cho phép đóng khi chạm ngoài màn hình
 
         // Ánh xạ các ô nhập mã
         codeInputs = new EditText[]{
@@ -204,6 +212,7 @@ public class ConfirmCode2Activity extends AppCompatActivity {
                     if (isRequesting) return; // Nếu đang request thì không gọi lại
                     isRequesting = true; // Đánh dấu là đang gọi API
                     new Handler().postDelayed(() -> {
+                        showLoading();
                         for (EditText input : codeInputs) {
                             input.setTransformationMethod(new android.text.method.PasswordTransformationMethod());
                         }
@@ -219,6 +228,7 @@ public class ConfirmCode2Activity extends AppCompatActivity {
                                     runOnUiThread(new Runnable() {
                                         @Override
                                         public void run() {
+                                            hideLoading();
                                             Log.d("OTP", "OTP verification success");
                                             clearOtpId();
                                             Intent intent = new Intent(ConfirmCode2Activity.this, SetUpAccountActivity.class);
@@ -239,6 +249,7 @@ public class ConfirmCode2Activity extends AppCompatActivity {
                                     runOnUiThread(new Runnable() {
                                         @Override
                                         public void run() {
+                                            hideLoading();
                                             showCustomDialog("Lỗi: " + errorMessage);
                                             isRequesting= false;
                                             //Toast.makeText(ConfirmCode2Activity.this, errorMessage, Toast.LENGTH_SHORT).show();
@@ -256,6 +267,7 @@ public class ConfirmCode2Activity extends AppCompatActivity {
                                     runOnUiThread(new Runnable() {
                                         @Override
                                         public void run() {
+                                            hideLoading();
                                             Log.d("OTP", "OTP verification success for forgot password");
                                             clearOtpId();
                                             Intent intent = new Intent(ConfirmCode2Activity.this, NewPassActivity.class);
@@ -276,6 +288,7 @@ public class ConfirmCode2Activity extends AppCompatActivity {
                                     runOnUiThread(new Runnable() {
                                         @Override
                                         public void run() {
+                                            hideLoading();
                                             showCustomDialog("Lỗi: " + errorMessage);
                                             isRequesting= false;
                                             //Toast.makeText(ConfirmCode2Activity.this, errorMessage, Toast.LENGTH_SHORT).show();
@@ -382,5 +395,16 @@ public class ConfirmCode2Activity extends AppCompatActivity {
         new Handler().postDelayed(() -> {
             dialog.dismiss();
         }, 2000);
+    }
+    private void showLoading() {
+        if (!loadingDialog.isShowing()) {
+            loadingDialog.show();
+        }
+    }
+
+    private void hideLoading() {
+        if (loadingDialog.isShowing()) {
+            loadingDialog.dismiss();
+        }
     }
 }
