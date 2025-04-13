@@ -322,7 +322,7 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseView
 
             // Kiểm tra xem có thay đổi danh sách không và thông báo phạm vi đã thay đổi
             if (oldSize != newSortedList.size()) {
-                notifyDataSetChanged();
+                notifyItemRangeChanged(0, newSortedList.size());
             }
         } else {
             this.courseList = new ArrayList<>();
