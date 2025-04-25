@@ -69,7 +69,35 @@ public class UserManager extends BaseApiManager {
             }
         });
     }
+
+    public void updateEnglishLevel(int userId, String level, ApiCallback<Void> callback) {
+        String token = SharedPreferencesManager.getInstance(context).getAccessToken();
+
+        Request request = new Request.Builder()
+                .url(BASE_URL + "/api/v1/user-english-level/" + userId + "?level=" + level)
+                .addHeader("Authorization", "Bearer " + token)
+                .put(RequestBody.create("", null)) // Empty PUT request
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                callback.onFailure("Failed to update English level: " + e.getMessage());
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    callback.onSuccess();
+                } else {
+                    callback.onFailure("Server error: " + response.code());
+                }
+                response.close();
+            }
+        });
+    }
     public void fetchUserProfile(int userId, ApiCallback<JSONObject> callback) {
+
         String token = SharedPreferencesManager.getInstance(context).getAccessToken();
 
         Request request = new Request.Builder()

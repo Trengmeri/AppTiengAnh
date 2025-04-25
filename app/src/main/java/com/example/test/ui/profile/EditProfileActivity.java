@@ -374,12 +374,31 @@ public class EditProfileActivity extends AppCompatActivity {
         userManager.updateProfile(Integer.parseInt(userId), name, phone, specialField,level, new ApiCallback<Object>() {
             @Override
             public void onSuccess() {
-                runOnUiThread(() -> {
-                    Toast.makeText(EditProfileActivity.this,
-                            "Profile updated successfully", Toast.LENGTH_SHORT).show();
-                    btnUpdate.setEnabled(true);
-                    setResult(RESULT_OK);
-                    finish();
+                userManager.updateEnglishLevel(Integer.parseInt(userId), level, new ApiCallback<Void>() {
+                    @Override
+                    public void onSuccess() {
+                        runOnUiThread(() -> {
+                            Toast.makeText(EditProfileActivity.this,
+                                    "Profile and English level updated successfully", Toast.LENGTH_SHORT).show();
+                            btnUpdate.setEnabled(true);
+                            setResult(RESULT_OK);
+                            finish();
+                        });
+                    }
+
+                    @Override
+                    public void onSuccess(Void result) {
+
+                    }
+
+                    @Override
+                    public void onFailure(String errorMessage) {
+                        runOnUiThread(() -> {
+                            Toast.makeText(EditProfileActivity.this,
+                                    "Failed to update English level: " + errorMessage, Toast.LENGTH_SHORT).show();
+                            btnUpdate.setEnabled(true);
+                        });
+                    }
                 });
             }
 
