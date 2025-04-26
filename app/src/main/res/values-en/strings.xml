@@ -152,6 +152,8 @@
     <string name="agree">Agree to Terms Conditions</string>
     <string name="havedacc">Already have an account?</string>
     <string name="signin">SIGN IN</string>
+    <string name="txtforgot">Select your email account to revice\n confirm code</string>
+    <string name="countinue">Continue</string>
 <!--    <string name="intro1">Welcome to Encybara - The Specialized English \n Learning App!</string>-->
 <!--    <string name="getready">Get ready!!</string>-->
 <!--    <string name="encybara">Encybara!</string>-->

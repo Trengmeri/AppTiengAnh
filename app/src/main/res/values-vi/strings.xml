@@ -152,6 +152,8 @@
     <string name="agree">Đồng ý với điều khoản</string>
     <string name="havedacc">Bạn đã có tài khoản ?</string>
     <string name="signin">ĐĂNG NHẬP</string>
+    <string name="txtforgot">Điền tài khoản email của bạn để\n nhận mã xác nhận</string>
+    <string name="countinue">Tiếp tục</string>
 <!--    <string name="intro1">Chào mừng đến với Encybara - Ứng dụng học tiếng Anh\n chuyên ngành!</string>-->
 <!--    <string name="getready">Get ready!!</string>-->
 <!--    <string name="encybara">Encybara!</string>-->

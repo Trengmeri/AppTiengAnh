@@ -9,26 +9,29 @@
     tools:context=".ui.NewPassActivity">
 <LinearLayout
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:ignore="MissingConstraints">
+    app:layout_constraintRight_toRightOf="parent"
+    app:layout_constraintLeft_toLeftOf="parent"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintTop_toTopOf="parent">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="5dp">
+        android:layout_marginTop="@dimen/dp_30">
         <ImageView
             android:id="@+id/icback"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
-            android:layout_marginLeft="15dp"
+            android:layout_marginStart="@dimen/dp_16"
             app:srcCompat="@drawable/icon_back" />
         <TextView
             android:id="@+id/textView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp"
-            android:layout_marginLeft="10dp"
+            android:layout_marginStart="@dimen/dp_16"
             android:text="@string/newpass"
             android:textColor="@color/black"
             android:textSize="20sp"
@@ -36,11 +39,7 @@
     </LinearLayout>
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        android:layout_height="match_parent">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -51,7 +50,7 @@
             android:layout_width="255dp"
             android:layout_height="245dp"
             android:layout_gravity="center"
-            android:layout_marginTop="25dp"
+            android:layout_marginTop="@dimen/dp_30"
             android:scaleType="fitCenter"
             app:srcCompat="@drawable/img_ava" />
 
@@ -64,7 +63,8 @@
             android:padding="8dp"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
-            android:layout_marginTop="30dp">
+            android:layout_marginTop="@dimen/dp_30"
+            android:layout_marginBottom="@dimen/dp_30">
             <TextView
                 android:id="@+id/textView2"
                 android:layout_width="wrap_content"
@@ -119,7 +119,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="30dp"
                 android:layout_marginTop="@dimen/dp_16"
-                android:layout_marginRight="30dp"
+                android:layout_marginRight="@dimen/dp_30"
                 android:background="@drawable/rounded_corner"
                 android:orientation="horizontal"
                 android:padding="12dp">
@@ -149,10 +149,12 @@
                 android:id="@+id/btnNext"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_margin="20dp"
+                android:layout_margin="30dp"
                 android:backgroundTint="#8B3000"
                 android:text="@string/Continue"
                 android:textColor="@color/white"
+                android:drawableEnd="@drawable/circle__1_"
+                android:paddingEnd="6dp"
                 android:enabled="false"
                 android:alpha="0.3"/>
         </LinearLayout>

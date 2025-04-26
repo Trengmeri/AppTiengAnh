@@ -155,9 +155,12 @@
     <string name="error">Error</string>
     <string name="lichmoi">The schedule has been successfully set!</string>
     <string name="trunglich">You have already set this schedule!</string>
+    <string name="txtforgot">Select your email account to revice\n confirm code</string>
+    <string name="countinue">Continue</string>
     <!--    <string name="intro1">Welcome to Encybara - The Specialized English \n Learning App!</string>-->
     <!--    <string name="getready">Get ready!!</string>-->
     <!--    <string name="encybara">Encybara!</string>-->
     <!--    <string name="learn_capy">Let's learn English with Capy >v<</string>-->
     <!--    <string name="future_app">The English learning app from the future!</string>-->
+
 </resources>
