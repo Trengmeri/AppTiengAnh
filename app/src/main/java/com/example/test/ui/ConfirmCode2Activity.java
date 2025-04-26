@@ -26,6 +26,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.example.test.AsteriskPasswordTransformationMethod;
 import com.example.test.NetworkChangeReceiver;
 import com.example.test.R;
 import com.example.test.api.ApiCallback;
@@ -171,19 +172,21 @@ public class ConfirmCode2Activity extends AppCompatActivity {
             int finalI = i;
             findViewById(buttonIds[i]).setOnClickListener(v -> {
                 if (currentInputIndex < codeInputs.length) {
+                    codeInputs[currentInputIndex].setTransformationMethod(null);
                     // Hiển thị số vừa nhập
                     codeInputs[currentInputIndex].setText(String.valueOf(finalI));
                     // Lưu giá trị để kiểm tra sau này
                     String enteredValue = String.valueOf(finalI);
-
+                    int finalCurrentIndex = currentInputIndex;
                     //codeInputs[currentInputIndex].setText(String.valueOf(finalI)); // Hiển thị số vào ô nhập
                     // Nếu chưa đến ô cuối cùng thì sau 500ms ẩn đi
                     if (currentInputIndex < codeInputs.length - 1) {
                         new Handler().postDelayed(() -> {
-                            if (codeInputs[currentInputIndex].getText().toString().equals(enteredValue)) {
-                                codeInputs[currentInputIndex].setTransformationMethod(new android.text.method.PasswordTransformationMethod());
+                            if (codeInputs[finalCurrentIndex].getText().toString().equals(enteredValue)) {
+                                codeInputs[finalCurrentIndex].setTransformationMethod(new AsteriskPasswordTransformationMethod());
+                                codeInputs[finalCurrentIndex].setSelection(codeInputs[finalCurrentIndex].getText().length()); // Cập nhật lại con trỏ
                             }
-                        }, 200);
+                        }, 500);
                         // **Đặt con trỏ vào ô tiếp theo**
                         codeInputs[currentInputIndex + 1].requestFocus();
                     }
@@ -197,6 +200,8 @@ public class ConfirmCode2Activity extends AppCompatActivity {
             if (currentInputIndex > 0) {
                 currentInputIndex--; // Quay lại ô trước
                 codeInputs[currentInputIndex].setText(""); // Xóa nội dung
+                codeInputs[currentInputIndex].setTransformationMethod(null);
+                codeInputs[currentInputIndex].requestFocus();
             }
         });
 
@@ -214,7 +219,7 @@ public class ConfirmCode2Activity extends AppCompatActivity {
                     new Handler().postDelayed(() -> {
                         showLoading();
                         for (EditText input : codeInputs) {
-                            input.setTransformationMethod(new android.text.method.PasswordTransformationMethod());
+                            input.setTransformationMethod(new AsteriskPasswordTransformationMethod());
                         }
                     String otpID = getOtpIdFromPreferences();// Khi người dùng nhập vào ô cuối cùng
                     String code = getCode(); // Lấy mã đã nhập
