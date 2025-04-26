@@ -38,33 +38,26 @@
         app:layout_constraintHorizontal_bias="0.431"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-    <LinearLayout
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
+        android:layout_height="0dp"
         android:layout_marginTop="@dimen/dp_60"
-        app:layout_constraintTop_toBottomOf="@id/txtTitle">
+        app:layout_constraintTop_toBottomOf="@id/txtTitle"
+        app:layout_constraintBottom_toBottomOf="parent">
 
-        <TextView
-            android:id="@+id/txtUp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/action_sign_up_short"
-            android:textColor="#172B4D"
-            android:textSize="30sp"
-            android:textStyle="bold"
-            android:layout_marginStart="50dp"/>
-        <androidx.core.widget.NestedScrollView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
+                <TextView
+                    android:id="@+id/txtUp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/action_sign_up_short"
+                    android:textColor="#172B4D"
+                    android:textSize="30sp"
+                    android:textStyle="bold"
+                    android:layout_marginStart="50dp"/>
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -72,8 +65,8 @@
                     android:background="@drawable/background_gradient"
                     android:paddingTop="@dimen/dp_30"
                     android:paddingStart="@dimen/dp_16"
-                    android:paddingBottom="@dimen/dp_16"
-                    android:layout_marginTop="@dimen/dp_16">
+                    android:layout_marginTop="@dimen/dp_16"
+                    android:paddingBottom="@dimen/dp_16">
                     <TextView
                         android:id="@+id/textView3"
                         android:layout_width="wrap_content"
@@ -221,7 +214,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:layout_marginTop="@dimen/dp_16">
+                    android:layout_marginTop="@dimen/dp_16"
+                    android:layout_marginBottom="@dimen/dp_16">
                     <TextView
                         android:id="@+id/textView6"
                         android:layout_width="wrap_content"
@@ -252,6 +246,5 @@
                     </LinearLayout>
                 </LinearLayout>
             </LinearLayout>
-        </androidx.core.widget.NestedScrollView>
-    </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>
