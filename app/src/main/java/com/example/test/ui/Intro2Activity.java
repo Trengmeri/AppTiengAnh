@@ -3,6 +3,7 @@ package com.example.test.ui;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.Html;
 import android.view.View;
@@ -14,6 +15,7 @@ import android.view.ViewGroup;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -68,6 +70,25 @@ public class Intro2Activity extends AppCompatActivity {
                 txtN.setText(Html.fromHtml(text2[currentIndex2[0]], Html.FROM_HTML_MODE_COMPACT));
                 txtN.startAnimation(AnimationUtils.loadAnimation(this, R.anim.slide_in_right));
             }, 300); // Đợi 300ms trước khi cập nhật nội dung
+
+            if(clickCount==2){
+                btnNext.setText("Get started");
+                btnNext.setTextSize(14);
+                Drawable drawable = ContextCompat.getDrawable(getApplicationContext(), R.drawable.circle__1_);
+                drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
+                btnNext.setCompoundDrawablesWithIntrinsicBounds(null, null, drawable, null);
+                btnNext.setCompoundDrawablePadding(10); // Khoảng cách giữa text và icon
+
+                ViewGroup.LayoutParams params = btnNext.getLayoutParams();
+
+                float scale = getResources().getDisplayMetrics().density;
+
+                params.width = (int) (150 * scale + 0.5f);
+                params.height = (int) (60 * scale + 0.5f);
+
+                btnNext.setLayoutParams(params);
+                btnNext.setPadding(btnNext.getPaddingLeft(), btnNext.getPaddingTop(), 10, btnNext.getPaddingBottom());
+            }
 
             if(clickCount ==3){
                 Intent intent = new Intent(Intro2Activity.this, SignInActivity.class);
