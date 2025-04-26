@@ -166,15 +166,18 @@
         android:id="@+id/cbRemember"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textStyle="bold"
         android:text="@string/remme"
-        android:textColor="#AB3B00"/>
+        android:textColor="#545454"/>
     <Button
             android:id="@+id/btnForgot"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
             android:text="@string/forgotpass"
-            android:textColor="#AB3B00"
+            android:textStyle="bold"
+            android:textColor="#545454"
+            android:gravity="end"
             android:layout_marginStart="@dimen/dp_16"/>
     </LinearLayout>
 

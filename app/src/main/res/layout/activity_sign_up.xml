@@ -97,6 +97,7 @@
                         android:background="@drawable/rounded_corner"
                         android:orientation="horizontal"
                         android:padding="15dp">
+
                         <EditText
                             android:id="@+id/edtTen"
                             android:layout_width="match_parent"

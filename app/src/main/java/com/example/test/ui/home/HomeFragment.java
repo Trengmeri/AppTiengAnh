@@ -226,7 +226,7 @@ public class HomeFragment extends Fragment {
 
     private void showNoCourseMessage() {
         courseTitle.setText("No active course found");
-       courseNumber.setText("");
+//       courseNumber.setText("");
         continueButton.setVisibility(View.GONE);
     }
 
