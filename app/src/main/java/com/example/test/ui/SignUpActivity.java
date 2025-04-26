@@ -49,9 +49,9 @@ import java.util.regex.Pattern;
 public class SignUpActivity extends AppCompatActivity {
 
     EditText edtName, edtEmail, edtMKhau1;
-    TextView txtEmailerror, txtPasserror;
+    TextView txtEmailerror, txtPasserror,btnIn;
     CheckBox cbCheck;
-    Button btnUp, btnIn;
+    Button btnUp;
     NetworkChangeReceiver networkReceiver;
     AuthenticationManager apiManager;
     boolean isvalid =true;

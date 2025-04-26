@@ -81,7 +81,6 @@ public class MainActivity extends AppCompatActivity {
         }, 3000);
     }
 
-
     private void loadLocale() {
         SharedPreferences prefs = getSharedPreferences("Settings", MODE_PRIVATE);
         String language = prefs.getString("Language", "en"); // Mặc định là tiếng Anh
