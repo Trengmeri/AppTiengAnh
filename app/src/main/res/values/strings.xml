@@ -143,7 +143,7 @@
     <string name="welcome_">Welcome Back </string>
     <string name="hellothere">Hello there, sign in continue</string>
     <string name="remme">Remember me</string>
-    <string name="forgotpass">Forgot Password</string>
+    <string name="forgotpass">Forgot Password?</string>
     <string name="not_have_acc">Don’t have an Account?</string>
     <string name="signup">SIGN UP</string>
     <string name="createacc">Create account</string>

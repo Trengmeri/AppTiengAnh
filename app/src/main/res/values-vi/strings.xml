@@ -144,7 +144,7 @@
     <string name="welcome_">Chào mừng trở lại</string>
     <string name="hellothere">Xin chào, đăng nhập để tiếp tục nhé</string>
     <string name="remme">Ghi nhớ tôi</string>
-    <string name="forgotpass">Quên mật khẩu</string>
+    <string name="forgotpass">Quên mật khẩu?</string>
     <string name="not_have_acc">Bạn chưa có tài khoản ?</string>
     <string name="signup">ĐĂNG KÝ</string>
     <string name="createacc">Tạo tài khoản</string>

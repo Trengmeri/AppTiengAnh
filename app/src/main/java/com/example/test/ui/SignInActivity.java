@@ -49,9 +49,9 @@ import java.util.regex.Pattern;
 public class SignInActivity extends AppCompatActivity {
 
     EditText edtEmail, edtMKhau;
-    TextView tvEmailerror, tvPasserror;
+    TextView tvEmailerror, tvPasserror,btnUp;
     CheckBox cbRemember;
-    Button btnIn, btnForgot, btnUp;
+    Button btnIn, btnForgot;
     NetworkChangeReceiver networkReceiver;
     AuthenticationManager apiManager;
     FieldManager fieldManager;

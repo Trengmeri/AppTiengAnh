@@ -8,86 +8,93 @@
     android:background="@drawable/intro_background"
     tools:context=".ui.ChooseFieldsActivity">
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_marginTop="@dimen/dp_30"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/dp_60"
-            android:layout_gravity="center"
-            android:text="@string/selectMajor"
-            android:textColor="@color/black"
-            android:textSize="22sp"
-            android:textStyle="bold" />
-
-        <FrameLayout
+        app:layout_constraintEnd_toEndOf="parent"
+        android:fillViewport="true">
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="40dp">
+            android:orientation="vertical"
+            android:layout_marginTop="@dimen/dp_30">
 
-            <ImageView
+            <TextView
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dp_60"
                 android:layout_gravity="center"
-                android:layout_marginTop="5dp"
-                android:layout_marginBottom="5dp"
-                android:background="@drawable/oval" />
+                android:text="@string/selectMajor"
+                android:textColor="@color/black"
+                android:textSize="22sp"
+                android:textStyle="bold" />
 
-            <LinearLayout
+            <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:layout_marginTop="@dimen/dp_30">
 
-                <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/btnEconomic"
-                    style="@style/Button_Active_All"
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginBottom="5dp"
+                    android:background="@drawable/oval" />
+
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/dp_16"
-                    android:text="@string/txt_economic"/>
+                    android:orientation="vertical">
 
-                <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/btnConstruct"
-                    style="@style/Button_Active_All"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/dp_16"
-                    android:text="@string/txt_construction" />
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/btnEconomic"
+                        style="@style/Button_Active_All"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/dp_16"
+                        android:text="@string/txt_economic"/>
 
-                <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/btnIT"
-                    style="@style/Button_Active_All"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/dp_16"
-                    android:text="@string/txt_it" />
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/btnConstruct"
+                        style="@style/Button_Active_All"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/dp_16"
+                        android:text="@string/txt_construction" />
 
-                <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/btnMechanic"
-                    style="@style/Button_Active_All"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/dp_16"
-                    android:text="@string/txt_mechanic" />
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/btnIT"
+                        style="@style/Button_Active_All"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/dp_16"
+                        android:text="@string/txt_it" />
 
-                <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/btnOthers"
-                    style="@style/Button_Active_All"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/dp_16"
-                    android:text="@string/txt_other" />
-            </LinearLayout>
-        </FrameLayout>
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/btnMechanic"
+                        style="@style/Button_Active_All"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/dp_16"
+                        android:text="@string/txt_mechanic" />
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/btnOthers"
+                        style="@style/Button_Active_All"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/dp_16"
+                        android:text="@string/txt_other" />
+                </LinearLayout>
+            </FrameLayout>
 
 
-    </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -23,36 +23,35 @@
             android:background="@drawable/ellipse_4"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="1.0"
-            tools:ignore="MissingConstraints" />
-        <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
             app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="MissingConstraints" />
+        <TextView
+            android:id="@+id/txtTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_60"
+            android:text="Encybara"
+            android:textAlignment="center"
+            android:textColor="#9E3A00"
+            android:textSize="@dimen/textsize_big"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.431"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
-            <TextView
-                android:id="@+id/txtTitle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="44dp"
-                android:text="Encybara"
-                android:textAlignment="center"
-                android:textColor="#9E3A00"
-                android:textSize="28sp"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.431"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="@dimen/dp_60"
+            app:layout_constraintTop_toBottomOf="@id/txtTitle">
             <TextView
                 android:id="@+id/txtUp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="48dp"
                 android:text="@string/action_sign_in_short"
                 android:textColor="#172B4D"
-                android:textSize="30sp"
+                android:textSize="@dimen/textsize_big"
                 android:textStyle="bold"
                 android:layout_marginLeft="50dp"/>
             <androidx.core.widget.NestedScrollView
@@ -71,19 +70,19 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:background="@drawable/background_gradient"
-           android:paddingTop="16dp"
-           android:paddingLeft="16dp"
-           android:layout_marginTop="10dp">
+            android:paddingTop="@dimen/dp_30"
+            android:paddingBottom="10dp"
+            android:paddingStart="@dimen/dp_16"
+            android:layout_marginTop="@dimen/dp_16">
            <TextView
             android:id="@+id/textView3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
             android:text="@string/welcome_"
             android:textColor="#AC3B00"
             android:textSize="18sp"
             android:textStyle="bold"
-            android:layout_marginLeft="30dp"/>
+            android:layout_marginStart="30dp"/>
 
            <TextView
             android:id="@+id/textView4"
@@ -93,14 +92,14 @@
             android:text="@string/hellothere"
             android:textColor="#7A7A7A"
             android:textSize="14sp"
-            android:layout_marginLeft="30dp"/>
+            android:layout_marginStart="@dimen/dp_30"/>
 
                 <LinearLayout
                     android:id="@+id/linearLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                   android:layout_marginLeft="12dp"
-                    android:layout_marginRight="16dp"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginEnd="@dimen/dp_16"
                     android:layout_marginTop="@dimen/dp_16"
                     android:background="@drawable/rounded_corner"
                     android:orientation="horizontal"
@@ -132,8 +131,8 @@
             android:id="@+id/linearLayout1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="12dp"
-            android:layout_marginRight="16dp"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="@dimen/dp_16"
             android:layout_marginTop="@dimen/dp_16"
             android:background="@drawable/rounded_corner"
             android:orientation="horizontal"
@@ -162,20 +161,19 @@
                    android:visibility="gone"
                     />
 
-
-    <!-- Nút Sign Up -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginRight="12dp"
-        android:layout_marginLeft="12dp">
+        android:layout_marginTop="8dp"
+        android:layout_marginRight="@dimen/dp_16"
+        android:layout_marginLeft="@dimen/dp_16">
     <CheckBox
         android:id="@+id/cbRemember"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/remme"
-        android:textColor="#7A7A7A"/>
+        android:textColor="#AB3B00"/>
     <Button
             android:id="@+id/btnForgot"
             android:layout_width="match_parent"
@@ -183,16 +181,15 @@
             android:background="@android:color/transparent"
             android:text="@string/forgotpass"
             android:textColor="#AB3B00"
-            android:layout_marginLeft="@dimen/dp_30"/>
-    <!-- Hoặc tiếp tục -->
+            android:layout_marginStart="@dimen/dp_30"/>
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginRight="@dimen/dp_60"
-        android:layout_marginLeft="12dp">
+        android:layout_marginEnd="@dimen/dp_60"
+        android:layout_marginStart="12dp">
     <Button
         android:id="@+id/btnIn"
         android:layout_width="match_parent"
@@ -203,62 +200,47 @@
         android:alpha="0.5"
         android:textColor="#FFFFFF"
         android:textColorLink="#9E3A00"
-        android:layout_margin="20dp"/>
-<!--        <ImageView-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_marginLeft="@dimen/dp40"-->
-<!--            android:background="@drawable/icon_vantay"/>-->
-
+        android:layout_margin="12dp"
+        android:paddingEnd="6dp"
+        android:drawableEnd="@drawable/circle__1_" />
     </LinearLayout>
-    <!-- TextView chuyển đến Sign In -->
 
-<!--    <TextView-->
-<!--        android:id="@+id/textView5"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_marginTop="1dp"-->
-<!--        android:text="Or Continue With"-->
-<!--        android:textColor="#7A7A7A"-->
-<!--        android:layout_gravity="center" />-->
-<!--    <LinearLayout-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_gravity="center"-->
-<!--        android:padding="8dp">-->
-<!--        <ImageView-->
-<!--            android:id="@+id/imageView5"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:background="@drawable/icon_gg"/>-->
-
-<!--            <ImageView-->
-<!--            android:id="@+id/imageView6"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_marginLeft="25dp"-->
-<!--                android:layout_marginTop="6dp"-->
-<!--            android:background="@drawable/facebook" />-->
-<!--    </LinearLayout>-->
     </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center">
+        android:gravity="center"
+        android:layout_marginTop="@dimen/dp_16">
         <TextView
             android:id="@+id/textView6"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/not_have_acc"
             android:textColor="#AC3B00"/>
-        <Button
-            android:id="@+id/btnUp"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@android:color/transparent"
-            android:text="@string/signup"
-            android:textColor="#AF4610"/>
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
+            android:layout_marginStart="8dp">
+
+            <TextView
+                android:id="@+id/btnUp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/signup"
+                android:textColor="#AF4610"
+                android:textSize="14sp"
+                android:textStyle="bold"/>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#AF4610"
+                android:layout_marginTop="1dp" /> <!-- chỉnh khoảng cách chữ với gạch -->
+        </LinearLayout>
     </LinearLayout>
+
        </LinearLayout>
 </androidx.core.widget.NestedScrollView>
     </LinearLayout>
