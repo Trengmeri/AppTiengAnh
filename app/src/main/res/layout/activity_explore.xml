@@ -6,6 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:backgroundTint="#FFFEF6"
     tools:context=".ui.explore.ExploreActivity">
 
     <FrameLayout
@@ -50,39 +51,14 @@
                 android:layout_marginTop="50dp"
                 android:textSize="22sp"
                 android:textStyle="bold"/>
-<!--            <TextView-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:layout_marginStart="@dimen/dp_30"-->
-<!--                android:layout_marginTop="@dimen/dp_16"-->
-<!--                android:text="Games"-->
-<!--                android:textSize="24sp"-->
-<!--                android:textStyle="bold"/>-->
 
-<!--            <LinearLayout-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:orientation="horizontal"-->
-<!--                android:layout_marginStart="@dimen/dp40"-->
-<!--                android:layout_marginEnd="@dimen/dp40"-->
-<!--                >-->
-<!--                <ImageView-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:background="@drawable/game"-->
-<!--                    />-->
-<!--                <ImageView-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:background="@drawable/game_1"/>-->
-<!--            </LinearLayout>-->
             <ImageView
                 android:layout_width="300dp"
                 android:layout_height="300dp"
                 android:background="@drawable/capy_sleep"
                 android:alpha="0.8"
                 android:layout_gravity="top"
-                android:layout_marginStart="16dp"/>
+                android:layout_marginStart="@dimen/dp_16"/>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -97,76 +73,32 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="vertical">
-<!--                    <LinearLayout-->
-<!--                        android:id="@+id/btnChat"-->
-<!--                        android:layout_width="match_parent"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                        android:orientation="horizontal"-->
-<!--                        android:layout_marginStart="@dimen/dp_30"-->
-<!--                        android:layout_marginEnd="@dimen/dp_30"-->
-<!--                        android:background="@drawable/bg_explore">-->
 
-<!--                        <ImageView-->
-<!--                            android:layout_width="wrap_content"-->
-<!--                            android:layout_height="wrap_content"-->
-<!--                            android:layout_gravity="center"-->
-<!--                            android:layout_marginStart="25dp"-->
-<!--                            android:background="@drawable/icon_chat"/>-->
-<!--                        <TextView-->
-<!--                            android:layout_width="wrap_content"-->
-<!--                            android:layout_height="wrap_content"-->
-<!--                            android:text="Chat"-->
-<!--                            android:textSize="16sp"-->
-
-<!--                            android:layout_gravity="center"-->
-<!--                            android:layout_marginStart="10dp"/>-->
-<!--                    </LinearLayout>-->
-<!--                    <LinearLayout-->
-<!--                        android:id="@+id/btnVoiceAla"-->
-<!--                        android:layout_width="match_parent"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                        android:orientation="horizontal"-->
-<!--                        android:layout_marginStart="@dimen/dp_30"-->
-<!--                        android:layout_marginEnd="@dimen/dp_30"-->
-<!--                        android:background="@drawable/bg_explore">-->
-
-<!--                        <ImageView-->
-<!--                            android:layout_width="wrap_content"-->
-<!--                            android:layout_height="wrap_content"-->
-<!--                            android:layout_gravity="center"-->
-<!--                            android:layout_marginStart="25dp"-->
-<!--                            android:background="@drawable/icon_voicealayst"/>-->
-<!--                        <TextView-->
-<!--                            android:layout_width="wrap_content"-->
-<!--                            android:layout_height="wrap_content"-->
-<!--                            android:text="Voice analysist"-->
-<!--                            android:textSize="16sp"-->
-<!--                            android:layout_gravity="center"-->
-<!--                            android:layout_marginStart="10dp"/>-->
-<!--                    </LinearLayout>-->
                     <LinearLayout
                         android:id="@+id/btnDic"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
                         android:layout_marginStart="@dimen/dp_30"
                         android:layout_marginEnd="@dimen/dp_30"
-                        android:background="@drawable/bg_explore">
+                        android:background="@drawable/bg_explore"
+                        android:orientation="horizontal">
 
                         <ImageView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
                             android:layout_marginStart="25dp"
-                            android:background="@drawable/icon_dictionary"/>
+                            android:background="@drawable/icon_dictionary" />
+
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/dictionary"
-                            android:textSize="16sp"
                             android:layout_gravity="center"
-                            android:layout_marginStart="10dp"/>
+                            android:layout_marginStart="10dp"
+                            android:text="@string/dictionary"
+                            android:textSize="16sp" />
                     </LinearLayout>
+
                     <LinearLayout
                         android:id="@+id/btnFlash"
                         android:layout_width="match_parent"

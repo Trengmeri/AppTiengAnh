@@ -84,7 +84,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:text="@string/hellothere"
-            android:textColor="#7A7A7A"
+            android:textColor="#545454"
             android:textSize="14sp"
             android:layout_marginStart="@dimen/dp_30"/>
 
@@ -160,22 +160,24 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:layout_marginTop="8dp"
-        android:layout_marginRight="@dimen/dp_16"
-        android:layout_marginLeft="12dp">
+        android:layout_marginEnd="@dimen/dp_16"
+        android:layout_marginStart="12dp">
     <CheckBox
         android:id="@+id/cbRemember"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_weight="1"
         android:text="@string/remme"
-        android:textColor="#AB3B00"/>
+        android:textStyle="bold"
+        android:textColor="#545454"/>
     <Button
             android:id="@+id/btnForgot"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
             android:text="@string/forgotpass"
-            android:textColor="#AB3B00"
-            android:layout_marginStart="@dimen/dp_16"/>
+            android:textStyle="bold"
+            android:textColor="#545454"/>
     </LinearLayout>
 
     <LinearLayout
@@ -213,7 +215,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/not_have_acc"
-            android:textColor="#737171"/>
+            android:textColor="#545454"/>
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
