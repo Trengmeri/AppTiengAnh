@@ -58,7 +58,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="30dp"
+                android:layout_marginTop="@dimen/dp_30"
                 android:gravity="center">
                 <FrameLayout
                     android:layout_width="wrap_content"
@@ -139,7 +139,7 @@
                 android:id="@+id/imgLessonMaterial"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="@dimen/dp_16"
                 android:adjustViewBounds="true"
                 android:scaleType="fitCenter"
                 android:visibility="gone" />
@@ -147,7 +147,7 @@
                 android:id="@+id/tvQuestion"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="30dp"
+                android:layout_marginTop="@dimen/dp_30"
                 android:layout_marginStart="@dimen/dp_16"
                 android:drawableLeft="@drawable/fe_question"
                 android:textSize="20sp"
@@ -164,7 +164,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/check"
-                android:layout_marginBottom="30dp"
+                android:layout_marginBottom="@dimen/dp_30"
                 android:backgroundTint="#BC6136"
                 android:layout_gravity="center"/>
         </LinearLayout>

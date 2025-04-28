@@ -108,7 +108,7 @@
                 android:layout_marginLeft="@dimen/dp_30"
                 android:layout_marginRight="@dimen/dp_30"
                 android:text="@string/check"
-                android:backgroundTint="#C0CEEF"
+                android:backgroundTint="#E0EBFF"
                 android:textColor="@color/black"/>
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

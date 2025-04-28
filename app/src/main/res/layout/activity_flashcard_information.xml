@@ -56,13 +56,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/dp40"
-            android:layout_marginLeft="@dimen/dp_16"
+            android:layout_marginStart="@dimen/dp_16"
             android:background="@drawable/icon_close"/>
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="30dp">
+            android:layout_marginTop="@dimen/dp_30">
             <FrameLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
@@ -246,18 +246,7 @@
             android:layout_gravity="center">
 
         </androidx.appcompat.widget.AppCompatButton>
-<!--        <androidx.appcompat.widget.AppCompatButton-->
-<!--            android:id="@+id/btnExample"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            style="@style/Answer_Multi_style"-->
-<!--            android:background="@drawable/btn_flash"-->
-<!--            android:text="Example"-->
-<!--            android:textSize="20sp"-->
-<!--            android:layout_marginTop="8dp"-->
-<!--            android:layout_gravity="center">-->
 
-<!--        </androidx.appcompat.widget.AppCompatButton>-->
         </LinearLayout>
 
 

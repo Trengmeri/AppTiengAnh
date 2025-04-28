@@ -17,7 +17,7 @@
         android:textColor="#CE9566"
         android:textSize="36sp"
         android:textStyle="bold"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="@dimen/dp_30"
         android:layout_gravity="center" />
 
     <!-- Thanh tiến trình -->
@@ -51,7 +51,7 @@
                 android:id="@+id/tvQuestion"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="40dp"
+                android:layout_marginTop="@dimen/dp_60"
                 android:layout_marginStart="@dimen/dp_16"
                 android:drawableStart="@drawable/jam_write"
                 android:drawablePadding="10dp"
@@ -62,7 +62,7 @@
                 android:id="@+id/imgLessonMaterial"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="@dimen/dp_16"
                 android:adjustViewBounds="true"
                 android:scaleType="fitCenter"
                 android:visibility="gone" />
@@ -88,12 +88,10 @@
                 android:id="@+id/btnCheckAnswer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="-20dp"
-                android:layout_marginBottom="30dp"
-                android:layout_marginLeft="@dimen/dp_30"
-                android:layout_marginRight="@dimen/dp_30"
+                android:layout_marginStart="@dimen/dp_60"
+                android:layout_marginEnd="@dimen/dp_60"
                 android:text="@string/check"
-                android:backgroundTint="#C0CEEF"
+                android:backgroundTint="#E0EBFF"
                 android:textColor="@color/black" />
 
         </LinearLayout>
