@@ -18,7 +18,7 @@
             android:background="@drawable/icon_back"
             android:backgroundTint="@color/btncolor"
             android:layout_gravity="center"
-            android:layout_marginLeft="10dp"/>
+            android:layout_marginStart="@dimen/dp_16"/>
 
     </LinearLayout>
 

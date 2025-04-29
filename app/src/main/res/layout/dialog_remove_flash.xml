@@ -83,6 +83,7 @@
             android:layout_height="wrap_content"
             android:text="@string/Remove"
             android:drawableEnd="@drawable/circle__1_"
+            android:paddingEnd="6dp"
             android:backgroundTint="#A95D40"
             android:textColor="@color/white"
             android:layout_marginStart="@dimen/dp_30"/>
