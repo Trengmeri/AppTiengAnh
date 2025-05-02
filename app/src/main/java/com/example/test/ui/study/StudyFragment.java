@@ -49,8 +49,8 @@ public class StudyFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 viewPager.setCurrentItem(0);
-                btnMyCourse.setBackground(ContextCompat.getDrawable(requireContext(), R.drawable.bg_about));
-                btnAllCourse.setBackground(ContextCompat.getDrawable(requireContext(), R.drawable.bg_lesson));
+                btnMyCourse.setBackground(ContextCompat.getDrawable(requireContext(), R.drawable.bg_mycourse));
+                btnAllCourse.setBackground(ContextCompat.getDrawable(requireContext(), R.drawable.bg_allcourse));
             }
         });
         //btnAllCourse.setOnClickListener(v -> viewPager.setCurrentItem(1));
@@ -58,8 +58,8 @@ public class StudyFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 viewPager.setCurrentItem(1);
-                btnAllCourse.setBackground(ContextCompat.getDrawable(requireContext(), R.drawable.bg_about));
-                btnMyCourse.setBackground(ContextCompat.getDrawable(requireContext(), R.drawable.bg_lesson));
+                btnAllCourse.setBackground(ContextCompat.getDrawable(requireContext(), R.drawable.bg_mycourse));
+                btnMyCourse.setBackground(ContextCompat.getDrawable(requireContext(), R.drawable.bg_allcourse));
             }
         });
 
