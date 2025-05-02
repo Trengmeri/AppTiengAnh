@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.viewpager2.widget.ViewPager2;
@@ -17,7 +18,7 @@ import com.example.test.model.Course;
 import java.util.List;
 
 public class StudyFragment extends Fragment {
-    private Button btnAbout, btnLesson;
+    private Button btnMyCourse, btnAllCourse;
     private ViewPager2 viewPager;
     private StudyPagerAdapter adapter;
 
@@ -33,8 +34,8 @@ public class StudyFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        btnAbout = view.findViewById(R.id.btnAbout);
-        btnLesson = view.findViewById(R.id.btnLesson);
+        btnMyCourse = view.findViewById(R.id.btnMyCourse);
+        btnAllCourse = view.findViewById(R.id.btnAllCourse);
         viewPager = view.findViewById(R.id.viewPager);
         viewPager.setSaveEnabled(false);
 
@@ -43,8 +44,24 @@ public class StudyFragment extends Fragment {
         adapter.addFragment(new AllCourseFragment());
         viewPager.setAdapter(adapter);
 
-        btnAbout.setOnClickListener(v -> viewPager.setCurrentItem(0));
-        btnLesson.setOnClickListener(v -> viewPager.setCurrentItem(1));
+       // btnMyCourse.setOnClickListener(v -> viewPager.setCurrentItem(0));
+        btnMyCourse.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                viewPager.setCurrentItem(0);
+                btnMyCourse.setBackground(ContextCompat.getDrawable(requireContext(), R.drawable.bg_about));
+                btnAllCourse.setBackground(ContextCompat.getDrawable(requireContext(), R.drawable.bg_lesson));
+            }
+        });
+        //btnAllCourse.setOnClickListener(v -> viewPager.setCurrentItem(1));
+        btnAllCourse.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                viewPager.setCurrentItem(1);
+                btnAllCourse.setBackground(ContextCompat.getDrawable(requireContext(), R.drawable.bg_about));
+                btnMyCourse.setBackground(ContextCompat.getDrawable(requireContext(), R.drawable.bg_lesson));
+            }
+        });
 
         // Kiểm tra nếu có courseId được truyền vào
         Bundle args = getArguments();
