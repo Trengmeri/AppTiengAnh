@@ -182,10 +182,10 @@ public class ProfileFragment extends Fragment {
         if (!isFragmentActive()) return;
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle("Xác nhận đăng xuất");
-        builder.setMessage("Bạn có chắc chắn muốn đăng xuất không?");
+        builder.setTitle(getString(R.string.dangxuat));
+        builder.setMessage(getString(R.string.cfdangxuat));
 
-        builder.setPositiveButton("Có", (dialog, which) -> {
+        builder.setPositiveButton(getString(R.string.yes), (dialog, which) -> {
             apiManager.sendLogoutRequest(new ApiCallback() {
                 @Override
                 public void onSuccess() {
@@ -215,7 +215,7 @@ public class ProfileFragment extends Fragment {
             });
         });
 
-        builder.setNegativeButton("Không", (dialog, which) -> dialog.dismiss());
+        builder.setNegativeButton(getString(R.string.no), (dialog, which) -> dialog.dismiss());
 
         AlertDialog alertDialog = builder.create();
         alertDialog.show();

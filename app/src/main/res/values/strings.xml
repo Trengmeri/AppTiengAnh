@@ -159,6 +159,10 @@
     <string name="countinue">Continue</string>
     <string name="comment">Comment...</string>
     <string name="answer">Answer....</string>
+    <string name="dangxuat">Confirm log out</string>
+    <string name="cfdangxuat">Are you sure you want to log out?</string>
+    <string name="no">No</string>
+    <string name="yes">Yes</string>
     <!--    <string name="intro1">Welcome to Encybara - The Specialized English \n Learning App!</string>-->
     <!--    <string name="getready">Get ready!!</string>-->
     <!--    <string name="encybara">Encybara!</string>-->

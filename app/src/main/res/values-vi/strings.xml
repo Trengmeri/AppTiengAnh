@@ -156,6 +156,10 @@
     <string name="countinue">Tiếp tục</string>
     <string name="comment">Viết bình luận...</string>
     <string name="answer">Trả lời ....</string>
+    <string name="dangxuat">Xác nhận đăng xuất</string>
+    <string name="cfdangxuat">Bạn có chắc chắn muốn đăng xuất không?</string>
+    <string name="no">Không</string>
+    <string name="yes">Có</string>
 <!--    <string name="intro1">Chào mừng đến với Encybara - Ứng dụng học tiếng Anh\n chuyên ngành!</string>-->
 <!--    <string name="getready">Get ready!!</string>-->
 <!--    <string name="encybara">Encybara!</string>-->
