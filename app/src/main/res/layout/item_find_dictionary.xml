@@ -6,7 +6,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:padding="@dimen/dp_16">
         <TextView
             android:id="@+id/wordLabel"
             android:layout_width="wrap_content"
@@ -102,13 +102,13 @@
             android:layout_height="wrap_content"
             android:padding="8dp"
             android:background="@drawable/rounded_textview"
-            android:layout_marginBottom="16dp"/>
+            android:layout_marginBottom="@dimen/dp_16"/>
         <Button
             android:id="@+id/btnAdd"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:backgroundTint="#BC725F"
-            android:text="Add to my flashcards"
+            android:text="@string/addflash"
             android:textColor="#FFFFFF"
             android:textColorLink="#9E3A00"
             android:layout_margin="20dp"

@@ -4,6 +4,10 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.ImageSpan;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +15,8 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
+
+import androidx.core.content.ContextCompat;
 
 import org.json.JSONObject;
 
@@ -48,18 +54,46 @@ public class PopupHelper {
         if ("MULTIPLE".equals(questType) || "CHOICE".equals(questType) || "TEXT".equals(questType)) {
 
             if (userAnswers.toLowerCase().equals(correctAnswers.toLowerCase())) {
-                tvMessage.setText(String.format("%s\n%s", activity.getString(R.string.correct), activity.getString(R.string.ANS)));
+                String correctText = activity.getString(R.string.correct);
+                String ansText = activity.getString(R.string.ANS);
+                SpannableString spannable = new SpannableString(correctText + "  \n" + ansText);
+
+                Drawable tick = ContextCompat.getDrawable(activity, R.drawable.ic_tick);
+                if (tick != null) {
+                    int size = (int) (tvMessage.getLineHeight() * 1.5);
+                    tick.setBounds(0, 0, size, size);
+                    ImageSpan imageSpan = new ImageSpan(tick, ImageSpan.ALIGN_BOTTOM);
+                    int start = correctText.length()+1;
+                    spannable.setSpan(imageSpan, start, start + 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                }
+
+                tvMessage.setText(spannable);
                 tvMessage.setTextColor(activity.getResources().getColor(android.R.color.holo_green_dark));
-                tvDetail.setText(String.join(", ", correctAnswers));
+                tvDetail.setText(correctAnswers);  // hoặc String.join(...) nếu là List
                 popupView.setBackgroundResource(R.drawable.popup_background_correct);
                 btnNext.setBackgroundColor(activity.getResources().getColor(android.R.color.holo_green_dark));
-            }else {
-                tvMessage.setText(String.format("%s\n%s", activity.getString(R.string.oops), activity.getString(R.string.COANS)));
+
+            } else {
+                String oopsText = activity.getString(R.string.oops);
+                String coAnsText = activity.getString(R.string.COANS);
+                SpannableString spannable = new SpannableString(oopsText + "  \n" + coAnsText);
+
+                Drawable cross = ContextCompat.getDrawable(activity, R.drawable.ic_cross);  // icon dấu X
+                if (cross != null) {
+                    int size = (int) (tvMessage.getLineHeight() * 1.5);
+                    cross.setBounds(0, 0, size, size);
+                    ImageSpan imageSpan = new ImageSpan(cross, ImageSpan.ALIGN_BOTTOM);
+                    int start = oopsText.length()+1;
+                    spannable.setSpan(imageSpan, start, start + 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                }
+
+                tvMessage.setText(spannable);
                 tvMessage.setTextColor(activity.getResources().getColor(android.R.color.holo_red_dark));
-                tvDetail.setText(String.join(", ", correctAnswers));
+                tvDetail.setText(correctAnswers);  // hoặc String.join(...) nếu là List
                 popupView.setBackgroundResource(R.drawable.popup_background_incorrect);
                 btnNext.setBackgroundColor(activity.getResources().getColor(android.R.color.holo_red_dark));
             }
+
         } else {
             try {
                 btnview.setVisibility(View.VISIBLE);
@@ -101,3 +135,16 @@ public class PopupHelper {
         dialog.show();
     }
 }
+//if (userAnswers.toLowerCase().equals(correctAnswers.toLowerCase())) {
+//        tvMessage.setText(String.format("%s\n%s", activity.getString(R.string.correct), activity.getString(R.string.ANS)));
+//        tvMessage.setTextColor(activity.getResources().getColor(android.R.color.holo_green_dark));
+//        tvDetail.setText(String.join(", ", correctAnswers));
+//        popupView.setBackgroundResource(R.drawable.popup_background_correct);
+//                btnNext.setBackgroundColor(activity.getResources().getColor(android.R.color.holo_green_dark));
+//        }else {
+//        tvMessage.setText(String.format("%s\n%s", activity.getString(R.string.oops), activity.getString(R.string.COANS)));
+//        tvMessage.setTextColor(activity.getResources().getColor(android.R.color.holo_red_dark));
+//        tvDetail.setText(String.join(", ", correctAnswers));
+//        popupView.setBackgroundResource(R.drawable.popup_background_incorrect);
+//                btnNext.setBackgroundColor(activity.getResources().getColor(android.R.color.holo_red_dark));
+//        }

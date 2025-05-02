@@ -160,6 +160,9 @@
     <string name="cfdangxuat">Bạn có chắc chắn muốn đăng xuất không?</string>
     <string name="no">Không</string>
     <string name="yes">Có</string>
+    <string name="addflash">Thêm vào thẻ ghi nhớ</string>
+    <string name="view">Xem gợi ý cải thiện</string>
+    <string name="nextquestion">Câu tiếp</string>
 <!--    <string name="intro1">Chào mừng đến với Encybara - Ứng dụng học tiếng Anh\n chuyên ngành!</string>-->
 <!--    <string name="getready">Get ready!!</string>-->
 <!--    <string name="encybara">Encybara!</string>-->

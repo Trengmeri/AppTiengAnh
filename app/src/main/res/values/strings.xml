@@ -163,6 +163,9 @@
     <string name="cfdangxuat">Are you sure you want to log out?</string>
     <string name="no">No</string>
     <string name="yes">Yes</string>
+    <string name="addflash">Add to my flashcards</string>
+    <string name="view">View improvement</string>
+    <string name="nextquestion">Next question</string>
     <!--    <string name="intro1">Welcome to Encybara - The Specialized English \n Learning App!</string>-->
     <!--    <string name="getready">Get ready!!</string>-->
     <!--    <string name="encybara">Encybara!</string>-->

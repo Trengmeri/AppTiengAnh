@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="16dp"
+    android:padding="@dimen/dp_16"
     android:background="@drawable/item_flashcard"
     android:layout_marginBottom="8dp"
     android:elevation="2dp">
@@ -14,7 +14,7 @@
                         android:layout_height="wrap_content"
                         android:background="@drawable/btn_remove"
                         android:layout_gravity="end"
-                        android:layout_marginRight="@dimen/dp_30"
+                        android:layout_marginEnd="@dimen/dp_30"
                         android:layout_marginTop="@dimen/dp_16"/>
 
     <TextView
@@ -40,7 +40,7 @@
                         android:textSize="12sp"
                         android:layout_marginTop="@dimen/dp_16"
                         android:layout_marginBottom="@dimen/dp_16"
-                        android:layout_marginRight="@dimen/dp_30"
+                        android:layout_marginEnd="@dimen/dp_30"
                         android:layout_gravity="end"
                         />
 
