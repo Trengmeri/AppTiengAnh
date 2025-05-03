@@ -3,7 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:background="@drawable/bg_study"
+    android:padding="@dimen/dp_16">
 
     <!-- Hàng chứa hai button -->
     <LinearLayout
@@ -14,24 +15,24 @@
         android:layout_marginEnd="8dp">
 
         <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/btnAbout"
+            android:id="@+id/btnMyCourse"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             style="@style/Text_Button_All"
             android:layout_weight="1"
-            android:background="@drawable/bg_about"
+            android:background="@drawable/bg_mycourse"
             android:textSize="16sp"
             android:text="@string/mycourse"/>
 
         <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/btnLesson"
+            android:id="@+id/btnAllCourse"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             style="@style/Text_Button_All"
             android:layout_weight="1"
             android:textSize="16sp"
             android:text="@string/suggestcourse"
-            android:background="@drawable/bg_lesson"/>
+            android:background="@drawable/bg_allcourse"/>
     </LinearLayout>
 
     <!-- ViewPager2 để hiển thị Fragment -->

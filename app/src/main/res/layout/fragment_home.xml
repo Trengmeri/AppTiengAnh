@@ -1,140 +1,114 @@
-
-<ScrollView
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:fillViewport="true">
-    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
-
-        <!-- Khoảng trống phía trên -->
-
-        <!-- Container chứa điểm và kỹ năng (Nằm giữa) -->
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@drawable/bg_homefragment">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/card"
             android:orientation="vertical"
             android:padding="20dp">
-
-
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                >
-
+                android:orientation="horizontal">
 
                 <ImageView
                     android:id="@+id/imgAvatar"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_margin="15dp"
+                    android:layout_margin="@dimen/dp_16"
                     android:background="@drawable/cricle" />
 
                 <LinearLayout
-                    android:layout_width="198dp"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_margin="5dp"
+                    android:layout_marginTop="@dimen/dp_16"
+                    android:layout_marginEnd="10dp"
                     android:layout_weight="1"
                     android:orientation="vertical">
                 <!-- Container cho course info -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="end">
 
-                        <ImageView
-                            android:id="@+id/img_notification"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="end"
-                            android:layout_marginEnd="0dp"
-                            android:layout_marginRight="0dp"
-                            android:background="@drawable/notifications" />
-                    </LinearLayout>
-                <TextView
-                    android:id="@+id/courseTitle"
+                    <TextView
+                        android:id="@+id/courseTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/white"
+                        android:textSize="22sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+                <ImageView
+                    android:id="@+id/img_notification"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:textColor="@color/white"
-                    android:textSize="24sp"
-                    android:textStyle="bold" />
-                </LinearLayout>
+                    android:background="@drawable/notifications" />
             </LinearLayout>
-
                 <Button
-
                     android:id="@+id/btn_continue"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="50dp"
                     android:layout_marginRight="50dp"
-                    android:layout_marginTop="8dp"
+                    android:layout_marginTop="@dimen/dp_16"
                     android:backgroundTint="@color/cotinute"
                     android:text="@string/btn_continute"
+                    android:textColor="@color/black"
                     android:padding="8dp" />
-
-
-
-
         </LinearLayout>
-
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/dp_16">
         <LinearLayout
             android:id="@+id/pointContainer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:layout_marginTop="60dp"
-            android:gravity="top"
-            android:layout_gravity="center"
-            android:background="@drawable/course_discuss">
+            android:layout_gravity="top|center">
 
             <!-- Tổng điểm -->
             <LinearLayout
-                android:layout_gravity="center"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/bg_overalpoint"
                 android:gravity="center"
-                android:orientation="horizontal"
-                android:background="@drawable/bg_schedule">
+                android:orientation="horizontal">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="8dp"
                     android:text="@string/OverallPoints"
-                    android:textSize="20dp"
-                    android:textStyle="bold"
-                    android:textColor="@color/btncolor"/>
+                    android:textColor="@color/btncolor"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/totalPoints"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="20sp"
-                    android:textStyle="bold"
                     android:layout_margin="10dp"
-                    android:textColor="@color/btncolor"/>
+                    android:textColor="@color/btncolor"
+                    android:textSize="20sp"
+                    android:text="1.0"
+                    android:textStyle="bold" />
             </LinearLayout>
 
             <!-- Kỹ năng + điểm hiển thị theo hàng ngang -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:gravity="center">
+                android:orientation="vertical">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
+                    android:background="@drawable/bg_listenpoint"
+                    android:layout_marginTop="@dimen/dp_30"
                     android:gravity="center">
 
                     <TextView
@@ -144,16 +118,21 @@
                         android:layout_height="wrap_content"
                         android:text="@string/lis"
                         android:textStyle="bold"
-                        android:textSize="18dp" />
+                        android:layout_marginStart="@dimen/dp_16"
+                        android:textSize="18sp" />
 
                     <TextView
                         android:id="@+id/listeningpoint"
-                        android:gravity="center"
+                        android:gravity="end"
                         android:layout_width="0dp"
                         android:layout_weight="1"
                         android:layout_height="wrap_content"
-                        android:layout_margin="10dp"
-                        android:textSize="18dp"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginEnd="@dimen/dp_30"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginBottom="10dp"
+                        android:textSize="18sp"
+                        android:text="1.o"
                         android:textStyle="bold"/>
                 </LinearLayout>
 
@@ -161,6 +140,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
+                    android:background="@drawable/bg_speakpoint"
+                    android:layout_marginTop="@dimen/dp_16"
                     android:gravity="center">
 
                     <TextView
@@ -170,22 +151,29 @@
                         android:layout_height="wrap_content"
                         android:text="@string/speak"
                         android:textStyle="bold"
-                        android:textSize="18dp" />
+                        android:layout_marginStart="@dimen/dp_16"
+                        android:textSize="18sp" />
 
                     <TextView
                         android:id="@+id/speakingpoint"
-                        android:gravity="center"
+                        android:gravity="end"
                         android:layout_width="0dp"
                         android:layout_weight="1"
                         android:layout_height="wrap_content"
-                        android:layout_margin="10dp"
-                        android:textSize="18dp"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginEnd="@dimen/dp_30"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginBottom="10dp"
+                        android:textSize="18sp"
+                        android:text="1.0"
                         android:textStyle="bold"/>
                 </LinearLayout>
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
+                    android:background="@drawable/bg_readpoint"
+                    android:layout_marginTop="@dimen/dp_16"
                     android:gravity="center">
 
                     <TextView
@@ -195,16 +183,21 @@
                         android:layout_height="wrap_content"
                         android:text="@string/read"
                         android:textStyle="bold"
-                        android:textSize="18dp"/>
+                        android:layout_marginStart="@dimen/dp_16"
+                        android:textSize="18sp"/>
 
                     <TextView
                         android:id="@+id/readingpoint"
-                        android:gravity="center"
+                        android:gravity="end"
                         android:layout_width="0dp"
                         android:layout_weight="1"
                         android:layout_height="wrap_content"
-                        android:layout_margin="10dp"
-                        android:textSize="18dp"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginEnd="@dimen/dp_30"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginBottom="10dp"
+                        android:textSize="18sp"
+                        android:text="1.0"
                         android:textStyle="bold"/>
                 </LinearLayout>
 
@@ -212,6 +205,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
+                    android:background="@drawable/bg_wripoint"
+                    android:layout_marginTop="@dimen/dp_16"
                     android:gravity="center">
 
                     <TextView
@@ -221,22 +216,26 @@
                         android:layout_height="wrap_content"
                         android:text="@string/write"
                         android:textStyle="bold"
-                        android:textSize="18dp" />
+                        android:layout_marginStart="@dimen/dp_16"
+                        android:textSize="18sp" />
 
                     <TextView
                         android:id="@+id/writingpoint"
-                        android:gravity="center"
+                        android:gravity="end"
                         android:layout_width="0dp"
                         android:layout_weight="1"
                         android:layout_height="wrap_content"
-                        android:layout_margin="10dp"
-                        android:textSize="18dp"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginEnd="@dimen/dp_30"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginBottom="10dp"
+                        android:textSize="18sp"
+                        android:text="1.0"
                         android:textStyle="bold"/>
                 </LinearLayout>
 
             </LinearLayout>
 
         </LinearLayout>
-
+    </androidx.core.widget.NestedScrollView>
     </LinearLayout>
-</ScrollView>

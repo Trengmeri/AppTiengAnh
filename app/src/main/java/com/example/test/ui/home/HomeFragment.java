@@ -82,7 +82,7 @@ public class HomeFragment extends Fragment {
         btnProfile = view.findViewById(R.id.imgAvatar);
         continueButton = view.findViewById(R.id.btn_continue);
         courseTitle = view.findViewById(R.id.courseTitle);
-       // courseNumber = view.findViewById(R.id.courseNumber);
+//        courseNumber = view.findViewById(R.id.courseNumber);
         btnNoti = view.findViewById(R.id.img_notification);
         totalPoints = view.findViewById(R.id.totalPoints);
         readingPoints = view.findViewById(R.id.readingpoint);
@@ -226,7 +226,7 @@ public class HomeFragment extends Fragment {
 
     private void showNoCourseMessage() {
         courseTitle.setText("No active course found");
-//       courseNumber.setText("");
+        //courseNumber.setText("");
         continueButton.setVisibility(View.GONE);
     }
 

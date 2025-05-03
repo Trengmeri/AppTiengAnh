@@ -40,7 +40,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="View improvement"
+            android:text="@string/view"
             android:visibility="gone"/>
 
         <Button
@@ -48,7 +48,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Next question"/>
+            android:text="@string/nextquestion"/>
     </LinearLayout>
 
 </LinearLayout>

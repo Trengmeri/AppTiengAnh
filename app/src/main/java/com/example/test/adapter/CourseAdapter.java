@@ -98,7 +98,7 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseView
                 textView.setTypeface(null, Typeface.BOLD); // Chữ in đậm
                 textView.setGravity(Gravity.CENTER);
 
-                int size = 60;
+                int size = 65;
                 LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(size, size);
                 params.setMargins(10, 0, 10, 0); // Điều chỉnh khoảng cách giữa các lesson
                 textView.setLayoutParams(params);

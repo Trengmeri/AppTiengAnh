@@ -3,8 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/rounded_corner"
-    android:backgroundTint="#F2F1EB"
+    android:background="#FFF2DB"
     android:columnCount="4"
     android:rowCount="1"
     android:padding="16dp">

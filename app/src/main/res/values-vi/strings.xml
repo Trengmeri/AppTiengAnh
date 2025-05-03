@@ -34,7 +34,7 @@
     <string name="writeans">Nhập câu trả lời của bạn.....</string>
     <string name="starttest">Làm một bài\nkiểm tra nhỏ!</string>
     <string name="englishlevel">Chọn trình\nđộ tiếng anh\ncủa bạn!</string>
-    <string name="levelintro">Chọn cấp độ bắt đầu \ntương ứng với trình độ \ncủa bạn</string>
+    <string name="levelintro">Chọn cấp độ bắt đầu \ntương ứng với trình\nđộ của bạn</string>
     <string name="start">Bắt đầu!</string>
     <string name="course_cotinue">Khóa học đang tham gia</string>
     <string name="course_suggest">Khóa học đề xuất</string>
@@ -154,6 +154,15 @@
     <string name="signin">ĐĂNG NHẬP</string>
     <string name="txtforgot">Điền tài khoản email của bạn để\n nhận mã xác nhận</string>
     <string name="countinue">Tiếp tục</string>
+    <string name="comment">Viết bình luận...</string>
+    <string name="answer">Trả lời ....</string>
+    <string name="dangxuat">Xác nhận đăng xuất</string>
+    <string name="cfdangxuat">Bạn có chắc chắn muốn đăng xuất không?</string>
+    <string name="no">Không</string>
+    <string name="yes">Có</string>
+    <string name="addflash">Thêm vào thẻ ghi nhớ</string>
+    <string name="view">Xem gợi ý cải thiện</string>
+    <string name="nextquestion">Câu tiếp</string>
 <!--    <string name="intro1">Chào mừng đến với Encybara - Ứng dụng học tiếng Anh\n chuyên ngành!</string>-->
 <!--    <string name="getready">Get ready!!</string>-->
 <!--    <string name="encybara">Encybara!</string>-->

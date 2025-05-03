@@ -10,4 +10,5 @@
 <!--        &lt;!&ndash; <item name="colorPrimary">@color/my_light_primary</item> &ndash;&gt;-->
 <!--    </style>-->
     <style name="Theme.Test" parent="Base.Theme.Test" />
+
 </resources>

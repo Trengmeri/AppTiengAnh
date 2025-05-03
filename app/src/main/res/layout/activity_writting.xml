@@ -121,8 +121,8 @@
                     android:layout_marginBottom="30dp"
                     android:layout_marginLeft="@dimen/dp_16"
                     android:layout_marginRight="@dimen/dp_16"
-                    android:textColor="@color/white"
-                    android:backgroundTint="@color/btncolor"
+                    android:textColor="@color/black"
+                    android:backgroundTint="#E0EBFF"
                     android:text="@string/check"
                     android:layout_gravity="center"/>
             </LinearLayout>

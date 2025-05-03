@@ -126,7 +126,7 @@
                                     android:layout_weight="1"
                                     android:background="@drawable/bg_about"
                                     android:textSize="16sp"
-                                    android:text="About"/>
+                                    android:text="@string/txt_about"/>
                                 <androidx.appcompat.widget.AppCompatButton
                                     android:id="@+id/btnLesson"
                                     android:layout_width="wrap_content"
@@ -134,7 +134,7 @@
                                     style="@style/Text_Button_All"
                                     android:layout_weight="1"
                                     android:textSize="16sp"
-                                    android:text="Lessons"
+                                    android:text="@string/txt_lesson"
                                     android:background="@drawable/bg_lesson"/>
                             </LinearLayout>
 

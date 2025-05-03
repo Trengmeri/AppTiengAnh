@@ -36,7 +36,7 @@
 
         <activity
             android:name=".ui.englishlevel.EnglishLevelActivity"
-            android:exported="false" />
+            android:exported="true" />
         <activity
             android:name=".ui.question_data.ReadingTextActivity"
             android:exported="false" />
@@ -159,7 +159,7 @@
         <activity
             android:name=".ui.home.HomeActivity"
             android:exported="false"
-            android:launchMode="singleTask" />
+            android:launchMode="singleTask"/>
         <activity
             android:name=".ui.LoadPassActivity"
             android:exported="false" />
