@@ -15,7 +15,7 @@
         android:layout_height="wrap_content"
         android:text="@string/grammar"
         android:textColor="#CE9566"
-        android:textSize="36sp"
+        android:textSize="32sp"
         android:textStyle="bold"
         android:layout_marginTop="@dimen/dp_30"
         android:layout_gravity="center" />
@@ -45,14 +45,16 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:layout_marginBottom="@dimen/dp_30">
 
             <TextView
                 android:id="@+id/tvQuestion"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dp_60"
+                android:layout_marginTop="@dimen/dp_30"
                 android:layout_marginStart="@dimen/dp_16"
+                android:gravity="center"
                 android:drawableStart="@drawable/jam_write"
                 android:drawablePadding="10dp"
                 android:text="@string/fill_blank"
@@ -71,7 +73,7 @@
                 android:id="@+id/tvContent"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="60dp"
+                android:layout_marginTop="@dimen/dp_16"
                 android:layout_marginStart="@dimen/dp_16"
                 android:padding="10dp"
                 android:textSize="18sp"
@@ -81,7 +83,7 @@
                 android:id="@+id/recyclerViewChoices"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="@dimen/dp40" />
+                android:layout_margin="@dimen/dp_30" />
 
             <!-- Nút kiểm tra -->
             <Button

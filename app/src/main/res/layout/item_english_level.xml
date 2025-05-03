@@ -6,19 +6,17 @@
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:gravity="center"
-    app:cardCornerRadius="16dp"
+    app:cardCornerRadius="@dimen/dp_16"
     app:cardElevation="8dp"
-    app:cardBackgroundColor="@android:color/white"
-    android:padding="16dp">
+    app:cardBackgroundColor="@android:color/white">
 
     <TextView
         android:id="@+id/textViewLevel"
         android:layout_width="match_parent"
-        android:layout_marginLeft="30dp"
-        android:layout_marginRight="30dp"
+        android:layout_marginLeft="@dimen/dp_30"
+        android:layout_marginRight="@dimen/dp_30"
         android:layout_height="wrap_content"
         android:textSize="18sp"
-        android:padding="20dp"
         android:gravity="center"
         android:textStyle="bold"
         style="@style/Button_Active_All"

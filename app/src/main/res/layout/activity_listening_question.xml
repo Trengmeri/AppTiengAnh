@@ -14,9 +14,9 @@
         android:layout_height="wrap_content"
         android:text="@string/lis"
         android:textColor="#CE9566"
-        android:textSize="36sp"
+        android:textSize="32sp"
         android:textStyle="bold"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="@dimen/dp_30"
         android:layout_gravity="center"/>
 
     <!-- Thanh tiến trình -->
@@ -47,22 +47,24 @@
                 android:id="@+id/tvInstruction"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="25dp"
+                android:layout_marginTop="@dimen/dp_30"
                 android:layout_marginStart="@dimen/dp_16"
+                android:gravity="center"
                 android:drawableLeft="@drawable/grommet_icons_assist_listening"
                 android:drawablePadding="5dp"
                 android:text="@string/listen_rewrite"
-                android:textSize="24sp"
+                android:textSize="22sp"
                 android:textStyle="bold" />
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/dp_30"
+                android:layout_marginStart="@dimen/dp_16"
+                android:layout_marginEnd="@dimen/dp_16"
                 android:gravity="center">
                 <FrameLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-
                     android:layout_marginLeft="@dimen/dp_60">
 
                     <!-- Nút nghe tùy chỉnh -->
@@ -139,7 +141,7 @@
         android:id="@+id/tvQuestion"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/dp_30"
+        android:layout_marginTop="@dimen/dp_16"
         android:layout_marginStart="@dimen/dp_16"
         android:drawableLeft="@drawable/fe_question"
         android:textSize="20sp"
@@ -167,7 +169,7 @@
         <EditText
             android:id="@+id/etAnswer"
             android:layout_width="match_parent"
-            android:layout_height="48dp"
+            android:layout_height="wrap_content"
             android:ems="30"
             android:hint="@string/answer"/>
     </LinearLayout>
