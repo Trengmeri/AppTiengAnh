@@ -164,6 +164,10 @@
     <string name="view">Xem gợi ý cải thiện</string>
     <string name="nextquestion">Câu tiếp</string>
     <string name="nocourse">Bạn chưa tham gia khóa học nào.</string>
+    <string name="home">Trang chủ</string>
+    <string name="study">Học tập</string>
+    <string name="explore">Khám phá</string>
+    <string name="profile">Bạn</string>
 <!--    <string name="intro1">Chào mừng đến với Encybara - Ứng dụng học tiếng Anh\n chuyên ngành!</string>-->
 <!--    <string name="getready">Get ready!!</string>-->
 <!--    <string name="encybara">Encybara!</string>-->
