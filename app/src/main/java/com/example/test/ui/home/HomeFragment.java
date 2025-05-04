@@ -2,11 +2,13 @@ package com.example.test.ui.home;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -72,6 +74,13 @@ public class HomeFragment extends Fragment {
         initializeManagers();
         setupViews();
         loadData();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Window window = requireActivity().getWindow();
+            window.getDecorView().setSystemUiVisibility(
+                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+            window.setStatusBarColor(Color.TRANSPARENT);
+        }
+
         btnNoti.setOnClickListener(v -> {
             Intent intent = new Intent(getActivity(), NotificationActivity.class);
             startActivity(intent);
