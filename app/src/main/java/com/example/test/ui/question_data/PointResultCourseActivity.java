@@ -18,6 +18,7 @@ import com.example.test.R;
 import com.example.test.api.ApiService;
 import com.example.test.model.Enrollment;
 import com.example.test.ui.CourseInformationActivity;
+import com.example.test.ui.ReviewActivity;
 import com.example.test.ui.home.HomeActivity;
 import com.example.test.api.ApiCallback;
 import com.example.test.api.LessonManager;
@@ -68,7 +69,7 @@ public class PointResultCourseActivity extends AppCompatActivity {
         fetchCourseData(courseID);
 
         btnReview.setOnClickListener(v -> {
-            Intent intent = new Intent(PointResultCourseActivity.this, ReviewAnswerActivity.class);
+            Intent intent = new Intent(PointResultCourseActivity.this, ReviewActivity.class);
             intent.putExtra("courseId", courseID);
             startActivity(intent);
         });

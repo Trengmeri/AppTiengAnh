@@ -1,5 +1,6 @@
 package com.example.test.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
@@ -47,9 +48,13 @@ public class ReviewActivity extends AppCompatActivity {
         back = findViewById(R.id.back);
         ratingBar= findViewById(R.id.ratingBar);
         loadReviews();
+        Intent intent = getIntent();
+        courseID = intent.getIntExtra("courseId", 0);
+
 
         // Sự kiện gửi Review
         btnSendReview.setOnClickListener(v -> {
+            Log.d("ReviewActivity", "Course ID: "+ courseID);
             sendReview();
         });
         back.setOnClickListener(v -> {
