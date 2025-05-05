@@ -86,39 +86,6 @@
 
             </LinearLayout>
 
-<!--&lt;!&ndash;          Cột 2: Thời gian&ndash;&gt;-->
-<!--            <LinearLayout-->
-<!--                android:layout_width="0dp"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:layout_weight="1"-->
-<!--                android:gravity="center">-->
-
-<!--&lt;!&ndash;                <LinearLayout&ndash;&gt;-->
-<!--&lt;!&ndash;                    android:layout_width="wrap_content"&ndash;&gt;-->
-<!--&lt;!&ndash;                    android:layout_height="wrap_content"&ndash;&gt;-->
-<!--&lt;!&ndash;                    android:orientation="vertical"&ndash;&gt;-->
-<!--&lt;!&ndash;                    android:gravity="center">&ndash;&gt;-->
-
-<!--&lt;!&ndash;                    <TextView&ndash;&gt;-->
-<!--&lt;!&ndash;                        android:id="@+id/totalComp"&ndash;&gt;-->
-<!--&lt;!&ndash;                        android:layout_width="wrap_content"&ndash;&gt;-->
-<!--&lt;!&ndash;                        android:layout_height="wrap_content"&ndash;&gt;-->
-<!--&lt;!&ndash;                        android:textSize="15sp"&ndash;&gt;-->
-<!--&lt;!&ndash;                        android:textStyle="bold"&ndash;&gt;-->
-<!--&lt;!&ndash;                        android:textColor="@color/black"&ndash;&gt;-->
-<!--&lt;!&ndash;                        android:gravity="center"/>&ndash;&gt;-->
-
-<!--&lt;!&ndash;                    <TextView&ndash;&gt;-->
-<!--&lt;!&ndash;                        android:layout_width="wrap_content"&ndash;&gt;-->
-<!--&lt;!&ndash;                        android:layout_height="wrap_content"&ndash;&gt;-->
-<!--&lt;!&ndash;                        android:textSize="12sp"&ndash;&gt;-->
-<!--&lt;!&ndash;                        android:textStyle="bold"&ndash;&gt;-->
-<!--&lt;!&ndash;                        android:textColor="@color/black"&ndash;&gt;-->
-<!--&lt;!&ndash;                        android:gravity="center"/>&ndash;&gt;-->
-<!--&lt;!&ndash;                </LinearLayout>&ndash;&gt;-->
-
-
-<!--            </LinearLayout>-->
 
             <!-- Cột 3: Điểm -->
             <LinearLayout
@@ -158,15 +125,24 @@
 
 
         <!-- Thống kê chi tiết -->
-        <TextView
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingTop="16dp"
-            android:paddingBottom="8dp"
-            android:text="Detailed Statistics"
-            android:textColor="@color/black"
-            android:textSize="16sp"
-            android:textStyle="bold" />
+            android:paddingTop="@dimen/dp_16"
+            android:paddingBottom="@dimen/dp_16"
+            android:layout_marginStart="@dimen/dp_16"
+            android:layout_marginEnd="@dimen/dp_16">
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Detailed Statistics"
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+
 
         <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
@@ -186,6 +162,8 @@
                 android:layout_height="wrap_content"
                 android:background="@drawable/rounded_corner"
                 android:orientation="vertical"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
                 android:padding="12dp">
                 <TextView
                     android:layout_width="wrap_content"
@@ -252,6 +230,8 @@
                 android:background="@drawable/rounded_corner"
                 android:orientation="vertical"
                 android:layout_marginTop="15dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
                 android:padding="12dp">
                 <TextView
                     android:layout_width="wrap_content"
@@ -316,6 +296,8 @@
                 android:background="@drawable/rounded_corner"
                 android:orientation="vertical"
                 android:layout_marginTop="15dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
                 android:padding="12dp">
                 <TextView
                     android:layout_width="wrap_content"
@@ -380,6 +362,8 @@
                 android:background="@drawable/rounded_corner"
                 android:orientation="vertical"
                 android:layout_marginTop="15dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
                 android:padding="12dp">
                 <TextView
                     android:layout_width="wrap_content"
@@ -446,7 +430,7 @@
                     android:layout_height="wrap_content"
                     android:layout_margin="20dp"
                     android:layout_weight="1"
-                    android:backgroundTint="@color/grayy"
+                    android:backgroundTint="#A6C0ED"
                     android:text="Review"
                     android:textColor="@color/white" />
 

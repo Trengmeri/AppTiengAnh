@@ -75,6 +75,10 @@ public class PointResultLessonActivity extends AppCompatActivity {
     private Set<Integer> calledAnswerIds = new HashSet<>();
     ApiService apiService;
     private Dialog loadingDialog;
+//    public static final String EXTRA_MODE = "mode";
+//    //public static final int MODE_TEST = 1; // Test đầu vào
+//    public static final int MODE_COURSE = 2; // Khóa học bình thường
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -184,6 +188,7 @@ public class PointResultLessonActivity extends AppCompatActivity {
                                 Intent intent = new Intent(PointResultLessonActivity.this, PointResultCourseActivity.class);
                                 intent.putExtra("courseId", course.getId());
                                 intent.putExtra("status", "study");
+                                intent.putExtra("EXTRA_MODE", "MODE_COURSE");
                                 startActivity(intent);
                                 finish();
                             });

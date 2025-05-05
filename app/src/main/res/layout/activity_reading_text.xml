@@ -50,13 +50,14 @@
 
             <TextView
                 android:id="@+id/tvQuestion"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/dp_30"
                 android:layout_marginStart="@dimen/dp_16"
+                android:layout_marginEnd="@dimen/dp_16"
                 android:drawableStart="@drawable/jam_write"
                 android:drawablePadding="10dp"
-                android:gravity="center"
+                android:gravity="center|start"
                 android:text="@string/fill_blank"
                 android:textSize="22sp"
                 android:textStyle="bold" />

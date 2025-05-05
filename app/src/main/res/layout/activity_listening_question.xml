@@ -49,9 +49,10 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/dp_30"
                 android:layout_marginStart="@dimen/dp_16"
-                android:gravity="center"
+                android:layout_marginEnd="@dimen/dp_16"
+                android:gravity="center|start"
                 android:drawableLeft="@drawable/grommet_icons_assist_listening"
-                android:drawablePadding="5dp"
+                android:drawablePadding="10dp"
                 android:text="@string/listen_rewrite"
                 android:textSize="22sp"
                 android:textStyle="bold" />
@@ -139,11 +140,13 @@
 
     <TextView
         android:id="@+id/tvQuestion"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/dp_16"
         android:layout_marginStart="@dimen/dp_16"
+        android:layout_marginEnd="@dimen/dp_16"
         android:drawableLeft="@drawable/fe_question"
+        android:drawablePadding="10dp"
         android:textSize="20sp"
         android:textStyle="bold" />
             <ImageView

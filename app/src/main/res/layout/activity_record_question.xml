@@ -49,10 +49,10 @@
 
             <TextView
                 android:id="@+id/tvInstruction"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/dp_30"
-                android:gravity="center"
+                android:gravity="center|start"
                 android:drawableLeft="@drawable/grommet_icons_assist_listening"
                 android:text="@string/ans_record"
                 android:drawablePadding="5dp"
@@ -61,10 +61,11 @@
 
             <TextView
                 android:id="@+id/tvQuestion"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:drawableLeft="@drawable/fe_question"
                 android:layout_marginTop="@dimen/dp_30"
+                android:drawablePadding="10dp"
                 android:textSize="20sp"
                 android:textStyle="bold" />
 

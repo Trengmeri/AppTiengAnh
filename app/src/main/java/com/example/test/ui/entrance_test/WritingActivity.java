@@ -46,6 +46,10 @@ public class WritingActivity extends AppCompatActivity {
     private int totalSteps;
     private ApiService apiService = new ApiService(this);
     private ProgressDialog progressDialog;
+//    public static final String EXTRA_MODE = "mode";
+//    public static final int MODE_TEST = 1; // Test đầu vào
+//   // public static final int MODE_COURSE = 2; // Khóa học bình thường
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -179,6 +183,7 @@ public class WritingActivity extends AppCompatActivity {
                                     Intent intent = new Intent(WritingActivity.this, PointResultCourseActivity.class);
                                     intent.putExtra("status", "test");
                                     intent.putExtra("enrollmentId", enrollmentId);
+                                    intent.putExtra("EXTRA_MODE", "MODE_TEST"); // hoặc MODE_COURSE
                                     startActivity(intent);
                                     finish();
                                 }

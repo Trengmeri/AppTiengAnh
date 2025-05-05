@@ -163,7 +163,7 @@ public class ListeningPick1Activity extends AppCompatActivity {
                                     createProgressBars(totalSteps, currentStep); // Cập nhật thanh tiến trình mỗi lần chuyển câu
 
                                 } else {
-                                    Intent intent = new Intent(ListeningPick1Activity.this, SpeakingActivity.class);
+                                    Intent intent = new Intent(ListeningPick1Activity.this, WritingActivity.class);
                                     intent.putExtra("enrollmentId", enrollmentId);
                                     startActivity(intent);
                                     finish();

@@ -68,10 +68,21 @@ public class PointResultCourseActivity extends AppCompatActivity {
         status = getIntent().getStringExtra("status");
         fetchCourseData(courseID);
 
+        String mode = getIntent().getStringExtra("EXTRA_MODE");
+
         btnReview.setOnClickListener(v -> {
-            Intent intent = new Intent(PointResultCourseActivity.this, ReviewActivity.class);
-            intent.putExtra("courseId", courseID);
-            startActivity(intent);
+//            Intent intent = new Intent(PointResultCourseActivity.this, ReviewActivity.class);
+//            intent.putExtra("courseId", courseID);
+//            startActivity(intent);
+            if ("MODE_TEST".equals(mode)) {
+                // sang ReviewAnswer
+                Intent intent = new Intent(PointResultCourseActivity.this, ReviewAnswerActivity.class);
+                startActivity(intent);
+            } else if ("MODE_COURSE".equals(mode)) {
+                // sang ReviewCourse
+                Intent intent = new Intent(PointResultCourseActivity.this, ReviewActivity.class);
+                startActivity(intent);
+            }
         });
 
         btnNext.setOnClickListener(v -> {
@@ -80,8 +91,9 @@ public class PointResultCourseActivity extends AppCompatActivity {
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
             startActivity(intent);
         });
-    }
 
+
+    }
     private void initializeViews() {
         pointTextView = findViewById(R.id.point);
         btnReview = findViewById(R.id.btnReview);

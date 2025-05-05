@@ -22,8 +22,8 @@
     <string name="invalid_username">Không phải tên người dùng hợp lệ</string>
     <string name="invalid_password">Mật khẩu phải > 5 ký tự</string>
     <string name="login_failed">Đăng nhập thất bại</string>
-    <string name="fill_blank">Đọc và trả lời câu hỏi </string>
-    <string name="listen_rewrite">Nghe và viết lại câu trả lời</string>
+    <string name="fill_blank">Đọc và thực hiện theo yêu cầu. </string>
+    <string name="listen_rewrite">Nghe và thực hiện theo yêu cầu.</string>
     <string name="ques_lis">Họ đang nói về điều gì?</string>
     <string name="check">Kiểm tra kết quả</string>
     <string name="review">Xem lại câu trả lời</string>
