@@ -28,9 +28,11 @@ import com.example.test.api.ResultManager;
 import java.util.Locale;
 
 public class HomeActivity extends AppCompatActivity {
-    ImageView btnstudy,btnexplore,btnprofile, icHome;
+    LinearLayout btnstudy,btnexplore,btnprofile, icHome;
     ViewPager2 vpgMain;
-    GridLayout bottomBar;
+    LinearLayout bottomBar;
+    ImageView imgHome, imgStudy, imgExplore, imgProfile;
+    TextView txtHome, txtStudy, txtExplore, txtProfile;
 
 
     @Override
@@ -56,6 +58,16 @@ public class HomeActivity extends AppCompatActivity {
         btnexplore= bottomBar.findViewById(R.id.ic_explore);
         btnprofile= bottomBar.findViewById(R.id.ic_profile);
         btnstudy = bottomBar.findViewById(R.id.ic_study);
+
+        imgHome = findViewById(R.id.imgHome);
+        imgStudy = findViewById(R.id.imgStudy);
+        imgExplore = findViewById(R.id.imgEx);
+        imgProfile = findViewById(R.id.imgPro);
+
+        txtHome = findViewById(R.id.txtHome);
+        txtStudy = findViewById(R.id.txtStudy);
+        txtExplore = findViewById(R.id.txtEx);
+        txtProfile = findViewById(R.id.txtPro);
 
         vpgMain.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
@@ -105,10 +117,22 @@ public class HomeActivity extends AppCompatActivity {
     private void updateIconColors(int position) {
         int selectedColor = ContextCompat.getColor(this, R.color.color_selected);
         int unselectedColor = ContextCompat.getColor(this, R.color.color_unselected);
-        icHome.setColorFilter(position == 0 ? selectedColor : unselectedColor);
-        btnstudy.setColorFilter(position == 1 ? selectedColor : unselectedColor);
-        btnexplore.setColorFilter(position == 2 ? selectedColor : unselectedColor);
-        btnprofile.setColorFilter(position == 3 ? selectedColor : unselectedColor);
+
+        // Home
+        imgHome.setColorFilter(position == 0 ? selectedColor : unselectedColor);
+        txtHome.setTextColor(position == 0 ? selectedColor : unselectedColor);
+
+        // Study
+        imgStudy.setColorFilter(position == 1 ? selectedColor : unselectedColor);
+        txtStudy.setTextColor(position == 1 ? selectedColor : unselectedColor);
+
+        // Explore
+        imgExplore.setColorFilter(position == 2 ? selectedColor : unselectedColor);
+        txtExplore.setTextColor(position == 2 ? selectedColor : unselectedColor);
+
+        // Profile
+        imgProfile.setColorFilter(position == 3 ? selectedColor : unselectedColor);
+        txtProfile.setTextColor(position == 3 ? selectedColor : unselectedColor);
     }
     private void loadLocale() {
         SharedPreferences prefs = getSharedPreferences("Settings", MODE_PRIVATE);

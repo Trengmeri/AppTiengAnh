@@ -234,7 +234,7 @@ public class HomeFragment extends Fragment {
 //    }
 
     private void showNoCourseMessage() {
-        courseTitle.setText("No active course found");
+        courseTitle.setText(getString(R.string.nocourse));
         //courseNumber.setText("");
         continueButton.setVisibility(View.GONE);
     }

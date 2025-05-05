@@ -67,12 +67,13 @@
                             </androidx.constraintlayout.widget.ConstraintLayout>
                             <TextView
                                 android:id="@+id/courseName"
-                                android:layout_width="wrap_content"
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:text="Designing App Layouts"
                                 android:textSize="22sp"
                                 android:textStyle="bold"
                                 android:layout_marginStart="@dimen/dp_30"
+                                android:layout_marginEnd="@dimen/dp_30"
                                 android:layout_marginTop="10dp"/>
 
                             <LinearLayout
