@@ -104,53 +104,53 @@ public class ListeningQuestionActivity extends AppCompatActivity {
         enrollmentId = getIntent().getIntExtra("enrollmentId", 1);
         totalSteps= questions.size();
         createProgressBars(totalSteps, currentQuestionIndex);
+
+        if (mediaPlayer == null) {
+            mediaPlayer = new MediaPlayer();
+            mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+            mediaPlayer.setOnPreparedListener(mp -> {
+                if (isPaused) {
+                    mediaPlayer.seekTo(currentPosition);
+                }
+                mediaPlayer.start();
+                btnCheckResult.setEnabled(true);
+                startWaves();
+                isPlayingAnimation = true;
+            });
+            mediaPlayer.setOnErrorListener((mp, what, extra) -> {
+                Log.e("MediaPlayerError", "Error occurred: what=" + what + ", extra=" + extra);
+                stopWaves();
+                isPlayingAnimation = false;
+                Toast.makeText(this, "Lỗi khi phát audio", Toast.LENGTH_SHORT).show();
+                return true;
+            });
+            mediaPlayer.setOnCompletionListener(mp -> {
+                stopWaves();
+                isPlayingAnimation = false;
+                currentPosition = 0;
+                isPaused = false;
+            });
+        }
         btnReplay.setOnClickListener(v -> {
             replayAudio();
         });
 
         // Hiển thị câu hỏi hiện tại
-        loadQuestion(currentQuestionIndex);
-        materialsManager.fetchAndLoadImageByLesId(lessonID, imgLessonMaterial);
-        materialsManager.fetchAudioByLesId(lessonID, new ApiCallback<String>() {
-            @Override
-            public void onSuccess() {
-
-            }
-
-            @Override
-            public void onSuccess(String result) {
-                runOnUiThread(() -> { // Sử dụng runOnUiThread ở đây
-                    if (result!= null) {
-                        audioUrl = result;
-                        btnListen.setOnClickListener(v -> {
-                            Log.d("AudioTest", "Đã click vào nút nghe");
-                            toggleAudioAndAnimation();
-                        });
-
-                    }
-                });
-            }
-
-            @Override
-            public void onFailure(String errorMessage) {
-
-            }
-        });
         btnListen.setOnClickListener(v -> {
             Log.d("AudioTest", "Đã click vào nút nghe");
-            playAudio(audioUrl);
+            toggleAudioAndAnimation();
         });
+        loadQuestion(currentQuestionIndex);
+        materialsManager.fetchAndLoadImageByLesId(lessonID, imgLessonMaterial);
 
+        int questionID = questions.get(currentQuestionIndex).getId();
+        fetchAudio(questionID, lessonID);
         LinearLayout progressBar = findViewById(R.id.progressBar); // Ánh xạ ProgressBar
 
         btnCheckResult.setOnClickListener(v -> {
             if (mediaPlayer != null && mediaPlayer.isPlaying()) {
-                mediaPlayer.pause();  // Dừng âm thanh nếu đang phát
-                currentPosition = mediaPlayer.getCurrentPosition();
-                isPaused = true;
-                // mediaPlayer.release();
-                //mediaPlayer = null;
-                stopWaves(); // Dừng hoạt hình khi dừng âm thanh
+                pauseAudio();
+                stopWaves();
                 isPlayingAnimation = false;
             }
             String userAnswer = etAnswer.getText().toString().trim();
@@ -248,43 +248,77 @@ public class ListeningQuestionActivity extends AppCompatActivity {
             }
         });
     }
+    private void fetchAudio(int questionId, int lessonId) {
+        mediaManager.fetchMediaByQuesId(questionId, new ApiCallback<MediaFile>() {
+            @Override
+            public void onSuccess() {
+            }
+
+            @Override
+            public void onSuccess(MediaFile mediaFile) {
+                runOnUiThread(() -> {
+                    if (mediaFile != null && mediaFile.getMaterLink() != null && mediaFile.getMaterLink().endsWith(".mp3")) {
+                        audioUrl = mediaFile.getMaterLink().replace("0.0.0.0", "14.225.198.3");
+                        resetMediaPlayer(audioUrl);
+                    } else {
+                        fetchAudioByLessonId(lessonId);
+                    }
+                });
+            }
+
+            @Override
+            public void onFailure(String errorMessage) {
+                runOnUiThread(() -> {
+                    fetchAudioByLessonId(lessonId);
+                });
+            }
+        });
+    }
+    private void fetchAudioByLessonId(int lessonId) {
+        materialsManager.fetchAudioByLesId(lessonId, new ApiCallback<String>() {
+            @Override
+            public void onSuccess() {
+            }
+
+            @Override
+            public void onSuccess(String result) {
+                runOnUiThread(() -> {
+                    if (result != null && !result.isEmpty()) {
+                        audioUrl = result;
+                        resetMediaPlayer(audioUrl);
+                    } else {
+                        Toast.makeText(ListeningQuestionActivity.this, "Không tìm thấy audio", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+
+            @Override
+            public void onFailure(String errorMessage) {
+                runOnUiThread(() -> {
+                    Toast.makeText(ListeningQuestionActivity.this, "Lỗi khi lấy audio: " + errorMessage, Toast.LENGTH_SHORT).show();
+                });
+            }
+        });
+    }
     private void playAudio(String audioUrl) {
         if (audioUrl == null || audioUrl.isEmpty()) {
             Log.e("MediaPlayerError", "Audio URL is null or empty");
+            Toast.makeText(this, "Không có audio để phát", Toast.LENGTH_SHORT).show();
             return;
         }
 
         try {
             if (mediaPlayer == null) {
-                mediaPlayer = new MediaPlayer();
-                mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-                mediaPlayer.setDataSource(audioUrl);
-                mediaPlayer.setOnPreparedListener(mp -> {
-                    if (isPaused) {
-                        mediaPlayer.seekTo(currentPosition); // Tiếp tục từ vị trí đã dừng
-                    }
-                    mediaPlayer.start();
-                    btnCheckResult.setEnabled(true);  // Kích hoạt lại nút CheckResult
-                });
-
-                mediaPlayer.setOnErrorListener((mp, what, extra) -> {
-                    Log.e("MediaPlayerError", "Error occurred: what=" + what + ", extra=" + extra);
-                    return true;
-                });
-                mediaPlayer.setOnCompletionListener(mp -> {
-                    stopWaves();
-                    isPlayingAnimation = false;
-                    currentPosition = 0; // Đặt lại vị trí khi âm thanh kết thúc
-                    isPaused = false;
-                });
-                mediaPlayer.prepareAsync();
-            } else if (isPaused) {
-                mediaPlayer.seekTo(currentPosition); // Tiếp tục từ vị trí đã dừng
+                initializeMediaPlayer(audioUrl);
+            } else if (!mediaPlayer.isPlaying()) {
+                mediaPlayer.seekTo(currentPosition);
                 mediaPlayer.start();
-                isPaused = false;
+                startWaves();
+                isPlayingAnimation = true;
             }
-        } catch (IOException | IllegalArgumentException e) {
-            Log.e("MediaPlayerError", e.getMessage());
+        } catch (IllegalStateException e) {
+            Log.e("MediaPlayerError", "IllegalStateException: " + e.getMessage());
+            resetMediaPlayer(audioUrl);
         }
     }
 
@@ -305,6 +339,7 @@ public class ListeningQuestionActivity extends AppCompatActivity {
                                 }
                             }
                         });
+                        fetchAudio(question.getId(), lessonID);
                     } else {
                         Log.e("ListeningQuestionActivity", "Câu hỏi trả về là null.");
                     }
@@ -336,19 +371,22 @@ public class ListeningQuestionActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         if (mediaPlayer != null) {
-            mediaPlayer.release();
+            try {
+                if (mediaPlayer.isPlaying()) {
+                    mediaPlayer.stop();
+                }
+                mediaPlayer.release();
+            } catch (IllegalStateException e) {
+                Log.e("MediaPlayerError", "Error in onDestroy: " + e.getMessage());
+            }
             mediaPlayer = null;
         }
-        // Hủy các animator để tránh rò rỉ bộ nhớ
-        if (animator1ScaleX != null) animator1ScaleX.cancel();
-        if (animator1ScaleY != null) animator1ScaleY.cancel();
-        if (animator1Alpha != null) animator1Alpha.cancel();
-        if (animator2ScaleX != null) animator2ScaleX.cancel();
-        if (animator2ScaleY != null) animator2ScaleY.cancel();
-        if (animator2Alpha != null) animator2Alpha.cancel();
-        if (animator3ScaleX != null) animator3ScaleX.cancel();
-        if (animator3ScaleY != null) animator3ScaleY.cancel();
-        if (animator3Alpha != null) animator3Alpha.cancel();
+        ObjectAnimator[] animators = {animator1ScaleX, animator1ScaleY, animator1Alpha,
+                animator2ScaleX, animator2ScaleY, animator2Alpha,
+                animator3ScaleX, animator3ScaleY, animator3Alpha};
+        for (ObjectAnimator animator : animators) {
+            if (animator != null) animator.cancel();
+        }
     }
     private void createProgressBars(int totalQuestions, int currentProgress) {
         LinearLayout progressContainer = findViewById(R.id.progressContainer);
@@ -469,55 +507,93 @@ public class ListeningQuestionActivity extends AppCompatActivity {
     // Đồng bộ âm thanh và hoạt hình
     private void toggleAudioAndAnimation() {
         if (!isPlayingAnimation) {
-            // Bắt đầu phát âm thanh
-            playAudio(audioUrl);
-            // Bắt đầu hoạt hình
-            startWaves();
-            isPlayingAnimation = true;
-        } else {
-            // Dừng âm thanh
-            if (mediaPlayer != null && mediaPlayer.isPlaying()) {
-                mediaPlayer.pause();
-                currentPosition = mediaPlayer.getCurrentPosition(); // Lưu vị trí hiện tại
-                isPaused = true;
-                //mediaPlayer.release();
-                //mediaPlayer = null;
+            if (isPaused && mediaPlayer != null) {
+                mediaPlayer.start();
+                startWaves();
+                isPlayingAnimation = true;
+                isPaused = false;
+            } else {
+                playAudio(audioUrl);
             }
-            // Dừng hoạt hình
+        } else {
+            pauseAudio();
             stopWaves();
             isPlayingAnimation = false;
         }
     }
     private void replayAudio() {
+        if (audioUrl == null) return;
         if (mediaPlayer != null) {
-            mediaPlayer.seekTo(0); // Đặt vị trí về đầu
-            mediaPlayer.start(); // Phát lại từ đầu
-            currentPosition = 0; // Đặt lại vị trí hiện tại
-            isPaused = false; // Đặt lại trạng thái tạm dừng
-
-            // Dừng hoạt hình hiện tại
-            stopWaves();
-
-            // Đặt lại trạng thái của các vòng tròn sóng âm về giá trị ban đầu
-            wave1.setScaleX(1f);
-            wave1.setScaleY(1f);
-            wave1.setAlpha(0.5f);
-
-            wave2.setScaleX(1f);
-            wave2.setScaleY(1f);
-            wave2.setAlpha(0.3f);
-
-            wave3.setScaleX(1f);
-            wave3.setScaleY(1f);
-            wave3.setAlpha(0.1f);
-
-            // Chạy lại hoạt hình từ đầu
-            startWaves();
-            isPlayingAnimation = true;
-        } else {
-            // Nếu mediaPlayer chưa được khởi tạo, gọi playAudio để khởi tạo và phát từ đầu
-            playAudio(audioUrl);
+            mediaPlayer.stop();
+            mediaPlayer.reset();
+        }
+        stopWaves();
+        resetWaveViews();
+        currentPosition = 0;
+        isPaused = false;
+        initializeMediaPlayer(audioUrl);
+    }
+    private void pauseAudio() {
+        if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+            currentPosition = mediaPlayer.getCurrentPosition();
+            mediaPlayer.pause();
+            isPaused = true;
         }
     }
-
+    private void initializeMediaPlayer(String audioUrl) {
+        try {
+            mediaPlayer = new MediaPlayer();
+            mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+            mediaPlayer.setDataSource(audioUrl);
+            mediaPlayer.setOnPreparedListener(mp -> {
+                mediaPlayer.start();
+                btnCheckResult.setEnabled(true);
+                startWaves();
+                isPlayingAnimation = true;
+            });
+            mediaPlayer.setOnErrorListener((mp, what, extra) -> {
+                Log.e("MediaPlayerError", "Error occurred: what=" + what + ", extra=" + extra);
+                stopWaves();
+                isPlayingAnimation = false;
+                Toast.makeText(ListeningQuestionActivity.this, "Lỗi khi phát audio", Toast.LENGTH_SHORT).show();
+                return true;
+            });
+            mediaPlayer.setOnCompletionListener(mp -> {
+                stopWaves();
+                isPlayingAnimation = false;
+                currentPosition = 0;
+                isPaused = false;
+            });
+            mediaPlayer.prepareAsync();
+        } catch (IOException e) {
+            Log.e("MediaPlayerError", "Error initializing: " + e.getMessage());
+            Toast.makeText(this, "Lỗi khi khởi tạo audio", Toast.LENGTH_SHORT).show();
+        }
+    }
+    private void resetWaveViews() {
+        wave1.setScaleX(1f);
+        wave1.setScaleY(1f);
+        wave1.setAlpha(0.5f);
+        wave2.setScaleX(1f);
+        wave2.setScaleY(1f);
+        wave2.setAlpha(0.3f);
+        wave3.setScaleX(1f);
+        wave3.setScaleY(1f);
+        wave3.setAlpha(0.1f);
+    }
+    private void resetMediaPlayer(String audioUrl) {
+        if (mediaPlayer != null) {
+            try {
+                if (mediaPlayer.isPlaying()) {
+                    mediaPlayer.stop();
+                }
+                mediaPlayer.reset();
+            } catch (IllegalStateException e) {
+                Log.e("MediaPlayerError", "Error resetting: " + e.getMessage());
+            }
+            mediaPlayer.release();
+            mediaPlayer = null;
+        }
+        initializeMediaPlayer(audioUrl);
+    }
 }

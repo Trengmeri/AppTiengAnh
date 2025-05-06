@@ -119,7 +119,31 @@ public class ListeningChoiceActivity extends AppCompatActivity {
         totalSteps= questions.size();
         createProgressBars(totalSteps, currentQuestionIndex);
         enrollmentId = getIntent().getIntExtra("enrollmentId", 1);
-
+        if (mediaPlayer == null) {
+            mediaPlayer = new MediaPlayer();
+            mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+            mediaPlayer.setOnPreparedListener(mp -> {
+                if (isPaused) {
+                    mediaPlayer.seekTo(currentPosition);
+                }
+                mediaPlayer.start();
+                btnCheckResult.setEnabled(true);
+                startWaves();
+                isPlayingAnimation = true;
+            });
+            mediaPlayer.setOnErrorListener((mp, what, extra) -> {
+                Log.e("MediaPlayerError", "Error occurred: what=" + what + ", extra=" + extra);
+                stopWaves();
+                isPlayingAnimation = false;
+                return true;
+            });
+            mediaPlayer.setOnCompletionListener(mp -> {
+                stopWaves();
+                isPlayingAnimation = false;
+                currentPosition = 0;
+                isPaused = false;
+            });
+        }
         btnReplay.setOnClickListener(v -> replayAudio());
         btnListen.setOnClickListener(v -> {
             Log.d("AudioTest", "Đã click vào nút nghe");
@@ -128,33 +152,9 @@ public class ListeningChoiceActivity extends AppCompatActivity {
         // Hiển thị câu hỏi hiện tại
         loadQuestion(currentQuestionIndex);
         materialsManager.fetchAndLoadImageByLesId(lessonID, imgLessonMaterial);
-        materialsManager.fetchAudioByLesId(lessonID,  new ApiCallback<String>() {
-
-            @Override
-            public void onSuccess() {
-
-            }
-
-            @Override
-            public void onSuccess(String result) {
-                runOnUiThread(() -> { // Sử dụng runOnUiThread ở đây
-                    if (result!= null) {
-                        audioUrl = result;
-//                        btnListen.setOnClickListener(v -> {
-//                            Log.d("AudioTest", "Đã click vào nút nghe");
-//                            toggleAudioAndAnimation();
-//                        });
-
-                    }
-                });
-            }
-
-            @Override
-            public void onFailure(String errorMessage) {
-
-            }
-        });
-
+        // Lấy audio theo questionID, fallback sang lessonID
+        int questionID = questions.get(currentQuestionIndex).getId();
+        fetchAudio(questionID, lessonID);
 
         btnCheckResult.setOnClickListener(v -> {
             if (mediaPlayer != null && mediaPlayer.isPlaying()) {
@@ -261,32 +261,57 @@ public class ListeningChoiceActivity extends AppCompatActivity {
     }
 
 
-    private void fetchAudioUrl(int questionId) {
-
-        // Gọi phương thức fetchAudioUrl từ ApiManager
+    private void fetchAudio(int questionId, int lessonId) {
+        // Ưu tiên lấy audio theo questionID
         mediaManager.fetchMediaByQuesId(questionId, new ApiCallback<MediaFile>() {
-
             @Override
             public void onSuccess() {
-
             }
 
             @Override
             public void onSuccess(MediaFile mediaFile) {
-                runOnUiThread(() -> { // Sử dụng runOnUiThread ở đây
-                    if (mediaFile!= null) {
-                        btnListen.setOnClickListener(v -> {
-                            String modifiedLink = mediaFile.getMaterLink().replace("0.0.0.0", "14.225.198.3");
-                            playAudio(modifiedLink);
-                        });
+                runOnUiThread(() -> {
+                    if (mediaFile != null && mediaFile.getMaterLink() != null && mediaFile.getMaterLink().endsWith(".mp3")) {
+                        audioUrl = mediaFile.getMaterLink().replace("0.0.0.0", "14.225.198.3");
+                        // Reset MediaPlayer để chuẩn bị phát file mới
+                        resetMediaPlayer(audioUrl);
+                    } else {
+                        // Fallback sang lessonID nếu không tìm thấy audio cho questionID
+                        fetchAudioByLessonId(lessonId);
                     }
                 });
             }
 
             @Override
             public void onFailure(String errorMessage) {
-                // Hiển thị thông báo lỗi nếu có
-                Log.e("media",errorMessage);
+                // Fallback sang lessonID nếu fetchMediaByQuesId thất bại
+                fetchAudioByLessonId(lessonId);
+            }
+        });
+    }
+    private void fetchAudioByLessonId(int lessonId) {
+        materialsManager.fetchAudioByLesId(lessonId, new ApiCallback<String>() {
+            @Override
+            public void onSuccess() {
+            }
+
+            @Override
+            public void onSuccess(String result) {
+                runOnUiThread(() -> {
+                    if (result != null && !result.isEmpty()) {
+                        audioUrl = result;
+                        resetMediaPlayer(audioUrl);
+                    } else {
+                        Toast.makeText(ListeningChoiceActivity.this, "Không tìm thấy audio", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+
+            @Override
+            public void onFailure(String errorMessage) {
+                runOnUiThread(() -> {
+                    Toast.makeText(ListeningChoiceActivity.this, "Lỗi khi lấy audio: " + errorMessage, Toast.LENGTH_SHORT).show();
+                });
             }
         });
     }
@@ -318,7 +343,9 @@ public class ListeningChoiceActivity extends AppCompatActivity {
                             });
                         } else {
                                 Log.e("ListeningChoiceActivity", "Câu hỏi không có lựa chọn.");
-                            }
+                        }
+                        // Lấy audio cho câu hỏi mới
+                        fetchAudio(question.getId(), lessonID);
                     } else {
                         Log.e("ListeningChoiceActivity", "Câu hỏi trả về là null.");
                     }
@@ -447,16 +474,12 @@ public class ListeningChoiceActivity extends AppCompatActivity {
     private void toggleAudioAndAnimation() {
         if (!isPlayingAnimation) {
             if (isPaused && mediaPlayer != null) {
-                // Tiếp tục từ vị trí tạm dừng
                 mediaPlayer.start();
                 startWaves();
                 isPlayingAnimation = true;
                 isPaused = false;
             } else {
-                // Phát từ đầu nếu chưa có mediaPlayer hoặc đã hoàn thành
                 playAudio(audioUrl);
-                startWaves();
-                isPlayingAnimation = true;
             }
         } else {
             pauseAudio();
@@ -467,6 +490,7 @@ public class ListeningChoiceActivity extends AppCompatActivity {
     private void playAudio(String audioUrl) {
         if (audioUrl == null || audioUrl.isEmpty()) {
             Log.e("MediaPlayerError", "Audio URL is null or empty");
+            Toast.makeText(this, "Không có audio để phát", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -476,13 +500,15 @@ public class ListeningChoiceActivity extends AppCompatActivity {
             } else if (!mediaPlayer.isPlaying()) {
                 mediaPlayer.seekTo(currentPosition);
                 mediaPlayer.start();
+                startWaves();
+                isPlayingAnimation = true;
             }
         } catch (IllegalStateException e) {
             Log.e("MediaPlayerError", "IllegalStateException: " + e.getMessage());
             resetMediaPlayer(audioUrl);
         }
     }
-    // Phát lại âm thanh từ đầu
+
     private void replayAudio() {
         if (audioUrl == null) return;
         if (mediaPlayer != null) {
@@ -492,9 +518,8 @@ public class ListeningChoiceActivity extends AppCompatActivity {
         stopWaves();
         resetWaveViews();
         currentPosition = 0;
+        isPaused = false;
         initializeMediaPlayer(audioUrl);
-        startWaves();
-        isPlayingAnimation = true;
     }
 
     private void pauseAudio() {
@@ -513,10 +538,14 @@ public class ListeningChoiceActivity extends AppCompatActivity {
             mediaPlayer.setOnPreparedListener(mp -> {
                 mediaPlayer.start();
                 btnCheckResult.setEnabled(true);
+                startWaves();
+                isPlayingAnimation = true;
             });
             mediaPlayer.setOnErrorListener((mp, what, extra) -> {
                 Log.e("MediaPlayerError", "Error occurred: what=" + what + ", extra=" + extra);
-                resetMediaPlayer(audioUrl);
+                stopWaves();
+                isPlayingAnimation = false;
+                Toast.makeText(ListeningChoiceActivity.this, "Lỗi khi phát audio", Toast.LENGTH_SHORT).show();
                 return true;
             });
             mediaPlayer.setOnCompletionListener(mp -> {
@@ -528,16 +557,25 @@ public class ListeningChoiceActivity extends AppCompatActivity {
             mediaPlayer.prepareAsync();
         } catch (IOException e) {
             Log.e("MediaPlayerError", "Error initializing: " + e.getMessage());
+            Toast.makeText(this, "Lỗi khi khởi tạo audio", Toast.LENGTH_SHORT).show();
         }
     }
-
     private void resetMediaPlayer(String audioUrl) {
         if (mediaPlayer != null) {
+            try {
+                if (mediaPlayer.isPlaying()) {
+                    mediaPlayer.stop();
+                }
+                mediaPlayer.reset();
+            } catch (IllegalStateException e) {
+                Log.e("MediaPlayerError", "Error resetting: " + e.getMessage());
+            }
             mediaPlayer.release();
             mediaPlayer = null;
         }
         initializeMediaPlayer(audioUrl);
     }
+
     private void resetWaveViews() {
         wave1.setScaleX(1f);
         wave1.setScaleY(1f);
@@ -573,6 +611,7 @@ public class ListeningChoiceActivity extends AppCompatActivity {
             if (animator != null) animator.cancel();
         }
     }
+
     private void createProgressBars(int totalQuestions, int currentProgress) {
         LinearLayout progressContainer = findViewById(R.id.progressContainer);
         progressContainer.removeAllViews(); // Xóa thanh cũ nếu có

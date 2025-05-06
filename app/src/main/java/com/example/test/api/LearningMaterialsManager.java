@@ -19,6 +19,7 @@ import com.google.gson.JsonSyntaxException;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import okhttp3.Call;
@@ -107,25 +108,59 @@ public class LearningMaterialsManager extends BaseApiManager {
                         List<MediaFile> mediaFiles = apiResponse.getData();
 
                         if (mediaFiles != null && !mediaFiles.isEmpty()) {
+                            // Collect all MP3 URLs
+                            List<String> mp3Urls = new ArrayList<>();
                             for (MediaFile media : mediaFiles) {
                                 String mediaUrl = media.getMaterLink().replace("0.0.0.0", "14.225.198.3");
                                 if (mediaUrl.endsWith(".mp3")) {
-                                    new Handler(Looper.getMainLooper()).post(() -> {
+                                    mp3Urls.add(mediaUrl);
+                                }
+                            }
+
+                            if (!mp3Urls.isEmpty()) {
+                                // Define a Runnable to play MP3 files sequentially
+                                final Handler handler = new Handler(Looper.getMainLooper());
+                                final Runnable playNext = new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        if (mp3Urls.isEmpty()) {
+                                            return; // No more files to play
+                                        }
                                         try {
                                             if (mediaPlayer.isPlaying()) {
                                                 mediaPlayer.stop();
                                                 mediaPlayer.reset();
                                             }
-                                            mediaPlayer.setDataSource(mediaUrl);
+                                            mediaPlayer.setDataSource(mp3Urls.get(0));
                                             mediaPlayer.prepareAsync();
-                                            mediaPlayer.setOnPreparedListener(MediaPlayer::start);
+                                            mediaPlayer.setOnPreparedListener(mp -> mp.start());
+                                            mediaPlayer.setOnCompletionListener(mp -> {
+                                                mp3Urls.remove(0);
+                                                mediaPlayer.reset();
+                                                handler.post(this); // Play the next file
+                                            });
+                                            mediaPlayer.setOnErrorListener((mp, what, extra) -> {
+                                                Log.e("AudioError", "Lỗi MediaPlayer: what=" + what + ", extra=" + extra);
+                                                mp3Urls.remove(0);
+                                                mediaPlayer.reset();
+                                                handler.post(this); // Skip to next file on error
+                                                return true;
+                                            });
                                         } catch (IOException e) {
                                             Log.e("AudioError", "Lỗi khi phát nhạc: " + e.getMessage());
+                                            mp3Urls.remove(0);
+                                            mediaPlayer.reset();
+                                            handler.post(this); // Skip to next file on error
                                         }
-                                    });
-                                    return; // Chỉ phát file MP3 đầu tiên tìm thấy
-                                }
+                                    }
+                                };
+                                // Start playing the first file
+                                handler.post(playNext);
+                            } else {
+                                Log.d("QuestionManager", "Không tìm thấy file MP3 nào.");
                             }
+                        } else {
+                            Log.d("QuestionManager", "Không có media files trong response.");
                         }
                     } catch (JsonSyntaxException e) {
                         Log.e("QuestionManager", "Lỗi khi parse JSON: " + e.getMessage());
