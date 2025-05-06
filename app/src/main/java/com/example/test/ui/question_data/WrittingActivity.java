@@ -142,7 +142,7 @@ public class WrittingActivity extends AppCompatActivity {
                         Log.d("WrittingActivity.this", "Lưu thành công!");
                         progressDialog.dismiss();
                         runOnUiThread(() -> {
-                            PopupHelper.showResultPopup(WrittingActivity.this, questype, null, null, result.getPoint(), result.getimprovements(), result.getevaluation(), () -> {
+                            PopupHelper.showResultPopup(WrittingActivity.this, "WRITING", null, null, result.getPoint(), result.getimprovements(), result.getevaluation(), () -> {
                                 etAnswer.setText("");
                                 key.setText("");
                                 currentStep++; // Tăng currentStep

@@ -172,7 +172,7 @@ public class WritingActivity extends AppCompatActivity {
 
                         progressDialog.dismiss();
                         runOnUiThread(() -> {
-                            PopupHelper.showResultPopup(WritingActivity.this, questype, null, null, result.getPoint(), result.getimprovements(), result.getevaluation(), () -> {
+                            PopupHelper.showResultPopup(WritingActivity.this, "WRITING", null, null, result.getPoint(), result.getimprovements(), result.getevaluation(), () -> {
                                 etAnswer.setText("");
                                 key.setText("");
                                 currentStep++;

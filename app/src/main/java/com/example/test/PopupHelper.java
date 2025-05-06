@@ -7,6 +7,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.text.SpannableString;
 import android.text.Spanned;
+import android.text.TextUtils;
 import android.text.style.ImageSpan;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -54,7 +55,7 @@ public class PopupHelper {
 
         if ("MULTIPLE".equals(questType) || "CHOICE".equals(questType) || "TEXT".equals(questType)) {
 
-            if (userAnswers.toLowerCase().equals(correctAnswers.toLowerCase())) {
+            if (TextUtils.equals(userAnswers.trim().toLowerCase(), correctAnswers.trim().toLowerCase())) {
                 String correctText = activity.getString(R.string.correct);
                 String ansText = activity.getString(R.string.ANS);
                 SpannableString spannable = new SpannableString(correctText + "  \n" + ansText);
