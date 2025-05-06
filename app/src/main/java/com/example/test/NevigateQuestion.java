@@ -112,8 +112,6 @@ public class NevigateQuestion extends AppCompatActivity {
             } else {
                 intent = new Intent(this, GrammarPick1QuestionActivity.class);
             }
-
-
     } else if ("LISTENING".equals(skill)) {
             String quesType = question.getQuesType().trim().toUpperCase();
             intent = new Intent(this, "CHOICE".equals(quesType)

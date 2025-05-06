@@ -60,6 +60,7 @@ public class PointResultCourseActivity extends AppCompatActivity {
     private static final int DELAY_MILLIS = 1500; // 1,5 giây
     View darkOverlay;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -83,6 +84,7 @@ public class PointResultCourseActivity extends AppCompatActivity {
             } else if ("MODE_COURSE".equals(mode)) {
                 // sang ReviewCourse
                 Intent intent = new Intent(PointResultCourseActivity.this, ReviewActivity.class);
+                intent.putExtra("CourseID",courseID);
                 startActivity(intent);
             }
         });

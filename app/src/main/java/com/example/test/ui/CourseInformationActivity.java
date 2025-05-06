@@ -325,10 +325,6 @@ import java.util.List;
         }
     }
 
-
-
-
-
     private void loadReviews() {
         reviewManager.fetchReviewsByCourse(courseID, currentPage, new ApiCallback<List<Review>>() {
             @Override

@@ -51,6 +51,7 @@ public class PopupHelper {
         Button btnNext = popupView.findViewById(R.id.btnNextQuestion);
         Button btnview = popupView.findViewById(R.id.btnview);
 
+
         if ("MULTIPLE".equals(questType) || "CHOICE".equals(questType) || "TEXT".equals(questType)) {
 
             if (userAnswers.toLowerCase().equals(correctAnswers.toLowerCase())) {
@@ -135,16 +136,4 @@ public class PopupHelper {
         dialog.show();
     }
 }
-//if (userAnswers.toLowerCase().equals(correctAnswers.toLowerCase())) {
-//        tvMessage.setText(String.format("%s\n%s", activity.getString(R.string.correct), activity.getString(R.string.ANS)));
-//        tvMessage.setTextColor(activity.getResources().getColor(android.R.color.holo_green_dark));
-//        tvDetail.setText(String.join(", ", correctAnswers));
-//        popupView.setBackgroundResource(R.drawable.popup_background_correct);
-//                btnNext.setBackgroundColor(activity.getResources().getColor(android.R.color.holo_green_dark));
-//        }else {
-//        tvMessage.setText(String.format("%s\n%s", activity.getString(R.string.oops), activity.getString(R.string.COANS)));
-//        tvMessage.setTextColor(activity.getResources().getColor(android.R.color.holo_red_dark));
-//        tvDetail.setText(String.join(", ", correctAnswers));
-//        popupView.setBackgroundResource(R.drawable.popup_background_incorrect);
-//                btnNext.setBackgroundColor(activity.getResources().getColor(android.R.color.holo_red_dark));
-//        }
+

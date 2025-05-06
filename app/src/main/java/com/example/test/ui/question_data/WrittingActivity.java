@@ -44,9 +44,9 @@ public class WrittingActivity extends AppCompatActivity {
     private ApiService apiService = new ApiService(this);
     private List<Question> questions; // Danh sách câu hỏi
     private int currentQuestionIndex;
-    private int lessonID,courseID,enrollmentId;
+    private int lessonID,courseID;
     private ProgressDialog progressDialog;
-
+    int enrollmentId;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -76,7 +76,7 @@ public class WrittingActivity extends AppCompatActivity {
             if (userAnswer.isEmpty()) {
                 Toast.makeText(this, "Please enter an answer!", Toast.LENGTH_SHORT).show();
             } else {
-                checkAnswer(userAnswer);
+                checkAnswer(userAnswer,enrollmentId);
             }
         });
     }
@@ -119,7 +119,7 @@ public class WrittingActivity extends AppCompatActivity {
         finish();
     }
 
-    private void checkAnswer(String userAnswer) {
+    private void checkAnswer(String userAnswer,int enrollmentId) {
         String questionContent = tvContent.getText().toString().trim();
         ApiService apiService = new ApiService(this);
 
@@ -143,10 +143,11 @@ public class WrittingActivity extends AppCompatActivity {
                         progressDialog.dismiss();
                         runOnUiThread(() -> {
                             PopupHelper.showResultPopup(WrittingActivity.this, questype, null, null, result.getPoint(), result.getimprovements(), result.getevaluation(), () -> {
-                                currentStep++; // Tăng currentStep
-                                currentQuestionIndex++;
                                 etAnswer.setText("");
                                 key.setText("");
+                                currentStep++; // Tăng currentStep
+                                currentQuestionIndex++;
+
                                 if (currentQuestionIndex < questions.size()) {
                                     createProgressBars(totalSteps, currentQuestionIndex);
                                     loadQuestion(currentQuestionIndex);
