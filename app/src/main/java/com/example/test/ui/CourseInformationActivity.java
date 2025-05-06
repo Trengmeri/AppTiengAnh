@@ -271,6 +271,7 @@ import java.util.List;
         btnJoin = findViewById(R.id.btnJoin);
         reviewAdapter = new ReviewAdapter(CourseInformationActivity.this, reviews);
         recyclerView.setAdapter(reviewAdapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
         contentAbout.setVisibility(View.VISIBLE);
         recyclerViewLesson.setVisibility(View.GONE);
 
@@ -330,7 +331,7 @@ import java.util.List;
     }
 
         private void loadReviews() {
-            reviewManager.fetchReviewsByCourse(12, currentPage, new ApiCallback<List<Review>>() {
+            reviewManager.fetchReviewsByCourse(courseID, currentPage, new ApiCallback<List<Review>>() {
                 @Override
                 public void onSuccess() {
 

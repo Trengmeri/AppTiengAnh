@@ -15,6 +15,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.test.R;
 import com.example.test.SharedPreferencesManager;
@@ -24,6 +26,7 @@ import com.example.test.api.ReviewManager;
 import com.example.test.model.Course;
 import com.example.test.model.Review;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ReviewActivity extends AppCompatActivity {
@@ -32,13 +35,15 @@ public class ReviewActivity extends AppCompatActivity {
     TextView back;
     private ReviewManager reviewManager = new ReviewManager(this);
     private ReviewAdapter reviewAdapter;
+    private RecyclerView recyclerView;
     Course curCourse;
     RatingBar ratingBar;
     private int courseID;
     private int currentPage = 1; // Bắt đầu từ trang 1
     private boolean isLoading = false; // Để tránh tải dữ liệu nhiều lần
-    private boolean hasMoreData = true; // Để biết còn dữ liệu để tải không
+    private boolean hasMoreData = true;// Để biết còn dữ liệu để tải không
 
+    private List<Review> reviews = new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,8 +52,11 @@ public class ReviewActivity extends AppCompatActivity {
         btnSendReview = findViewById(R.id.btnSendReview);
         back = findViewById(R.id.back);
         ratingBar= findViewById(R.id.ratingBar);
+        recyclerView = findViewById(R.id.rv_Review);
        courseID = getIntent().getIntExtra("CourseID",1);
-
+        reviewAdapter = new ReviewAdapter(ReviewActivity.this, reviews);
+        recyclerView.setAdapter(reviewAdapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
         String id = SharedPreferencesManager.getInstance(this).getID();
         // Sự kiện gửi Review
         btnSendReview.setOnClickListener(v -> {
@@ -74,12 +82,14 @@ public class ReviewActivity extends AppCompatActivity {
                 runOnUiThread(() -> {
                     if (reviews == null || reviews.isEmpty()) {
                         hasMoreData = false;
+                        Log.d("CourseInformationActivity", "List review null ");
                         return;
                     }
-                    if ( reviewAdapter == null){
-                        reviewAdapter = new ReviewAdapter(ReviewActivity.this, reviews);
-                    }else {
+                    else {
+                        Log.d("CourseInformationActivity", "reviewSize: "+ reviews.size() );
                         reviewAdapter.addMoreReviews(reviews);
+
+
                     }
 
                     currentPage++;

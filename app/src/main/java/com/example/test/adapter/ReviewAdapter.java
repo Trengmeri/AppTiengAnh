@@ -62,55 +62,59 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ViewHolder
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Review review = reviews.get(position);
 
-        // Hiển thị nội dung đánh giá
+        // Hiển thị nội dung cơ bản
         holder.txtReContent.setText(review.getReContent());
-//        holder.txtReSubject.setText(review.getReSubject());
         holder.txtLikeCount.setText(String.valueOf(review.getNumLike()));
         holder.btnLike.setSelected(review.isLiked());
         holder.txtNumStar.setText(String.valueOf(review.getNumStar()));
         holder.ratingBar.setRating(review.getNumStar());
 
-        // Cache tên người dùng
-        final int reviewUserId = review.getUserId();
-        final ViewHolder currentHolder = holder;
+        // Tải thông tin người dùng
+        int reviewUserId = review.getUserId();
         userManager.fetchUserById(reviewUserId, new ApiCallback<User>() {
             @Override
             public void onSuccess() {
-                // Do nothing, xử lý sau
+
             }
 
             @Override
             public void onSuccess(User user) {
                 String avatar = user.getAvt();
                 String name = user.getName();
-                Log.d("UserAdapter", "onSuccess: " + name);
-                String uri;
-                if (avatar == null) return;
-                uri = avatar.replace("0.0.0.0", "14.225.198.3");
+                String uri = (avatar != null) ? avatar.replace("0.0.0.0", "14.225.198.3") : null;
 
                 new Handler(Looper.getMainLooper()).post(() -> {
-                        currentHolder.txtUser.setText(name); // Cập nhật tên người dùng
-                        Log.d("TEST", "onSuccess: Thanh Cong");
-                        Glide.with(context)
-                                .load(uri)
-                                .placeholder(R.drawable.icon_lesson)
-                                .error(R.drawable.icon_lesson)
-                                .circleCrop()
-                                .override(200, 200)
-                                .into(currentHolder.imgAvatar);
+                    int adapterPosition = holder.getAdapterPosition();
+                    if (adapterPosition != RecyclerView.NO_POSITION) {
+                        Review currentReview = reviews.get(adapterPosition);
+                        if (currentReview.getUserId() == user.getId()) {
+                            holder.txtUser.setText(name);
+                            if (uri != null) {
+                                Glide.with(context)
+                                        .load(uri)
+                                        .placeholder(R.drawable.icon_lesson)
+                                        .error(R.drawable.icon_lesson)
+                                        .circleCrop()
+                                        .override(200, 200)
+                                        .into(holder.imgAvatar);
+                            }
+                        }
+                    }
                 });
             }
 
             @Override
             public void onFailure(String errorMessage) {
                 new Handler(Looper.getMainLooper()).post(() -> {
-                    currentHolder.txtUser.setText("Không tải được tên");
-                    Toast.makeText(context, "Lỗi tải tên người dùng: " + errorMessage, Toast.LENGTH_SHORT).show();
+                    if (holder.getAdapterPosition() != RecyclerView.NO_POSITION) {
+                        holder.txtUser.setText("Không tải được tên");
+                        Toast.makeText(context, "Lỗi tải tên: " + errorMessage, Toast.LENGTH_SHORT).show();
+                    }
                 });
             }
         });
 
-        // Kiểm tra trạng thái like ban đầu
+        // Kiểm tra like
         reviewManager.isReviewLiked(currentUserId, review.getId(), new ApiCallback<Boolean>() {
             @Override
             public void onSuccess() {
@@ -121,7 +125,9 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ViewHolder
             public void onSuccess(Boolean isLiked) {
                 review.setLiked(isLiked);
                 new Handler(Looper.getMainLooper()).post(() -> {
-                    holder.btnLike.setSelected(isLiked);
+                    if (holder.getAdapterPosition() != RecyclerView.NO_POSITION) {
+                        holder.btnLike.setSelected(isLiked);
+                    }
                 });
             }
 
@@ -132,26 +138,28 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ViewHolder
         });
 
         // Xử lý sự kiện Like
-
-
         holder.btnLike.setOnClickListener(v -> {
             if (currentUserId == -1) {
                 Toast.makeText(context, "Vui lòng đăng nhập để thích đánh giá!", Toast.LENGTH_SHORT).show();
                 return;
             }
 
-            boolean isLiked = review.isLiked();
-            int newCount = isLiked ? review.getNumLike() - 1 : review.getNumLike() + 1;
+            int adapterPosition = holder.getAdapterPosition();
+            if (adapterPosition == RecyclerView.NO_POSITION) return;
 
-            // Cập nhật UI ngay lập tức
-            review.setNumLike(newCount);
-            review.setLiked(!isLiked);
+            Review currentReview = reviews.get(adapterPosition);
+            boolean isLiked = currentReview.isLiked();
+            int newCount = isLiked ? currentReview.getNumLike() - 1 : currentReview.getNumLike() + 1;
+
+            // Cập nhật UI
+            currentReview.setNumLike(newCount);
+            currentReview.setLiked(!isLiked);
             holder.txtLikeCount.setText(String.valueOf(newCount));
             holder.btnLike.setSelected(!isLiked);
 
-            // Gửi PI like/unlike
+            // Gọi API
             if (!isLiked) {
-                reviewManager.likeReview(currentUserId, review.getId(), new ApiCallback<Void>() {
+                reviewManager.likeReview(currentUserId, currentReview.getId(), new ApiCallback<Void>() {
                     @Override
                     public void onSuccess() {
 
@@ -159,17 +167,16 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ViewHolder
 
                     @Override
                     public void onSuccess(Void response) {
-                        Log.d("DiscussionAdapter", "Like thành công");
+                        Log.d("ReviewAdapter", "Like thành công");
                     }
 
                     @Override
                     public void onFailure(String errorMessage) {
-                        rollbackLike(holder, review, isLiked);
+                        rollbackLike(holder, currentReview, isLiked);
                     }
                 });
-            }
-            else {
-                reviewManager.unlikeReview(currentUserId, review.getId(), new ApiCallback<Void>() {
+            } else {
+                reviewManager.unlikeReview(currentUserId, currentReview.getId(), new ApiCallback<Void>() {
                     @Override
                     public void onSuccess() {
 
@@ -177,18 +184,18 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ViewHolder
 
                     @Override
                     public void onSuccess(Void response) {
-                        Log.d("DiscussionAdapter", "Unlike thành công");
+                        Log.d("ReviewAdapter", "Unlike thành công");
                     }
 
                     @Override
                     public void onFailure(String errorMessage) {
-                        rollbackLike(holder, review, isLiked);
+                        rollbackLike(holder, currentReview, isLiked);
                     }
                 });
             }
-
         });
     }
+
     @Override
     public int getItemCount() {
         return reviews.size();
