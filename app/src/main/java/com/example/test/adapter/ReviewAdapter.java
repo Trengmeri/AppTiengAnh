@@ -34,7 +34,7 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ViewHolder
     private List<Review> reviews;
     private UserManager userManager;
     private ReviewManager reviewManager;
-    private final int currentUserId = SharedPreferencesManager.getInstance(context).getUser().getId();
+    private final int currentUserId;
 
 
     public ReviewAdapter(Context context, List<Review> reviews) {
@@ -42,7 +42,11 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ViewHolder
         this.reviews = reviews;
         this.userManager = new UserManager(context);
         this.reviewManager = new ReviewManager(context);
-        if (currentUserId == -1) {
+        User currentUser = SharedPreferencesManager.getInstance(context).getUser();
+        if (currentUser != null) {
+            this.currentUserId = currentUser.getId();
+        } else {
+            this.currentUserId = -1;
             Log.e("ReviewAdapter", "User chưa đăng nhập, userId không hợp lệ");
         }
     }
@@ -61,47 +65,51 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ViewHolder
         // Hiển thị nội dung đánh giá
         holder.txtReContent.setText(review.getReContent());
 //        holder.txtReSubject.setText(review.getReSubject());
-        holder.txtUser.setText("Đang tải...");
         holder.txtLikeCount.setText(String.valueOf(review.getNumLike()));
         holder.btnLike.setSelected(review.isLiked());
         holder.txtNumStar.setText(String.valueOf(review.getNumStar()));
         holder.ratingBar.setRating(review.getNumStar());
 
         // Cache tên người dùng
-        int userId = review.getUserId();
-        userManager.fetchUserById(userId, new ApiCallback<User>() {
+        final int reviewUserId = review.getUserId();
+        final ViewHolder currentHolder = holder;
+        userManager.fetchUserById(reviewUserId, new ApiCallback<User>() {
             @Override
             public void onSuccess() {
-
+                // Do nothing, xử lý sau
             }
 
             @Override
             public void onSuccess(User user) {
                 String avatar = user.getAvt();
+                String name = user.getName();
+                Log.d("UserAdapter", "onSuccess: " + name);
                 String uri;
                 if (avatar == null) return;
                 uri = avatar.replace("0.0.0.0", "14.225.198.3");
+
                 new Handler(Looper.getMainLooper()).post(() -> {
-                    holder.txtUser.setText(user.getName());
-                    Glide.with(context)
-                            .load(uri)
-                            .placeholder(R.drawable.icon_lesson) // Ảnh mặc định
-                            .error(R.drawable.icon_lesson)// Ảnh lỗi
-                            .circleCrop()                        // Luôn hiển thị hình tròn
-                            .override(200, 200)
-                            .into(holder.imgAvatar);
+                        currentHolder.txtUser.setText(name); // Cập nhật tên người dùng
+                        Log.d("TEST", "onSuccess: Thanh Cong");
+                        Glide.with(context)
+                                .load(uri)
+                                .placeholder(R.drawable.icon_lesson)
+                                .error(R.drawable.icon_lesson)
+                                .circleCrop()
+                                .override(200, 200)
+                                .into(currentHolder.imgAvatar);
                 });
             }
 
             @Override
             public void onFailure(String errorMessage) {
                 new Handler(Looper.getMainLooper()).post(() -> {
-                    holder.txtUser.setText("Không tải được tên");
+                    currentHolder.txtUser.setText("Không tải được tên");
                     Toast.makeText(context, "Lỗi tải tên người dùng: " + errorMessage, Toast.LENGTH_SHORT).show();
                 });
             }
         });
-        holder.txtReContent.setText(review.getReContent());
+
         // Kiểm tra trạng thái like ban đầu
         reviewManager.isReviewLiked(currentUserId, review.getId(), new ApiCallback<Boolean>() {
             @Override

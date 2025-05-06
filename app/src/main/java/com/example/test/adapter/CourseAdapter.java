@@ -240,6 +240,7 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseView
             holder.itemView.setBackgroundTintList(ColorStateList.valueOf(Color.LTGRAY));
             holder.itemView.setOnClickListener(v -> {
                 Intent intent = new Intent(context, CourseInformationActivity.class);
+                Log.d("CourseID:", course.getId() +"");
                 intent.putExtra("courseId", course.getId());
                 context.startActivity(intent);
             });

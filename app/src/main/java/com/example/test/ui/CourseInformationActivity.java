@@ -61,6 +61,7 @@ import java.util.List;
     private LessonManager lessonManager = new LessonManager();
     private CourseManager courseManager = new CourseManager(CourseInformationActivity.this);
     private ResultManager resultManager = new ResultManager(CourseInformationActivity.this);
+    private List<Review> reviews= new ArrayList<>();
 
     private User curUser = SharedPreferencesManager.getInstance(this).getUser();
     @Override
@@ -81,6 +82,14 @@ import java.util.List;
             Log.e("CourseActivity", "One or more views are null. Check activity_course.xml");
             return;
         }
+        // Thiết lập RecyclerView
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+//        reviewAdapter = new ReviewAdapter(this, new ArrayList<>());
+//        recyclerView.setAdapter(reviewAdapter);
+
+        lessonAdapter = new LessonAdapter(this);
+        recyclerViewLesson.setLayoutManager(new LinearLayoutManager(this));
+        recyclerViewLesson.setAdapter(lessonAdapter);
 
         // Lấy thông tin khóa học
         getCourseInfo(courseID, new ApiCallback<Course>() {
@@ -109,7 +118,7 @@ import java.util.List;
                     // Gọi hàm lấy danh sách bài học
                     loadLessons(course.getLessonIds());
 
-                    loadReviews(); // Tải reviews sau khi có curCourse
+//                    loadReviews(); // Tải reviews sau khi có curCourse
                 });
             }
 
@@ -118,16 +127,10 @@ import java.util.List;
                 runOnUiThread(() -> Log.e("CourseInfo", "Lỗi: " + errorMessage));
             }
         });
+        loadReviews();
 
 
-        // Thiết lập RecyclerView
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-//        reviewAdapter = new ReviewAdapter(this, new ArrayList<>());
-//        recyclerView.setAdapter(reviewAdapter);
 
-        lessonAdapter = new LessonAdapter(this);
-        recyclerViewLesson.setLayoutManager(new LinearLayoutManager(this));
-        recyclerViewLesson.setAdapter(lessonAdapter);
 
 
         // Sự kiện nút About và Lesson
@@ -266,7 +269,8 @@ import java.util.List;
         txtContentAbout = findViewById(R.id.txtContentAbout);
         recyclerView = findViewById(R.id.recyclerViewDiscussion);
         btnJoin = findViewById(R.id.btnJoin);
-
+        reviewAdapter = new ReviewAdapter(CourseInformationActivity.this, reviews);
+        recyclerView.setAdapter(reviewAdapter);
         contentAbout.setVisibility(View.VISIBLE);
         recyclerViewLesson.setVisibility(View.GONE);
 
@@ -325,36 +329,37 @@ import java.util.List;
         }
     }
 
-    private void loadReviews() {
-        reviewManager.fetchReviewsByCourse(courseID, currentPage, new ApiCallback<List<Review>>() {
-            @Override
-            public void onSuccess() {
+        private void loadReviews() {
+            reviewManager.fetchReviewsByCourse(12, currentPage, new ApiCallback<List<Review>>() {
+                @Override
+                public void onSuccess() {
 
-            }
+                }
 
-            @Override
-            public void onSuccess(List<Review> reviews) {
-                runOnUiThread(() -> {
-                    if (reviews == null || reviews.isEmpty()) {
-                        hasMoreData = false;
-                        return;
-                    }
-                    if ( reviewAdapter == null){
-                        reviewAdapter = new ReviewAdapter(CourseInformationActivity.this, reviews);
-                    }else {
-                        reviewAdapter.addMoreReviews(reviews);
-                    }
+                @Override
+                public void onSuccess(List<Review> reviews) {
+                    runOnUiThread(() -> {
+                        if (reviews == null || reviews.isEmpty()) {
+                            hasMoreData = false;
+                            Log.d("CourseInformationActivity", "List review null 1");
+                            return;
+                        }
+                        else {
+                            Log.d("CourseInformationActivity", "reviewSize: " );
+                            reviewAdapter.addMoreReviews(reviews);
 
-                    currentPage++;
-                    isLoading = false;
-                });
-            }
+                        }
 
-            @Override
-            public void onFailure(String errorMessage) {
-                runOnUiThread(() ->
-                        Toast.makeText(CourseInformationActivity.this, "Lỗi tải đánh giá: " + errorMessage, Toast.LENGTH_SHORT).show());
-            }
-        });
-    }
+                        currentPage++;
+                        isLoading = false;
+                    });
+                }
+
+                @Override
+                public void onFailure(String errorMessage) {
+                    runOnUiThread(() ->
+                            Toast.makeText(CourseInformationActivity.this, "Lỗi tải đánh giá: " + errorMessage, Toast.LENGTH_SHORT).show());
+                }
+            });
+        }
 }
