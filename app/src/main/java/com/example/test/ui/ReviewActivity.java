@@ -48,13 +48,13 @@ public class ReviewActivity extends AppCompatActivity {
         back = findViewById(R.id.back);
         ratingBar= findViewById(R.id.ratingBar);
         loadReviews();
-        Intent intent = getIntent();
-        courseID = intent.getIntExtra("courseId", 0);
+        courseID = getIntent().getIntExtra("courseId", 1);
 
-
+        String id = SharedPreferencesManager.getInstance(this).getID();
         // Sự kiện gửi Review
         btnSendReview.setOnClickListener(v -> {
             Log.d("ReviewActivity", "Course ID: "+ courseID);
+            Log.d("ReviewActivity", "User ID: "+ id);
             sendReview();
         });
         back.setOnClickListener(v -> {

@@ -2,6 +2,7 @@ package com.example.test.ui.question_data;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -12,6 +13,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import com.bumptech.glide.Glide;
 import com.example.test.R;
@@ -331,14 +333,14 @@ public class PointResultCourseActivity extends AppCompatActivity {
                 }
             }
 
-            correctRead.setText(getString(R.string.point) +": " + totalPointR);
-            compRead.setText("Complete: " + String.format("%.1f", comR / r));
-            correctLis.setText(getString(R.string.point) +": "+ totalPointL);
-            compLis.setText("Complete: " + String.format("%.1f", comL / l));
-            correctSpeak.setText(getString(R.string.point) +": "+ totalPointS);
-            compSpeak.setText("Complete: " + String.format("%.1f", comS / s));
-            correctWrite.setText(getString(R.string.point) +": "+ totalPointW);
-            compWrite.setText("Complete: " + String.format("%.1f", comW / w));
+            correctRead.setText(getString(R.string.point)  + totalPointR);
+            compRead.setText(getString(R.string.comp) + String.format("%.1f", comR / r));
+            correctLis.setText(getString(R.string.point) + totalPointL);
+            compLis.setText(getString(R.string.comp) + String.format("%.1f", comL / l));
+            correctSpeak.setText(getString(R.string.point) + totalPointS);
+            compSpeak.setText(getString(R.string.comp) + String.format("%.1f", comS / s));
+            correctWrite.setText(getString(R.string.point)+ totalPointW);
+            compWrite.setText(getString(R.string.comp) + String.format("%.1f", comW / w));
 
             // Hủy bất kỳ API call nào đang chờ trước đó
             if (callApiRunnable != null) {
@@ -367,13 +369,16 @@ public class PointResultCourseActivity extends AppCompatActivity {
                 coursePoint = enrollment.getTotalPoints();
                 runOnUiThread(() -> {
                     if (compCourse > 90) {
-                        star3.setBackgroundTintList(getResources().getColorStateList(R.color.yellow));
+                        star3.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(getApplicationContext(), R.color.yellow)));
+
                     }
                     if (compCourse > 60) {
-                        star2.setBackgroundTintList(getResources().getColorStateList(R.color.yellow));
+                        star2.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(getApplicationContext(), R.color.yellow)));
+
                     }
                     if (compCourse > 30) {
-                        star1.setBackgroundTintList(getResources().getColorStateList(R.color.yellow));
+                        star1.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(getApplicationContext(), R.color.yellow)));
+
                     }
                     pointTextView.setText(String.valueOf(coursePoint));
 
