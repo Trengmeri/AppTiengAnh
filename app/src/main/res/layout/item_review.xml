@@ -6,8 +6,8 @@
     android:orientation="horizontal"
     android:background="@color/white"
     android:layout_marginStart="@dimen/dp_30"
-    android:layout_marginTop="6dp"
-    android:layout_marginEnd="@dimen/dp_16"
+    android:layout_marginTop="16dp"
+    android:layout_marginEnd="@dimen/dp_30"
     android:paddingBottom="@dimen/dp_16">
 
     <!-- Avatar -->
@@ -15,6 +15,7 @@
         android:id="@+id/imgAvatar"
         android:layout_width="40dp"
         android:layout_height="40dp"
+        android:layout_marginTop="10dp"
         android:background="@drawable/icon_numlesson"/>
 
     <!-- Nội dung đánh giá -->
@@ -22,6 +23,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
+        android:layout_marginTop="10dp"
         android:layout_marginStart="8dp">
 
         <!-- Tên user + Số sao -->
@@ -51,6 +53,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
+                    android:layout_marginEnd="@dimen/dp_16"
                     android:gravity="center_vertical">
 
                     <RatingBar
@@ -69,7 +72,7 @@
                         android:id="@+id/txtNumStar"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
+                        android:layout_marginStart="5dp"
                         android:text="5"
                         android:textSize="14sp"
                         android:textStyle="bold"/>
@@ -99,7 +102,7 @@
             android:text="Nội dung đánh giá here..."
             android:textColor="#545454"
             android:textSize="13sp"
-            android:layout_marginEnd="@dimen/dp_16"
+            android:layout_marginEnd="@dimen/dp_30"
             android:layout_marginTop="5dp"/>
 
         <!-- Trạng thái (status) -->

@@ -257,9 +257,7 @@
                     android:id="@+id/recyclerViewDiscussion"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/dp_30"
                     android:layout_marginTop="10dp"
-                    android:layout_marginEnd="@dimen/dp_30"
                     android:nestedScrollingEnabled="false"
                     android:paddingBottom="80dp" />
             </LinearLayout>
