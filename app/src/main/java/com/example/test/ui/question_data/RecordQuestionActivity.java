@@ -542,6 +542,15 @@ public class RecordQuestionActivity extends AppCompatActivity {
             @Override
             public void onSuccess(SpeechResult result) {
                 Log.d("SPEECH_TO_TEXT", result.toString());
+                String resultText = result.toString();  // convert SpeechResult to String
+                String extracted = resultText;
+                if (resultText.contains("Transcript:") && resultText.contains(",")) {
+                    int start = resultText.indexOf("Transcript:") + "Transcript:".length();
+                    int end = resultText.indexOf(",", start);
+                    extracted = resultText.substring(start, end).trim();
+                }
+
+                tvTranscription.setText(extracted);
                 confidence= result.getConfidence();
             }
 
