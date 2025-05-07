@@ -7,9 +7,10 @@ import android.app.ProgressDialog;
 import android.content.pm.PackageManager;
 import android.content.Intent;
 import android.graphics.Color;
-import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.media.MediaRecorder;
 import android.os.Bundle;
+import android.os.Environment;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.View;
@@ -28,6 +29,7 @@ import com.example.test.SpeechRecognitionCallback;
 import com.example.test.SpeechRecognitionHelper;
 import com.example.test.api.ApiCallback;
 import com.example.test.api.ApiService;
+import com.example.test.api.AudioManager;
 import com.example.test.api.LessonManager;
 import com.example.test.api.MediaManager;
 import com.example.test.api.QuestionManager;
@@ -37,13 +39,16 @@ import com.example.test.model.Lesson;
 import com.example.test.model.MediaFile;
 import com.example.test.model.Question;
 import com.example.test.model.QuestionChoice;
+import com.example.test.model.SpeechResult;
 import com.example.test.ui.question_data.PointResultCourseActivity;
+import com.example.test.ui.question_data.RecordQuestionActivity;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SpeakingActivity extends AppCompatActivity implements SpeechRecognitionCallback {
+public class SpeakingActivity extends AppCompatActivity{
 
     private MediaPlayer mediaPlayer;
     private TextView tvTranscription;
@@ -53,7 +58,7 @@ public class SpeakingActivity extends AppCompatActivity implements SpeechRecogni
     List<String> correctAnswers = new ArrayList<>();
     private List<Integer> questionIds;
     private int currentStep = 0;
-    private int totalSteps;
+    private int totalSteps,enrollmentId;
     QuestionManager quesManager = new QuestionManager(this);
     LessonManager lesManager = new LessonManager();
     ResultManager resultManager = new ResultManager(this);
@@ -65,6 +70,11 @@ public class SpeakingActivity extends AppCompatActivity implements SpeechRecogni
     private boolean isPlaying = false;
     TextView tvQuestion,key;
     private ProgressDialog progressDialog;
+    private File recordedFile;
+    private AudioManager audioManager = new AudioManager(this);
+    private double confidence=0;
+    private MediaRecorder recorder;
+    private ObjectAnimator animator;
 
     LinearLayout imgVoice;
     // Thêm vào đầu class SpeakingActivity
@@ -94,14 +104,24 @@ public class SpeakingActivity extends AppCompatActivity implements SpeechRecogni
         imgReset= findViewById(R.id.imgReset);
 
         int lessonId = 6;
-        int enrollmentId = getIntent().getIntExtra("enrollmentId", 1);
+        enrollmentId = getIntent().getIntExtra("enrollmentId", 1);
         fetchLessonAndQuestions(lessonId);
         setupWaveAnimators();
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO}, 1);
         } else {
             imgVoice.setOnClickListener(v -> {
-                toggleRecordingAndAnimation();
+                if(!isRecordingAnimation){
+                    startRecording();
+                    startWaves();
+                    isRecordingAnimation = true;
+//                    Toast.makeText(this, "Đang ghi âm...", Toast.LENGTH_SHORT).show();
+                }
+                else{
+                    stopRecording();
+                    stopWaves();
+                    isRecordingAnimation = false;
+                }
             });
             imgReset.setOnClickListener(v -> resetRecording()); // Sự kiện cho nút reset
         }
@@ -111,24 +131,37 @@ public class SpeakingActivity extends AppCompatActivity implements SpeechRecogni
 
 
         btnCheckResult.setOnClickListener(v -> {
-            String userAnswer = tvTranscription.getText().toString().trim();
+            audioManager.uploadAndTranscribeM4A(recordedFile, new ApiCallback<SpeechResult>() {
 
-            if (userAnswer.isEmpty()) {
-                Toast.makeText(SpeakingActivity.this, "Vui lòng trả lời câu hỏi!", Toast.LENGTH_SHORT).show();
-            } else {
-                checkAnswer(userAnswer, enrollmentId);
-            }
+                @Override
+                public void onSuccess() {
+
+                }
+
+                @Override
+                public void onSuccess(SpeechResult result) {
+                    Log.d("SPEECH_TO_TEXT", result.toString());
+                    confidence= result.getConfidence();
+                    checkAnswer(result.getTranscript());
+                }
+
+                @Override
+                public void onFailure(String errorMessage) {
+                    Log.e("SPEECH_TO_TEXT", errorMessage);
+                }
+            });
         });
     }
 
-    private void checkAnswer(String userAnswer,int enrollmentId) {
+    private void checkAnswer(String userAnswer) {
         String questionContent = tvQuestion.getText().toString().trim();
         ApiService apiService = new ApiService(this);
-        // Hiển thị ProgressDialog
-        progressDialog = new ProgressDialog(this);
-        progressDialog.setMessage(getString(R.string.load));
-        progressDialog.setCancelable(false);
-        progressDialog.show();
+        runOnUiThread(() -> {
+            progressDialog = new ProgressDialog(this);
+            progressDialog.setMessage(getString(R.string.load));
+            progressDialog.setCancelable(false);
+            progressDialog.show();
+        });
 
         apiService.sendAnswerToApi(questionContent, userAnswer, new ApiCallback<EvaluationResult>() {
             @Override
@@ -276,57 +309,87 @@ public class SpeakingActivity extends AppCompatActivity implements SpeechRecogni
         });
     }
 
-    @Override
-    public void onReadyForSpeech() {
-        Toast.makeText(this, "Listening...", Toast.LENGTH_SHORT).show();
-    }
+    private void resetRecording() {
+        // Dừng ghi âm nếu đang ghi
+        if (isRecordingAnimation && speechRecognitionHelper != null) {
+            speechRecognitionHelper.stopListening();
+            isRecordingAnimation = false;
+        }
 
-    @Override
-    public void onBeginningOfSpeech() {
-    }
+        // Dừng và đặt lại animation
+        resetWaves();
 
-    @Override
-    public void onRmsChanged(float rmsdB) {
-    }
+        // Xóa nội dung cũ
+        tvTranscription.setText("");
+        userAnswers.clear();
 
-    @Override
-    public void onBufferReceived(byte[] buffer) {
-    }
+        runOnUiThread(() -> {
+            Toast.makeText(SpeakingActivity.this, "Ghi âm đã được reset", Toast.LENGTH_SHORT).show();
+        });
 
-    @Override
-    public void onEndOfSpeech() {
-        Toast.makeText(this, "Processing...", Toast.LENGTH_SHORT).show();
     }
-
-    @Override
-    public void onError(int error) {
-        Log.e("SpeechRecognizerError", "Error code: " + error);
-        Toast.makeText(this, "Error: " + error, Toast.LENGTH_SHORT).show();
-        stopWaves(); // Dừng animation nếu có lỗi
-        isRecordingAnimation = false;
-    }
-
-    @Override
-    public void onResults(ArrayList<String> matches) {
-        if (matches != null && !matches.isEmpty()) {
-            tvTranscription.setText(matches.get(0));
-            userAnswers.clear();
-            userAnswers.add(matches.get(0));
+    private void startRecording() {
+        File outputDir = getExternalFilesDir(Environment.DIRECTORY_MUSIC);
+        String fileName = "recorded_audio_" + System.currentTimeMillis() + ".m4a";
+        recordedFile = new File(outputDir, fileName);
+        recorder = new MediaRecorder();
+        recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+        recorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4); // vẫn giữ MPEG_4
+        recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);    // encoder phù hợp cho m4a
+        recorder.setOutputFile(recordedFile.getAbsolutePath());
+        try {
+            recorder.prepare();
+            recorder.start();
+            isRecordingAnimation = true;
+            startWaves();
+            Log.d("Succsse", "Recording started");
+        } catch (IOException e) {
+            e.printStackTrace();
+            Log.e("Fail", "Recording failed");
         }
     }
+    private void stopRecording() {
+        if (recorder != null) {
+            recorder.stop();
+            recorder.release();
+            recorder = null;
+        }
+        if (animator != null) {
+            animator.cancel();
+        }
 
-    @Override
-    public void onPartialResults(Bundle partialResults) {
+        isRecordingAnimation = false;
+
+        audioManager.uploadAndTranscribeM4A(recordedFile, new ApiCallback<SpeechResult>() {
+
+            @Override
+            public void onSuccess() {
+
+            }
+
+            @Override
+            public void onSuccess(SpeechResult result) {
+                Log.d("SPEECH_TO_TEXT", result.toString());
+                String resultText = result.toString();  // convert SpeechResult to String
+                String extracted = resultText;
+                if (resultText.contains("Transcript:") && resultText.contains(",")) {
+                    int start = resultText.indexOf("Transcript:") + "Transcript:".length();
+                    int end = resultText.indexOf(",", start);
+                    extracted = resultText.substring(start, end).trim();
+                }
+
+                tvTranscription.setText(extracted);
+                confidence= result.getConfidence();
+            }
+
+            @Override
+            public void onFailure(String errorMessage) {
+                Log.e("SPEECH_TO_TEXT", errorMessage);
+            }
+        });
+        Log.d("Succsse", "Recording saved to: " + recordedFile.getAbsolutePath());
     }
 
-    @Override
-    public void onEvent(int eventType, Bundle params) {
-    }
-
-    private void initializeSpeechRecognition() {
-        speechRecognitionHelper = new SpeechRecognitionHelper(this, this);
-        speechRecognitionHelper.startListening();
-    }
     private void createProgressBars(int totalQuestions, int currentProgress) {
         LinearLayout progressContainer = findViewById(R.id.progressContainer);
         progressContainer.removeAllViews(); // Xóa thanh cũ nếu có
@@ -440,42 +503,6 @@ public class SpeakingActivity extends AppCompatActivity implements SpeechRecogni
         animator3Alpha.pause();
     }
 
-    private void toggleRecordingAndAnimation() {
-        if (!isRecordingAnimation) {
-            // Bắt đầu ghi âm
-            initializeSpeechRecognition();
-            // Bắt đầu animation
-            startWaves();
-            isRecordingAnimation = true;
-            Toast.makeText(this, "Đang ghi âm...", Toast.LENGTH_SHORT).show();
-        } else {
-            // Dừng ghi âm
-            if (speechRecognitionHelper != null) {
-                speechRecognitionHelper.stopListening();
-            }
-            // Dừng animation
-            stopWaves();
-            isRecordingAnimation = false;
-            Toast.makeText(this, "Đã dừng ghi âm", Toast.LENGTH_SHORT).show();
-        }
-    }
-    private void resetRecording() {
-        // Dừng ghi âm nếu đang ghi
-        if (isRecordingAnimation && speechRecognitionHelper != null) {
-            speechRecognitionHelper.stopListening();
-            isRecordingAnimation = false;
-        }
-
-        // Dừng và đặt lại animation
-        resetWaves();
-
-        // Xóa nội dung cũ
-        tvTranscription.setText("");
-        userAnswers.clear();
-
-        Toast.makeText(this, "Đã xóa bản ghi âm", Toast.LENGTH_SHORT).show();
-    }
-
     private void resetWaves() {
         // Dừng các animator nếu đang chạy
         stopWaves();
@@ -497,17 +524,8 @@ public class SpeakingActivity extends AppCompatActivity implements SpeechRecogni
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (speechRecognitionHelper != null) {
-            speechRecognitionHelper.destroy();
+        if (recorder != null) {
+            recorder.release();
         }
-        if (animator1ScaleX != null) animator1ScaleX.cancel();
-        if (animator1ScaleY != null) animator1ScaleY.cancel();
-        if (animator1Alpha != null) animator1Alpha.cancel();
-        if (animator2ScaleX != null) animator2ScaleX.cancel();
-        if (animator2ScaleY != null) animator2ScaleY.cancel();
-        if (animator2Alpha != null) animator2Alpha.cancel();
-        if (animator3ScaleX != null) animator3ScaleX.cancel();
-        if (animator3ScaleY != null) animator3ScaleY.cancel();
-        if (animator3Alpha != null) animator3Alpha.cancel();
     }
 }

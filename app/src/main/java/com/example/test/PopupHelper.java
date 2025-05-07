@@ -12,6 +12,7 @@ import android.text.style.ImageSpan;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -98,8 +99,12 @@ public class PopupHelper {
 
         } else {
             try {
+                ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) btnNext.getLayoutParams();
+                params.setMargins(16, 0, 0, 0);  // 16 pixels hoặc dùng dp chuyển sang pixel
+                btnNext.setLayoutParams(params);
+
                 btnview.setVisibility(View.VISIBLE);
-                tvMessage.setText(String.format("%s :%.1f",activity.getString(R.string.point), score));
+                tvMessage.setText(String.format("%s %.1f",activity.getString(R.string.point), score));
                 tvDetail.setText(evaluation);
                 btnview.setOnClickListener(view -> {
                     tvMessage.setText(activity.getString(R.string.improvements));
