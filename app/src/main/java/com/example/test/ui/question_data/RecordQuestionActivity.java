@@ -144,7 +144,7 @@ public class RecordQuestionActivity extends AppCompatActivity {
 
         runOnUiThread(() -> {
             progressDialog = new ProgressDialog(this);
-            progressDialog.setMessage("Đang xử lý...");
+            progressDialog.setMessage(getString(R.string.load));
             progressDialog.setCancelable(false);
             progressDialog.show();
         });
@@ -158,7 +158,7 @@ public class RecordQuestionActivity extends AppCompatActivity {
             @Override
             public void onSuccess(EvaluationResult result) {
 
-                double point = result.getPoint() *(70/100)+ confidence* (30/100);
+                double point = result.getPoint() * 0.7 + confidence * 0.3;
                 // Lưu kết quả vào hệ thống
                 quesManager.saveUserAnswer(questions.get(currentStep).getId(), userAnswer, point, result.getimprovements(),enrollmentId, new ApiCallback() {
                     @Override
