@@ -25,5 +25,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/dp_16"
         android:layout_gravity="center"
-        android:text=""/>
+        android:text=""
+        android:maxLines="2"
+        android:ellipsize="end"/>
 </LinearLayout>
