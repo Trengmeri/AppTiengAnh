@@ -313,15 +313,18 @@ public class ListeningChoiceActivity extends AppCompatActivity {
             return;
         }
 
-        if (isPreparing) return;
+        if (isPreparing) {
+            Log.d("MediaPlayer", "Đang chuẩn bị, bỏ qua yêu cầu");
+            return;
+        }
 
         try {
             if (mediaPlayer == null) {
                 initializeMediaPlayer(audioUrl);
-            } else if (!mediaPlayer.isPlaying()) {
-                if (isPaused) {
-                    // Chỉ tiếp tục phát nếu stream hỗ trợ seek
+            } else if (isPaused) {
+                if (isSeekable) {
                     try {
+                        mediaPlayer.seekTo(currentPosition);
                         mediaPlayer.start();
                         startWaves();
                         isPlayingAnimation = true;
@@ -331,8 +334,11 @@ public class ListeningChoiceActivity extends AppCompatActivity {
                         resetMediaPlayer(audioUrl);
                     }
                 } else {
+                    // Nếu không hỗ trợ seek, phát lại từ đầu
                     resetMediaPlayer(audioUrl);
                 }
+            } else if (!mediaPlayer.isPlaying()) {
+                resetMediaPlayer(audioUrl);
             }
         } catch (IllegalStateException e) {
             Log.e("MediaPlayerError", "Lỗi trạng thái: " + e.getMessage());
@@ -504,13 +510,14 @@ public class ListeningChoiceActivity extends AppCompatActivity {
         if (!isPlayingAnimation) {
             if (isPaused && mediaPlayer != null) {
                 try {
-                    // Đảm bảo MediaPlayer đã được prepare
-                    if (currentPosition >= 0) {
+                    if (isSeekable && currentPosition >= 0) {
                         mediaPlayer.seekTo(currentPosition);
                         mediaPlayer.start();
                         startWaves();
                         isPlayingAnimation = true;
                         isPaused = false;
+                    } else {
+                        resetMediaPlayer(audioUrl);
                     }
                 } catch (IllegalStateException e) {
                     Log.e("MediaPlayerError", "Lỗi tiếp tục phát: " + e.getMessage());
@@ -526,26 +533,38 @@ public class ListeningChoiceActivity extends AppCompatActivity {
         }
     }
 
+
     private void replayAudio() {
-        if (audioUrl == null) return;
+        if (audioUrl == null) {
+            Toast.makeText(this, "Không có audio để phát lại", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         if (mediaPlayer != null) {
             try {
                 if (mediaPlayer.isPlaying()) {
                     mediaPlayer.stop();
                 }
-                mediaPlayer.reset();
+                if (isSeekable) {
+                    mediaPlayer.seekTo(0);
+                    mediaPlayer.start();
+                    startWaves();
+                    isPlayingAnimation = true;
+                    currentPosition = 0;
+                    isPaused = false;
+                } else {
+                    // Nếu không hỗ trợ seek, reset và phát lại
+                    resetMediaPlayer(audioUrl);
+                }
             } catch (IllegalStateException e) {
-                Log.e("MediaPlayerError", "Error resetting in replay: " + e.getMessage());
+                Log.e("MediaPlayerError", "Lỗi phát lại: " + e.getMessage());
+                resetMediaPlayer(audioUrl);
             }
-            mediaPlayer.release();
-            mediaPlayer = null;
+        } else {
+            resetMediaPlayer(audioUrl);
         }
-        stopWaves();
+
         resetWaveViews();
-        currentPosition = 0;
-        isPaused = false;
-        isPreparing = false;
-        initializeMediaPlayer(audioUrl);
     }
 
     private void pauseAudio() {
@@ -572,7 +591,6 @@ public class ListeningChoiceActivity extends AppCompatActivity {
         btnListen.setEnabled(false);
 
         try {
-            // Giải phóng MediaPlayer cũ nếu tồn tại
             if (mediaPlayer != null) {
                 mediaPlayer.release();
                 mediaPlayer = null;
@@ -586,13 +604,17 @@ public class ListeningChoiceActivity extends AppCompatActivity {
                 isPreparing = false;
                 btnListen.setEnabled(true);
                 try {
-                    // Không seek nếu là stream không seekable
+                    int duration = mediaPlayer.getDuration();
+                    if (duration == -1) {
+                        Log.d("MediaPlayerInfo", "Audio duration is unknown");
+                        isSeekable = false;
+                    }
                     mediaPlayer.start();
                     btnCheckResult.setEnabled(true);
                     startWaves();
                     isPlayingAnimation = true;
                     isPaused = false;
-                    currentPosition = 0; // Reset vị trí khi bắt đầu phát mới
+                    currentPosition = 0;
                 } catch (IllegalStateException e) {
                     Log.e("MediaPlayerError", "Lỗi khi phát: " + e.getMessage());
                 }
@@ -604,13 +626,8 @@ public class ListeningChoiceActivity extends AppCompatActivity {
                 stopWaves();
                 isPlayingAnimation = false;
                 Log.e("MediaPlayerError", "Lỗi phát audio: " + what + ", " + extra);
-
-                // Xử lý riêng cho trường hợp stream không seekable
-                if (what == MediaPlayer.MEDIA_ERROR_NOT_VALID_FOR_PROGRESSIVE_PLAYBACK) {
-                    runOnUiThread(() ->
-                            Toast.makeText(this, "Audio stream không hỗ trợ tua", Toast.LENGTH_SHORT).show());
-                }
-                return true; // Ngăn không gọi onCompletion
+                runOnUiThread(() -> Toast.makeText(this, "Không thể phát audio", Toast.LENGTH_SHORT).show());
+                return true;
             });
 
             mediaPlayer.setOnInfoListener((mp, what, extra) -> {
@@ -621,11 +638,19 @@ public class ListeningChoiceActivity extends AppCompatActivity {
                 return true;
             });
 
+            mediaPlayer.setOnCompletionListener(mp -> {
+                stopWaves();
+                isPlayingAnimation = false;
+                currentPosition = 0;
+                isPaused = false;
+            });
+
             mediaPlayer.prepareAsync();
         } catch (IOException e) {
             isPreparing = false;
             btnListen.setEnabled(true);
             Log.e("MediaPlayerError", "Lỗi khởi tạo: " + e.getMessage());
+            runOnUiThread(() -> Toast.makeText(this, "Lỗi khi tải audio", Toast.LENGTH_SHORT).show());
         }
     }
 
@@ -656,6 +681,7 @@ public class ListeningChoiceActivity extends AppCompatActivity {
         wave3.setScaleY(1f);
         wave3.setAlpha(0.1f);
     }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
