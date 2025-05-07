@@ -69,6 +69,9 @@ public class ListeningQuestionActivity extends AppCompatActivity {
     private boolean isPlayingAnimation = false;
     private int currentPosition = 0; // Lưu vị trí hiện tại của âm thanh
     private boolean isPaused = false; // Trạng thái tạm dừng của âm thanh
+    private String lessonAudioUrl; // Cache for lesson audio
+    private boolean isUsingLessonAudio = false; // Track if lesson audio is in use
+
     QuestionManager quesManager = new QuestionManager(this);
     LessonManager lesManager = new LessonManager();
     ResultManager resultManager = new ResultManager(this);
@@ -109,9 +112,7 @@ public class ListeningQuestionActivity extends AppCompatActivity {
             mediaPlayer = new MediaPlayer();
             mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             mediaPlayer.setOnPreparedListener(mp -> {
-                if (isPaused) {
-                    mediaPlayer.seekTo(currentPosition);
-                }
+                mediaPlayer.seekTo(currentPosition);
                 mediaPlayer.start();
                 btnCheckResult.setEnabled(true);
                 startWaves();
@@ -145,6 +146,7 @@ public class ListeningQuestionActivity extends AppCompatActivity {
 
         int questionID = questions.get(currentQuestionIndex).getId();
         fetchAudio(questionID, lessonID);
+
         LinearLayout progressBar = findViewById(R.id.progressBar); // Ánh xạ ProgressBar
 
         btnCheckResult.setOnClickListener(v -> {
@@ -259,6 +261,8 @@ public class ListeningQuestionActivity extends AppCompatActivity {
                 runOnUiThread(() -> {
                     if (mediaFile != null && mediaFile.getMaterLink() != null && mediaFile.getMaterLink().endsWith(".mp3")) {
                         audioUrl = mediaFile.getMaterLink().replace("0.0.0.0", "14.225.198.3");
+                        isUsingLessonAudio = false;
+                        currentPosition = 0; // Reset position for new question-specific audio
                         resetMediaPlayer(audioUrl);
                     } else {
                         fetchAudioByLessonId(lessonId);
@@ -275,6 +279,17 @@ public class ListeningQuestionActivity extends AppCompatActivity {
         });
     }
     private void fetchAudioByLessonId(int lessonId) {
+        if (lessonAudioUrl != null && !lessonAudioUrl.isEmpty()) {
+            // Use cached lesson audio
+            audioUrl = lessonAudioUrl;
+            isUsingLessonAudio = true;
+            // Do not reset MediaPlayer to preserve currentPosition
+            if (mediaPlayer == null) {
+                initializeMediaPlayer(audioUrl);
+            }
+            return;
+        }
+
         materialsManager.fetchAudioByLesId(lessonId, new ApiCallback<String>() {
             @Override
             public void onSuccess() {
@@ -284,8 +299,10 @@ public class ListeningQuestionActivity extends AppCompatActivity {
             public void onSuccess(String result) {
                 runOnUiThread(() -> {
                     if (result != null && !result.isEmpty()) {
-                        audioUrl = result;
-                        resetMediaPlayer(audioUrl);
+                        lessonAudioUrl = result; // Cache the lesson audio URL
+                        audioUrl = lessonAudioUrl;
+                        isUsingLessonAudio = true;
+                        resetMediaPlayer(audioUrl); // Only reset on first fetch
                     } else {
                         Toast.makeText(ListeningQuestionActivity.this, "Không tìm thấy audio", Toast.LENGTH_SHORT).show();
                     }
@@ -546,6 +563,7 @@ public class ListeningQuestionActivity extends AppCompatActivity {
             mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             mediaPlayer.setDataSource(audioUrl);
             mediaPlayer.setOnPreparedListener(mp -> {
+                mediaPlayer.seekTo(currentPosition);
                 mediaPlayer.start();
                 btnCheckResult.setEnabled(true);
                 startWaves();
